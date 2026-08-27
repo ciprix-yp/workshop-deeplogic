@@ -122,8 +122,12 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
 
 ## F5 — Emailuri
 
-- [ ] `docs/EMAILURI.md` — cele 7 texte, **review de Ciprian înainte de cod**
-- [ ] Template-uri + trimitere reală, verificată pe Gmail mobil + Outlook
+- [x] `docs/EMAILURI.md` — **draft complet, toate cele 7 texte** — blocat pe review-ul lui
+      Ciprian înainte să intre în cod (D10). 4 puncte marcate `⚠ DE CONFIRMAT`
+      (poziția pe listă în email 5, „workshop următor" în email 7, forma semnăturii,
+      `EMAIL_FROM`).
+- [ ] Template-uri Resend + trimitere reală, verificată pe Gmail mobil + Outlook
+      — **așteaptă aprobarea textelor**
 
 ## F6 — Ciclul Inngest
 
