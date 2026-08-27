@@ -57,6 +57,18 @@ for (const ecran of ECRANE) {
      fonturile — care sunt oricum singurul asset care contează vizual aici. */
   await page.goto(URL_BAZA, { waitUntil: 'load', timeout: 30_000 });
   await page.evaluate(() => document.fonts.ready);
+  /*
+   * Forțează dezvăluirea înainte de captură.
+   *
+   * Capturile auditează LAYOUT-ul; animația de intrare le-ar face
+   * nedeterministe — un element prins la jumătatea tranziției apare
+   * translucid, iar un bloc întunecat la 15% opacitate se citește ca gri
+   * deschis. Comportamentul animației se testează separat, în
+   * tests/e2e/motion.spec.ts.
+   */
+  await page.addStyleTag({
+    content: '.js-reveal [data-reveal]{opacity:1!important;transform:none!important;transition:none!important}',
+  });
   await page.waitForTimeout(400); // așezarea layout-ului după swap-ul de font
 
   await page.screenshot({

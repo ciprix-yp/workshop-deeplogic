@@ -8,7 +8,7 @@ import Sectiune from './Sectiune.astro';
 
   <ol class="lista">
     {rezultatul.lista.map((item, i) => (
-      <li>
+      <li data-reveal style={`--intarziere: ${i * 50}ms`}>
         <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
         <span class="text">
           <strong>{item.titlu}</strong>

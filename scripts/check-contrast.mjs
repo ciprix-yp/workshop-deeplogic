@@ -20,6 +20,12 @@ const TOKENS = {
   inainte: '#637474', // corectat: original era #2F4F4F la opacitate 70% (= 4.23:1)
   eroare: '#9E4B4B', // corectat: original #B85C5C = 4.45:1, marginal sub AA
   succes: '#C9E3D0',
+
+  // Registrul întunecat (§02 vacarm, §08, footer).
+  bgInchis: '#1B2426',
+  textPeInchis: '#FFFFFF',
+  textPeInchisMuted: '#B9C4C4',
+  accentClar: '#7FD1C4',
 };
 
 /** @param {string} hex */
@@ -55,6 +61,14 @@ const PERECHI = [
   { nume: 'mesaj de eroare pe fundal secundar', fg: TOKENS.eroare, bg: TOKENS.bgSecundar, min: 4.5 },
   { nume: 'accent decorativ — text mare', fg: TOKENS.accentDecor, bg: TOKENS.bgPrimar, min: 3.0 },
   { nume: 'accent decorativ — bordură/UI', fg: TOKENS.accentDecor, bg: TOKENS.bgPrimar, min: 3.0 },
+
+  // Registrul întunecat. Textul secundar de pe fundal închis e cel mai ușor
+  // de greșit: pe alb un gri se vede, pe negru același gri dispare.
+  { nume: 'titlu pe fundal închis', fg: TOKENS.textPeInchis, bg: TOKENS.bgInchis, min: 4.5 },
+  { nume: 'corp secundar pe fundal închis', fg: TOKENS.textPeInchisMuted, bg: TOKENS.bgInchis, min: 4.5 },
+  { nume: 'accent clar pe fundal închis', fg: TOKENS.accentClar, bg: TOKENS.bgInchis, min: 4.5 },
+  { nume: 'CTA pe întuneric — text închis pe accent clar', fg: TOKENS.bgInchis, bg: TOKENS.accentClar, min: 4.5 },
+  { nume: 'fundal secundar ca text pe închis', fg: TOKENS.bgSecundar, bg: TOKENS.bgInchis, min: 4.5 },
 ];
 
 let picat = 0;

@@ -1,0 +1,137 @@
+---
+import { CTA, EVENIMENT } from '../content/copy';
+---
+
+{/*
+  CTA persistent, doar pe mobil.
+
+  Nu încalcă regula „un singur CTA pe toată pagina": e ACELAȘI CTA, cu același
+  text și aceeași ancoră, ținut la îndemână. Regula interzice un al doilea
+  îndemn concurent („află mai multe"), nu accesibilitatea primului.
+
+  Apare abia după ce butonul din hero iese din cadru — altfel ar dubla vizual
+  un buton deja pe ecran — și se ascunde când formularul e vizibil, ca să nu
+  acopere exact lucrul spre care trimite.
+*/}
+<div id="cta-sticky" class="sticky" hidden>
+  <div class="info">
+    <span class="data">{EVENIMENT.dataScurt}</span>
+    <span class="locuri">{EVENIMENT.capacitate} de locuri</span>
+  </div>
+  <a href={CTA.ancora} class="buton">{CTA.text}</a>
+</div>
+
+<script is:inline>
+  (() => {
+    const bara = document.getElementById('cta-sticky');
+    const hero = document.querySelector('.hero .cta');
+    const form = document.getElementById('inscriere');
+    if (!bara || !hero || !form || !('IntersectionObserver' in window)) return;
+
+    let heroVizibil = true;
+    let formVizibil = false;
+
+    const actualizeaza = () => {
+      const arata = !heroVizibil && !formVizibil;
+      bara.hidden = !arata;
+      bara.classList.toggle('vizibil', arata);
+    };
+
+    new IntersectionObserver(
+      ([e]) => {
+        heroVizibil = e.isIntersecting;
+        actualizeaza();
+      },
+      { threshold: 0 },
+    ).observe(hero);
+
+    new IntersectionObserver(
+      ([e]) => {
+        formVizibil = e.isIntersecting;
+        actualizeaza();
+      },
+      // Prag generos: bara trebuie să dispară înainte ca formularul să fie
+      // pe jumătate pe ecran, nu fix când îl atinge.
+      { threshold: 0, rootMargin: '0px 0px -25% 0px' },
+    ).observe(form);
+  })();
+</script>
+
+<style>
+  .sticky {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-md);
+    padding: var(--sp-sm) var(--lat);
+    /* `env(safe-area-inset-bottom)` ține butonul deasupra barei de gesturi de
+       pe iPhone. Fără el, jumătatea de jos a țintei devine neapăsabilă. */
+    padding-bottom: calc(var(--sp-sm) + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-inchis);
+    color: var(--text-pe-inchis-muted);
+
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 220ms ease,
+      transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .sticky.vizibil {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Doar pe mobil. Pe desktop, CTA-urile din pagină sunt mereu la un scroll
+     scurt distanță și o bară fixă ar fura din înălțimea utilă. */
+  @media (min-width: 48rem) {
+    .sticky {
+      display: none;
+    }
+  }
+
+  .info {
+    display: grid;
+    gap: 0.1rem;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .data {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-pe-inchis);
+  }
+
+  .locuri {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--accent-clar);
+  }
+
+  .buton {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch);
+    padding-inline: var(--sp-lg);
+    border-radius: var(--radius);
+    background: var(--accent-clar);
+    color: var(--bg-inchis);
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    font-size: var(--t-corp);
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky {
+      transition: none;
+    }
+  }
+</style>

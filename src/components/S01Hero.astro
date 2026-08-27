@@ -1,5 +1,5 @@
 ---
-import { hero } from '../content/copy';
+import { hero, EVENIMENT } from '../content/copy';
 import Cta from './Cta.astro';
 ---
 
@@ -17,15 +17,32 @@ import Cta from './Cta.astro';
       ))}
     </h1>
 
-    <p class="subheadline">{hero.subheadline}</p>
-    <p class="pentru-cine">{hero.pentruCine}</p>
+    {/*
+      Sub titlu, două coloane pe desktop. Înainte, argumentul stătea singur pe
+      stânga și jumătatea dreaptă rămânea goală — arăta a pagină neterminată,
+      nu a spațiu deliberat. Informația practică umple coloana a doua și
+      primește o formă proprie: fișa evenimentului, în limbajul documentului
+      de lucru pe care îl promite pagina.
+    */}
+    <div class="sub">
+      <div class="argument">
+        <p class="subheadline">{hero.subheadline}</p>
+        <p class="pentru-cine">{hero.pentruCine}</p>
+        <Cta marime="mare" spatiuSus />
+      </div>
 
-    <p class="meta">{hero.meta}</p>
+      <aside class="fisa">
+        <dl>
+          <div><dt>Data</dt><dd>{EVENIMENT.dataText}</dd></div>
+          <div><dt>Ora</dt><dd>{EVENIMENT.ora}</dd></div>
+          <div><dt>Locul</dt><dd>{EVENIMENT.locatie}<span>{EVENIMENT.oras}</span></dd></div>
+          <div><dt>Locuri</dt><dd>{EVENIMENT.capacitate}</dd></div>
+        </dl>
 
-    <Cta marime="mare" spatiuSus />
-
-    <div class="micro-proof">
-      {hero.microProof.map((linie) => <p>{linie}</p>)}
+        <div class="micro-proof">
+          {hero.microProof.map((linie) => <p>{linie}</p>)}
+        </div>
+      </aside>
     </div>
   </div>
 </header>
@@ -57,7 +74,7 @@ import Cta from './Cta.astro';
 
   h1 {
     font-size: var(--t-h1);
-    max-width: 20ch;
+    max-width: 18ch;
   }
 
   .rand {
@@ -67,10 +84,26 @@ import Cta from './Cta.astro';
     color: var(--secundar);
   }
 
+  .sub {
+    display: grid;
+    gap: var(--sp-xl);
+    margin-top: var(--sp-lg);
+  }
+
+  @media (min-width: 56rem) {
+    .sub {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+      gap: var(--sp-2xl);
+      align-items: start;
+    }
+    h1 {
+      max-width: 20ch;
+    }
+  }
+
   .subheadline {
     font-size: var(--t-corp-lg);
-    max-width: 46ch;
-    margin-top: var(--sp-md);
+    max-width: 44ch;
     /* Nu `--lh-lejer` (1.65): la trei rânduri pe mobil, spațierea de proză
        lungă rupe fraza în rânduri independente. Un subtitlu trebuie citit
        ca o singură unitate. */
@@ -80,29 +113,62 @@ import Cta from './Cta.astro';
   .pentru-cine {
     color: var(--text-muted);
     margin-top: var(--sp-sm);
-    max-width: 46ch;
+    max-width: 44ch;
     line-height: var(--lh-normal);
   }
 
-  .meta {
+  /* ── Fișa evenimentului ─────────────────────────────────────────────── */
+
+  .fisa {
+    border: 1px solid rgba(47, 79, 79, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--sp-md) var(--sp-lg) var(--sp-lg);
+  }
+
+  .fisa dl {
+    margin: 0;
+    display: grid;
+  }
+
+  .fisa dl > div {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: var(--sp-sm);
+    align-items: baseline;
+    padding-block: var(--sp-sm);
+    border-block-end: 1px solid rgba(47, 79, 79, 0.12);
+  }
+
+  .fisa dt {
     font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--text-muted);
+  }
+
+  .fisa dd {
+    margin: 0;
+    font-weight: 600;
+    line-height: var(--lh-normal);
     font-size: var(--t-corp);
-    color: var(--secundar);
-    margin-top: var(--sp-lg);
-    /* Data e informație de scanat, nu de citit — mono o separă de proză. */
-    letter-spacing: -0.01em;
+  }
+
+  .fisa dd span {
+    display: block;
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: var(--t-mic);
   }
 
   .micro-proof {
-    margin-top: var(--sp-lg);
+    margin-top: var(--sp-md);
     display: grid;
     gap: var(--sp-xs);
     color: var(--text-muted);
-    /* Nu `--t-eyebrow`: „25 de locuri. Fără laptop, fără cont…" e dovadă, nu
-       text mărunt de subsol. La 12px pe mobil se citea ca un disclaimer legal
-       și pierdea exact obiecția pe care o dezamorsează. */
-    font-size: var(--t-corp);
+    /* Nu text mărunt de subsol: „25 de locuri. Fără laptop, fără cont…" e
+       dovadă, și dezamorsează obiecția „îmi trebuie pregătire". */
+    font-size: var(--t-mic);
     line-height: var(--lh-normal);
-    max-width: 52ch;
   }
 </style>

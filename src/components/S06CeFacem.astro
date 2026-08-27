@@ -8,7 +8,7 @@ import Sectiune from './Sectiune.astro';
 
   <div class="blocuri">
     {ceFacem.blocuri.map((bloc) => (
-      <article class="bloc">
+      <article class="bloc" data-reveal>
         <p class="numar" aria-hidden="true">{bloc.numar}</p>
         <div class="corp">
           <h3>{bloc.titlu}</h3>

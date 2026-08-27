@@ -14,12 +14,16 @@ interface Props {
    * întâlnesc. Fără eroare, fără avertisment: se vede doar în captură.
    */
   spatiuSus?: boolean;
+  /** Pe fundal închis, butonul se inversează: accent clar cu text închis. */
+  pe?: 'deschis' | 'inchis';
 }
-const { marime = 'normal', spatiuSus = false } = Astro.props;
+const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
 ---
 
 <div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
-  <a href={CTA.ancora} class:list={['cta', marime]}>{CTA.text}</a>
+  <a href={CTA.ancora} class:list={['cta', marime, pe === 'inchis' && 'pe-inchis']}>
+    {CTA.text}
+  </a>
   <slot />
 </div>
 
@@ -72,5 +76,17 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
 
   .cta:active {
     transform: translateY(1px);
+  }
+
+  /* Pe întuneric butonul se inversează. Accentul închis (#376A66) pe fundal
+     #1B2426 ar da 2.6:1 — invizibil. Verificat în npm run contrast. */
+  .cta.pe-inchis {
+    background: var(--accent-clar);
+    color: var(--bg-inchis);
+  }
+
+  .cta.pe-inchis:hover,
+  .cta.pe-inchis:focus-visible {
+    background: #a3e2d8;
   }
 </style>

@@ -54,6 +54,22 @@ const ctx = await browser.newContext({
 const page = await ctx.newPage();
 await page.goto(URL_BAZA, { waitUntil: 'load' });
 await page.evaluate(() => document.fonts.ready);
+
+/*
+ * Forțează dezvăluirea înainte de captură.
+ *
+ * Capturile auditează LAYOUT-ul; animația de intrare le-ar face nedeterministe
+ * — un element prins la jumătatea tranziției apare translucid, iar un bloc
+ * întunecat la 15% opacitate se citește ca gri deschis. Exact asta a produs
+ * prima serie de capturi după introducerea motion-ului: §02 părea că n-are
+ * fundal închis, deși îl avea.
+ *
+ * Comportamentul animației se testează separat, în tests/e2e/motion.spec.ts.
+ */
+await page.addStyleTag({
+  content:
+    '.js-reveal [data-reveal]{opacity:1!important;transform:none!important;transition:none!important}',
+});
 await page.waitForTimeout(500);
 
 for (const id of SECTIUNI) {

@@ -112,6 +112,47 @@ const jsonLd = {
   <body>
     <a class="skip" href="#continut">Sari la conținut</a>
     <slot />
+
+    {/*
+      Dezvăluire la scroll. ~700 bytes, zero dependințe, zero scroll deturnat.
+      Rulează inline în <head>-ul logic al paginii ca să adauge `.js-reveal`
+      ÎNAINTE de prima pictare — altfel elementele apar o clipă, apoi dispar
+      ca să se anime, ceea ce se vede ca un clipit.
+    */}
+    <script is:inline>
+      (() => {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (reduce.matches || !('IntersectionObserver' in window)) return;
+
+        document.documentElement.classList.add('js-reveal');
+
+        const arata = (el) => el.classList.add('vazut');
+
+        const obs = new IntersectionObserver(
+          (intrari) => {
+            for (const i of intrari) {
+              if (!i.isIntersecting) continue;
+              arata(i.target);
+              obs.unobserve(i.target); // o singură dată; nu re-animăm la scroll înapoi
+            }
+          },
+          // Declanșează puțin înainte ca elementul să intre complet: pe mobil,
+          // cu degetul pe ecran, un prag de 0 face mișcarea să pară întârziată.
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+        );
+
+        const tinte = document.querySelectorAll('[data-reveal]');
+        for (const t of tinte) obs.observe(t);
+
+        // Plasă de siguranță: dacă observerul n-a apucat să ruleze (tab în
+        // fundal, restaurare din bfcache), nimic nu rămâne invizibil.
+        window.addEventListener('pageshow', () => {
+          for (const t of tinte) {
+            if (t.getBoundingClientRect().top < window.innerHeight) arata(t);
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
 

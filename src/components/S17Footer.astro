@@ -29,10 +29,12 @@ import { footer } from '../content/copy';
 
 <style>
   footer {
-    background: var(--bg-secundar);
+    /* Închide pagina în același registru în care e §08 — nu ca al treilea ton
+       de gri, ci ca margine fermă a documentului. */
+    background: var(--bg-inchis);
     padding-block: var(--sp-xl);
     padding-inline: var(--lat);
-    color: var(--secundar);
+    color: var(--text-pe-inchis-muted);
   }
 
   .continut {
@@ -53,7 +55,7 @@ import { footer } from '../content/copy';
   .nume {
     font-family: var(--font-titlu);
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-pe-inchis);
   }
 
   .loc {
@@ -68,8 +70,8 @@ import { footer } from '../content/copy';
   }
 
   a {
-    /* 4.94:1 pe fundalul secundar — verificat de npm run contrast. */
-    color: var(--accent);
+    /* 8.91:1 pe fundalul închis — verificat de npm run contrast. */
+    color: var(--accent-clar);
     text-decoration: none;
     /* Ținta de atingere pe mobil: linkurile de footer sunt cele mai înghesuite
        de pe pagină. */

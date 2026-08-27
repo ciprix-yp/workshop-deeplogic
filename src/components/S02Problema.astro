@@ -8,95 +8,163 @@ import Sectiune from './Sectiune.astro';
   Legislația (AI Act, GDPR) apare AICI ca zgomot pe care îl aude cititorul —
   niciodată în pagină ca promisiune că o rezolvă Deep Logic.
 */}
-<Sectiune id="problema">
-  <h2>{problema.h2}</h2>
-
-  <p class="intro">{problema.intro}</p>
-  <p class="pivot-mic">{problema.intreTimp}</p>
+<Sectiune id="problema" latime="larg">
+  <div class="cap">
+    <h2>{problema.h2}</h2>
+    <p class="intro">{problema.intro}</p>
+  </div>
 
   {/*
-    Linie cu „—", nu bullet rotund. Păstrează ritmul de vorbire — e o listă
-    de replici auzite, nu o listă de caracteristici.
+    Vacarmul, ca bloc întunecat.
+
+    Nu e ornament: secțiunea vorbește literal despre ce aude cititorul din
+    toate părțile, iar blocul îl pune în el pentru câteva rânduri. Diagnosticul
+    care urmează revine pe alb — asta e trecerea de la ceață la hartă, făcută
+    vizual, nu doar spusă. De asta e un bloc în interiorul secțiunii, nu
+    secțiunea întreagă: 1600px de întuneric pe mobil ar apăsa, nu ar semnifica.
   */}
-  <ul class="vacarm">
-    {problema.vacarm.map((linie) => (
-      <li>{linie}</li>
-    ))}
-  </ul>
-
-  <p class="pivot">{problema.pivot}</p>
-  <p class="intrebari">{problema.pivotIntrebari}</p>
-
-  {problema.blocuri.map((bloc) => (
-    <div class="bloc">
-      <h3>{bloc.h3}</h3>
-      {bloc.corp.map((p) => (
-        <p>{p}</p>
+  <div class="vacarm-bloc" data-reveal>
+    <p class="vacarm-eticheta">{problema.intreTimp}</p>
+    <ul class="vacarm">
+      {problema.vacarm.map((linie) => (
+        <li>{linie}</li>
       ))}
+    </ul>
+
+    <div class="pivot">
+      <p class="pivot-afirmatie">{problema.pivot}</p>
+      <p class="pivot-intrebari">{problema.pivotIntrebari}</p>
     </div>
-  ))}
+  </div>
+
+  <div class="blocuri">
+    {problema.blocuri.map((bloc) => (
+      <div class="bloc" data-reveal>
+        <h3>{bloc.h3}</h3>
+        <div class="corp">
+          {bloc.corp.map((p) => (
+            <p>{p}</p>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
 </Sectiune>
 
 <style>
+  .cap {
+    max-width: var(--max-proza);
+  }
+
   h2 {
-    font-size: var(--t-h2);
-    margin-bottom: var(--sp-lg);
+    /* Teza secțiunii — cel mai mare lucru de aici. Înainte era mai mică decât
+       h3-urile de dedesubt, ceea ce inversa ierarhia și se citea a greșeală. */
+    font-size: var(--t-statement);
+    max-width: 16ch;
+    margin-bottom: var(--sp-md);
   }
 
   .intro {
     font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
   }
 
-  .pivot-mic {
-    margin-top: var(--sp-md);
-    color: var(--text-muted);
+  /* ── Blocul de vacarm ───────────────────────────────────────────────── */
+
+  .vacarm-bloc {
+    margin-top: var(--sp-xl);
+    background: var(--bg-inchis);
+    color: var(--text-pe-inchis-muted);
+    border-radius: var(--radius-lg);
+    padding: var(--sp-lg) var(--sp-md);
+  }
+
+  @media (min-width: 40rem) {
+    .vacarm-bloc {
+      padding: var(--sp-xl) var(--sp-lg);
+    }
+  }
+
+  .vacarm-eticheta {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-clar);
+    margin-bottom: var(--sp-md);
   }
 
   .vacarm {
     list-style: none;
     padding: 0;
-    margin: var(--sp-md) 0 0;
+    margin: 0;
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-md);
+  }
+
+  @media (min-width: 52rem) {
+    .vacarm {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-md) var(--sp-xl);
+    }
   }
 
   .vacarm li {
     display: grid;
-    grid-template-columns: 1.5rem 1fr;
+    grid-template-columns: 1.25rem 1fr;
     align-items: baseline;
+    line-height: var(--lh-normal);
+    /* Vacarmul e mărunt, prin design. Contrastul cu declarațiile mari care
+       urmează e structura argumentului, nu o preferință de mărime. */
+    font-size: var(--t-mic);
   }
 
   .vacarm li::before {
     content: '—';
-    color: var(--accent-decor);
-    font-weight: 600;
+    color: var(--accent-clar);
+    opacity: 0.7;
   }
 
   .pivot {
     margin-top: var(--sp-lg);
-    font-weight: 600;
+    padding-top: var(--sp-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .intrebari {
+  .pivot-afirmatie {
+    color: var(--text-pe-inchis);
+    font-weight: 600;
+    font-size: var(--t-corp-lg);
+  }
+
+  .pivot-intrebari {
     margin-top: var(--sp-xs);
     /* Ritmul rapid al întrebărilor e efectul. Italic le leagă într-o singură
        respirație, în loc să le lase ca patru propoziții separate. */
     font-style: italic;
-    color: var(--secundar);
+    line-height: var(--lh-normal);
   }
 
-  .bloc {
-    margin-top: var(--sp-xl);
+  /* ── Diagnosticele, pe alb ──────────────────────────────────────────── */
+
+  .blocuri {
+    margin-top: var(--sp-2xl);
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-2xl);
+    max-width: var(--max-proza);
   }
 
   .bloc h3 {
-    font-size: var(--t-h3);
-    /* Separarea o fac spațiul (--sp-xl între blocuri) și greutatea titlului.
-       Fără bordură colorată lateral: e ornament, nu ierarhie, iar aici cele
-       trei blocuri sunt oricum pași ai aceluiași argument — un marcaj care
-       le izolează vizual lucrează împotriva textului. */
-    margin-bottom: var(--sp-2xs);
+    /* Sub teza secțiunii, dar mult peste vacarmul de deasupra: ~2.25rem față
+       de 0.875rem. Diferența de scală ESTE argumentul — copy-ul alternează
+       între zgomot și claritate, iar tipografia trebuie să facă la fel. */
+    font-size: var(--t-h2);
+    max-width: 20ch;
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
   }
 </style>

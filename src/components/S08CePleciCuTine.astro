@@ -7,76 +7,134 @@ import Cta from './Cta.astro';
 {/*
   A doua cea mai importantă secțiune. Răspunsul direct la „am mai fost la unul
   și n-am plecat cu nimic". Nu se taie la mobil.
-  ITEM 5 (cheat-sheet tipărit) e adăugat prin decizia D7.
-*/}
-<Sectiune id="ce-pleci-cu-tine" fundal="secundar" latime="larg">
-  <h2>{cePleciCuTine.h2}</h2>
 
+  Singura secțiune întunecată din pagină, deliberat: e locul unde se răspunde
+  la obiecția cea mai scumpă, iar greutatea vizuală face argumentul să pară
+  ce e — substanța, nu un bonus. ITEM 5 (cheat-sheet tipărit) vine din D7.
+*/}
+<Sectiune id="ce-pleci-cu-tine" fundal="inchis" latime="larg">
+  <div class="cap">
+    <h2>{cePleciCuTine.h2}</h2>
+    <p class="numar-total">
+      <span>{cePleciCuTine.itemi.length}</span> lucruri, nu notițe
+    </p>
+  </div>
+
+  {/*
+    h3 e frate cu `.corp`, nu copil.
+
+    Varianta cu `display: contents` pe `.corp` arunca al doilea paragraf într-un
+    rând de grid nou, iar `gap`-ul dintre rânduri devenea o gaură de 3rem în
+    mijlocul livrabilului. Trei coloane reale, trei elemente reale — fără trucuri.
+  */}
   <div class="itemi">
     {cePleciCuTine.itemi.map((item, i) => (
-      <article class="item">
+      <article class="item" data-reveal style={`--intarziere: ${i * 60}ms`}>
         <p class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
-        <div>
-          <h3>{item.titlu}</h3>
+        <h3>{item.titlu}</h3>
+        <div class="corp">
           {item.corp.map((p) => <p>{p}</p>)}
         </div>
       </article>
     ))}
   </div>
 
-  <Cta spatiuSus />
+  <Cta spatiuSus pe="inchis" />
 </Sectiune>
 
 <style>
+  .cap {
+    display: grid;
+    gap: var(--sp-xs);
+    margin-bottom: var(--sp-xl);
+  }
+
+  @media (min-width: 48rem) {
+    .cap {
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      gap: var(--sp-lg);
+    }
+  }
+
   h2 {
-    font-size: var(--t-h2);
-    margin-bottom: var(--sp-lg);
+    font-size: var(--t-statement);
+    max-width: 16ch;
+  }
+
+  .numar-total {
+    font-family: var(--font-mono);
+    font-size: var(--t-mic);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--accent-clar);
+  }
+
+  .numar-total span {
+    font-size: var(--t-corp-lg);
+    font-weight: 500;
   }
 
   .itemi {
     display: grid;
-    gap: var(--sp-lg);
-  }
-
-  @media (min-width: 52rem) {
-    .itemi {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--sp-lg) var(--sp-xl);
-    }
-    /* Primul item („harta ta, scrisă în sală") ocupă toată lățimea — e
-       livrabilul care contează cel mai mult și cel mai lung ca text. */
-    .item:first-child {
-      grid-column: 1 / -1;
-    }
+    gap: 0;
+    /* Linii de câmp, nu carduri. Cardurile pe fundal închis cer un al doilea
+       ton de fundal și pagina capătă straturi pe care nu le folosește nicăieri
+       altundeva; liniile păstrează limbajul de document de lucru. */
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
 
   .item {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--sp-md);
+    /* Mobil: numărul pe stânga, titlul și descrierea stivuite pe coloana 2. */
+    grid-template-columns: 2.25rem 1fr;
+    column-gap: var(--sp-md);
+    row-gap: var(--sp-xs);
     align-items: start;
-    background: var(--bg);
-    padding: var(--sp-md) var(--sp-lg);
-    border-radius: var(--radius-lg);
+    padding-block: var(--sp-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   }
 
-  .item > div {
-    display: grid;
-    gap: var(--sp-2xs);
+  .item h3,
+  .item .corp {
+    grid-column: 2;
+  }
+
+  @media (min-width: 52rem) {
+    .item {
+      /* Desktop: trei coloane reale. Titlurile se scanează pe verticală fără
+         să citești descrierile — ăsta e scopul secțiunii, cinci livrabile
+         concrete, vizibile dintr-o privire. */
+      grid-template-columns: 3rem minmax(0, 20ch) minmax(0, 1fr);
+      column-gap: var(--sp-xl);
+      align-items: baseline;
+    }
+    .item h3 {
+      grid-column: 2;
+    }
+    .item .corp {
+      grid-column: 3;
+    }
   }
 
   .numar {
     font-family: var(--font-mono);
     font-size: var(--t-corp);
     font-weight: 500;
-    color: var(--accent);
-    padding-top: 0.2em;
+    color: var(--accent-clar);
+    padding-top: 0.15em;
+    grid-row: 1;
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
   }
 
   h3 {
     font-size: var(--t-corp-lg);
     font-weight: 600;
     letter-spacing: -0.01em;
-    margin-bottom: var(--sp-2xs);
+    line-height: var(--lh-normal);
   }
 </style>

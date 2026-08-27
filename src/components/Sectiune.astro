@@ -1,8 +1,14 @@
 ---
 interface Props {
   id?: string;
-  /** `secundar` = fundal #E4E7E7. Folosit rar, ca să păstreze greutatea. */
-  fundal?: 'primar' | 'secundar';
+  /**
+   * `secundar` = #E4E7E7. `inchis` = #1B2426.
+   *
+   * Registrul închis nu e un pattern care alternează — sunt trei momente în
+   * toată pagina, alese pentru sens: vacarmul din §02, livrabilul din §08,
+   * footer-ul. Folosit ritmic, ar deveni decor și și-ar pierde greutatea.
+   */
+  fundal?: 'primar' | 'secundar' | 'inchis';
   /** Lățimea conținutului: `proza` pentru text lung, `larg` pentru tabele/grid. */
   latime?: 'proza' | 'larg';
   clasa?: string;
@@ -10,7 +16,7 @@ interface Props {
 const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
 ---
 
-<section id={id} class:list={['sectiune', fundal]}>
+<section id={id} class:list={['sectiune', fundal]} data-fundal={fundal}>
   <div class:list={['continut', latime, clasa]}>
     <slot />
   </div>
@@ -21,8 +27,17 @@ const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
     padding-block: var(--sp-2xl);
     padding-inline: var(--lat);
   }
+
   .sectiune.secundar {
     background: var(--bg-secundar);
+  }
+
+  .sectiune.inchis {
+    background: var(--bg-inchis);
+    color: var(--text-pe-inchis-muted);
+    /* Secțiunile închise primesc mai mult aer: pe întuneric, aceeași spațiere
+       arată mai strânsă decât e. */
+    padding-block: calc(var(--sp-2xl) * 1.15);
   }
 
   .continut {
@@ -33,5 +48,17 @@ const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
   }
   .continut.larg {
     max-width: var(--max-continut);
+  }
+</style>
+
+<style is:global>
+  /* Titlurile din secțiunile închise trec pe alb pur; corpul rămâne pe gri
+     deschis. Global, pentru că elementele vin din componenta copil, iar CSS-ul
+     scoped al Astro nu traversează granița de componentă. */
+  .sectiune.inchis :is(h2, h3, strong) {
+    color: var(--text-pe-inchis);
+  }
+  .sectiune.inchis a:not(.cta) {
+    color: var(--accent-clar);
   }
 </style>
