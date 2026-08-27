@@ -17,3 +17,6 @@ tests/visual/__screenshots__/*-diff.png
 
 .DS_Store
 *.log
+
+# Cache generat de hook-ul de design — se regenerează local, nu e conținut.
+.impeccable/hook.cache.json

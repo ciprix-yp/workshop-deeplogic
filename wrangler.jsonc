@@ -19,6 +19,10 @@
   // Secretele NU stau aici. Se pun cu `wrangler secret put <NUME>`.
   // Aici doar ce e public și versionabil.
   "vars": {
-    "PUBLIC_SITE_URL": "https://workshop.deeplogic.ro"
+    "PUBLIC_SITE_URL": "https://workshop.deeplogic.ro",
+    // Sitekey Turnstile — public prin design (merge în HTML-ul clientului).
+    // Funcționează doar pe workshop.deeplogic.ro; local rămân cheile de test
+    // Cloudflare din .env/.dev.vars.
+    "PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEd91eLSLyQCvsIL"
   }
 }

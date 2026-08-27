@@ -17,25 +17,26 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 - [x] `.gitignore`, `.env.example`
 - [x] `CLAUDE.md` — reguli de producție
 - [x] `git init` + primul commit
-- [~] **Cont Cloudflare**: DNS record pentru `workshop.deeplogic.ro` — A record proxiat creat
-      (192.0.2.1, placeholder). Ruta reală/Custom Domain spre worker-ul `workshop-deeplogic`
-      nu s-a putut atașa: Cloudflare refuză rute spre un Worker inexistent (10019). Se leagă
-      la primul `wrangler deploy`.
-- [x] **Resend**: domeniu `deeplogic.ro` verificat (era deja, din 06-06). SPF+DKIM erau verzi;
-      DMARC lipsea — adăugat `_dmarc.deeplogic.ro` (`p=none`, monitorizare). Cheie API creată,
-      scop `sending_access` restrâns la domeniu, în `.env`.
-- [~] **Supabase**: proiect `leeds-deeplogic` creat (eu-central-1, $10/lună, confirmat de
-      Ciprian), migrația `0001_init.sql` aplicată. `SUPABASE_URL` în `.env`. Găsit și reparat
-      pe loc: `revoke ... from anon, authenticated` din migrație nu revoca și grantul implicit
-      către `PUBLIC` — toate funcțiile RPC (inclusiv `register_participant`) erau apelabile
-      direct din `/rest/v1/rpc/...` de oricine, ocolind Turnstile. Migrație de fix aplicată,
-      verificat cu `get_advisors` — zero avertismente rămase. **`SUPABASE_SERVICE_ROLE_KEY`
-      tot manual**: niciun tool MCP nu-l expune (deliberat) — Settings → API → service_role.
-- [ ] **Turnstile**: site key + secret key — niciun widget creat încă pentru workshop.deeplogic.ro
-- [ ] **Inngest**: nu e problemă de credențiale pt. dev local (MCP-ul de dev se leagă la un
-      Inngest Dev Server local, portul 8288 — nimic nu rulează acum, dar și `/api/inngest`
-      lipsește încă din cod, deci n-are ce sincroniza). Pt. producție tot e nevoie de cont +
-      `INNGEST_EVENT_KEY`/`INNGEST_SIGNING_KEY` reale.
+- [x] **Cloudflare**: Custom Domain `workshop.deeplogic.ro` legat de worker-ul
+      `workshop-deeplogic`, certificat emis, DNS gestionat automat. Site key Turnstile de
+      producție pusă în `wrangler.jsonc` → `vars.PUBLIC_TURNSTILE_SITE_KEY` (publică prin
+      design). Domeniul răspunde acum cu eroarea standard Cloudflare, nu cu pagina —
+      **așteptat**: worker-ul e gol până la primul `wrangler deploy` cu F4+ scrise. Nu e regresie.
+- [x] **Resend**: domeniu `deeplogic.ro` verificat. SPF+DKIM+DMARC toate verzi
+      (`_dmarc.deeplogic.ro`, `p=none`, monitorizare). Cheie API `sending_access`, în `.env`.
+- [x] **Supabase**: proiect `leeds-deeplogic` (eu-central-1), migrația `0001_init.sql`
+      aplicată. `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` în `.env`. Gaura de securitate
+      găsită pe loc (grant implicit `PUBLIC` pe funcțiile RPC) — reparată live ȘI în
+      `supabase/migrations/0001_init.sql` (vezi commit `bc2323c`), cu `tests/db/permissions.sql`
+      care o prinde dacă revine. `get_advisors`: zero avertismente.
+- [x] **Turnstile**: widget real creat pentru `workshop.deeplogic.ro`. Site key în
+      `wrangler.jsonc` (vars, public), secret key în `.env`/`.dev.vars`.
+- [x] **Inngest**: signing key + event key de producție generate și puse în `.env`/`.dev.vars`
+      — verificat local: ambele goale încă (`INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`), corect
+      pentru dev, unde nu sunt cerute. Dev Server local rulează deja pe portul 8288, ca proces
+      persistent. **Nuanță de reținut**: spre deosebire de Resend/Cloudflare/Supabase, nu există
+      acces API/MCP direct la Inngest Cloud — nu se pot vedea rulările de producție sau declanșa
+      sync de acolo. Sync-ul cu Inngest Cloud la deploy rămâne manual (dashboard) sau pas de CI.
 
 ## F1 — Date
 
@@ -135,11 +136,11 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 
 ## Blocat pe Ciprian
 
+Toate cele 5 credențiale sunt rezolvate (Resend, Cloudflare, Supabase, Turnstile, Inngest —
+vezi F0). Rămân doar assets și decizii de conținut:
+
 1. **Pagini legale** (D11) — singurul asset absent. Propun draft în F9.
-2. **Credențiale rămase**: Turnstile (site+secret key), Inngest (cont + signing key pt.
-   producție), `SUPABASE_SERVICE_ROLE_KEY` (manual, din dashboard — niciun tool nu-l expune).
-   Cloudflare și Resend nu mai blochează — acces confirmat și folosit.
-3. ~~**Resend/DNS**~~ — rezolvat: domeniu verificat, SPF/DKIM/DMARC verzi.
-4. **Foto** `public/ciprian-micu.jpg` — reală, la lucru sau la un eveniment.
-5. **Review `docs/EMAILURI.md`** înainte să intre în cod.
-6. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.
+2. **Foto** `public/ciprian-micu.jpg` — reală, la lucru sau la un eveniment.
+3. **Review `docs/EMAILURI.md`** înainte să intre în cod.
+4. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.
+5. **`ALERT_EMAIL`** gol în `.env` — unde ajung alertele de reconciliere (B11)?
