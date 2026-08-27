@@ -69,15 +69,29 @@ psql -d "$DB" -tAc "
     grant all on tables to service_role;
 " >/dev/null
 
-echo "Aplic migrația pe o bază goală…"
-psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$RADACINA/supabase/migrations/0001_init.sql"
-echo "  ok  migrația se aplică curat"
+echo "Aplic migrațiile pe o bază goală…"
+# Toate fișierele din supabase/migrations/, în ordine — exact cum le aplică
+# `supabase db push`. Hardcodat pe un singur fișier, testul ar trece chiar
+# dacă o migrație nouă nu se aplică deloc.
+shopt -s nullglob
+migratii=("$RADACINA"/supabase/migrations/*.sql)
+shopt -u nullglob
+if [ ${#migratii[@]} -eq 0 ]; then
+  echo "✗ Niciun fișier în supabase/migrations/"; exit 1
+fi
+for m in "${migratii[@]}"; do
+  psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$m"
+  echo "  ok  $(basename "$m")"
+done
 
 echo
 psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/state-machine.sql" 2>&1 \
   | grep -E 'NOTICE|PICA|──|✓' | sed 's/^psql:[^ ]* //; s/^NOTICE: *//'
 
 psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/permissions.sql" 2>&1 \
+  | grep -E "NOTICE|PICA|──|✓" | sed "s/^psql:[^ ]* //; s/^NOTICE: *//"
+
+psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/rate-limit.sql" 2>&1 \
   | grep -E "NOTICE|PICA|──|✓" | sed "s/^psql:[^ ]* //; s/^NOTICE: *//"
 
 echo

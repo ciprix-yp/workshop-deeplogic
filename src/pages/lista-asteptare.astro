@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import CardRaspuns from '../components/CardRaspuns.astro';
+import { stari, EVENIMENT } from '../content/copy';
+
+/**
+ * B12: al 31-lea om nu trebuie să vadă „Gata, locul e al tău" — vede asta.
+ * Prerandată: conținutul e static, nu depinde de query string (spre deosebire
+ * de /multumesc, care ramifică pe `?stare=`).
+ */
+export const prerender = true;
+
+const continut = stari.asteptare;
+---
+
+<Base titlu={`${continut.titlu} — ${EVENIMENT.titlu}`} noindex>
+  <CardRaspuns titlu={continut.titlu} corp={continut.corp} />
+</Base>

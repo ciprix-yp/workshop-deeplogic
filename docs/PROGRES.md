@@ -77,12 +77,48 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 - [ ] **OG image 1200×630, sub 300KB (B5)** — referențiat în `copy.ts`, fișierul lipsește
 - [ ] Foto `public/ciprian-micu.jpg` — §11 rulează text-only până apare
 
-## F4 — Înscriere
+## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
-- [ ] `POST /api/register` — validare, Turnstile, prag capacitate, insert
-- [ ] Ecrane: `stari.inscris`, `stari.asteptare`, `stari.dejaInscris`, `stari.eroare`
-- [ ] Idempotency pe `inngest.send()` (B10)
-- [ ] Rate limiting
+- [x] `src/lib/supabase.ts` — client + înveliș tipat peste toate funcțiile RPC
+- [x] `src/lib/turnstile.ts` — siteverify, verificat manual cu ambele chei de test
+      Cloudflare (always-pass ȘI always-block — confirmat că respinge real)
+- [x] `src/lib/rate-limit.ts` — IP hash-uit (SHA-256, în Worker) → bucket Postgres opac
+- [x] `supabase/migrations/0002_rate_limit.sql` — fereastră fixă, atomică (`INSERT..ON
+      CONFLICT..RETURNING`). Cloudflare KV nu era accesibil în sesiune (token expirat) —
+      mutat în Postgres, mai consistent cu restul proiectului oricum.
+- [x] `src/inngest/client.ts` — evenimente tipate (Zod = StandardSchemaV1, nativ în Zod 4),
+      `isDev: import.meta.env.DEV` (nu `INNGEST_DEV` — determinist, fără variabilă în plus)
+- [x] `POST /api/register` — ordinea: rate limit → Zod → Turnstile → Supabase → Inngest,
+      cea mai ieftină verificare prima. JSON pentru fetch, redirect 303 pentru no-JS.
+- [x] `/multumesc`, `/lista-asteptare` — `CardRaspuns.astro` extras după al doilea duplicat
+- [x] Idempotency pe `inngest.send()` (B10) — `id: reg-${registration_id}` /
+      `wait-${registration_id}`; dovedește și B4 „retrimite email idempotent" gratis:
+      re-emiterea pe duplicat e no-op dacă a rulat deja, recuperare dacă nu
+
+**Trei bug-uri reale, găsite DOAR prin testul end-to-end prin API (nu de local/SQL):**
+
+1. `ALERT_EMAIL` obligatoriu în schema `astro:env`, dar gol → bloca ÎNTREAGA aplicație,
+   nu doar reconcilierea B11 care-l va folosi. Făcut opțional; verificarea corectă se
+   face la punctul unde chiar contează (F6), nu la pornire.
+2. `register_participant` întorcea status sintetic `'duplicat'` pentru orice reînscriere,
+   indiferent de starea reală. Cineva `reconfirmat` care redeschide link-ul de înscriere
+   ar fi văzut „te-ai înscris" în loc de „ne vedem miercuri" — migrația 0003 întoarce
+   starea REALĂ + `este_nou`, ruta API decide ecranul din ambele.
+3. `gen_token()` nu găsea `gen_random_bytes` pe Supabase real — pgcrypto e instalat în
+   schema `extensions` acolo, nu `public` ca pe Postgres-ul vanilla local. Migrația 0004
+   dă funcției propriul `search_path`, independent de search_path-ul apelantului.
+   Test dedicat care verifică asta cu `search_path = pg_temp`, nu doar cu valoarea corectă.
+
+**Verificat prin API real, împotriva Supabase de producție** (date de test șterse după):
+înscriere reușită → rând corect + eveniment livrat la Inngest Dev Server cu id-ul de
+idempotență corect · dublă înscriere → un singur rând, status real · Turnstile respinge
+cu cheia „always-block" · rate limit: 12 treceau, a 13-a → 429 · validare Zod pe câmpuri
+lipsă/invalide → mesaje corecte, în vocea paginii.
+
+- [x] `tests/form-schema.test.ts` — 18 teste, validare pură (fără `astro:env`)
+- [ ] E2E automat prin `/api/register` — **decizie deliberată, nu omisiune**: ar polua
+      Supabase-ul real cu rânduri de test la fiecare rulare. Logica SQL e acoperită de
+      `tests/db/`, logica de graniță (Turnstile/rate-limit) verificată manual mai sus.
 
 ## F5 — Emailuri
 
@@ -143,4 +179,7 @@ vezi F0). Rămân doar assets și decizii de conținut:
 2. **Foto** `public/ciprian-micu.jpg` — reală, la lucru sau la un eveniment.
 3. **Review `docs/EMAILURI.md`** înainte să intre în cod.
 4. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.
-5. **`ALERT_EMAIL`** gol în `.env` — unde ajung alertele de reconciliere (B11)?
+5. **`ALERT_EMAIL`** gol în `.env` — unde ajung alertele de reconciliere (B11)? Nu mai
+   blochează (F4 l-a făcut opțional), dar tot trebuie completat înainte de F6.
+6. **Cloudflare re-autorizare** — tokenul MCP a expirat în sesiunea asta. N-a blocat F4
+   (rate limiting mutat în Postgres), dar va fi nevoie de el pentru deploy (F6+).

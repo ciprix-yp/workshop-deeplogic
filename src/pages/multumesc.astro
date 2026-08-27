@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import CardRaspuns from '../components/CardRaspuns.astro';
+import { stari, EVENIMENT } from '../content/copy';
+
+/**
+ * Ecranul de după înscriere. Non-static, deliberat: conținutul depinde de
+ * `?stare=`, pe care register.ts o pune pentru cazurile în care cineva
+ * reîncearcă înscrierea fiind deja `reconfirmat`/`prezent`/`anulat` — ecranul
+ * trebuie să reflecte starea REALĂ (fix migrația 0003), nu mesajul implicit
+ * de „te-ai înscris".
+ */
+export const prerender = false;
+
+const stareParam = Astro.url.searchParams.get('stare');
+
+// `prezent` (bifat la ușă) folosește aceeași copy ca `reconfirmat` — nu există
+// un mesaj dedicat pentru „ești deja în sală", și nu merită unul: statusul
+// ăsta e practic imposibil de atins înainte de 16 septembrie, iar în ziua
+// evenimentului mesajul „ne vedem miercuri" tot rămâne adevărat.
+const continut =
+  stareParam === 'anulat' ? stari.anulatAnterior
+  : stareParam === 'reconfirmat' || stareParam === 'prezent' ? stari.reconfirmat
+  : stari.inscris;
+---
+
+<Base titlu={`${continut.titlu} — ${EVENIMENT.titlu}`} noindex>
+  <CardRaspuns titlu={continut.titlu} corp={continut.corp} />
+</Base>

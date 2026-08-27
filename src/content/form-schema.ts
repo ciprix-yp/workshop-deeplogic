@@ -68,6 +68,19 @@ export const Q5_ANVERGURA = [
   'Nu știu încă',
 ] as const;
 
+/**
+ * Tipuri derivate din array-urile de mai sus, nu declarate separat — o
+ * opțiune adăugată în array intră automat și în tip. Folosite de
+ * src/lib/supabase.ts pentru a tipa `qualification_answers`.
+ */
+export type Sursa = (typeof SURSA)[number];
+export type NivelAi = (typeof NIVEL_AI)[number];
+export type Q1Unealta = (typeof Q1_UNEALTA)[number];
+export type Q2Blocaj = (typeof Q2_BLOCAJ)[number];
+export type Q3Domeniu = (typeof Q3_DOMENIU)[number];
+export type Q4Pregatire = (typeof Q4_PREGATIRE)[number];
+export type Q5Anvergura = (typeof Q5_ANVERGURA)[number];
+
 /* ── Lungimi ─────────────────────────────────────────────────────────────── */
 
 export const LIMITE = {
@@ -184,6 +197,30 @@ export const inscriereSchema = z
 
 export type InscriereInput = z.input<typeof inscriereSchema>;
 export type Inscriere = z.output<typeof inscriereSchema>;
+
+/**
+ * `FormData` → obiectul pe care îl așteaptă `inscriereSchema`.
+ *
+ * Singura conversie reală: bifele. Un checkbox nebifat e ABSENT din FormData
+ * (comportament HTML standard), nu `"false"` — dacă am lăsat Zod să vadă
+ * `undefined` direct, mesajul de eroare ar fi fost genericul „Required" al
+ * Zod, nu M.consimtamant din schema noastră. Coerciția explicită la boolean
+ * face ca eroarea corectă, în vocea paginii, să ajungă la validare.
+ *
+ * `request.formData()` din Fetch API parsează la fel de bine
+ * `application/x-www-form-urlencoded` (submit nativ, fără JS) și
+ * `multipart/form-data` (submit prin fetch, cu JS) — nu trebuie ramificat pe
+ * content-type în ruta API.
+ */
+export function formDataInSchema(fd: FormData): Record<string, unknown> {
+  const obiect: Record<string, unknown> = {};
+  for (const [cheie, valoare] of fd.entries()) {
+    if (typeof valoare === 'string') obiect[cheie] = valoare;
+  }
+  obiect.consimtamant_comunicare = fd.get(BIFE.consimtamant.id) === 'true';
+  obiect.vrea_discutie = fd.get(BIFE.discutie.id) === 'true';
+  return obiect;
+}
 
 /* ── Structura vizuală a formularului ────────────────────────────────────── */
 /*

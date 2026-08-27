@@ -1,0 +1,65 @@
+---
+import { footer } from '../content/copy';
+
+/**
+ * Card centrat pentru ecranele post-acțiune: /multumesc, /lista-asteptare,
+ * și viitoarele /raspuns, /checkin (F8). Extras după al doilea duplicat —
+ * al treilea ar fi fost semnul clar că trebuia făcut mai devreme.
+ */
+interface Props {
+  titlu: string;
+  corp: readonly string[];
+}
+const { titlu, corp } = Astro.props;
+---
+
+<main id="continut" class="pagina-raspuns">
+  <div class="card">
+    <h1>{titlu}</h1>
+    {corp.map((p) => <p>{p}</p>)}
+    <slot />
+    <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
+  </div>
+  <p class="contact">
+    Ceva nu e cum trebuie? Scrie la <a href={`mailto:${footer.email}`}>{footer.email}</a>.
+  </p>
+</main>
+
+<style>
+  .pagina-raspuns {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-lg);
+    padding: var(--sp-2xl) var(--lat);
+    text-align: center;
+  }
+
+  .card {
+    max-width: 34rem;
+    display: grid;
+    gap: var(--sp-md);
+    justify-items: center;
+  }
+
+  h1 {
+    font-size: var(--t-h2);
+  }
+
+  .card p {
+    line-height: var(--lh-lejer);
+    color: var(--secundar);
+  }
+
+  .inapoi {
+    margin-top: var(--sp-sm);
+    font-weight: 600;
+  }
+
+  .contact {
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+  }
+</style>

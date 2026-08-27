@@ -65,6 +65,32 @@ ca **accent decorativ**, permis doar la ≥24px sau pe elemente non-text.
 
 ---
 
+## F4 — Înscriere (27 august 2026, sesiune cu credențiale conectate)
+
+| # | Decizie | Motiv |
+|---|---|---|
+| **D12** | Rate limiting în Postgres, nu Cloudflare KV | Tokenul MCP Cloudflare a expirat în sesiune — n-am putut provizona un namespace KV nou. Mutat în Postgres, unde toată logica atomică trăiește oricum. Fereastră fixă, `INSERT..ON CONFLICT..RETURNING` atomic. Dacă Cloudflare Rate Limiting devine disponibil mai târziu, rămâne linia a doua de apărare — Turnstile e prima. |
+| **D13** | IP-ul hash-uit în Worker, niciodată brut în Postgres | `crypto.subtle.digest` local, Postgres primește doar `register:a3f9…`. Logurile bazei de date nu conțin identificatori personali reutilizabili. |
+| **D14** | Pragurile de rate limit: 12/15min (register), 20/15min (răspuns, check-in) | Generoase deliberat — Turnstile e prima linie reală de apărare (token per-cerere, greu de scriptat). Pragurile trebuie să încapă un birou/familie în spatele aceluiași NAT. |
+| **D15** | `register_participant` întoarce statusul REAL, nu `'duplicat'` sintetic | Găsit înainte de a fi folosit: API-ul are nevoie de starea reală ca să aleagă ecranul corect. Migrația 0003. |
+| **D16** | Idempotency Inngest (`id: reg-${id}`) dublează ca fix pentru B4 | Re-emiterea evenimentului la reînscriere e no-op dacă a rulat deja, recuperare dacă emiterea inițială eșuase (B11). Niciun cod separat de „retrimite email". |
+| **D17** | Fără E2E automat prin `/api/register` împotriva Supabase real | Ar polua baza de producție cu rânduri de test la fiecare rulare de CI. Logica SQL: `tests/db/`. Granița de rețea (Turnstile, rate limit): verificată manual, cu date de test șterse după. |
+
+### Trei bug-uri găsite DOAR la testul end-to-end prin API (nu la nivel local/SQL)
+
+1. **`ALERT_EMAIL` obligatoriu bloca toată aplicația.** Schema `astro:env` validează
+   toate câmpurile la fiecare cerere, nu doar cele folosite pe calea curentă — un câmp
+   necompletat oprea totul, nu doar reconcilierea B11 care încă nu există. Făcut opțional.
+2. **`register_participant` → `'duplicat'` sintetic** (vezi D15 mai sus).
+3. **`gen_token()` nu găsea `gen_random_bytes` pe Supabase.** pgcrypto e instalat în
+   schema `extensions` pe Supabase, `public` pe Postgres vanilla local — diferență de
+   mediu pe care testul local n-o putea reproduce fără o schemă `extensions` reală.
+   Migrația 0004: `gen_token()` primește propriul `search_path`, independent de
+   search_path-ul apelantului. Testul care-l verifică setează `search_path = pg_temp`
+   explicit, nu doar rulează cu valoarea implicită corectă.
+
+---
+
 ## Ce a rămas deliberat în afara scopului
 
 Din spec, plus deciziile de mai sus: arhitectura de replicare pentru agenții viitori · interfața

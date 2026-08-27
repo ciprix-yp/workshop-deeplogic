@@ -31,8 +31,14 @@ export default defineConfig({
       INNGEST_EVENT_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
       INNGEST_SIGNING_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
 
-      // Unde ajung alertele când ceva se rupe tăcut (B11 — reconciliere).
-      ALERT_EMAIL: envField.string({ context: 'server', access: 'secret' }),
+      // Unde ajung alertele când ceva se rupe tăcut (B11 — reconciliere, F6).
+      // Opțional DELIBERAT: `astro:env` validează schema întreagă la fiecare
+      // cerere, nu doar câmpurile folosite pe calea curentă — un câmp
+      // obligatoriu dar necompletat blochează ÎNTREAGA aplicație, nu doar
+      // funcția de reconciliere care încă nu există. Verificarea „ai uitat
+      // s-o setezi" se face la punctul unde chiar contează (în codul F6),
+      // nu la pornire.
+      ALERT_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
       EMAIL_FROM: envField.string({ context: 'server', access: 'secret' }),
 
       // Publice — ajung în client, deliberat.

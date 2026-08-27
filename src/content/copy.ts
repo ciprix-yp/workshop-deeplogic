@@ -558,6 +558,18 @@ export const stari = {
     ],
   },
 
+  // Cineva anulat sau no_show completează din nou formularul. Nu-l reînscriem
+  // automat — statusul rămâne cum era, ca să nu corupem tăcut mașina de stări
+  // (email-ul principal trimite exact o dată, la insert; un „anulat" readus
+  // silențios la viață ar primi al doilea email 1, fals). Îl îndrumăm direct.
+  anulatAnterior: {
+    titlu: 'Ai anulat locul ăsta mai devreme.',
+    corp: [
+      'Dacă vrei totuși să vii, scrie-mi la contact@deeplogic.ro și te bag înapoi manual.',
+      'Așa mă asigur că nu se dublează nimic în evidență.',
+    ],
+  },
+
   eroare: {
     titlu: 'N-a mers.',
     corp: [

@@ -99,6 +99,14 @@ Mașina de stări e partea care poate aloca fizic același scaun de două ori. R
   dar pe primul îl inviți la workshopul următor.
 - **Service role key nu ajunge niciodată la client.** Impus mecanic prin `astro:env`
   (`access: 'secret'`), nu prin disciplină.
+- **Orice funcție SQL care apelează `gen_random_bytes`/pgcrypto își dă propriul
+  `search_path`, cu `extensions` inclus.** Pe Supabase, pgcrypto stă în `extensions`,
+  nu `public` — spre deosebire de Postgres vanilla local. O funcție care moștenește
+  search_path-ul apelantului trece testele locale și pică doar pe stack-ul real.
+- **Câmpuri `astro:env` obligatorii doar dacă sunt cerute de codul care rulează ACUM.**
+  Schema se validează integral la fiecare cerere — un câmp gol dar `required` blochează
+  toată aplicația, nu doar funcția care încă nu-l folosește (vezi `ALERT_EMAIL`, F4).
+  `optional: true` până când funcția reală ajunge în cod.
 
 ---
 
