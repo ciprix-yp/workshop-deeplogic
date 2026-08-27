@@ -16,12 +16,26 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 - [x] `tsconfig.json` — strict, `noUncheckedIndexedAccess`
 - [x] `.gitignore`, `.env.example`
 - [x] `CLAUDE.md` — reguli de producție
-- [ ] `git init` + primul commit
-- [ ] **Cont Cloudflare**: DNS record pentru `workshop.deeplogic.ro`
-- [ ] **Resend**: domeniu verificat + SPF/DKIM/DMARC — *de pornit primul, are propagare DNS*
-- [ ] **Supabase**: proiect creat, service role key
-- [ ] **Turnstile**: site key + secret key
-- [ ] **Inngest**: cont + signing key
+- [x] `git init` + primul commit
+- [~] **Cont Cloudflare**: DNS record pentru `workshop.deeplogic.ro` — A record proxiat creat
+      (192.0.2.1, placeholder). Ruta reală/Custom Domain spre worker-ul `workshop-deeplogic`
+      nu s-a putut atașa: Cloudflare refuză rute spre un Worker inexistent (10019). Se leagă
+      la primul `wrangler deploy`.
+- [x] **Resend**: domeniu `deeplogic.ro` verificat (era deja, din 06-06). SPF+DKIM erau verzi;
+      DMARC lipsea — adăugat `_dmarc.deeplogic.ro` (`p=none`, monitorizare). Cheie API creată,
+      scop `sending_access` restrâns la domeniu, în `.env`.
+- [~] **Supabase**: proiect `leeds-deeplogic` creat (eu-central-1, $10/lună, confirmat de
+      Ciprian), migrația `0001_init.sql` aplicată. `SUPABASE_URL` în `.env`. Găsit și reparat
+      pe loc: `revoke ... from anon, authenticated` din migrație nu revoca și grantul implicit
+      către `PUBLIC` — toate funcțiile RPC (inclusiv `register_participant`) erau apelabile
+      direct din `/rest/v1/rpc/...` de oricine, ocolind Turnstile. Migrație de fix aplicată,
+      verificat cu `get_advisors` — zero avertismente rămase. **`SUPABASE_SERVICE_ROLE_KEY`
+      tot manual**: niciun tool MCP nu-l expune (deliberat) — Settings → API → service_role.
+- [ ] **Turnstile**: site key + secret key — niciun widget creat încă pentru workshop.deeplogic.ro
+- [ ] **Inngest**: nu e problemă de credențiale pt. dev local (MCP-ul de dev se leagă la un
+      Inngest Dev Server local, portul 8288 — nimic nu rulează acum, dar și `/api/inngest`
+      lipsește încă din cod, deci n-are ce sincroniza). Pt. producție tot e nevoie de cont +
+      `INNGEST_EVENT_KEY`/`INNGEST_SIGNING_KEY` reale.
 
 ## F1 — Date
 
@@ -105,7 +119,8 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 ## Gates de lansare
 
 - [ ] `LEGAL` — Termeni + Confidențialitate publicate și linkate din bifă
-- [ ] `EMAIL` — SPF/DKIM/DMARC verzi, email aterizat în inbox (nu spam)
+- [~] `EMAIL` — SPF/DKIM/DMARC verzi (toate trei, verificat). Rămâne partea netehnică:
+      un email trimis real, deschis pe Gmail mobil + Outlook, ca să confirme aterizarea în inbox.
 - [ ] `OG` — card randat corect pe un telefon real, prin WhatsApp
 - [x] `CONCURENȚĂ` — 20/20 rulări, un singur câștigător; verificat că testul pică fără lock
 - [~] `B1` — jumătatea de bază de date gata (`expire_unconfirmed` = o rulare, idempotentă).
@@ -121,8 +136,10 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 ## Blocat pe Ciprian
 
 1. **Pagini legale** (D11) — singurul asset absent. Propun draft în F9.
-2. **Credențiale**: Cloudflare, Supabase, Resend, Turnstile, Inngest.
-3. **Resend/DNS** — de pornit primul, propagarea nu se grăbește.
+2. **Credențiale rămase**: Turnstile (site+secret key), Inngest (cont + signing key pt.
+   producție), `SUPABASE_SERVICE_ROLE_KEY` (manual, din dashboard — niciun tool nu-l expune).
+   Cloudflare și Resend nu mai blochează — acces confirmat și folosit.
+3. ~~**Resend/DNS**~~ — rezolvat: domeniu verificat, SPF/DKIM/DMARC verzi.
 4. **Foto** `public/ciprian-micu.jpg` — reală, la lucru sau la un eveniment.
 5. **Review `docs/EMAILURI.md`** înainte să intre în cod.
 6. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.

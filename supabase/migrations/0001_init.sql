@@ -449,12 +449,40 @@ as $$
   update event_registrations set welcome_sent_at = now() where id = $1;
 $$;
 
--- Funcțiile sunt apelate exclusiv cu service role. `anon` nu le poate invoca.
-revoke all on function register_participant  from anon, authenticated;
-revoke all on function claim_waitlist_seat   from anon, authenticated;
-revoke all on function respond_to_invite     from anon, authenticated;
-revoke all on function expire_unconfirmed    from anon, authenticated;
-revoke all on function check_in              from anon, authenticated;
-revoke all on function walk_in_check_in      from anon, authenticated;
-revoke all on function mark_welcome_sent     from anon, authenticated;
-revoke all on function gen_token             from anon, authenticated;
+-- ── Drepturi de execuție ────────────────────────────────────────────────────
+--
+-- ATENȚIE, capcană Postgres: la `create function`, EXECUTE se acordă IMPLICIT
+-- rolului `PUBLIC`. `revoke ... from anon, authenticated` NU atinge grantul
+-- ăla — iar `anon` e membru al `PUBLIC`, deci rămâne cu drept de execuție.
+--
+-- Consecința concretă, dacă lipsește revoke-ul de mai jos: oricine cunoaște
+-- URL-ul proiectului poate apela `POST /rest/v1/rpc/register_participant` cu
+-- anon key (care e publică, e în bundle-ul de client) și poate insera înscrieri
+-- direct — ocolind complet validarea Zod ȘI Turnstile. Practic, formularul
+-- devine decorativ.
+--
+-- `revoke from PUBLIC` trebuie să vină PRIMUL; abia apoi se acordă explicit
+-- cui trebuie. Verificat de tests/db/permissions.sql.
+
+revoke all on function register_participant  from public, anon, authenticated;
+revoke all on function claim_waitlist_seat   from public, anon, authenticated;
+revoke all on function respond_to_invite     from public, anon, authenticated;
+revoke all on function expire_unconfirmed    from public, anon, authenticated;
+revoke all on function check_in              from public, anon, authenticated;
+revoke all on function walk_in_check_in      from public, anon, authenticated;
+revoke all on function mark_welcome_sent     from public, anon, authenticated;
+revoke all on function gen_token             from public, anon, authenticated;
+
+-- Pentru funcțiile VIITOARE nu există o soluție declarativă.
+--
+-- `alter default privileges ... revoke execute on functions from public` pare
+-- răspunsul, dar nu funcționează: verificat pe Postgres 15, în toate ordinile.
+-- Un revoke „pur" nu se stochează deloc în `pg_default_acl`, iar când există
+-- și un grant, ACL-ul funcției nou create conține tot `=X/postgres` — adică
+-- exact grantul către PUBLIC pe care încercam să-l prevenim.
+--
+-- Deci regula rămâne umană: ORICE funcție nouă adăugată aici are nevoie de
+-- propriul `revoke ... from public`. Plasa de siguranță e în
+-- tests/db/permissions.sql, care enumeră dinamic toate funcțiile din schemă
+-- și pică dacă vreuna e executabilă de public — inclusiv una scrisă mâine,
+-- de cineva care n-a citit comentariul ăsta.

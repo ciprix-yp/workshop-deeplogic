@@ -51,8 +51,23 @@ for _ in $(seq 1 20); do
 done
 
 psql -tAc "create database $DB;" >/dev/null
-# Rolurile există deja în Supabase; aici le creăm ca să treacă REVOKE-urile.
-psql -d "$DB" -tAc "create role anon nologin; create role authenticated nologin;" >/dev/null
+
+# Reproduce configurația de roluri a Supabase, ca testele de drepturi să spună
+# ceva despre producție, nu despre un Postgres gol.
+#
+# `service_role` primește grant EXPLICIT prin default privileges — exact cum
+# face platforma. Contează pentru că revoke-ul din migrație închide accesul
+# public; testul trebuie să dovedească și că NU taie rolul de care depinde
+# aplicația. Un lockdown care rupe backend-ul nu e o remediere.
+psql -d "$DB" -tAc "
+  create role anon nologin;
+  create role authenticated nologin;
+  create role service_role nologin bypassrls;
+  alter default privileges in schema public
+    grant all on routines to service_role;
+  alter default privileges in schema public
+    grant all on tables to service_role;
+" >/dev/null
 
 echo "Aplic migrația pe o bază goală…"
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$RADACINA/supabase/migrations/0001_init.sql"
@@ -61,6 +76,9 @@ echo "  ok  migrația se aplică curat"
 echo
 psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/state-machine.sql" 2>&1 \
   | grep -E 'NOTICE|PICA|──|✓' | sed 's/^psql:[^ ]* //; s/^NOTICE: *//'
+
+psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/permissions.sql" 2>&1 \
+  | grep -E "NOTICE|PICA|──|✓" | sed "s/^psql:[^ ]* //; s/^NOTICE: *//"
 
 echo
 bash "$RADACINA/tests/db/race.sh"
