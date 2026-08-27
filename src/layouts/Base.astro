@@ -1,0 +1,140 @@
+---
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import { meta, EVENIMENT, footer } from '../content/copy';
+
+interface Props {
+  titlu?: string;
+  descriere?: string;
+  /** Paginile de răspuns (confirmare, anulare, check-in) nu se indexează. */
+  noindex?: boolean;
+}
+
+const {
+  titlu = meta.titlu,
+  descriere = meta.descriere,
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://workshop.deeplogic.ro';
+const urlCanonic = new URL(Astro.url.pathname, siteUrl).toString();
+// og:image trebuie să fie absolut — WhatsApp și LinkedIn nu rezolvă căi relative.
+const ogImagineAbsolut = new URL(meta.ogImagine, siteUrl).toString();
+
+/**
+ * JSON-LD. Ora e scrisă cu offset explicit: pe 16 septembrie România e în EEST
+ * (UTC+3). Fără offset, Google interpretează ca UTC și afișează 17:00.
+ */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: EVENIMENT.titlu,
+  description: meta.descriere,
+  startDate: '2026-09-16T14:00:00+03:00',
+  endDate: '2026-09-16T17:00:00+03:00',
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  inLanguage: 'ro-RO',
+  maximumAttendeeCapacity: EVENIMENT.capacitate,
+  image: [ogImagineAbsolut],
+  location: {
+    '@type': 'Place',
+    name: EVENIMENT.locatie,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Strada 1 Decembrie 1918 nr. 1',
+      addressLocality: 'Satu Mare',
+      postalCode: '440010',
+      addressCountry: 'RO',
+    },
+  },
+  organizer: {
+    '@type': 'Organization',
+    name: EVENIMENT.organizator,
+    url: footer.website,
+  },
+  performer: { '@type': 'Person', name: 'Ciprian Micu' },
+  offers: {
+    '@type': 'Offer',
+    price: 0,
+    priceCurrency: 'RON',
+    availability: 'https://schema.org/InStock',
+    url: urlCanonic,
+    validFrom: '2026-08-27T00:00:00+03:00',
+  },
+};
+---
+
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href={urlCanonic} />
+    <title>{titlu}</title>
+    <meta name="description" content={descriere} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    {/*
+      Peste 40% din trafic vine dintr-un link lipit în WhatsApp de un membru
+      BIZZ.CLUB. Cardul de preview e primul lucru pe care îl vede invitatul, în
+      momentul în care membrul își pune reputația la bătaie („ți-o dau ție").
+      Un link fără card arată a spam.
+    */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={EVENIMENT.organizator} />
+    <meta property="og:locale" content={meta.locale} />
+    <meta property="og:title" content={meta.ogTitlu} />
+    <meta property="og:description" content={meta.ogDescriere} />
+    <meta property="og:url" content={urlCanonic} />
+    <meta property="og:image" content={ogImagineAbsolut} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${EVENIMENT.titlu} — ${EVENIMENT.dataScurt}, ${EVENIMENT.oras}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.ogTitlu} />
+    <meta name="twitter:description" content={meta.ogDescriere} />
+    <meta name="twitter:image" content={ogImagineAbsolut} />
+
+    {/*
+      Preîncărcăm doar Inter — H1-ul din hero e elementul LCP, iar textul lui
+      („Toată lumea îți spune să adopți AI.") conține ă/î/ț, deci are nevoie
+      și de latin-ext, nu doar de latin. Corpul paginii se încarcă prin swap.
+    */}
+    <link rel="preload" href="/fonts/inter-400-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-400-700-latin-ext.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#376A66" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+  </head>
+
+  <body>
+    <a class="skip" href="#continut">Sari la conținut</a>
+    <slot />
+  </body>
+</html>
+
+<style>
+  /*
+    Link de sărire peste navigare. Vizibil doar la focus de tastatură — nu are
+    cost vizual, dar e diferența dintre „pot naviga" și „nu pot" pentru cineva
+    care ajunge la formular cu Tab.
+  */
+  .skip {
+    position: absolute;
+    left: var(--sp-md);
+    top: -100%;
+    z-index: 100;
+    background: var(--accent);
+    color: #fff;
+    padding: var(--sp-sm) var(--sp-md);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: top 0.15s ease;
+  }
+  .skip:focus {
+    top: var(--sp-md);
+  }
+</style>

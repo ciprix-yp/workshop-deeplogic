@@ -1,0 +1,144 @@
+---
+import { inainteDupa } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+import Cta from './Cta.astro';
+---
+
+<Sectiune id="inainte-dupa" fundal="secundar" latime="larg">
+  <h2>{inainteDupa.h2}</h2>
+
+  {/*
+    Tabel real, nu proză și nu două liste. Perechea înainte/după e informația —
+    citite separat, își pierd jumătate din efect.
+
+    Pe mobil, `<table>` clasic ar cere scroll orizontal. Aici fiecare rând
+    devine o pereche stivuită, cu etichete vizibile, păstrând semantica de tabel
+    pentru cititoarele de ecran.
+  */}
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{inainteDupa.capIntai}</th>
+        <th scope="col">{inainteDupa.capAlDoilea}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {inainteDupa.randuri.map(([inainte, dupa]) => (
+        <tr>
+          <td class="inainte" data-eticheta={inainteDupa.capIntai}>{inainte}</td>
+          <td class="dupa" data-eticheta={inainteDupa.capAlDoilea}>{dupa}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {/*
+    Primul punct din pagină în care cititorul e „cald". CTA repetat aici,
+    deliberat — e a doua din cele patru apariții.
+  */}
+  <Cta spatiuSus />
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* ── Mobil: perechi stivuite ─────────────────────────────────────────── */
+
+  thead {
+    /* Ascuns vizual, păstrat pentru cititoarele de ecran. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  tr {
+    display: grid;
+    gap: var(--sp-2xs);
+    padding-block: var(--sp-md);
+    border-block-end: 1px solid rgba(47, 79, 79, 0.15);
+  }
+
+  tr:last-child {
+    border-block-end: none;
+  }
+
+  td {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  td::before {
+    content: attr(data-eticheta);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .inainte {
+    color: var(--text-muted); /* 4.91:1 — nu opacitate 70%, care pica AA */
+  }
+
+  .dupa {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── Desktop: două coloane reale ─────────────────────────────────────── */
+
+  @media (min-width: 48rem) {
+    thead {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+    }
+
+    thead th {
+      text-align: start;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding-block-end: var(--sp-sm);
+      border-block-end: 1px solid rgba(47, 79, 79, 0.2);
+    }
+
+    thead th:last-child {
+      color: var(--accent);
+    }
+
+    tr {
+      display: table-row;
+    }
+
+    td {
+      display: table-cell;
+      padding-block: var(--sp-md);
+      padding-inline-end: var(--sp-lg);
+      vertical-align: top;
+      border-block-end: 1px solid rgba(47, 79, 79, 0.12);
+    }
+
+    td::before {
+      display: none;
+    }
+
+    tbody tr:last-child td {
+      border-block-end: none;
+    }
+  }
+</style>

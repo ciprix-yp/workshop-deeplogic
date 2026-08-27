@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import S01Hero from '../components/S01Hero.astro';
+import S02Problema from '../components/S02Problema.astro';
+import S03Rezultatul from '../components/S03Rezultatul.astro';
+import S04PentruCine from '../components/S04PentruCine.astro';
+import S05InainteDupa from '../components/S05InainteDupa.astro';
+import S06CeFacem from '../components/S06CeFacem.astro';
+import S07NuDoarTeorie from '../components/S07NuDoarTeorie.astro';
+import S08CePleciCuTine from '../components/S08CePleciCuTine.astro';
+import S09UseCases from '../components/S09UseCases.astro';
+import S10Deeplogic from '../components/S10Deeplogic.astro';
+import S11Facilitator from '../components/S11Facilitator.astro';
+import S12Precedent from '../components/S12Precedent.astro';
+import S13Detalii from '../components/S13Detalii.astro';
+import S14DeCeGratuit from '../components/S14DeCeGratuit.astro';
+import S15Faq from '../components/S15Faq.astro';
+import S16Inscriere from '../components/S16Inscriere.astro';
+import S17Footer from '../components/S17Footer.astro';
+
+/**
+ * Prerandată integral. Nimic din §01–§17 nu e dinamic — formularul face POST
+ * către o rută separată, randată la cerere. Pagina se servește de pe CDN-ul
+ * Cloudflare, ceea ce contează pe 4G, în browserul in-app din WhatsApp.
+ */
+export const prerender = true;
+---
+
+<Base>
+  <S01Hero />
+
+  <main id="continut">
+    <S02Problema />
+    <S03Rezultatul />
+    <S04PentruCine />
+    <S05InainteDupa />
+    <S06CeFacem />
+    <S07NuDoarTeorie />
+    <S08CePleciCuTine />
+    <S09UseCases />
+    <S10Deeplogic />
+    <S11Facilitator />
+    <S12Precedent />
+    <S13Detalii />
+    <S14DeCeGratuit />
+    <S15Faq />
+    <S16Inscriere />
+  </main>
+
+  <S17Footer />
+</Base>

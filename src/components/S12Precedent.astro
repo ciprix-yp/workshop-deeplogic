@@ -1,0 +1,32 @@
+---
+import { precedent } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Înlocuiește „social proof". Nu există testimoniale pe formatul ăsta și nu se
+  inventează.
+
+  Ultima propoziție („nu pun testimoniale pentru că n-am colectat") PARE că
+  slăbește pagina. Nu o slăbește — la un cititor saturat de promisiuni e cel
+  mai puternic semnal de onestitate de pe toată pagina. Nu se taie, și nu se
+  stilizează ca notă de subsol.
+*/}
+<Sectiune id="precedent">
+  <h2>{precedent.h2}</h2>
+  <div class="corp">
+    {precedent.corp.map((p) => <p>{p}</p>)}
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
+  }
+</style>

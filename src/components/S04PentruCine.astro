@@ -1,0 +1,79 @@
+---
+import { pentruCine } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Filtru real, nu politețe. Cu 25 de locuri, o pagină care convinge pe toată
+  lumea e un eșec.
+
+  Cele două coloane rămân VIZUAL EGALE — aceeași dimensiune de titlu, aceeași
+  culoare de text, aceeași greutate. Dacă „nu e pentru tine" arată mai mic sau
+  mai gri, filtrul devine decorativ și nu mai filtrează pe nimeni.
+*/}
+<Sectiune id="pentru-cine" latime="larg">
+  <div class="grila">
+    <div class="coloana">
+      <h2>{pentruCine.da.h2}</h2>
+      <ul class="lista da">
+        {pentruCine.da.lista.map((l) => <li>{l}</li>)}
+      </ul>
+    </div>
+
+    <div class="coloana">
+      <h2>{pentruCine.nu.h2}</h2>
+      <ul class="lista nu">
+        {pentruCine.nu.lista.map((l) => <li>{l}</li>)}
+      </ul>
+    </div>
+  </div>
+</Sectiune>
+
+<style>
+  .grila {
+    display: grid;
+    gap: var(--sp-xl);
+  }
+
+  @media (min-width: 48rem) {
+    .grila {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-2xl);
+    }
+  }
+
+  h2 {
+    font-size: var(--t-h3);
+    margin-bottom: var(--sp-md);
+  }
+
+  .lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .lista li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: baseline;
+    /* Aceeași culoare în ambele coloane. Vezi comentariul de sus. */
+    color: var(--text);
+  }
+
+  .lista li::before {
+    font-weight: 600;
+  }
+
+  .da li::before {
+    content: '—';
+    color: var(--accent-decor);
+  }
+
+  .nu li::before {
+    content: '—';
+    color: var(--text-muted);
+  }
+</style>

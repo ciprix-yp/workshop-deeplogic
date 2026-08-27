@@ -1,0 +1,35 @@
+---
+import { despreDeepLogic } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Zero cifre aici. Fără „X clienți", fără „Y proiecte". Când vor exista date
+  documentate, se adaugă — până atunci, poziția se afirmă, nu se cuantifică.
+*/}
+<Sectiune id="deep-logic">
+  <h2>{despreDeepLogic.h2}</h2>
+  <div class="corp">
+    {despreDeepLogic.corp.map((p) => <p>{p}</p>)}
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  /* Cele două afirmații de poziționare („infrastructură, nu automatizări" și
+     „întâi strategia") sunt tezele secțiunii — restul le explică. */
+  .corp p:nth-child(2),
+  .corp p:nth-child(4) {
+    font-weight: 600;
+    color: var(--secundar);
+  }
+</style>

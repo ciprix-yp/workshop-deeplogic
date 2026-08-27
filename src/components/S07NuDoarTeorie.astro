@@ -1,0 +1,39 @@
+---
+import { nuDoarTeorie } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+<Sectiune id="nu-doar-teorie">
+  <h2>{nuDoarTeorie.h2}</h2>
+  <ul>
+    {nuDoarTeorie.lista.map((l) => <li>{l}</li>)}
+  </ul>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-md);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: baseline;
+    font-size: var(--t-corp-lg);
+  }
+
+  li::before {
+    content: '—';
+    color: var(--accent-decor);
+    font-weight: 600;
+  }
+</style>

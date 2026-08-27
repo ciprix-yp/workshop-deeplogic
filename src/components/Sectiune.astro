@@ -1,0 +1,37 @@
+---
+interface Props {
+  id?: string;
+  /** `secundar` = fundal #E4E7E7. Folosit rar, ca să păstreze greutatea. */
+  fundal?: 'primar' | 'secundar';
+  /** Lățimea conținutului: `proza` pentru text lung, `larg` pentru tabele/grid. */
+  latime?: 'proza' | 'larg';
+  clasa?: string;
+}
+const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
+---
+
+<section id={id} class:list={['sectiune', fundal]}>
+  <div class:list={['continut', latime, clasa]}>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .sectiune {
+    padding-block: var(--sp-2xl);
+    padding-inline: var(--lat);
+  }
+  .sectiune.secundar {
+    background: var(--bg-secundar);
+  }
+
+  .continut {
+    margin-inline: auto;
+  }
+  .continut.proza {
+    max-width: var(--max-proza);
+  }
+  .continut.larg {
+    max-width: var(--max-continut);
+  }
+</style>

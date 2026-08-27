@@ -1,0 +1,76 @@
+---
+import { CTA } from '../content/copy';
+
+interface Props {
+  /** `mare` doar în hero și în §16. Restul repetărilor sunt inline, mai discrete. */
+  marime?: 'mare' | 'normal';
+  /**
+   * Spațiul de deasupra se declară AICI, nu printr-o clasă dată de părinte.
+   *
+   * Astro izolează CSS-ul pe componentă, printr-un atribut `data-astro-cid-*`
+   * unic. Elementul rădăcină de mai jos poartă scope-ul acestui fișier, deci
+   * o regulă `.ceva { margin-top: … }` scrisă în `<style>`-ul părintelui nu-l
+   * atinge niciodată — clasa ajunge în HTML, regula ajunge în CSS, și nu se
+   * întâlnesc. Fără eroare, fără avertisment: se vede doar în captură.
+   */
+  spatiuSus?: boolean;
+}
+const { marime = 'normal', spatiuSus = false } = Astro.props;
+---
+
+<div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
+  <a href={CTA.ancora} class:list={['cta', marime]}>{CTA.text}</a>
+  <slot />
+</div>
+
+<style>
+  .invelis {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-sm);
+    align-items: flex-start;
+  }
+
+  .invelis.spatiu-sus {
+    margin-top: var(--sp-xl);
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #fff;                     /* 6.15:1 — verificat de npm run contrast */
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius);
+    /* Ținta de atingere: 44px e pragul WCAG 2.2 și, practic, lățimea unui deget
+       pe un telefon ținut cu o mână. */
+    min-height: var(--touch);
+    padding: var(--sp-sm) var(--sp-lg);
+    transition: background-color 0.15s ease;
+  }
+
+  .cta.mare {
+    font-size: var(--t-corp-lg);
+    padding: var(--sp-md) var(--sp-xl);
+    /* Pe mobil ocupă toată lățimea — degetul nu trebuie să caute ținta. */
+    width: 100%;
+  }
+
+  @media (min-width: 40rem) {
+    .cta.mare {
+      width: auto;
+    }
+  }
+
+  .cta:hover,
+  .cta:focus-visible {
+    background: var(--accent-hover);
+  }
+
+  .cta:active {
+    transform: translateY(1px);
+  }
+</style>

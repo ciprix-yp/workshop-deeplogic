@@ -1,0 +1,88 @@
+---
+import { useCases } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+<Sectiune id="use-cases" latime="larg">
+  <h2>{useCases.h2}</h2>
+
+  {/*
+    Prima linie de corp e OBLIGATORIE. Fără ea, secțiunea promite cinci domenii
+    acoperite în trei ore — și pagina minte.
+  */}
+  <p class="disclaimer">{useCases.disclaimer}</p>
+
+  <div class="grila">
+    {useCases.grid.map((z) => (
+      <article class="zona">
+        <h3>{z.titlu}</h3>
+        <p>{z.corp}</p>
+      </article>
+    ))}
+  </div>
+
+  <div class="incheiere">
+    {useCases.incheiere.map((p) => <p>{p}</p>)}
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .disclaimer {
+    color: var(--text-muted);
+    max-width: var(--max-proza);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .grila {
+    display: grid;
+    gap: var(--sp-md);
+  }
+
+  @media (min-width: 40rem) {
+    .grila {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .grila {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .zona {
+    padding: var(--sp-md);
+    border: 1px solid rgba(47, 79, 79, 0.15);
+    border-radius: var(--radius-lg);
+    display: grid;
+    gap: var(--sp-2xs);
+    align-content: start;
+  }
+
+  h3 {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--accent);
+  }
+
+  .zona p {
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+  }
+
+  .incheiere {
+    margin-top: var(--sp-lg);
+    max-width: var(--max-proza);
+    display: grid;
+    gap: var(--sp-xs);
+    color: var(--secundar);
+  }
+</style>

@@ -1,0 +1,514 @@
+---
+import { ctaFinal, CTA } from '../content/copy';
+import { BLOCURI, BIFE, SURSA_CONDITIONAL } from '../content/form-schema';
+import Sectiune from './Sectiune.astro';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
+
+/** Sursele care deschid un câmp suplimentar, serializate pentru scriptul de pe client. */
+const conditionale = JSON.stringify(SURSA_CONDITIONAL);
+---
+
+<Sectiune id="inscriere" latime="larg" clasa="bloc-inscriere">
+  <div class="antet">
+    <h2>{ctaFinal.h2}</h2>
+    <p class="corp">{ctaFinal.corp}</p>
+    <p class="meta">{ctaFinal.meta}</p>
+  </div>
+
+  {/*
+    Formularul face POST nativ către /api/register. JS-ul îl interceptează
+    pentru erori inline, dar dacă JS-ul nu rulează — browser in-app restrictiv,
+    conexiune care pică la jumătate — POST-ul clasic funcționează și API-ul
+    răspunde cu redirect. Un formular care are nevoie de JS ca să existe e un
+    formular care pierde înscrieri fără să știi.
+  */}
+  <form id="form-inscriere" method="POST" action="/api/register" novalidate>
+    {BLOCURI.map((bloc) => (
+      <fieldset class="bloc">
+        {bloc.titlu && (
+          <legend>
+            <span class="legend-titlu">{bloc.titlu}</span>
+            {bloc.intro && <span class="legend-intro">{bloc.intro}</span>}
+          </legend>
+        )}
+
+        {bloc.campuri.map((camp) => (
+          <div class:list={['camp', `tip-${camp.tip}`]} data-camp={camp.id}>
+            {camp.tip === 'radio' ? (
+              <fieldset class="grup-radio">
+                <legend class="eticheta">{camp.label}</legend>
+                <div class="optiuni">
+                  {camp.optiuni?.map((op) => (
+                    <label class="optiune">
+                      <input
+                        type="radio"
+                        name={camp.id}
+                        value={op}
+                        required={camp.obligatoriu}
+                        aria-describedby={`${camp.id}-eroare`}
+                      />
+                      <span>{op}</span>
+                    </label>
+                  ))}
+                </div>
+                <p class="eroare" id={`${camp.id}-eroare`} role="alert" aria-live="polite"></p>
+              </fieldset>
+            ) : (
+              <>
+                <label class="eticheta" for={camp.id}>{camp.label}</label>
+                {camp.microcopy && (
+                  <p class="microcopy" id={`${camp.id}-ajutor`}>{camp.microcopy}</p>
+                )}
+
+                {camp.tip === 'textarea' ? (
+                  <textarea
+                    id={camp.id}
+                    name={camp.id}
+                    rows="3"
+                    required={camp.obligatoriu}
+                    placeholder={camp.placeholder}
+                    aria-describedby={`${camp.id}-eroare${camp.microcopy ? ` ${camp.id}-ajutor` : ''}`}
+                  ></textarea>
+                ) : camp.tip === 'select' ? (
+                  <select
+                    id={camp.id}
+                    name={camp.id}
+                    required={camp.obligatoriu}
+                    aria-describedby={`${camp.id}-eroare`}
+                  >
+                    <option value="">Alege…</option>
+                    {camp.optiuni?.map((op) => <option value={op}>{op}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type={camp.tip}
+                    id={camp.id}
+                    name={camp.id}
+                    required={camp.obligatoriu}
+                    autocomplete={camp.autocomplete}
+                    placeholder={camp.placeholder}
+                    aria-describedby={`${camp.id}-eroare${camp.microcopy ? ` ${camp.id}-ajutor` : ''}`}
+                  />
+                )}
+
+                <p class="eroare" id={`${camp.id}-eroare`} role="alert" aria-live="polite"></p>
+              </>
+            )}
+          </div>
+        ))}
+
+        {/* Câmpul condiționat de „Cine te-a invitat?". Ascuns până e relevant. */}
+        {bloc.id === 'cine' && (
+          <div class="camp tip-text" id="camp-sursa-detaliu" hidden>
+            <label class="eticheta" for="sursa_detaliu" id="eticheta-sursa-detaliu">De la cine?</label>
+            <input type="text" id="sursa_detaliu" name="sursa_detaliu"
+                   aria-describedby="sursa_detaliu-eroare" />
+            <p class="eroare" id="sursa_detaliu-eroare" role="alert" aria-live="polite"></p>
+          </div>
+        )}
+      </fieldset>
+    ))}
+
+    <div class="bife">
+      {/*
+        Linkul către politică stă ÎN AFARA etichetei, deliberat.
+
+        Un `<a>` înăuntrul unui `<label>` primește clickul, dar acesta bubble-uiește
+        la etichetă și comută controlul asociat — deci un tap pe „Politica de
+        confidențialitate" ar deschide politica ȘI ar schimba consimțământul.
+        Omul își modifică bifa exact când încearcă să citească ce semnează.
+      */}
+      <label class="bifa">
+        <input type="checkbox" name={BIFE.consimtamant.id} value="true" required
+               aria-describedby="consimtamant-eroare consimtamant-politica" />
+        <span>{BIFE.consimtamant.label}</span>
+      </label>
+      <p class="link-politica" id="consimtamant-politica">
+        <a href={BIFE.consimtamant.linkPolitica.href} target="_blank" rel="noopener">
+          {BIFE.consimtamant.linkPolitica.text}
+        </a>
+      </p>
+      <p class="eroare" id="consimtamant-eroare" role="alert" aria-live="polite"></p>
+
+      {/*
+        Bifa opțională promisă explicit în FAQ: „există o singură bifă, prin
+        care poți cere o discuție dacă vrei. Dacă n-o bifezi, nu te caută
+        nimeni." Microcopy-ul repetă promisiunea exact acolo unde se ia decizia.
+      */}
+      <label class="bifa">
+        <input type="checkbox" name={BIFE.discutie.id} value="true" />
+        <span>
+          {BIFE.discutie.label}
+          <span class="microcopy">{BIFE.discutie.microcopy}</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="turnstile-invelis">
+      <div class="cf-turnstile" data-sitekey={siteKey} data-language="ro" data-theme="light"></div>
+      <p class="eroare" id="turnstile-eroare" role="alert" aria-live="polite"></p>
+    </div>
+
+    <div class="trimite">
+      <button type="submit" class="cta-submit">{CTA.text}</button>
+      <p class="microcopy sub-cta">{ctaFinal.microcopy}</p>
+    </div>
+
+    {/* Rezultatul, când JS-ul e activ. Fără JS, API-ul face redirect. */}
+    <div id="rezultat" class="rezultat" role="status" aria-live="polite" hidden></div>
+  </form>
+</Sectiune>
+
+{/*
+  Fără `integrity` — deliberat, nu din omisiune.
+
+  Cloudflare publică `api.js` fără versionare și îl actualizează continuu;
+  documentația lor spune explicit să NU se folosească SRI pe el, pentru că un
+  hash fix ar rupe widget-ul la prima actualizare de partea lor — iar dacă
+  Turnstile nu se încarcă, formularul nu mai poate fi trimis deloc.
+
+  Riscul rezidual e limitat: scriptul nu are acces la câmpurile formularului
+  în vreun mod privilegiat, iar validarea reală se face pe server, unde
+  tokenul e verificat împotriva API-ului Cloudflare. Un script compromis ar
+  putea cel mult produce tokeni invalizi, nu ocoli verificarea.
+
+  Dacă adaugi CSP, `challenges.cloudflare.com` trebuie pe lista de script-src.
+*/}
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script is:inline define:vars={{ conditionale }}>
+  (() => {
+    const form = document.getElementById('form-inscriere');
+    if (!form) return;
+
+    const COND = JSON.parse(conditionale);
+    const sursa = form.querySelector('#sursa');
+    const wrapDetaliu = document.getElementById('camp-sursa-detaliu');
+    const etichetaDetaliu = document.getElementById('eticheta-sursa-detaliu');
+    const inputDetaliu = document.getElementById('sursa_detaliu');
+
+    /* Câmpul condiționat apare doar când sursa aleasă îl cere. `required` se
+       setează dinamic — altfel un câmp ascuns blochează submit-ul fără să
+       spună de ce, iar utilizatorul nu vede niciodată ce l-a oprit. */
+    function actualizeazaDetaliu() {
+      const cerut = COND[sursa?.value ?? ''];
+      if (cerut) {
+        etichetaDetaliu.textContent = cerut;
+        wrapDetaliu.hidden = false;
+        inputDetaliu.required = true;
+      } else {
+        wrapDetaliu.hidden = true;
+        inputDetaliu.required = false;
+        inputDetaliu.value = '';
+      }
+    }
+    sursa?.addEventListener('change', actualizeazaDetaliu);
+    actualizeazaDetaliu();
+
+    function stergeErori() {
+      form.querySelectorAll('.eroare').forEach((e) => (e.textContent = ''));
+      form.querySelectorAll('[aria-invalid]').forEach((e) => e.removeAttribute('aria-invalid'));
+    }
+
+    function arataErori(erori) {
+      let primul = null;
+      for (const [camp, mesaj] of Object.entries(erori)) {
+        const tinta = document.getElementById(`${camp}-eroare`);
+        if (tinta) tinta.textContent = mesaj;
+        const control = form.querySelector(`[name="${camp}"]`);
+        if (control) {
+          control.setAttribute('aria-invalid', 'true');
+          if (!primul) primul = control;
+        }
+      }
+      /* Focus pe primul câmp greșit, nu doar scroll: cine navighează cu
+         tastatura sau cu cititor de ecran trebuie dus acolo, nu doar arătat. */
+      if (primul) {
+        primul.focus({ preventScroll: true });
+        primul.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    const buton = form.querySelector('.cta-submit');
+    const textInitial = buton.textContent;
+    const rezultat = document.getElementById('rezultat');
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      stergeErori();
+      buton.disabled = true;
+      buton.textContent = 'Se trimite…';
+
+      try {
+        const r = await fetch('/api/register', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const date = await r.json();
+
+        if (date.ok) {
+          window.location.href = date.redirect;
+          return;
+        }
+
+        if (date.erori) arataErori(date.erori);
+        else {
+          rezultat.hidden = false;
+          rezultat.textContent = date.mesaj ?? 'Ceva s-a rupt. Încearcă din nou.';
+        }
+        /* Turnstile e single-use: după un submit respins, tokenul e consumat.
+           Fără reset, a doua încercare pică pe verificare fără explicație. */
+        if (window.turnstile) window.turnstile.reset();
+      } catch {
+        rezultat.hidden = false;
+        rezultat.textContent =
+          'N-am putut trimite. Verifică conexiunea și încearcă din nou.';
+        if (window.turnstile) window.turnstile.reset();
+      } finally {
+        buton.disabled = false;
+        buton.textContent = textInitial;
+      }
+    });
+  })();
+</script>
+
+<style>
+  .antet {
+    max-width: var(--max-proza);
+    margin-bottom: var(--sp-xl);
+  }
+
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp {
+    font-size: var(--t-corp-lg);
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    color: var(--secundar);
+    margin-top: var(--sp-md);
+  }
+
+  form {
+    max-width: 40rem;
+    display: grid;
+    gap: var(--sp-xl);
+  }
+
+  fieldset.bloc {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-md);
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: var(--sp-xs);
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .legend-titlu {
+    font-family: var(--font-titlu);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .legend-intro {
+    font-size: var(--t-corp);
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+    max-width: 46ch;
+  }
+
+  .camp {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .eticheta {
+    font-weight: 600;
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+  }
+
+  .microcopy {
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+
+  input[type='text'],
+  input[type='email'],
+  textarea,
+  select {
+    width: 100%;
+    font: inherit;
+    /* 16px minim: sub atât, Safari pe iOS face zoom automat la focus și
+       aruncă layout-ul — pe un formular deschis din WhatsApp, e dezorientant. */
+    font-size: max(1rem, var(--t-corp));
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid rgba(47, 79, 79, 0.35);
+    border-radius: var(--radius);
+    padding: var(--sp-sm);
+    min-height: var(--touch);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 5.5rem;
+    line-height: var(--lh-normal);
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    border-color: var(--accent);
+  }
+
+  [aria-invalid='true'] {
+    border-color: var(--eroare);
+  }
+
+  .grup-radio {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-xs);
+  }
+
+  .optiuni {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  @media (min-width: 34rem) {
+    .optiuni {
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+  }
+
+  .optiune,
+  .bifa {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-xs);
+    align-items: start;
+    /* Toată eticheta e zonă de click, nu doar cerculețul de 16px. */
+    padding-block: var(--sp-2xs);
+    min-height: var(--touch);
+    align-content: center;
+    cursor: pointer;
+    line-height: var(--lh-normal);
+  }
+
+  .optiune input,
+  .bifa input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15em;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .bife {
+    display: grid;
+    gap: var(--sp-sm);
+    padding: var(--sp-md);
+    background: var(--bg-secundar);
+    border-radius: var(--radius-lg);
+  }
+
+  .bifa .microcopy {
+    display: block;
+    margin-top: 0.1em;
+  }
+
+  .link-politica {
+    /* Aliniat sub textul bifei, nu sub caseta ei. */
+    margin-inline-start: calc(1.15rem + var(--sp-xs));
+    margin-top: calc(-1 * var(--sp-xs));
+    font-size: var(--t-eyebrow);
+  }
+
+  .link-politica a {
+    /* Țintă proprie de 44px: e un link pe care omul chiar trebuie să-l poată
+       apăsa, nu unul decorativ. */
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch);
+    color: var(--accent);
+  }
+
+  .eroare {
+    color: var(--eroare);
+    font-size: var(--t-eyebrow);
+    line-height: var(--lh-normal);
+    min-height: 0;
+  }
+
+  .eroare:empty {
+    display: none;
+  }
+
+  .trimite {
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .cta-submit {
+    font-family: var(--font-titlu);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: var(--sp-md) var(--sp-xl);
+    min-height: var(--touch);
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.15s ease;
+  }
+
+  @media (min-width: 40rem) {
+    .cta-submit {
+      width: auto;
+      justify-self: start;
+    }
+  }
+
+  .cta-submit:hover:not(:disabled),
+  .cta-submit:focus-visible:not(:disabled) {
+    background: var(--accent-hover);
+  }
+
+  .cta-submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .sub-cta {
+    max-width: 52ch;
+  }
+
+  .rezultat {
+    padding: var(--sp-md);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secundar);
+    color: var(--eroare);
+    font-weight: 600;
+  }
+</style>

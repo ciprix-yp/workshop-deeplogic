@@ -1,0 +1,82 @@
+---
+import { cePleciCuTine } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+import Cta from './Cta.astro';
+---
+
+{/*
+  A doua cea mai importantă secțiune. Răspunsul direct la „am mai fost la unul
+  și n-am plecat cu nimic". Nu se taie la mobil.
+  ITEM 5 (cheat-sheet tipărit) e adăugat prin decizia D7.
+*/}
+<Sectiune id="ce-pleci-cu-tine" fundal="secundar" latime="larg">
+  <h2>{cePleciCuTine.h2}</h2>
+
+  <div class="itemi">
+    {cePleciCuTine.itemi.map((item, i) => (
+      <article class="item">
+        <p class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+        <div>
+          <h3>{item.titlu}</h3>
+          {item.corp.map((p) => <p>{p}</p>)}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <Cta spatiuSus />
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .itemi {
+    display: grid;
+    gap: var(--sp-lg);
+  }
+
+  @media (min-width: 52rem) {
+    .itemi {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-lg) var(--sp-xl);
+    }
+    /* Primul item („harta ta, scrisă în sală") ocupă toată lățimea — e
+       livrabilul care contează cel mai mult și cel mai lung ca text. */
+    .item:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-md);
+    align-items: start;
+    background: var(--bg);
+    padding: var(--sp-md) var(--sp-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .item > div {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .numar {
+    font-family: var(--font-mono);
+    font-size: var(--t-corp);
+    font-weight: 500;
+    color: var(--accent);
+    padding-top: 0.2em;
+  }
+
+  h3 {
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--sp-2xs);
+  }
+</style>

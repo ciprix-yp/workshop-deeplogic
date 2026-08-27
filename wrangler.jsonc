@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "workshop-deeplogic",
+  "compatibility_date": "2026-08-27",
+
+  // Inngest are nevoie de AsyncLocalStorage; Supabase și Resend de crypto/stream.
+  // Fără flag-ul ăsta, worker-ul pică la RUNTIME cu „process is not defined",
+  // nu la build — deci ar trece de CI și ar cădea în producție.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // `main` și `assets` NU se declară aici: @astrojs/cloudflare v14 folosește
+  // @cloudflare/vite-plugin, care le generează la build. Declarate manual,
+  // build-ul pică pentru că fișierul nu există încă în momentul configurării.
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Secretele NU stau aici. Se pun cu `wrangler secret put <NUME>`.
+  // Aici doar ce e public și versionabil.
+  "vars": {
+    "PUBLIC_SITE_URL": "https://workshop.deeplogic.ro"
+  }
+}

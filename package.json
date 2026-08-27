@@ -1,0 +1,38 @@
+{
+  "name": "workshop-deeplogic",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing + înscriere — Workshop „Prima Mutare spre un Asistent Digital\", Deep Logic, 16 septembrie 2026",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler dev",
+    "check": "astro check",
+    "deploy": "astro build && wrangler deploy",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db": "bash tests/db/run.sh",
+    "test:e2e": "playwright test",
+    "test:visual": "playwright test tests/visual",
+    "verify": "npm run contrast && npm run test && npm run test:db && npm run check && npm run build",
+    "inngest:dev": "npx inngest-cli@latest dev -u http://localhost:4321/api/inngest",
+    "db:push": "supabase db push",
+    "contrast": "node scripts/check-contrast.mjs"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.5",
+    "@supabase/supabase-js": "^2.112.4",
+    "astro": "^7.2.8",
+    "inngest": "^4.18.1",
+    "resend": "^6.24.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.62.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.127.0"
+  }
+}

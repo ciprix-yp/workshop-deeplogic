@@ -1,0 +1,56 @@
+---
+import { faq } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Ultimele obiecții, chiar înainte de CTA-ul final.
+
+  Deliberat FĂRĂ accordion. Un `<details>` închis ascunde exact răspunsurile
+  care conving — inclusiv „O să-mi vindeți ceva la final?", cea mai importantă
+  din listă. Un click în plus pe obiecția decisivă e un click pe care mulți
+  nu-l fac. Sunt șapte întrebări scurte; se citesc.
+*/}
+<Sectiune id="intrebari">
+  <h2>{faq.h2}</h2>
+
+  <dl>
+    {faq.intrebari.map((item) => (
+      <div class="qa">
+        <dt>{item.q}</dt>
+        <dd>{item.a}</dd>
+      </div>
+    ))}
+  </dl>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    gap: var(--sp-lg);
+  }
+
+  .qa {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  dt {
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
+    letter-spacing: -0.01em;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--secundar);
+  }
+</style>

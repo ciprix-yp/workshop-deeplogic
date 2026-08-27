@@ -1,0 +1,108 @@
+---
+import { hero } from '../content/copy';
+import Cta from './Cta.astro';
+---
+
+<header class="hero">
+  <div class="continut">
+    <p class="eyebrow">{hero.eyebrow}</p>
+
+    {/*
+      H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
+      propoziții E mesajul — pe un singur rând se pierde.
+    */}
+    <h1>
+      {hero.h1.map((rand, i) => (
+        <span class:list={['rand', i === 1 && 'accentuat']}>{rand}</span>
+      ))}
+    </h1>
+
+    <p class="subheadline">{hero.subheadline}</p>
+    <p class="pentru-cine">{hero.pentruCine}</p>
+
+    <p class="meta">{hero.meta}</p>
+
+    <Cta marime="mare" spatiuSus />
+
+    <div class="micro-proof">
+      {hero.microProof.map((linie) => <p>{linie}</p>)}
+    </div>
+  </div>
+</header>
+
+<style>
+  .hero {
+    /* Fundal curat. Fără imagine generică cu roboți, creiere sau rețele
+       neuronale — regula e explicită în documentul sursă. */
+    background: var(--bg);
+    padding-block: clamp(3rem, 2rem + 5vw, 6.5rem) var(--sp-2xl);
+    padding-inline: var(--lat);
+  }
+
+  .continut {
+    max-width: var(--max-continut);
+    margin-inline: auto;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-eyebrow);
+    /* Literă mică deliberat: e numele produsului, dar nu trebuie să concureze
+       cu H1-ul. Greutatea vizuală o dă spațierea, nu dimensiunea. */
+    text-transform: lowercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: var(--sp-md);
+  }
+
+  h1 {
+    font-size: var(--t-h1);
+    max-width: 20ch;
+  }
+
+  .rand {
+    display: block;
+  }
+  .rand.accentuat {
+    color: var(--secundar);
+  }
+
+  .subheadline {
+    font-size: var(--t-corp-lg);
+    max-width: 46ch;
+    margin-top: var(--sp-md);
+    /* Nu `--lh-lejer` (1.65): la trei rânduri pe mobil, spațierea de proză
+       lungă rupe fraza în rânduri independente. Un subtitlu trebuie citit
+       ca o singură unitate. */
+    line-height: var(--lh-normal);
+  }
+
+  .pentru-cine {
+    color: var(--text-muted);
+    margin-top: var(--sp-sm);
+    max-width: 46ch;
+    line-height: var(--lh-normal);
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--t-corp);
+    color: var(--secundar);
+    margin-top: var(--sp-lg);
+    /* Data e informație de scanat, nu de citit — mono o separă de proză. */
+    letter-spacing: -0.01em;
+  }
+
+  .micro-proof {
+    margin-top: var(--sp-lg);
+    display: grid;
+    gap: var(--sp-xs);
+    color: var(--text-muted);
+    /* Nu `--t-eyebrow`: „25 de locuri. Fără laptop, fără cont…" e dovadă, nu
+       text mărunt de subsol. La 12px pe mobil se citea ca un disclaimer legal
+       și pierdea exact obiecția pe care o dezamorsează. */
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+    max-width: 52ch;
+  }
+</style>

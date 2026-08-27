@@ -1,0 +1,102 @@
+---
+import { problema } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Cea mai importantă secțiune a paginii. Nu se taie la mobil, indiferent ce.
+  Legislația (AI Act, GDPR) apare AICI ca zgomot pe care îl aude cititorul —
+  niciodată în pagină ca promisiune că o rezolvă Deep Logic.
+*/}
+<Sectiune id="problema">
+  <h2>{problema.h2}</h2>
+
+  <p class="intro">{problema.intro}</p>
+  <p class="pivot-mic">{problema.intreTimp}</p>
+
+  {/*
+    Linie cu „—", nu bullet rotund. Păstrează ritmul de vorbire — e o listă
+    de replici auzite, nu o listă de caracteristici.
+  */}
+  <ul class="vacarm">
+    {problema.vacarm.map((linie) => (
+      <li>{linie}</li>
+    ))}
+  </ul>
+
+  <p class="pivot">{problema.pivot}</p>
+  <p class="intrebari">{problema.pivotIntrebari}</p>
+
+  {problema.blocuri.map((bloc) => (
+    <div class="bloc">
+      <h3>{bloc.h3}</h3>
+      {bloc.corp.map((p) => (
+        <p>{p}</p>
+      ))}
+    </div>
+  ))}
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .intro {
+    font-size: var(--t-corp-lg);
+  }
+
+  .pivot-mic {
+    margin-top: var(--sp-md);
+    color: var(--text-muted);
+  }
+
+  .vacarm {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-md) 0 0;
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .vacarm li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: baseline;
+  }
+
+  .vacarm li::before {
+    content: '—';
+    color: var(--accent-decor);
+    font-weight: 600;
+  }
+
+  .pivot {
+    margin-top: var(--sp-lg);
+    font-weight: 600;
+  }
+
+  .intrebari {
+    margin-top: var(--sp-xs);
+    /* Ritmul rapid al întrebărilor e efectul. Italic le leagă într-o singură
+       respirație, în loc să le lase ca patru propoziții separate. */
+    font-style: italic;
+    color: var(--secundar);
+  }
+
+  .bloc {
+    margin-top: var(--sp-xl);
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .bloc h3 {
+    font-size: var(--t-h3);
+    /* Marcaj discret la marginea de start. Separă blocurile fără să adauge
+       chenare — pagina nu e un dashboard. */
+    border-inline-start: 3px solid var(--accent-decor);
+    padding-inline-start: var(--sp-md);
+    margin-inline-start: calc(-1 * var(--sp-md) - 3px);
+  }
+</style>

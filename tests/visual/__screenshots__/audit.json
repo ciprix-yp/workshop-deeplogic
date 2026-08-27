@@ -1,0 +1,92 @@
+[
+  {
+    "ecran": "360-android",
+    "audit": {
+      "latimeDocument": 360,
+      "latimeViewport": 360,
+      "vinovati": [],
+      "tinteMici": [],
+      "interactiveImbricate": [],
+      "imgFaraAlt": [],
+      "numarH1": 1,
+      "salturi": [],
+      "cuSedila": 0,
+      "cuVirgula": 221,
+      "faraEticheta": []
+    },
+    "eroriConsola": [],
+    "scrollOrizontal": false
+  },
+  {
+    "ecran": "390-iphone",
+    "audit": {
+      "latimeDocument": 390,
+      "latimeViewport": 390,
+      "vinovati": [],
+      "tinteMici": [],
+      "interactiveImbricate": [],
+      "imgFaraAlt": [],
+      "numarH1": 1,
+      "salturi": [],
+      "cuSedila": 0,
+      "cuVirgula": 221,
+      "faraEticheta": []
+    },
+    "eroriConsola": [],
+    "scrollOrizontal": false
+  },
+  {
+    "ecran": "768-tableta",
+    "audit": {
+      "latimeDocument": 768,
+      "latimeViewport": 768,
+      "vinovati": [],
+      "tinteMici": [],
+      "interactiveImbricate": [],
+      "imgFaraAlt": [],
+      "numarH1": 1,
+      "salturi": [],
+      "cuSedila": 0,
+      "cuVirgula": 221,
+      "faraEticheta": []
+    },
+    "eroriConsola": [],
+    "scrollOrizontal": false
+  },
+  {
+    "ecran": "1280-laptop",
+    "audit": {
+      "latimeDocument": 1280,
+      "latimeViewport": 1280,
+      "vinovati": [],
+      "tinteMici": [],
+      "interactiveImbricate": [],
+      "imgFaraAlt": [],
+      "numarH1": 1,
+      "salturi": [],
+      "cuSedila": 0,
+      "cuVirgula": 221,
+      "faraEticheta": []
+    },
+    "eroriConsola": [],
+    "scrollOrizontal": false
+  },
+  {
+    "ecran": "1920-desktop",
+    "audit": {
+      "latimeDocument": 1920,
+      "latimeViewport": 1920,
+      "vinovati": [],
+      "tinteMici": [],
+      "interactiveImbricate": [],
+      "imgFaraAlt": [],
+      "numarH1": 1,
+      "salturi": [],
+      "cuSedila": 0,
+      "cuVirgula": 221,
+      "faraEticheta": []
+    },
+    "eroriConsola": [],
+    "scrollOrizontal": false
+  }
+]

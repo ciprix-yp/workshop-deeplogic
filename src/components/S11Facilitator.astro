@@ -1,0 +1,94 @@
+---
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { facilitator } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+
+/**
+ * Fotografia lipsește încă (vezi docs/PROGRES.md). Verificăm la build în loc
+ * să randăm un `<img>` care ar afișa iconița de imagine ruptă — pe o pagină
+ * a cărei miză declarată e credibilitatea, un asset stricat costă mai mult
+ * decât absența lui.
+ *
+ * Când fișierul apare în public/, secțiunea îl preia automat, fără altă
+ * modificare de cod.
+ */
+const caleFoto = fileURLToPath(new URL(`../../public${facilitator.foto.src}`, import.meta.url));
+const areFoto = existsSync(caleFoto);
+---
+
+<Sectiune id="facilitator" latime="larg">
+  <h2>{facilitator.h2}</h2>
+
+  <div class:list={['aranjament', areFoto && 'cu-foto']}>
+    {areFoto && (
+      <img
+        class="foto"
+        src={facilitator.foto.src}
+        alt={facilitator.foto.alt}
+        width="440"
+        height="550"
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+
+    <div class="text">
+      <p class="nume">{facilitator.nume}</p>
+      <p class="rol">{facilitator.rol}</p>
+      {facilitator.corp.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .aranjament {
+    display: grid;
+    gap: var(--sp-lg);
+  }
+
+  @media (min-width: 52rem) {
+    .aranjament.cu-foto {
+      grid-template-columns: minmax(0, 18rem) 1fr;
+      gap: var(--sp-xl);
+      align-items: start;
+    }
+  }
+
+  .foto {
+    width: 100%;
+    max-width: 18rem;
+    border-radius: var(--radius-lg);
+    /* Fotografie reală, la lucru sau la un eveniment — nu portret corporate pe
+       fundal alb, nu stock. Regula e în documentul sursă. */
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  .text {
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+  }
+
+  .nume {
+    font-family: var(--font-titlu);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .rol {
+    font-family: var(--font-mono);
+    font-size: var(--t-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-top: calc(-1 * var(--sp-xs));
+  }
+</style>

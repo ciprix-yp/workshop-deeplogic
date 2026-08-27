@@ -1,0 +1,77 @@
+---
+import { deCeGratuit } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Dezamorsează „e gratuit, deci e un pitch de trei ore".
+
+  FĂRĂ preț, FĂRĂ „valoare 2000 lei", FĂRĂ „normal ar costa X". Workshopul
+  public și cel in-company nu sunt același produs — o ancoră de preț ar
+  revendica o echivalență falsă, iar primul om care compară cele două agende
+  o vede.
+
+  „Nu vinde nimeni nimic de la microfon" e un angajament public. Se respectă
+  în sală.
+*/}
+<Sectiune id="de-ce-gratuit">
+  <h2>{deCeGratuit.h2}</h2>
+
+  <div class="corp">
+    {deCeGratuit.corp.map((p) => <p>{p}</p>)}
+  </div>
+
+  <div class="sub">
+    <h3>{deCeGratuit.include.h3}</h3>
+    <ul>
+      {deCeGratuit.include.lista.map((l) => <li>{l}</li>)}
+    </ul>
+  </div>
+
+  <div class="sub">
+    <h3>{deCeGratuit.deCe25.h3}</h3>
+    <p>{deCeGratuit.deCe25.corp}</p>
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .sub {
+    margin-top: var(--sp-xl);
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  h3 {
+    font-size: var(--t-h3);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-xs);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: baseline;
+  }
+
+  li::before {
+    content: '—';
+    color: var(--accent-decor);
+    font-weight: 600;
+  }
+</style>

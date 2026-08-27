@@ -1,0 +1,87 @@
+---
+import { ceFacem } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+<Sectiune id="ce-facem">
+  <h2>{ceFacem.h2}</h2>
+
+  <div class="blocuri">
+    {ceFacem.blocuri.map((bloc) => (
+      <article class="bloc">
+        <p class="numar" aria-hidden="true">{bloc.numar}</p>
+        <div class="corp">
+          <h3>{bloc.titlu}</h3>
+          {bloc.corp.map((p) => <p>{p}</p>)}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  {/*
+    Răspunde direct fricii „n-o să știu ce să întreb, o să par prost în fața
+    altor antreprenori". E motivul principal de neînscriere la un format ca
+    ăsta — deci nu se îngroapă vizual într-o notă de subsol.
+  */}
+  <aside class="format">
+    {ceFacem.notaFormat.map((p) => <p>{p}</p>)}
+  </aside>
+
+  <p class="final">{ceFacem.final}</p>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .blocuri {
+    display: grid;
+    gap: var(--sp-xl);
+  }
+
+  .bloc {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-md);
+    align-items: start;
+  }
+
+  .numar {
+    font-family: var(--font-mono);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    /* Accent decorativ la dimensiune mare — peste pragul de 24px unde 4.06:1
+       trece AA Large. */
+    color: var(--accent-decor);
+    line-height: 1;
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-xs);
+  }
+
+  h3 {
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .format {
+    margin-top: var(--sp-xl);
+    padding: var(--sp-md) var(--sp-lg);
+    background: var(--succes-bg);
+    border-radius: var(--radius-lg);
+    display: grid;
+    gap: var(--sp-2xs);
+    /* Text pe fundalul de succes: 9.33:1 — verificat. */
+    color: var(--text);
+  }
+
+  .final {
+    margin-top: var(--sp-lg);
+    color: var(--secundar);
+  }
+</style>

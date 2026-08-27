@@ -1,0 +1,91 @@
+---
+import { footer } from '../content/copy';
+---
+
+{/*
+  Minimalist, deliberat. Fără newsletter signup, fără social icons multiple,
+  fără sitemap. Pagina are un singur CTA; footer-ul nu introduce un al doilea.
+*/}
+<footer>
+  <div class="continut">
+    <div class="brand">
+      <p class="nume">{footer.brand}</p>
+      <p class="loc">{footer.locatie}</p>
+    </div>
+
+    <nav class="linkuri" aria-label="Contact">
+      <a href={`mailto:${footer.email}`}>{footer.email}</a>
+      <a href={footer.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>
+      <a href={footer.website} rel="noopener noreferrer" target="_blank">deeplogic.ro</a>
+    </nav>
+
+    <nav class="legal" aria-label="Informații legale">
+      {footer.legal.map((l) => (
+        <a href={l.href}>{l.text}</a>
+      ))}
+    </nav>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--bg-secundar);
+    padding-block: var(--sp-xl);
+    padding-inline: var(--lat);
+    color: var(--secundar);
+  }
+
+  .continut {
+    max-width: var(--max-continut);
+    margin-inline: auto;
+    display: grid;
+    gap: var(--sp-lg);
+  }
+
+  @media (min-width: 48rem) {
+    .continut {
+      grid-template-columns: 1fr auto auto;
+      align-items: start;
+      gap: var(--sp-xl);
+    }
+  }
+
+  .nume {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .loc {
+    font-size: var(--t-eyebrow);
+  }
+
+  .linkuri,
+  .legal {
+    display: grid;
+    gap: var(--sp-xs);
+    font-size: var(--t-eyebrow);
+  }
+
+  a {
+    /* 4.94:1 pe fundalul secundar — verificat de npm run contrast. */
+    color: var(--accent);
+    text-decoration: none;
+    /* Ținta de atingere pe mobil: linkurile de footer sunt cele mai înghesuite
+       de pe pagină. */
+    min-height: var(--touch);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  a:hover,
+  a:focus-visible {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 48rem) {
+    a {
+      min-height: 0;
+    }
+  }
+</style>

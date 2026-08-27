@@ -1,0 +1,67 @@
+---
+import { detalii } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Toate informațiile practice, într-un singur loc scanabil.
+  Adresa e acum aici, completă (D6) — nu „în emailul de confirmare". Reduce
+  fricțiunea exact în momentul deciziei.
+*/}
+<Sectiune id="detalii" fundal="secundar">
+  <h2>{detalii.h2}</h2>
+
+  <dl>
+    {detalii.randuri.map(([eticheta, valoare]) => (
+      <div class="rand">
+        <dt>{eticheta}</dt>
+        <dd>{valoare}</dd>
+      </div>
+    ))}
+  </dl>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .rand {
+    display: grid;
+    gap: var(--sp-2xs);
+    padding-block: var(--sp-sm);
+    border-block-end: 1px solid rgba(47, 79, 79, 0.15);
+  }
+
+  .rand:last-child {
+    border-block-end: none;
+  }
+
+  @media (min-width: 40rem) {
+    .rand {
+      grid-template-columns: 10rem 1fr;
+      gap: var(--sp-md);
+      align-items: baseline;
+    }
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0;
+    line-height: var(--lh-normal);
+  }
+</style>

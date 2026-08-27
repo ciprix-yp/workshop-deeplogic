@@ -1,0 +1,94 @@
+---
+import { rezultatul } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+<Sectiune id="rezultatul">
+  <h2>{rezultatul.h2}</h2>
+
+  <ol class="lista">
+    {rezultatul.lista.map((item, i) => (
+      <li>
+        <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <span class="text">
+          <strong>{item.titlu}</strong>
+          <span class="sub">{item.corp}</span>
+        </span>
+      </li>
+    ))}
+  </ol>
+
+  {/*
+    Blocul „Ce NU vei ști" e obligatoriu. E singura formă de credibilitate care
+    funcționează la un om saturat de promisiuni.
+    Stilizare deliberată: fundal secundar, FĂRĂ chenar roșu și FĂRĂ iconiță de
+    avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
+    un disclaimer legal și își pierde efectul.
+  */}
+  <aside class="granita">
+    <h3>{rezultatul.granita.h3}</h3>
+    {rezultatul.granita.corp.map((p) => (
+      <p>{p}</p>
+    ))}
+  </aside>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-lg);
+  }
+
+  .lista li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--sp-sm);
+    align-items: start;
+  }
+
+  .numar {
+    font-family: var(--font-mono);
+    font-size: var(--t-corp);
+    /* Accent decorativ: 4.06:1, permis pentru că e un marcaj de listă, nu text
+       de citit — SC 1.4.11 cere 3:1 pentru componente non-text. */
+    color: var(--accent-decor);
+    font-weight: 500;
+    padding-top: 0.15em;
+  }
+
+  .text {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .text strong {
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    line-height: var(--lh-normal);
+  }
+
+  .sub {
+    color: var(--text-muted);
+  }
+
+  .granita {
+    margin-top: var(--sp-xl);
+    background: var(--bg-secundar);
+    padding: var(--sp-lg);
+    border-radius: var(--radius-lg);
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .granita h3 {
+    font-size: var(--t-h3);
+  }
+</style>
