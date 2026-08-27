@@ -93,10 +93,10 @@ import Sectiune from './Sectiune.astro';
 
   .bloc h3 {
     font-size: var(--t-h3);
-    /* Marcaj discret la marginea de start. Separă blocurile fără să adauge
-       chenare — pagina nu e un dashboard. */
-    border-inline-start: 3px solid var(--accent-decor);
-    padding-inline-start: var(--sp-md);
-    margin-inline-start: calc(-1 * var(--sp-md) - 3px);
+    /* Separarea o fac spațiul (--sp-xl între blocuri) și greutatea titlului.
+       Fără bordură colorată lateral: e ornament, nu ierarhie, iar aici cele
+       trei blocuri sunt oricum pași ai aceluiași argument — un marcaj care
+       le izolează vizual lucrează împotriva textului. */
+    margin-bottom: var(--sp-2xs);
   }
 </style>
