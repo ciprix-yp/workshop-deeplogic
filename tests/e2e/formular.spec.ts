@@ -92,7 +92,7 @@ test('nu cere telefon, cifră de afaceri sau număr de angajați', async ({ page
   expect(html).not.toMatch(/telefon|mobil"/);
   expect(html).not.toMatch(/cifr[ăa] de afaceri/);
   expect(html).not.toMatch(/num[ăa]r de angajați|c[âa]ți angajați/);
-  expect(page.locator('input[type="tel"]')).toHaveCount(0);
+  await expect(page.locator('input[type="tel"]')).toHaveCount(0);
 });
 
 test('câmpurile de text au minim 16px — altfel iOS face zoom la focus', async ({ page }) => {
