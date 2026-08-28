@@ -1,21 +1,39 @@
 # Emailuri — Workshop „Prima Mutare spre un Asistent Digital"
 
-**Draft pentru review-ul lui Ciprian, înainte să intre în cod (F5 → F6).**
-Șapte texte: 4 din ciclul principal de înscriere + 3 din ciclul de waitlist.
+**Aprobat de Ciprian pe 28 august 2026.** Toate cele 4 puncte deschise din
+prima variantă sunt tranșate — vezi „Decizii" la final. Gata pentru F6.
 
 ## Cum se citește documentul ăsta
 
-- Ton: același ca landing page-ul — direct, la persoana I (Ciprian scrie, nu
-  „echipa Deep Logic"), fără fluff, fără corporatism. Fiecare email e semnat
-  „Ciprian", nu „Echipa Deep Logic".
+- Ton: același ca landing page-ul — direct, la persoana I, fără fluff, fără
+  corporatism. Fiecare email semnat **„Ciprian Micu - Deep Logic"**.
 - **Variabile** în `{{acolade duble}}` — se completează la trimitere.
-- **[Buton]** = link stilizat ca buton, nu text simplu — vezi nota tehnică
-  de la fiecare email pentru URL-ul exact.
+- **[Buton]** = link stilizat ca buton, nu text simplu.
 - Aceleași invarianți ca pagina: fără preț, fără urgență fabricată, fără
   cifre neverificate. Un email care minte e la fel de grav ca o secțiune
   de pe pagină care minte.
-- **De modificat înainte de trimitere reală:** orice paranteză marcată
-  `⚠ DE CONFIRMAT`.
+- Fiecare email are un subsol identic (adresă + organizator) — vezi
+  „Subsol comun" mai jos. Nu se repetă în fiecare bloc.
+
+## Verificare de deliverability (28 august 2026)
+
+Cerut explicit de Ciprian — verificat, nu presupus:
+
+- **SPF/DKIM/DMARC** — toate verificate, confirmat direct din contul Resend
+  și din DNS live. DKIM pe `deeplogic.ro`, SPF pe `send.deeplogic.ro`
+  (subdomeniul dedicat al Resend — modelul lor standard, izolează reputația
+  de trimitere de domeniul principal), DMARC `p=none` (monitorizare — poziția
+  corectă înainte de lansare; nu trecem la `reject` acum).
+- **List-Unsubscribe header — NU se adaugă.** E cerut de Gmail/Yahoo pentru
+  expeditori de volum mare (mii de mailuri/zi). Aici: sub 200 de mailuri în
+  toată campania, secvență tranzacțională legată de o înscriere concretă.
+  Fiecare email are deja „Nu mai pot veni" — opt-out-ul real, funcțional.
+- **Subiectele** — verificate manual pe cuvinte care declanșează filtre
+  (CAPS, „gratuit", „urgent", „garantat", semne de exclamare, simboluri de
+  bani). Niciunul nu le conține.
+- **Volum de trimitere** — batch-urile cele mai mari sunt ~25-30 mailuri
+  simultan (email 2, la reconfirmare). Nu e un „vârf de volum" în sensul
+  care afectează reputația la scara asta, prin infrastructura Resend.
 
 ---
 
@@ -39,11 +57,13 @@ veni, spune-mi, ca să dau locul mai departe din timp, nu în ultima clipă.
 [Nu mai pot veni] → {{link_anulare}}
 
 Ne vedem miercuri,
-Ciprian
+Ciprian Micu - Deep Logic
 
 —
 Ce aduci: un pix. Atât.
 Întrebări? Răspunde direct la mailul ăsta.
+
+{{subsol}}
 ```
 
 **Notă tehnică:** `{{link_anulare}}` = `/raspuns?token={{confirm_token}}&r=nu`.
@@ -73,11 +93,13 @@ Detalii, ca să le ai la îndemână:
 Miercuri, 16 septembrie · 14:00–17:00
 Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1, Satu Mare
 
-Ciprian
+Ciprian Micu - Deep Logic
 
 —
 Dacă ai bifat că vrei o discuție separată, nu ține de mailul ăsta — te caut
 eu, separat.
+
+{{subsol}}
 ```
 
 **Notă tehnică:** `{{link_confirmare}}` = `/raspuns?token={{confirm_token}}&r=da`,
@@ -105,7 +127,9 @@ altcineva locul.
 [Nu mai pot veni] → {{link_anulare}}
 
 Pe curând,
-Ciprian
+Ciprian Micu - Deep Logic
+
+{{subsol}}
 ```
 
 **Fișier atașat:** `.ics`, conform `docs/spec-tehnic-inscriere-16-09.md` §
@@ -132,7 +156,9 @@ pe listă și gata, nu mai pierdem timp la intrare.
 Dacă nu apuci să-l apeși, nicio problemă — te bifez oricum la intrare.
 
 Ne vedem imediat,
-Ciprian
+Ciprian Micu - Deep Logic
+
+{{subsol}}
 ```
 
 **Notă tehnică:** `{{link_checkin}}` = `/checkin?token={{checkin_token}}`.
@@ -148,23 +174,26 @@ Ciprian
 ```
 Salut, {{nume}},
 
-Cele 25 de locuri sunt ocupate. Te-am trecut pe lista de așteptare —
-{{pozitie}} înaintea ta la înscriere ⚠ DE CONFIRMAT: păstrăm afișarea
-poziției? E informativă, nu o garanție de ordine.
+Cele 25 de locuri sunt ocupate. Te-am trecut pe lista de așteptare.
 
 Aproape mereu se eliberează locuri — oameni care anunță că nu mai pot veni.
-Când se întâmplă, primești imediat un mail. Primul care confirmă îl ia, nu
-contează poziția de pe listă.
+Când se întâmplă, primești imediat un mail, împreună cu toți ceilalți de pe
+listă. Primul care confirmă îl ia.
 
 Nu trebuie să faci nimic acum. Dacă se eliberează un loc, afli direct de
 la mine.
 
-Ciprian
+Ciprian Micu - Deep Logic
+
+{{subsol}}
 ```
 
-**Notă tehnică:** `{{pozitie}}` = `count(*) where status='asteptare' and
-created_at < a lui`. Textul de mai sus reflectă corect că e informativ, nu
-FIFO — vezi spec, secțiunea „workshop/waitlisted".
+**Notă tehnică — de ce fără poziție pe listă (decizie 28 august):** sistemul
+nu e FIFO — la eliberare, TOȚI cei de pe listă sunt anunțați simultan, câștigă
+primul care apasă butonul, nu ordinea de înscriere. „Ești al 5-lea" ar implica
+o coadă care se mișcă în ordine, care nu există — cineva de pe poziția 8 poate
+lua locul înaintea celui de pe poziția 1. Scos ca să nu promitem ceva ce
+mecanismul nu respectă.
 
 ---
 
@@ -184,7 +213,9 @@ doilea, rămâi pe listă și te anunț din nou dacă se mai eliberează ceva.
 
 [Confirm că vin] → {{link_revendicare}}
 
-Ciprian
+Ciprian Micu - Deep Logic
+
+{{subsol}}
 ```
 
 **Notă tehnică — pluralul, nu „un loc" mereu (B1):**
@@ -206,7 +237,7 @@ nu o eroare.
 **Trimis:** o singură rulare, batch, ~17 septembrie dimineața (funcția
 `workshop/leftover-waitlist-notice`), către toți cu status `asteptare`
 neschimbat.
-**Subiect:** `N-a fost loc de data asta — dar ții minte pentru următorul`
+**Subiect:** `N-a fost loc de data asta`
 
 ```
 Salut, {{nume}},
@@ -214,27 +245,41 @@ Salut, {{nume}},
 N-am reușit să-ți fac loc la workshopul de miercuri — n-a plecat nimeni
 de pe listă la timp cât să-ți pot da vestea bună.
 
-Mai organizez un workshop. Când stabilesc data, tu ești primul anunțat,
-înainte de lansarea oficială — și ai prioritate la înscriere, nu mai treci
-prin coadă.
+Dacă mai organizez un workshop similar, ești primul anunțat, înainte de
+lansarea oficială — și ai prioritate la înscriere, nu mai treci prin coadă.
 
 Îmi pare rău că nu s-a potrivit de data asta.
 
-Ciprian
+Ciprian Micu - Deep Logic
+
+{{subsol}}
 ```
 
-**Notă tehnică:** spec-ul marca acest text ca „TBD" — e primul draft.
-⚠ DE CONFIRMAT: chiar există un workshop următor planificat, sau formularea
-„mai organizez" e prematură? Dacă nu-i decis, aș înmuia în „dacă mai
-organizez un workshop similar, ești primul anunțat".
+**Notă:** formulare condițională (decizie 28 august) — „dacă mai organizez",
+nu „mai organizez". Spec-ul marca acest text ca TBD; nu există încă un
+workshop următor confirmat.
 
 ---
 
-## Rezumat — ce rămâne de decis înainte de F6
+## Subsol comun
 
-| # | Unde | Întrebare |
+Aceeași linie, la finalul fiecărui email — semnal de legitimitate pentru
+filtrele de spam, gratis, și consistent cu footer-ul de pe pagină:
+
+```
+—
+Deep Logic · Satu Mare, România
+Ai primit mailul ăsta pentru că te-ai înscris la „Prima Mutare spre un
+Asistent Digital" pe workshop.deeplogic.ro.
+```
+
+---
+
+## Decizii (28 august 2026)
+
+| # | Decizie | Rezultat |
 |---|---|---|
-| 1 | Email 5 | Păstrăm poziția pe listă (`{{pozitie}}`) sau o scoatem, ca să nu sugereze FIFO din greșeală? |
-| 2 | Email 7 | Există un workshop următor real, sau formulăm condițional? |
-| 3 | toate | Semnătura „Ciprian" simplă, sau `Ciprian Micu · Deep Logic`? |
-| 4 | toate | Confirmi `EMAIL_FROM` deja setat: `Ciprian Micu · Deep Logic <ciprian@deeplogic.ro>` — rămâne? |
+| 1 | Poziția pe listă în email 5 | **Scoasă.** Sistemul nu e FIFO — cifra ar fi implicat o promisiune falsă de ordine. |
+| 2 | „Workshop următor" în email 7 | **Formulare condițională** — „dacă mai organizez", nu „mai organizez". |
+| 3 | Semnătura | **„Ciprian Micu - Deep Logic"**, cratimă simplă, peste tot. |
+| 4 | `EMAIL_FROM` + spam-safety | **Verificat live**: SPF/DKIM/DMARC corecte, subiecte curate, List-Unsubscribe nu e necesar la volumul ăsta. `EMAIL_FROM` actualizat să reflecte semnătura din #3. |

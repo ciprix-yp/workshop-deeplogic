@@ -120,14 +120,23 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
       Supabase-ul real cu rânduri de test la fiecare rulare. Logica SQL e acoperită de
       `tests/db/`, logica de graniță (Turnstile/rate-limit) verificată manual mai sus.
 
-## F5 — Emailuri
+## F5 — Emailuri — GATA, textele aprobate
 
-- [x] `docs/EMAILURI.md` — **draft complet, toate cele 7 texte** — blocat pe review-ul lui
-      Ciprian înainte să intre în cod (D10). 4 puncte marcate `⚠ DE CONFIRMAT`
-      (poziția pe listă în email 5, „workshop următor" în email 7, forma semnăturii,
-      `EMAIL_FROM`).
+- [x] `docs/EMAILURI.md` — toate cele 7 texte, **aprobate de Ciprian pe 28 august**.
+      Cele 4 puncte deschise, tranșate: poziția pe listă scoasă din email 5 (sistemul
+      nu e FIFO — cifra ar fi promis o ordine care nu există), email 7 formulare
+      condițională („dacă mai organizez"), semnătura „Ciprian Micu - Deep Logic"
+      peste tot, `EMAIL_FROM` actualizat în `.env`/`.dev.vars`/`.env.example` să
+      corespundă.
+- [x] **Verificare de deliverability, live** (cerută explicit): SPF pe
+      `send.deeplogic.ro`, DKIM pe `deeplogic.ro`, DMARC `p=none` — toate confirmate
+      din contul Resend + DNS live, nu presupuse. Subiectele celor 7 emailuri
+      verificate manual pe cuvinte-declanșator de spam — curate. List-Unsubscribe
+      header: decis să NU se adauge (sub pragul de „bulk sender", opt-out real deja
+      prin „Nu mai pot veni" în fiecare email).
+- [x] Subsol comun adăugat la toate cele 7 (organizator + motiv pentru care a
+      primit mailul) — semnal de legitimitate pentru filtre, gratis.
 - [ ] Template-uri Resend + trimitere reală, verificată pe Gmail mobil + Outlook
-      — **așteaptă aprobarea textelor**
 
 ## F6 — Ciclul Inngest
 
