@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import { EVENIMENT } from '../content/copy';
+
+/**
+ * B2: pagina asta NU mută nicio stare la încărcare — doar afișează un buton.
+ * Mutarea reală se întâmplă exclusiv la POST /api/raspuns, declanșat de un
+ * click real (fetch, cu fallback la submit nativ de formular fără JS).
+ *
+ * Un prefetch de scanner/Safe Links încarcă pagina asta, o citește, poate
+ * chiar execută JS-ul de pe ea — dar nu simulează o interacțiune umană de
+ * apăsare pe buton. Exact granița care contează.
+ */
+export const prerender = false;
+
+const token = Astro.url.searchParams.get('token');
+const r = Astro.url.searchParams.get('r');
+const raspunsValid = r === 'da' || r === 'nu';
+
+const titlu = r === 'da' ? 'Confirmi că vii miercuri?' : 'Confirmi că nu mai poți veni?';
+const textButon = r === 'da' ? 'Da, confirm că vin' : 'Da, anulează locul';
+---
+
+<Base titlu={`${titlu} — ${EVENIMENT.titlu}`} noindex>
+  <main id="continut" class="pagina-raspuns">
+    {!token || !raspunsValid ? (
+      <div class="card">
+        <h1>Linkul ăsta nu e complet.</h1>
+        <p>Scrie-mi la contact@deeplogic.ro și rezolv eu manual.</p>
+        <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
+      </div>
+    ) : (
+      <div class="card">
+        <h1>{titlu}</h1>
+        <p>Un singur click, ca să fim siguri că ești tu, nu un scanner automat de email.</p>
+
+        <form id="form-raspuns" method="POST" action="/api/raspuns">
+          <input type="hidden" name="token" value={token} />
+          <input type="hidden" name="r" value={r} />
+          <button type="submit" class="cta-raspuns">{textButon}</button>
+        </form>
+
+        <p class="rezultat" id="rezultat" role="status" aria-live="polite" hidden></p>
+      </div>
+    )}
+  </main>
+</Base>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById('form-raspuns');
+    if (!form) return;
+    const buton = form.querySelector('button');
+    const rezultat = document.getElementById('rezultat');
+    const textInitial = buton.textContent;
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      buton.disabled = true;
+      buton.textContent = 'Se trimite…';
+      try {
+        const r = await fetch('/api/raspuns', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const date = await r.json();
+        if (date.ok) {
+          window.location.href = date.redirect;
+          return;
+        }
+        rezultat.hidden = false;
+        rezultat.textContent = date.mesaj ?? 'Ceva s-a rupt. Încearcă din nou.';
+      } catch {
+        rezultat.hidden = false;
+        rezultat.textContent = 'N-am putut trimite. Verifică conexiunea și încearcă din nou.';
+      } finally {
+        buton.disabled = false;
+        buton.textContent = textInitial;
+      }
+    });
+  })();
+</script>
+
+<style>
+  .pagina-raspuns {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-2xl) var(--lat);
+    text-align: center;
+  }
+
+  .card {
+    max-width: 28rem;
+    display: grid;
+    gap: var(--sp-md);
+    justify-items: center;
+  }
+
+  h1 {
+    font-size: var(--t-h2);
+  }
+
+  p {
+    color: var(--secundar);
+    line-height: var(--lh-lejer);
+  }
+
+  .cta-raspuns {
+    font-family: var(--font-titlu);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: var(--sp-md) var(--sp-xl);
+    min-height: var(--touch);
+    cursor: pointer;
+  }
+  .cta-raspuns:hover:not(:disabled),
+  .cta-raspuns:focus-visible:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .cta-raspuns:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .rezultat {
+    color: var(--eroare);
+    font-weight: 600;
+  }
+
+  .inapoi {
+    font-weight: 600;
+  }
+</style>

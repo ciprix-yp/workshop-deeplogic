@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import CardRaspuns from '../components/CardRaspuns.astro';
+import { stari, EVENIMENT } from '../content/copy';
+
+/**
+ * Ecran generic de rezultat pentru orice acțiune din `/api/raspuns` sau
+ * `/api/checkin` — reconfirmare, anulare, cursa din waitlist, check-in.
+ * Un singur fișier în loc de patru aproape identice.
+ */
+export const prerender = false;
+
+const STARI_VALIDE = ['reconfirmat', 'anulat', 'locRevendicat', 'locLuat', 'tokenInvalid', 'checkinReusit'] as const;
+type StareValida = (typeof STARI_VALIDE)[number];
+
+const param = Astro.url.searchParams.get('stare');
+const stare: StareValida = (STARI_VALIDE as readonly string[]).includes(param ?? '')
+  ? (param as StareValida)
+  : 'tokenInvalid';
+
+const continut = stari[stare];
+
+// Spec: „.ics atașat la emailul 3 ȘI pe pagina de revendicare din waitlist".
+// Reconfirmarea normală beneficiază de același link — cost zero, utilitate reală.
+const areLinkCalendar = stare === 'reconfirmat' || stare === 'locRevendicat';
+---
+
+<Base titlu={`${continut.titlu} — ${EVENIMENT.titlu}`} noindex>
+  <CardRaspuns titlu={continut.titlu} corp={continut.corp}>
+    {areLinkCalendar && (
+      <a href="/eveniment.ics" class="link-calendar">Adaugă în calendar</a>
+    )}
+  </CardRaspuns>
+</Base>
+
+<style>
+  .link-calendar {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch);
+    padding-inline: var(--sp-md);
+    border: 1px solid rgba(47, 79, 79, 0.3);
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+</style>

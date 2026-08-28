@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import { EVENIMENT } from '../content/copy';
+
+export const prerender = false;
+
+const token = Astro.url.searchParams.get('token');
+---
+
+<Base titlu={`Check-in — ${EVENIMENT.titlu}`} noindex>
+  <main id="continut" class="pagina-raspuns">
+    {!token ? (
+      <div class="card">
+        <h1>Linkul ăsta nu e complet.</h1>
+        <p>Spune-i lui Ciprian direct — te bifează manual.</p>
+      </div>
+    ) : (
+      <div class="card">
+        <h1>Ai ajuns?</h1>
+        <p>Apasă butonul și te bifez pe listă.</p>
+
+        <form id="form-checkin" method="POST" action="/api/checkin">
+          <input type="hidden" name="token" value={token} />
+          <button type="submit" class="cta-checkin">Sunt aici</button>
+        </form>
+
+        <p class="rezultat" id="rezultat" role="status" aria-live="polite" hidden></p>
+      </div>
+    )}
+  </main>
+</Base>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById('form-checkin');
+    if (!form) return;
+    const buton = form.querySelector('button');
+    const rezultat = document.getElementById('rezultat');
+    const textInitial = buton.textContent;
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      buton.disabled = true;
+      buton.textContent = 'Se trimite…';
+      try {
+        const r = await fetch('/api/checkin', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const date = await r.json();
+        if (date.ok) {
+          window.location.href = date.redirect;
+          return;
+        }
+        rezultat.hidden = false;
+        rezultat.textContent = date.mesaj ?? 'Ceva s-a rupt. Încearcă din nou.';
+      } catch {
+        rezultat.hidden = false;
+        rezultat.textContent = 'N-am putut trimite. Verifică conexiunea și încearcă din nou.';
+      } finally {
+        buton.disabled = false;
+        buton.textContent = textInitial;
+      }
+    });
+  })();
+</script>
+
+<style>
+  .pagina-raspuns {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-2xl) var(--lat);
+    text-align: center;
+  }
+  .card {
+    max-width: 26rem;
+    display: grid;
+    gap: var(--sp-md);
+    justify-items: center;
+  }
+  h1 {
+    font-size: var(--t-h2);
+  }
+  p {
+    color: var(--secundar);
+    line-height: var(--lh-lejer);
+  }
+  .cta-checkin {
+    font-family: var(--font-titlu);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: var(--sp-md) var(--sp-xl);
+    min-height: var(--touch);
+    cursor: pointer;
+  }
+  .cta-checkin:hover:not(:disabled),
+  .cta-checkin:focus-visible:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .cta-checkin:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .rezultat {
+    color: var(--eroare);
+    font-weight: 600;
+  }
+</style>

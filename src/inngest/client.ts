@@ -52,6 +52,32 @@ export const evtWaitlisted = eventType('workshop/waitlisted', {
   }),
 });
 
+/**
+ * Emis la orice tranziție spre `anulat`/`no_show` — din `POST /api/raspuns`
+ * (cineva anunță că nu mai vine) sau din cutoff-ul automat de la 11:00
+ * (funcția `registered.ts`).
+ *
+ * Funcția care-l ascultă (`seat-freed.ts`) are `debounce` + `singleton` pe
+ * `event_slug` (B1): la cutoff, până la 30 de tranziții pot avea loc în
+ * aceeași secundă — fără coalescing, fiecare om de pe waitlist ar primi
+ * câte un email pentru fiecare loc eliberat. `data` nu conține un contor de
+ * locuri: funcția interoghează Supabase direct, la momentul rulării (după
+ * fereastra de debounce), pentru starea REALĂ — mai robust decât să sume
+ * evenimente individuale, care Inngest oricum le coalesc fără să le agrege.
+ */
+export const evtSeatFreed = eventType('workshop/seat_freed', {
+  schema: z.object({ event_slug: z.string() }),
+});
+
+/**
+ * Declanșat MANUAL (din dashboard-ul Inngest sau printr-un script), nu de
+ * un cron — e o rulare unică, nu una recurentă. Vezi spec: „trigger:
+ * scheduled, ex. 17 septembrie dimineața, sau manual".
+ */
+export const evtLeftoverNoticeRequested = eventType('workshop/leftover_notice_requested', {
+  schema: z.object({ event_slug: z.string() }),
+});
+
 export const inngest = new Inngest({
   id: 'workshop-deeplogic',
   isDev: import.meta.env.DEV,

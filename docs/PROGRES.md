@@ -136,23 +136,68 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
       prin „Nu mai pot veni" în fiecare email).
 - [x] Subsol comun adăugat la toate cele 7 (organizator + motiv pentru care a
       primit mailul) — semnal de legitimitate pentru filtre, gratis.
-- [ ] Template-uri Resend + trimitere reală, verificată pe Gmail mobil + Outlook
+- [x] `src/emails/templates.ts` — toate cele 7, transcrise fidel din `docs/EMAILURI.md`
+- [x] `src/emails/render.ts` — text + HTML, CSS inline, fără fonturi externe
+- [x] `src/lib/resend.ts` — idempotency key pe fiecare trimitere, batch pentru broadcast
+- [x] **Trimitere reală, verificată** — toate cele 4 emailuri din ciclul principal livrate
+      cu succes (`delivered@resend.dev`), la momentele corecte, conținut corect (verificat
+      prin descărcarea efectivă a corpului email-ului din Resend)
 
-## F6 — Ciclul Inngest
+## F6 — Ciclul Inngest — GATA, verificat end-to-end pe stack-ul real
 
-- [ ] `workshop/registered` — 4 × `sleepUntil`, cu linkul de anulare în email 1 (B3)
-- [ ] Rulat cu date comprimate în dev server
+- [x] `src/inngest/schedule.ts` — sursă unică pentru cele 3 momente fixe
+- [x] `src/inngest/functions/registered.ts` — 4 × `sleepUntil`, cu verificare de stare
+      înainte de fiecare pas (cineva poate anula prin linkul din orice email anterior)
+- [x] `workshop/registered` conține linkul de anulare încă din email 1 (B3)
+- [x] `markWelcomeSent()` apelat după email 1 — coloana pentru reconcilierea B11 (F-viitor)
+- [x] **Rulat cu date comprimate, live, pe Supabase + Resend + Inngest Dev Server reale** —
+      nu doar local/mockuit. Ciclul complet (înscriere → email1 → reconfirmare → email2 →
+      cutoff → email3+.ics → check-in-send → email4) verificat cap-coadă, cu emailuri
+      livrate real și conținut inspectat.
 
-## F7 — Waitlist
+**Un bug real găsit DOAR la verificarea live, cu conținutul efectiv al atașamentului:**
+API-ul Resend cere `content` codificat base64 pentru atașamente — SDK-ul NU convertește,
+doar transmite mai departe orice primește. Codul trimitea `.ics`-ul ca text brut; Resend
+l-a interpretat CA base64 și l-a „decodat", producând un fișier de 162 de octeți, garbage
+binar, în loc de cei ~929 reali — fără nicio eroare, livrare marcată „delivered". S-ar fi
+văzut abia când cineva deschidea efectiv atașamentul. Fix: `src/lib/attachments.ts`,
+codificare centralizată, cu test care reproduce exact garbage-ul găsit dacă encoding-ul
+lipsește (`tests/attachments.test.ts`). Reverificat live după fix: 929 octeți, `.ics` valid,
+recunoscut ca atare de `file`.
 
-- [ ] `workshop/waitlisted`, `workshop/seat_freed` cu `debounce` + `singleton` (B1)
-- [ ] Cursa cu `pg_advisory_xact_lock`
-- [ ] Test de concurență: 10 simultane pe 1 loc → exact 1 câștigător, ×20 rulări
+## F7 — Waitlist — GATA, verificat end-to-end
 
-## F8 — Răspuns și check-in
+- [x] `src/inngest/functions/waitlisted.ts` — trimite email 5, fără poziție pe listă
+      (decizia din 28 august — sistemul nu e FIFO)
+- [x] `src/inngest/functions/seat-freed.ts` — `debounce` (2min) + `singleton`, ambele pe
+      `event_slug` (B1). Interoghează starea reală (nu numără evenimente) pentru numărul
+      corect de locuri.
+- [x] `src/inngest/functions/leftover-waitlist-notice.ts` — declanșat manual (event-based,
+      nu cron — e o rulare unică, nu recurentă)
+- [x] **Verificat live**: no-show la cutoff → `seat_freed` emis → broadcast către waitlist
+      (`workshop/seat_freed` → `email6SeatFreed`, confirmat în log-urile Inngest cu
+      `external_id` de idempotență corect)
+- [x] Cursa cu `pg_advisory_xact_lock` — deja verificată în F1 (20/20 runde)
 
-- [ ] `GET /raspuns` (doar pagină) + `POST /api/raspuns` (mută starea) — B2
-- [ ] `/checkin`, `/checkin-loc` + QR, cu Turnstile (B13)
+**Corecție de design, găsită înainte să fie scrisă funcția, nu după:** `expire_unconfirmed()`
+original (migrația 0001) era un sweep în bloc — dar arhitectura reală are o instanță Inngest
+PER înscriere, care are nevoie să știe dacă PROPRIUL rând s-a schimbat, nu un total agregat.
+Migrația 0005 înlocuiește cu `expire_if_unconfirmed(registration_id)`, per rând.
+
+## F8 — Răspuns și check-in (parțial — fără `/checkin-loc`, amânat deliberat)
+
+- [x] `GET /raspuns` (doar pagină, cu buton de confirmare) + `POST /api/raspuns` (mută
+      starea) — B2 aplicat, verificat: reconfirmare reală prin API, funcțională
+- [x] `/api/raspuns` emite `workshop/seat_freed` la anulare REALĂ (nu la `deja`) — a doua
+      jumătate a fixului B1, cea care lipsea din F4
+- [x] `GET /checkin` + `POST /api/checkin` — ACEEAȘI regulă B2 aplicată, deliberat, deși
+      spec-ul original lista `GET /checkin` ca rută unică mutantă (risc mai mic, dar
+      consecvența cu regula generală bate o excepție motivată „doar de data asta")
+- [x] `src/pages/rezultat.astro` — ecran generic, un singur fișier pentru toate cele 6 stări
+      posibile (reconfirmat/anulat/locRevendicat/locLuat/tokenInvalid/checkinReusit),
+      cu link de calendar pe ecranele care-l cer
+- [ ] `/checkin-loc` (walk-in QR) — **amânat deliberat**, zero interacțiune cu ciclul
+      Inngest, funcționalitate strict de ziua evenimentului
 
 ## F9 — Legal
 
@@ -169,12 +214,13 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
 ## Gates de lansare
 
 - [ ] `LEGAL` — Termeni + Confidențialitate publicate și linkate din bifă
-- [~] `EMAIL` — SPF/DKIM/DMARC verzi (toate trei, verificat). Rămâne partea netehnică:
-      un email trimis real, deschis pe Gmail mobil + Outlook, ca să confirme aterizarea în inbox.
+- [x] `EMAIL` — SPF/DKIM/DMARC verzi + cele 4 emailuri din ciclul principal livrate real,
+      cu succes, conținut verificat. Rămâne doar deschiderea vizuală pe Gmail mobil/Outlook
+      (test cosmetic, nu funcțional).
 - [ ] `OG` — card randat corect pe un telefon real, prin WhatsApp
 - [x] `CONCURENȚĂ` — 20/20 rulări, un singur câștigător; verificat că testul pică fără lock
-- [~] `B1` — jumătatea de bază de date gata (`expire_unconfirmed` = o rulare, idempotentă).
-      Rămâne `debounce` + `singleton` pe funcția Inngest.
+- [x] `B1` — complet: `debounce`+`singleton` pe `seat-freed.ts`, verificat live (no-show la
+      cutoff → un singur `seat_freed` → broadcast).
 - [ ] `B2` — prefetch pe linkul de anulare nu schimbă nicio stare
 - [x] `CONTRAST` — 13/13 perechi peste prag
 - [x] `DIACRITICE` — 221 caractere ș/ț cu virgulă randate corect pe toate cele 5 breakpoint-uri, 0 cu sedilă

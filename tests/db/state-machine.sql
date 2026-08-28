@@ -180,11 +180,41 @@ begin
   end loop;
 end $$;
 
--- O SINGURĂ rulare care marchează toți nereconfirmații și returnează câte
--- locuri s-au eliberat. Jumătatea de bază de date a fixului B1 — cealaltă e
--- `debounce` pe funcția Inngest.
-select assert_eq(expire_unconfirmed(), 5, 'cutoff-ul marchează 5 no-show într-o singură rulare');
-select assert_eq(expire_unconfirmed(), 0, 'a doua rulare nu mai găsește nimic (idempotent)');
+-- PER RÂND, nu sweep în bloc (migrația 0005) — fiecare instanță Inngest se
+-- trezește la cutoff pentru PROPRIA înscriere și trebuie să știe dacă TOCMAI
+-- a marcat-o no-show, ca să decidă dacă emite `workshop/seat_freed`. Un
+-- sweep în bloc nu-i spune asta unei instanțe individuale.
+do $$
+declare i int; v_flip boolean;
+begin
+  for i in 1..8 loop
+    select expire_if_unconfirmed(
+      (select r.id from event_registrations r join contacts c on c.id=r.contact_id
+        where c.email = 'n' || i || '@t.ro')
+    ) into v_flip;
+    if i <= 3 then
+      if v_flip then raise exception 'PICA: n%@t.ro era reconfirmat, n-ar fi trebuit atins', i; end if;
+    else
+      if not v_flip then raise exception 'PICA: n%@t.ro era inscris, ar fi trebuit marcat no_show', i; end if;
+    end if;
+  end loop;
+  raise notice '  ok  expire_if_unconfirmed(): fiecare instanță știe dacă PROPRIUL rând s-a schimbat';
+end $$;
+
+select assert_eq(
+  (select count(*)::int from event_registrations where status = 'no_show'),
+  5, 'exact 5 din 8 devin no_show — restul erau deja reconfirmați');
+
+do $$
+declare v_flip boolean;
+begin
+  select expire_if_unconfirmed(
+    (select r.id from event_registrations r join contacts c on c.id=r.contact_id where c.email='n4@t.ro')
+  ) into v_flip;
+  if v_flip then raise exception 'PICA: a doua chemare pe un rând deja no_show ar fi trebuit să fie no-op'; end if;
+  raise notice '  ok  a doua chemare pe același rând e no-op (idempotent)';
+end $$;
+
 select assert_eq(t_status('n1@t.ro'), 'reconfirmat', 'cei reconfirmați nu sunt atinși');
 
 \echo ''

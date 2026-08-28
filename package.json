@@ -6,6 +6,7 @@
   "description": "Landing + înscriere — Workshop „Prima Mutare spre un Asistent Digital\", Deep Logic, 16 septembrie 2026",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "npx tsx scripts/generate-ics.mjs",
     "build": "astro build",
     "preview": "wrangler dev",
     "check": "astro check",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@playwright/test": "^1.62.1",
+    "tsx": "^4.23.12",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
     "wrangler": "^4.127.0"

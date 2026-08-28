@@ -91,10 +91,55 @@ ca **accent decorativ**, permis doar la ≥24px sau pe elemente non-text.
 
 ---
 
+## F6/F7/F8 — Ciclul Inngest (28 august 2026)
+
+| # | Decizie | Motiv |
+|---|---|---|
+| **D18** | `expire_unconfirmed()` (bulk) înlocuit cu `expire_if_unconfirmed(id)` (per rând) | Găsit înainte de a scrie funcția Inngest care-l apelează: arhitectura reală are o instanță PER înscriere, care are nevoie să știe dacă PROPRIUL rând s-a schimbat, ca să decidă dacă emite `seat_freed`. Un sweep în bloc nu spune asta unei instanțe individuale. Migrația 0005. |
+| **D19** | `/checkin` urmează aceeași regulă B2 (GET randează, POST mută) ca `/raspuns` | Spec-ul original lista `GET /checkin` ca rută unică mutantă — risc mai mic decât la anulare (check-in e idempotent, nimic nu se propagă în cascadă). Dar regula din CLAUDE.md e generală. Consecvența costă un tap în plus la ușă; excepțiile „doar de data asta" sunt exact cum se strecoară bug-urile de genul B2. |
+| **D20** | `leftover-waitlist-notice` declanșat manual (event), nu cron | E o rulare unică, nu recurentă — sintaxa de cron e făcută pentru recurență, nu pentru „o singură dată, pe 17 septembrie". Mai simplu și mai sigur declanșat explicit din dashboard-ul Inngest. |
+| **D21** | `/checkin-loc` (walk-in QR) amânat, nu construit acum | Zero interacțiune cu ciclul Inngest, funcționalitate strict de ziua evenimentului. Scop bine delimitat pentru sesiunea asta, fără să lase o gaură — nimic altceva nu depinde de el. |
+
+### Bug găsit DOAR la verificarea live, cu conținutul efectiv trimis (nu la citirea codului)
+
+**Atașamentele Resend cer `content` base64, SDK-ul nu convertește.** Codul trimitea
+conținutul `.ics` ca text brut prin câmpul `content`; API-ul Resend l-a interpretat CA
+base64 și l-a „decodat" — rezultatul: un fișier de 162 de octeți, garbage binar complet,
+livrat cu succes („delivered"), fără nicio eroare vizibilă în nicio parte a sistemului.
+S-ar fi observat abia când cineva ar fi deschis efectiv atașamentul din email 3 — pe
+pagina asta, exact genul de defect tăcut pe care testarea manuală, fără verificare de
+conținut, nu l-ar fi prins niciodată.
+
+Fix: `src/lib/attachments.ts`, encoding centralizat (o singură funcție, apelată din
+`resend.ts`, niciun apelant nu mai poate uita pasul). Test dedicat
+(`tests/attachments.test.ts`) care reproduce EXACT garbage-ul găsit dacă cineva scoate
+encoding-ul din greșeală — verificat că testul are dinți: reintrodus bug-ul temporar,
+testul a picat cu byte-for-byte același rezultat corupt văzut live, apoi restaurat fixul.
+Reverificat împotriva Resend real după fix: 929 octeți, recunoscut ca `vCalendar calendar
+file` valid de `file`, conținut byte-identic cu generarea locală.
+
+### Metodologie de verificare — programul comprimat temporar
+
+Pentru F6/F7, `src/inngest/schedule.ts` a fost modificat temporar la date apropiate
+(secunde/minute, nu zile), ciclul rulat live împotriva Supabase + Resend + Inngest Dev
+Server reale, apoi restaurat la datele de producție (14/16 septembrie). Aceeași tehnică
+folosită la F5 pentru cheile Turnstile. Emailurile de test au mers către
+`delivered@resend.dev` (adresa de test oficială Resend) sau `contact+tag@deeplogic.ro`
+— toate datele de test șterse din Supabase după verificare.
+
+**Notă necesară pentru sesiuni viitoare**: adresele `contact+tag@deeplogic.ro` (plus-adresare
+pe domeniul propriu Deep Logic) au picat cu bounce în timpul testării — motivul nu ține de
+cod, e specific mailbox-ului propriu al lui Ciprian, nu afectează adrese reale de
+înscriere (Gmail și majoritatea providerilor suportă plus-adresarea normal pe partea de
+RECEPȚIE). Nu s-a investigat mai departe — irelevant pentru producție, unde adresele vin
+de la participanți, nu de la testare pe domeniul propriu.
+
+---
+
 ## Ce a rămas deliberat în afara scopului
 
 Din spec, plus deciziile de mai sus: arhitectura de replicare pentru agenții viitori · interfața
 Notion peste `contacts` · trimiterea automată a materialelor post-workshop (rămâne manuală, către
 segmentul `prezent`) · formularul de închidere din sală · blocul despre faliment (D8) · testimonialele
 (D9) · textul de distribuire pentru membrii BIZZ.CLUB (**există deja scris** în `landing-*.md`,
-secțiunea finală — e livrabil separat, nu intră pe pagină).
+secțiunea finală — e livrabil separat, nu intră pe pagină) · `/checkin-loc` walk-in prin QR (D21).

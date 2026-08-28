@@ -166,6 +166,128 @@ export async function markWelcomeSent(registrationId: string): Promise<void> {
   if (error) throw new SupabaseRpcError('mark_welcome_sent', error);
 }
 
+/* ── expire_if_unconfirmed ───────────────────────────────────────────────── */
+
+/**
+ * Marchează `no_show` DOAR rândul dat, dacă e încă `inscris`. Întoarce
+ * `true` dacă tocmai l-a schimbat, `false` dacă era deja altceva (idempotent).
+ *
+ * Per rând, nu sweep în bloc (migrația 0005) — fiecare instanță Inngest are
+ * nevoie să știe dacă PROPRIA înscriere tocmai a devenit no_show, ca să
+ * decidă dacă emite `workshop/seat_freed`. Vezi comentariul din migrație.
+ */
+export async function expireIfUnconfirmed(registrationId: string): Promise<boolean> {
+  const { data, error } = await supabaseAdmin()
+    .rpc('expire_if_unconfirmed', { p_registration_id: registrationId, p_event_slug: EVENT_SLUG })
+    .single<boolean>();
+
+  if (error) throw new SupabaseRpcError('expire_if_unconfirmed', error);
+  return data;
+}
+
+/* ── Citiri directe ──────────────────────────────────────────────────────────
+ * Fără funcție RPC dedicată: sunt CITIRI, nu tranziții de stare — nimic de
+ * protejat cu atomicitate. Service role ocolește RLS prin design.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export interface StareInregistrare {
+  status: RegisterStatus;
+  email: string;
+  nume: string;
+  confirm_token: string;
+  checkin_token: string;
+}
+
+/**
+ * Starea curentă a unei înscrieri, după `registration_id` — folosită de
+ * `registered.ts` la pașii „check-status" / „check-status-again" din spec:
+ * lucrurile se pot schimba între cele două `sleepUntil` (cineva anulează
+ * exact în fereastra dintre cutoff și trimiterea emailului de check-in).
+ */
+export async function getRegistrationStatus(
+  registrationId: string,
+): Promise<StareInregistrare | null> {
+  const { data, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('status, confirm_token, checkin_token, contacts(email, nume)')
+    .eq('id', registrationId)
+    .maybeSingle();
+
+  if (error) throw new SupabaseRpcError('select event_registrations', error);
+  if (!data) return null;
+
+  const contact = Array.isArray(data.contacts) ? data.contacts[0] : data.contacts;
+  if (!contact) return null;
+
+  return {
+    status: data.status as RegisterStatus,
+    confirm_token: data.confirm_token,
+    checkin_token: data.checkin_token,
+    email: contact.email,
+    nume: contact.nume,
+  };
+}
+
+export interface IntrareWaitlist {
+  registration_id: string;
+  email: string;
+  nume: string;
+  confirm_token: string;
+}
+
+/** Toți cei aflați curent pe `asteptare` — pentru broadcast-ul din email 6. */
+export async function listWaitlist(): Promise<IntrareWaitlist[]> {
+  const { data, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('id, confirm_token, contacts(email, nume)')
+    .eq('event_slug', EVENT_SLUG)
+    .eq('status', 'asteptare');
+
+  if (error) throw new SupabaseRpcError('select waitlist', error);
+
+  return (data ?? []).flatMap((r) => {
+    const contact = Array.isArray(r.contacts) ? r.contacts[0] : r.contacts;
+    if (!contact) return [];
+    return [{ registration_id: r.id, confirm_token: r.confirm_token, email: contact.email, nume: contact.nume }];
+  });
+}
+
+/**
+ * Câte locuri sunt libere ACUM, sub capacitatea reală (25) — nu un contor de
+ * evenimente. La cutoff, până la 30 de tranziții spre `no_show` pot avea loc
+ * simultan; interogarea directă, la momentul rulării funcției debounced,
+ * reflectă starea reală mai fidel decât ar face suma evenimentelor primite
+ * (pe care Inngest oricum le coalesce, nu le agregă).
+ */
+export async function locuriLibere(): Promise<number> {
+  const { count, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_slug', EVENT_SLUG)
+    .in('status', ['reconfirmat', 'prezent']);
+
+  if (error) throw new SupabaseRpcError('count locuri ocupate', error);
+  return Math.max(0, CAPACITATE_REALA - (count ?? 0));
+}
+
+/**
+ * Statusul curent, după `confirm_token` — folosit de `/api/raspuns` ca să
+ * decidă ÎNTRE reconfirmare normală și cursa din waitlist, ÎNAINTE de a
+ * apela funcția RPC potrivită (`respond_to_invite` vs `claim_waitlist_seat`
+ * așteaptă stări de plecare diferite).
+ */
+export async function getStatusByToken(token: string): Promise<RegisterStatus | null> {
+  const { data, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('status')
+    .eq('confirm_token', token)
+    .eq('event_slug', EVENT_SLUG)
+    .maybeSingle();
+
+  if (error) throw new SupabaseRpcError('select status by token', error);
+  return (data?.status as RegisterStatus) ?? null;
+}
+
 /* ── check_rate_limit ────────────────────────────────────────────────────── */
 
 export async function checkRateLimit(
