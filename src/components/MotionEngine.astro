@@ -48,11 +48,11 @@
         id: 'ruptura',
         progressMode: 'scroll',
         elements: [
-          { el: 'h1-linia-1', from: { opacity: 1, blur: 0 }, to: { opacity: 0.5, blur: 1.4 }, reveal: 0.4 },
+          { el: 'h1-linia-1', from: { opacity: 1, blur: 0, weight: 700 }, to: { opacity: 0.5, blur: 1.4, weight: 420 }, reveal: 0.4 },
           { el: 'h1-linia-2', from: { opacity: 0.4, blur: 2.1, y: 12 }, to: { opacity: 1, blur: 0, y: 0 }, reveal: 0.85 },
         ],
         mobileElements: [
-          { el: 'h1-linia-1', from: { opacity: 1, blur: 0 }, to: { opacity: 0.55, blur: 0.84 }, reveal: 0.4 },
+          { el: 'h1-linia-1', from: { opacity: 1, blur: 0, weight: 700 }, to: { opacity: 0.55, blur: 0.84, weight: 420 }, reveal: 0.4 },
           { el: 'h1-linia-2', from: { opacity: 0.5, blur: 1.05 }, to: { opacity: 1, blur: 0 }, reveal: 0.85 },
         ],
       },
@@ -120,6 +120,10 @@
           { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.79 },
           { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
           { el: 'harta-asamblata', from: { opacity: 0, scale: 0.96 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
+          // Paralaxă pe adâncime — glow static în spatele pieselor, se mișcă mai
+          // încet decât ele. `reveal: 1` = urmărește scroll-ul continuu, cât
+          // timp scena e vizibilă, nu se așază niciodată ca restul elementelor.
+          { el: 'harta-profunzime', from: { y: -22 }, to: { y: 22 }, reveal: 1 },
         ],
         mobileElements: [
           { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
@@ -128,6 +132,7 @@
           { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.79 },
           { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
           { el: 'harta-asamblata', from: { opacity: 0, scale: 0.97 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
+          { el: 'harta-profunzime', from: { y: -14 }, to: { y: 14 }, reveal: 1 },
         ],
         // Bătaie discretă, NU scrubuită — latch cu histerezis, pe traseul
         // propriu al elementului „harta-asamblata" (nu al scenei). Evită
@@ -171,6 +176,15 @@
       if ('blur' in to || 'blur' in from) {
         const blur = lerp(from.blur ?? 0, to.blur ?? 0, t);
         target.style.filter = blur > 0.02 ? `blur(${blur.toFixed(2)}px)` : '';
+      }
+      // Greutatea axei variabile a fontului (Inter/Source Sans 3 sunt
+      // variabile, 400-700/400-600 — vezi fonts.css). NU e transform/opacity,
+      // deci nu e gratuit: repaint de text la fiecare cadru, nu doar
+      // recompunere. Folosit cu parcimonie — un singur element, un interval
+      // scurt (§01) — și verificat cu perf-budget.mjs, nu presupus ieftin.
+      if ('weight' in to || 'weight' in from) {
+        const weight = lerp(from.weight ?? 400, to.weight ?? 400, t);
+        target.style.fontWeight = String(Math.round(weight));
       }
     }
 

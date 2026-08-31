@@ -46,7 +46,7 @@
           },
           "reveal": 0.4,
           "ease": "linear",
-          "notes": "'Toată lumea îți spune să adopți AI.' se defocalizează — devine zgomotul de fundal pe care restul paginii îl răspunde."
+          "notes": "'Toată lumea îți spune să adopți AI.' se defocalizează — devine zgomotul de fundal pe care restul paginii îl răspunde. Greutatea fontului variabil (Inter) scade odată cu blur-ul — se subțiază pe măsură ce devine zgomot de fundal, nu doar se defocalizează."
         },
         {
           "selector": "[data-scene='ruptura'] [data-el='h1-linia-2']",
@@ -115,7 +115,8 @@
               "blur": 0.84
             },
             "reveal": 0.4,
-            "ease": "linear"
+            "ease": "linear",
+            "notes": " Greutatea fontului variabil (Inter) scade odată cu blur-ul — se subțiază pe măsură ce devine zgomot de fundal, nu doar se defocalizează."
           },
           {
             "selector": "[data-scene='ruptura'] [data-el='h1-linia-2']",
@@ -752,6 +753,18 @@
           },
           "reveal": 0.86,
           "notes": "NU se scrubuiește continuu — latch cu histerezis: declanșează o singură dată la trecerea LOCALĂ 0.72 în sus, se rearmează doar sub 0.45, cooldown 400ms, maximum 2 declanșări per parcurgere, acoperă <2% din suprafață. Evită exact eroarea de flash/strobe (WCAG 2.3.1) găsită și corectată în explorarea abandonată din 29-31 august (vezi docs/DECIZII.md + docs/design/IMPLEMENTATION_NOTES.md). Fără `ease` — nu e o interpolare continuă, e un eveniment discret."
+        },
+        {
+          "selector": "[data-scene='harta'] [data-el='harta-profunzime']",
+          "role": "background",
+          "from": {
+            "y": -22
+          },
+          "to": {
+            "y": 22
+          },
+          "reveal": 1,
+          "notes": "Paralaxă pe adâncime — glow static (blur CSS fix, fără imagine), z-index sub piese, se mișcă mai încet/continuu decât ele (reveal:1 = nu se așază niciodată, urmărește scroll-ul cât timp scena e vizibilă). Ancorează asamblarea, nu o ilustrează."
         }
       ],
       "checkpoints": [
@@ -871,6 +884,17 @@
               "opacity": 0.12
             },
             "reveal": 0.86
+          },
+          {
+            "selector": "[data-scene='harta'] [data-el='harta-profunzime']",
+            "role": "background",
+            "from": {
+              "y": -14
+            },
+            "to": {
+              "y": 14
+            },
+            "reveal": 1
           }
         ]
       },

@@ -55,7 +55,19 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.p
        pe un telefon ținut cu o mână. */
     min-height: var(--touch);
     padding: var(--sp-sm) var(--sp-lg);
-    transition: background-color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.15s ease;
+  }
+
+  /* Doar pe pointer fin (mouse real) — pe touch, „hover" rămâne lipit după
+     atingere și butonul ar arăta permanent ridicat. */
+  @media (hover: hover) and (pointer: fine) {
+    .cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px -6px rgba(55, 106, 102, 0.45);
+    }
   }
 
   .cta.mare {
@@ -77,7 +89,9 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.p
   }
 
   .cta:active {
-    transform: translateY(1px);
+    transform: translateY(1px) scale(0.985);
+    box-shadow: none;
+    transition-duration: 0.08s;
   }
 
   /* Pe întuneric butonul se inversează. Accentul închis (#376A66) pe fundal
@@ -90,5 +104,11 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.p
   .cta.pe-inchis:hover,
   .cta.pe-inchis:focus-visible {
     background: #a3e2d8;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cta.pe-inchis:hover {
+      box-shadow: 0 6px 16px -6px rgba(127, 209, 196, 0.5);
+    }
   }
 </style>
