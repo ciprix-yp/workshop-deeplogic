@@ -662,7 +662,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.55,
+          "reveal": 0.28,
           "ease": "linear"
         },
         {
@@ -678,7 +678,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.63,
+          "reveal": 0.4,
           "ease": "linear"
         },
         {
@@ -694,7 +694,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.71,
+          "reveal": 0.52,
           "ease": "linear"
         },
         {
@@ -710,7 +710,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.79,
+          "reveal": 0.64,
           "ease": "linear"
         },
         {
@@ -724,23 +724,21 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 0.87,
+          "reveal": 0.76,
           "ease": "linear"
         },
         {
           "selector": "[data-scene='harta'] [data-el='harta-asamblata']",
           "role": "subject",
           "from": {
-            "opacity": 0,
             "scale": 0.96
           },
           "to": {
-            "opacity": 1,
             "scale": 1
           },
-          "reveal": 0.96,
+          "reveal": 0.9,
           "ease": "linear",
-          "notes": "Momentul de 'click' al asamblării — cele cinci piese, deja așezate, se citesc ca UN obiect. Fundal alb, spațiere generoasă (bugetul de design al paginii se cheltuiește aici, pe scară/margini — nu pe decor)."
+          "notes": "Momentul de 'click' al asamblării — cele cinci piese, deja așezate, se citesc ca UN obiect. Fundal alb, spațiere generoasă (bugetul de design al paginii se cheltuiește aici, pe scară/margini — nu pe decor). NU mai animă opacity — doar scale. Combinat cu opacitatea proprie a fiecărui item, cele două se compuneau multiplicativ (0.3×0.3=0.09), cauza reală a defectului \"abia se vede\" raportat pe telefon real."
         },
         {
           "selector": "[data-scene='harta'] [data-el='bataie-latch']",
@@ -801,7 +799,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.55,
+            "reveal": 0.28,
             "ease": "linear"
           },
           {
@@ -815,7 +813,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.63,
+            "reveal": 0.4,
             "ease": "linear"
           },
           {
@@ -829,7 +827,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.71,
+            "reveal": 0.52,
             "ease": "linear"
           },
           {
@@ -843,7 +841,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.79,
+            "reveal": 0.64,
             "ease": "linear"
           },
           {
@@ -857,22 +855,21 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.87,
+            "reveal": 0.76,
             "ease": "linear"
           },
           {
             "selector": "[data-scene='harta'] [data-el='harta-asamblata']",
             "role": "subject",
             "from": {
-              "opacity": 0,
               "scale": 0.97
             },
             "to": {
-              "opacity": 1,
               "scale": 1
             },
-            "reveal": 0.96,
-            "ease": "linear"
+            "reveal": 0.9,
+            "ease": "linear",
+            "notes": "NU mai animă opacity — doar scale. Combinat cu opacitatea proprie a fiecărui item, cele două se compuneau multiplicativ (0.3×0.3=0.09), cauza reală a defectului \"abia se vede\" raportat pe telefon real."
           },
           {
             "selector": "[data-scene='harta'] [data-el='bataie-latch']",
@@ -932,15 +929,13 @@
           "selector": "[data-scene='registrul'] [data-el='bloc-continut']",
           "role": "support",
           "from": {
-            "opacity": 0,
             "y": 8
           },
           "to": {
-            "opacity": 1,
             "y": 0
           },
           "reveal": 0.5,
-          "notes": "O singură gramatică de reveal, repetată identic pe toate blocurile din §09/§10/§12/§13/§14/§15 (grid use-cases, despre Deep Logic, precedent, detalii, de ce gratuit, FAQ) — reveal-on-enter prin IntersectionObserver, declanșat independent per bloc, nu scrubuit cu poziția de scroll. Deliberat monoton: e informație de verificat, nu de trăit.",
+          "notes": "O singură gramatică de reveal, repetată identic pe toate blocurile din §09/§10/§12/§13/§14/§15 (grid use-cases, despre Deep Logic, precedent, detalii, de ce gratuit, FAQ) — reveal-on-enter prin IntersectionObserver, declanșat independent per bloc, nu scrubuit cu poziția de scroll. Deliberat monoton: e informație de verificat, nu de trăit. NU mai animă opacity — \"foto-facilitator\" e copilul lui în DOM; ambele animând opacity s-ar fi compus multiplicativ, aceeași eroare ca la \"harta\".",
           "ease": "linear"
         }
       ],
@@ -971,15 +966,14 @@
             "selector": "[data-scene='registrul'] [data-el='bloc-continut']",
             "role": "support",
             "from": {
-              "opacity": 0,
               "y": 4
             },
             "to": {
-              "opacity": 1,
               "y": 0
             },
             "reveal": 0.5,
-            "ease": "linear"
+            "ease": "linear",
+            "notes": "NU mai animă opacity — \"foto-facilitator\" e copilul lui în DOM; ambele animând opacity s-ar fi compus multiplicativ, aceeași eroare ca la \"harta\"."
           }
         ]
       },

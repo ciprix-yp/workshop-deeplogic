@@ -114,24 +114,29 @@
         // Momentul-semnătură — vezi storyboard.json „harta". Zero pinning.
         id: 'harta',
         elements: [
-          { el: 'item-harta-scrisa', from: { opacity: 0, x: -40, y: 20 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.55 },
-          { el: 'item-document-24h', from: { opacity: 0, x: 40, y: -16 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.63 },
-          { el: 'item-structura-prompt', from: { opacity: 0, x: -30, y: -10 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.71 },
-          { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.79 },
-          { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
-          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.96 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
+          { el: 'item-harta-scrisa', from: { opacity: 0, x: -40, y: 20 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.28 },
+          { el: 'item-document-24h', from: { opacity: 0, x: 40, y: -16 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.4 },
+          { el: 'item-structura-prompt', from: { opacity: 0, x: -30, y: -10 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.52 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.64 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.76 },
+          // „harta-asamblata" (containerul .itemi) NU mai animă opacity — doar
+          // scale, ca „click"-ul de asamblare. Combinat cu opacitatea proprie a
+          // fiecărui item, cele două se COMPUNEAU multiplicativ (0.3×0.3=0.09),
+          // motiv real al defectului „abia se vede" raportat pe telefon real,
+          // nu doar praguri prea mari.
+          { el: 'harta-asamblata', from: { scale: 0.96 }, to: { scale: 1 }, reveal: 0.9 },
           // Paralaxă pe adâncime — glow static în spatele pieselor, se mișcă mai
           // încet decât ele. `reveal: 1` = urmărește scroll-ul continuu, cât
           // timp scena e vizibilă, nu se așază niciodată ca restul elementelor.
           { el: 'harta-profunzime', from: { y: -22 }, to: { y: 22 }, reveal: 1 },
         ],
         mobileElements: [
-          { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
-          { el: 'item-document-24h', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.63 },
-          { el: 'item-structura-prompt', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.71 },
-          { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.79 },
-          { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
-          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.97 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
+          { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.28 },
+          { el: 'item-document-24h', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.4 },
+          { el: 'item-structura-prompt', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.52 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.64 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.76 },
+          { el: 'harta-asamblata', from: { scale: 0.97 }, to: { scale: 1 }, reveal: 0.9 },
           { el: 'harta-profunzime', from: { y: -14 }, to: { y: 14 }, reveal: 1 },
         ],
         // Bătaie discretă, NU scrubuită — latch cu histerezis, pe traseul
@@ -142,13 +147,17 @@
       },
       {
         id: 'registrul',
+        // „foto-facilitator" e COPIL al „bloc-continut" (imaginea stă în
+        // interiorul .aranjament) — dacă amândouă animă opacity, se compun
+        // multiplicativ (aceeași eroare găsită și reparată la „harta").
+        // Containerul primește doar `y`, subiectul (foto) primește opacity+y.
         elements: [
           { el: 'foto-facilitator', from: { opacity: 0, y: 12 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
-          { el: 'bloc-continut', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'bloc-continut', from: { y: 8 }, to: { y: 0 }, reveal: 0.5 },
         ],
         mobileElements: [
           { el: 'foto-facilitator', from: { opacity: 0, y: 6 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
-          { el: 'bloc-continut', from: { opacity: 0, y: 4 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'bloc-continut', from: { y: 4 }, to: { y: 0 }, reveal: 0.5 },
         ],
       },
       {
