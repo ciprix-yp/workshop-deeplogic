@@ -161,9 +161,12 @@
         ],
       },
       {
+        // Fostul „formular" — formularul propriu-zis a trecut în
+        // DialogInscriere.astro (modal, deschis din orice CTA); ce rămâne
+        // aici, în flux, e doar chemarea de închidere (ctaFinal + CTA).
         id: 'mutarea',
-        elements: [{ el: 'formular', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
-        mobileElements: [{ el: 'formular', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
+        elements: [{ el: 'inscriere-chemare', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
+        mobileElements: [{ el: 'inscriere-chemare', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
       },
     ];
 

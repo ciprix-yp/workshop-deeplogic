@@ -64,6 +64,32 @@ test('fără JavaScript, tot conținutul rămâne vizibil', async ({ browser }) 
   await ctx.close();
 });
 
+test('fără JavaScript, formularul rămâne un bloc normal în flux, nu un dialog închis', async ({ browser }) => {
+  // DialogInscriere.astro randează `<dialog open>` static pe server. Fără JS
+  // ca să cheme `.close()`, browserul îl arată exact ca un bloc obișnuit —
+  // niciun `showModal()`, niciun backdrop, niciun element ascuns. Un
+  // formular care are nevoie de JS ca să existe e un formular care pierde
+  // înscrieri fără să știi (același principiu ca la reveal-ul de scroll).
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const page = await ctx.newPage();
+  await page.goto('/');
+
+  const dialog = page.locator('#inscriere');
+  await dialog.scrollIntoViewIfNeeded();
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#form-inscriere')).toBeVisible();
+  await expect(page.locator('#form-inscriere')).toHaveAttribute('action', '/api/register');
+  await expect(page.locator('#form-inscriere')).toHaveAttribute('method', 'POST');
+  // NU verificăm `.cf-turnstile` vizibil — widget-ul e randat de scriptul
+  // Cloudflare (api.js), inaccesibil fără JS prin definiție, dinainte de
+  // acest refactor. Div-ul gol tot ajunge la server cu formularul (câmpul
+  // există în markup), doar widget-ul vizual nu poate exista fără JS.
+  await expect(page.locator('input[name="nume"]')).toBeVisible();
+  await expect(page.locator('button.cta-submit')).toBeVisible();
+
+  await ctx.close();
+});
+
 test('bara sticky apare după hero și dispare la formular', async ({ browser }) => {
   const ctx = await browser.newContext({
     viewport: { width: 360, height: 800 },
@@ -80,8 +106,8 @@ test('bara sticky apare după hero și dispare la formular', async ({ browser })
   await page.locator('#ce-facem').scrollIntoViewIfNeeded();
   await expect(bara).toBeVisible({ timeout: 3000 });
 
-  // La formular dispare: ar acoperi exact lucrul spre care trimite.
-  await page.locator('#inscriere').scrollIntoViewIfNeeded();
+  // La chemarea finală dispare: ar dubla exact CTA-ul de-acolo.
+  await page.locator('#inscriere-cta').scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
   await expect(bara).toBeHidden();
 

@@ -10,8 +10,11 @@ import { CTA, EVENIMENT } from '../content/copy';
   îndemn concurent („află mai multe"), nu accesibilitatea primului.
 
   Apare abia după ce butonul din hero iese din cadru — altfel ar dubla vizual
-  un buton deja pe ecran — și se ascunde când formularul e vizibil, ca să nu
-  acopere exact lucrul spre care trimite.
+  un buton deja pe ecran — și se ascunde când chemarea finală (§16,
+  `#inscriere-cta`) e vizibilă, ca să nu dubleze exact CTA-ul de-acolo.
+  Formularul propriu-zis (DialogInscriere.astro, `#inscriere`) e un
+  `<dialog>` închis implicit — fără geometrie cât timp nu e deschis, deci
+  nu poate fi ținta asta.
 */}
 <div id="cta-sticky" class="sticky" hidden>
   <div class="info">
@@ -25,7 +28,7 @@ import { CTA, EVENIMENT } from '../content/copy';
   (() => {
     const bara = document.getElementById('cta-sticky');
     const hero = document.querySelector('.hero .cta');
-    const form = document.getElementById('inscriere');
+    const form = document.getElementById('inscriere-cta');
     if (!bara || !hero || !form || !('IntersectionObserver' in window)) return;
 
     let heroVizibil = true;

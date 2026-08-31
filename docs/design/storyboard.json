@@ -992,7 +992,7 @@
       "camera": "static",
       "elements": [
         {
-          "selector": "[data-scene='mutarea'] [data-el='formular']",
+          "selector": "[data-scene='mutarea'] [data-el='inscriere-chemare']",
           "role": "subject",
           "from": {
             "opacity": 0,

@@ -11,7 +11,11 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.locator('#inscriere').scrollIntoViewIfNeeded();
+  // Formularul trăiește într-un <dialog> (DialogInscriere.astro), închis
+  // implicit — orice CTA îl deschide. Cel din hero e mereu pe ecran la
+  // scroll 0, deci e ținta cea mai directă pentru teste.
+  await page.locator('.hero .cta').click();
+  await expect(page.locator('#inscriere')).toBeVisible();
 });
 
 test('câmpul condiționat e ascuns până când sursa îl cere', async ({ page }) => {

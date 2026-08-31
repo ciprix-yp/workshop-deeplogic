@@ -42,6 +42,27 @@ function tintaPentruStatus(status: RegisterStatus): string {
   }
 }
 
+/**
+ * Cheia din `stari` (src/content/copy.ts) pentru clientul cu JS — care nu
+ * navighează la `redirect`, ci randează confirmarea direct în dialog. Aceeași
+ * ramificare ca `multumesc.astro`/`lista-asteptare.astro`, dusă pe server ca
+ * să nu fie reimplementată a doua oară, diferit, pe client.
+ */
+function stareaPentruClient(status: RegisterStatus): 'inscris' | 'asteptare' | 'reconfirmat' | 'anulatAnterior' {
+  switch (status) {
+    case 'inscris':
+      return 'inscris';
+    case 'asteptare':
+      return 'asteptare';
+    case 'reconfirmat':
+    case 'prezent':
+      return 'reconfirmat';
+    case 'anulat':
+    case 'no_show':
+      return 'anulatAnterior';
+  }
+}
+
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const vreaJson = (request.headers.get('accept') ?? '').includes('application/json');
 
@@ -164,5 +185,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   const tinta = tintaPentruStatus(rezultat.status);
-  return vreaJson ? raspundeJson({ ok: true, redirect: tinta }) : raspundeRedirect(tinta);
+  return vreaJson
+    ? raspundeJson({ ok: true, redirect: tinta, stare: stareaPentruClient(rezultat.status) })
+    : raspundeRedirect(tinta);
 };

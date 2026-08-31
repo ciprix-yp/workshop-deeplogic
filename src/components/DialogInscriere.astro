@@ -1,0 +1,647 @@
+---
+import { ctaFinal, CTA, stari } from '../content/copy';
+import { BLOCURI, BIFE, SURSA_CONDITIONAL } from '../content/form-schema';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
+
+/** Sursele care deschid un câmp suplimentar, serializate pentru scriptul de pe client. */
+const conditionale = JSON.stringify(SURSA_CONDITIONAL);
+
+/**
+ * Cele patru stări posibile după un submit reușit (vezi `stareaPentruClient`
+ * în src/pages/api/register.ts) — trimise la client ca să randeze confirmarea
+ * ÎN dialog, fără navigare. `/multumesc`/`/lista-asteptare` rămân ținta reală
+ * pentru submit-ul nativ (JS oprit/eșuat) — regula B2 nu se atinge, POST-ul
+ * mută starea exact ca înainte, doar prezentarea diferă pentru clientul cu JS.
+ */
+const stariClient = JSON.stringify({
+  inscris: stari.inscris,
+  asteptare: stari.asteptare,
+  reconfirmat: stari.reconfirmat,
+  anulatAnterior: stari.anulatAnterior,
+});
+---
+
+{/*
+  Formularul, într-un `<dialog>` — nu o secțiune în flux.
+
+  `open` ca atribut static, în HTML-ul randat pe server: fără JS, dialogul se
+  comportă ca un bloc normal, în flux, exact unde e plasat în DOM — un
+  formular funcțional, accesibil prin ancora `#inscriere`, POST nativ către
+  /api/register. Cu JS activ, scriptul de mai jos apelează `.close()`
+  SINCRON, înainte de primul paint (același contract ca `.js-reveal` din
+  Base.astro) — nu există cadru intermediar în care dialogul apare deschis,
+  apoi dispare. CTA-urile (Cta.astro, `href="#inscriere"`) rămân neschimbate:
+  scriptul le interceptează global și cheamă `.showModal()` în loc să lase
+  browserul să sară la ancoră.
+*/}
+<dialog id="inscriere" class="dialog-inscriere" aria-labelledby="dialog-titlu" open>
+  <button type="button" class="inchide" data-inchide aria-label="Închide fereastra">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+    </svg>
+  </button>
+
+  <div class="continut">
+    <h2 id="dialog-titlu">{ctaFinal.h2}</h2>
+
+    <div data-pas="formular">
+      <p class="corp">{ctaFinal.corp}</p>
+      <p class="meta">{ctaFinal.meta}</p>
+
+      <form id="form-inscriere" method="POST" action="/api/register" novalidate data-el="formular">
+        {BLOCURI.map((bloc) => (
+          <fieldset class="bloc">
+            {bloc.titlu && (
+              <legend>
+                <span class="legend-titlu">{bloc.titlu}</span>
+                {bloc.intro && <span class="legend-intro">{bloc.intro}</span>}
+              </legend>
+            )}
+
+            {bloc.campuri.map((camp) => (
+              <div class:list={['camp', `tip-${camp.tip}`]} data-camp={camp.id}>
+                {camp.tip === 'radio' ? (
+                  <fieldset class="grup-radio">
+                    <legend class="eticheta">{camp.label}</legend>
+                    <div class="optiuni">
+                      {camp.optiuni?.map((op) => (
+                        <label class="optiune">
+                          <input
+                            type="radio"
+                            name={camp.id}
+                            value={op}
+                            required={camp.obligatoriu}
+                            aria-describedby={`${camp.id}-eroare`}
+                          />
+                          <span>{op}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <p class="eroare" id={`${camp.id}-eroare`} role="alert" aria-live="polite"></p>
+                  </fieldset>
+                ) : (
+                  <>
+                    <label class="eticheta" for={camp.id}>{camp.label}</label>
+                    {camp.microcopy && (
+                      <p class="microcopy" id={`${camp.id}-ajutor`}>{camp.microcopy}</p>
+                    )}
+
+                    {camp.tip === 'textarea' ? (
+                      <textarea
+                        id={camp.id}
+                        name={camp.id}
+                        rows="3"
+                        required={camp.obligatoriu}
+                        placeholder={camp.placeholder}
+                        aria-describedby={`${camp.id}-eroare${camp.microcopy ? ` ${camp.id}-ajutor` : ''}`}
+                      ></textarea>
+                    ) : camp.tip === 'select' ? (
+                      <select
+                        id={camp.id}
+                        name={camp.id}
+                        required={camp.obligatoriu}
+                        aria-describedby={`${camp.id}-eroare`}
+                      >
+                        <option value="">Alege…</option>
+                        {camp.optiuni?.map((op) => <option value={op}>{op}</option>)}
+                      </select>
+                    ) : (
+                      <input
+                        type={camp.tip}
+                        id={camp.id}
+                        name={camp.id}
+                        required={camp.obligatoriu}
+                        autocomplete={camp.autocomplete}
+                        placeholder={camp.placeholder}
+                        aria-describedby={`${camp.id}-eroare${camp.microcopy ? ` ${camp.id}-ajutor` : ''}`}
+                      />
+                    )}
+
+                    <p class="eroare" id={`${camp.id}-eroare`} role="alert" aria-live="polite"></p>
+                  </>
+                )}
+              </div>
+            ))}
+
+            {bloc.id === 'cine' && (
+              <div class="camp tip-text" id="camp-sursa-detaliu" hidden>
+                <label class="eticheta" for="sursa_detaliu" id="eticheta-sursa-detaliu">De la cine?</label>
+                <input type="text" id="sursa_detaliu" name="sursa_detaliu"
+                       aria-describedby="sursa_detaliu-eroare" />
+                <p class="eroare" id="sursa_detaliu-eroare" role="alert" aria-live="polite"></p>
+              </div>
+            )}
+          </fieldset>
+        ))}
+
+        <div class="bife">
+          <label class="bifa">
+            <input type="checkbox" name={BIFE.consimtamant.id} value="true" required
+                   aria-describedby="consimtamant-eroare consimtamant-politica" />
+            <span>{BIFE.consimtamant.label}</span>
+          </label>
+          <p class="link-politica" id="consimtamant-politica">
+            <a href={BIFE.consimtamant.linkPolitica.href} target="_blank" rel="noopener">
+              {BIFE.consimtamant.linkPolitica.text}
+            </a>
+          </p>
+          <p class="eroare" id="consimtamant-eroare" role="alert" aria-live="polite"></p>
+
+          <label class="bifa">
+            <input type="checkbox" name={BIFE.discutie.id} value="true" />
+            <span>
+              {BIFE.discutie.label}
+              <span class="microcopy">{BIFE.discutie.microcopy}</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="turnstile-invelis">
+          <div class="cf-turnstile" data-sitekey={siteKey} data-language="ro" data-theme="light"></div>
+          <p class="eroare" id="turnstile-eroare" role="alert" aria-live="polite"></p>
+        </div>
+
+        <div class="trimite">
+          <button type="submit" class="cta-submit">{CTA.text}</button>
+          <p class="microcopy sub-cta">{ctaFinal.microcopy}</p>
+        </div>
+
+        {/* Rezultatul, când JS-ul e activ și submit-ul EȘUEAZĂ. Confirmarea de
+            succes trăiește în `[data-pas="confirmare"]`, nu aici. Fără JS,
+            API-ul face redirect. */}
+        <div id="rezultat" class="rezultat" role="status" aria-live="polite" hidden></div>
+      </form>
+    </div>
+
+    <div data-pas="confirmare" hidden>
+      <div data-confirmare-corp class="confirmare-corp"></div>
+      <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
+    </div>
+  </div>
+</dialog>
+
+{/*
+  Fără `integrity` — deliberat, nu din omisiune (vezi comentariul original,
+  S16Inscriere.astro/git history). Cloudflare publică `api.js` fără
+  versionare și îl actualizează continuu; documentația lor spune explicit
+  să NU se folosească SRI pe el, pentru că un hash fix ar rupe widget-ul la
+  prima actualizare de partea lor. Riscul rezidual e limitat: validarea
+  reală se face pe server, unde tokenul e verificat împotriva API-ului
+  Cloudflare — un script compromis ar produce cel mult tokeni invalizi, nu
+  ar ocoli verificarea.
+*/}
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script is:inline define:vars={{ conditionale, stariClient }}>
+  (() => {
+    const dialog = document.getElementById('inscriere');
+    const form = document.getElementById('form-inscriere');
+    if (!dialog || !form) return;
+
+    const STARI = JSON.parse(stariClient);
+    const COND = JSON.parse(conditionale);
+
+    // ── No-JS → JS: normalizează starea înainte de primul paint ───────────
+    // Fără asta, dialogul (randat `open` pentru clientul fără JS) ar apărea
+    // o clipă ca bloc inline, apoi ar „sări" la închis — exact fereastra de
+    // FOUC pe care restul scripturilor din proiect o evită prin poziționare.
+    dialog.close();
+
+    function deschide() {
+      dialog.showModal();
+    }
+    function inchide() {
+      dialog.close();
+    }
+
+    // Orice link către #inscriere (CTA.astro, repetat de 4 ori pe pagină)
+    // deschide dialogul în loc să sară la ancoră.
+    document.addEventListener('click', (ev) => {
+      const link = ev.target.closest?.('a[href="#inscriere"]');
+      if (!link) return;
+      ev.preventDefault();
+      deschide();
+    });
+
+    dialog.querySelector('[data-inchide]')?.addEventListener('click', inchide);
+
+    // Click pe `::backdrop` — singurul caz în care `event.target` e chiar
+    // `<dialog>`, nu un descendent (conținutul e într-un `<div>` interior).
+    dialog.addEventListener('click', (ev) => {
+      if (ev.target === dialog) inchide();
+    });
+    // ESC e nativ (`<dialog>` emite `cancel` apoi `close`) — nimic de scris.
+
+    // ── Câmpul condiționat „De la cine?" ───────────────────────────────────
+    const sursa = form.querySelector('#sursa');
+    const wrapDetaliu = document.getElementById('camp-sursa-detaliu');
+    const etichetaDetaliu = document.getElementById('eticheta-sursa-detaliu');
+    const inputDetaliu = document.getElementById('sursa_detaliu');
+
+    function actualizeazaDetaliu() {
+      const cerut = COND[sursa?.value ?? ''];
+      if (cerut) {
+        etichetaDetaliu.textContent = cerut;
+        wrapDetaliu.hidden = false;
+        inputDetaliu.required = true;
+      } else {
+        wrapDetaliu.hidden = true;
+        inputDetaliu.required = false;
+        inputDetaliu.value = '';
+      }
+    }
+    sursa?.addEventListener('change', actualizeazaDetaliu);
+    actualizeazaDetaliu();
+
+    function stergeErori() {
+      form.querySelectorAll('.eroare').forEach((e) => (e.textContent = ''));
+      form.querySelectorAll('[aria-invalid]').forEach((e) => e.removeAttribute('aria-invalid'));
+    }
+
+    function arataErori(erori) {
+      let primul = null;
+      for (const [camp, mesaj] of Object.entries(erori)) {
+        const tinta = document.getElementById(`${camp}-eroare`);
+        if (tinta) tinta.textContent = mesaj;
+        const control = form.querySelector(`[name="${camp}"]`);
+        if (control) {
+          control.setAttribute('aria-invalid', 'true');
+          if (!primul) primul = control;
+        }
+      }
+      if (primul) {
+        primul.focus({ preventScroll: true });
+        primul.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // ── Confirmarea, ÎN dialog — nu navigare ───────────────────────────────
+    const pasFormular = dialog.querySelector('[data-pas="formular"]');
+    const pasConfirmare = dialog.querySelector('[data-pas="confirmare"]');
+    const titluDialog = document.getElementById('dialog-titlu');
+    const confirmareCorp = dialog.querySelector('[data-confirmare-corp]');
+
+    function arataConfirmarea(stare) {
+      const continut = STARI[stare] ?? STARI.inscris;
+      titluDialog.textContent = continut.titlu;
+      confirmareCorp.replaceChildren(
+        ...continut.corp.map((p) => {
+          const el = document.createElement('p');
+          el.textContent = p;
+          return el;
+        }),
+      );
+      pasFormular.hidden = true;
+      pasConfirmare.hidden = false;
+      // Mutare de focus pe titlu — cine navighează cu tastatura/cititor de
+      // ecran trebuie să afle imediat ce s-a întâmplat, nu doar să vadă.
+      titluDialog.setAttribute('tabindex', '-1');
+      titluDialog.focus();
+    }
+
+    const buton = form.querySelector('.cta-submit');
+    const textInitial = buton.textContent;
+    const rezultat = document.getElementById('rezultat');
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      stergeErori();
+      buton.disabled = true;
+      buton.textContent = 'Se trimite…';
+
+      try {
+        const r = await fetch('/api/register', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const date = await r.json();
+
+        if (date.ok) {
+          arataConfirmarea(date.stare);
+          return;
+        }
+
+        if (date.erori) arataErori(date.erori);
+        else {
+          rezultat.hidden = false;
+          rezultat.textContent = date.mesaj ?? 'Ceva s-a rupt. Încearcă din nou.';
+        }
+        if (window.turnstile) window.turnstile.reset();
+      } catch {
+        rezultat.hidden = false;
+        rezultat.textContent =
+          'N-am putut trimite. Verifică conexiunea și încearcă din nou.';
+        if (window.turnstile) window.turnstile.reset();
+      } finally {
+        buton.disabled = false;
+        buton.textContent = textInitial;
+      }
+    });
+  })();
+</script>
+
+<style>
+  .dialog-inscriere {
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-lg);
+    max-width: min(40rem, calc(100vw - 2 * var(--lat)));
+    width: 100%;
+    max-height: min(90dvh, 52rem);
+    box-shadow: 0 24px 64px -16px rgba(27, 36, 38, 0.35);
+  }
+
+  /* Fără JS: `open` static, fără `showModal()` — dialogul e un bloc normal,
+     în flux, nu o fereastră plutitoare. Lățimea/înălțimea de mai sus rămân
+     nefolosite (nu contează în flux), dar `::backdrop` nu există niciodată
+     în cazul ăsta — nimic de dezactivat separat. */
+  .dialog-inscriere::backdrop {
+    background: rgba(27, 36, 38, 0.55);
+  }
+
+  .continut {
+    max-height: min(90dvh, 52rem);
+    overflow-y: auto;
+    padding: var(--sp-xl) var(--sp-lg) var(--sp-lg);
+  }
+
+  @media (min-width: 40rem) {
+    .continut {
+      padding: var(--sp-xl);
+    }
+  }
+
+  .inchide {
+    position: sticky;
+    float: right;
+    top: var(--sp-sm);
+    margin: var(--sp-sm) var(--sp-sm) 0 0;
+    /* deasupra conținutului scrolabil */
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: var(--touch);
+    height: var(--touch);
+    border: none;
+    border-radius: 999px;
+    background: var(--bg-secundar);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .inchide:hover,
+  .inchide:focus-visible {
+    background: rgba(47, 79, 79, 0.2);
+  }
+
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+    max-width: 34ch;
+  }
+
+  h2:focus-visible {
+    outline: none;
+  }
+
+  .corp {
+    font-size: var(--t-corp-lg);
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    color: var(--secundar);
+    margin-top: var(--sp-md);
+    margin-bottom: var(--sp-xl);
+  }
+
+  form {
+    display: grid;
+    gap: var(--sp-xl);
+  }
+
+  fieldset.bloc {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-md);
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: var(--sp-xs);
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .legend-titlu {
+    font-family: var(--font-titlu);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .legend-intro {
+    font-size: var(--t-corp);
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+    max-width: 46ch;
+  }
+
+  .camp {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .eticheta {
+    font-weight: 600;
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+  }
+
+  .microcopy {
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+
+  input[type='text'],
+  input[type='email'],
+  textarea,
+  select {
+    width: 100%;
+    font: inherit;
+    font-size: max(1rem, var(--t-corp));
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid rgba(47, 79, 79, 0.35);
+    border-radius: var(--radius);
+    padding: var(--sp-sm);
+    min-height: var(--touch);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 5.5rem;
+    line-height: var(--lh-normal);
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    border-color: var(--accent);
+  }
+
+  [aria-invalid='true'] {
+    border-color: var(--eroare);
+  }
+
+  .grup-radio {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-xs);
+  }
+
+  .optiuni {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  @media (min-width: 34rem) {
+    .optiuni {
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+  }
+
+  .optiune,
+  .bifa {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-xs);
+    align-items: start;
+    padding-block: var(--sp-2xs);
+    min-height: var(--touch);
+    align-content: center;
+    cursor: pointer;
+    line-height: var(--lh-normal);
+  }
+
+  .optiune input,
+  .bifa input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15em;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .bife {
+    display: grid;
+    gap: var(--sp-sm);
+    padding: var(--sp-md);
+    background: var(--bg-secundar);
+    --text-muted: var(--text-muted-pe-secundar);
+    border-radius: var(--radius-lg);
+  }
+
+  .bifa .microcopy {
+    display: block;
+    margin-top: 0.1em;
+  }
+
+  .link-politica {
+    margin-inline-start: calc(1.15rem + var(--sp-xs));
+    margin-top: calc(-1 * var(--sp-xs));
+    font-size: var(--t-eyebrow);
+  }
+
+  .link-politica a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch);
+    color: var(--accent);
+  }
+
+  .eroare {
+    color: var(--eroare);
+    font-size: var(--t-eyebrow);
+    line-height: var(--lh-normal);
+    min-height: 0;
+  }
+
+  .eroare:empty {
+    display: none;
+  }
+
+  .trimite {
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .cta-submit {
+    font-family: var(--font-titlu);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: var(--sp-md) var(--sp-xl);
+    min-height: var(--touch);
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.15s ease;
+  }
+
+  @media (min-width: 40rem) {
+    .cta-submit {
+      width: auto;
+      justify-self: start;
+    }
+  }
+
+  .cta-submit:hover:not(:disabled),
+  .cta-submit:focus-visible:not(:disabled) {
+    background: var(--accent-hover);
+  }
+
+  .cta-submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .sub-cta {
+    max-width: 52ch;
+  }
+
+  .rezultat {
+    padding: var(--sp-md);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secundar);
+    --text-muted: var(--text-muted-pe-secundar);
+    color: var(--eroare);
+    font-weight: 600;
+  }
+
+  .confirmare-corp {
+    display: grid;
+    gap: var(--sp-sm);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .confirmare-corp p {
+    line-height: var(--lh-lejer);
+    color: var(--secundar);
+  }
+
+  .inapoi {
+    font-weight: 600;
+    color: var(--accent);
+  }
+</style>
