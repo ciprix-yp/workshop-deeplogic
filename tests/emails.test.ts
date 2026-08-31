@@ -17,6 +17,7 @@ import {
   email5Waitlisted,
   email6SeatFreed,
   email7Leftover,
+  email8RetentieDate,
 } from '../src/emails/templates';
 
 const P = {
@@ -163,5 +164,54 @@ describe('diacritice — virgulă, nu sedilă', () => {
     for (const e of TOATE) {
       expect(e.text.match(/[şţŞŢ]/g), `în: ${e.subject}`).toBeNull();
     }
+  });
+});
+
+/* ── Email 8 — aprobat 28 august 2026, testat separat de cele 7 ──────────
+ * Deliberat NEinclus în `TOATE`: acel array e folosit peste tot mai sus ca
+ * „cele 7", inclusiv în titluri de describe() — amestecarea lui acolo ar
+ * cere redenumit șase blocuri de test pentru zero câștig de acoperire, de
+ * vreme ce are deja propriul set complet de asertiuni mai jos.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+describe('email 8 — retenție date la 1 an', () => {
+  const linkReconfirmare = 'https://workshop.deeplogic.ro/pastreaza-datele?token=abc';
+  const e8 = email8RetentieDate({ nume: P.nume, linkReconfirmare });
+
+  it('se randează complet', () => {
+    expect(e8.subject.length).toBeGreaterThan(5);
+    expect(e8.text.length).toBeGreaterThan(20);
+    expect(e8.html).toContain('<!doctype html>');
+  });
+
+  it('subiect fără cuvinte care declanșează filtre de spam', () => {
+    expect(e8.subject).toBe('Vrei să-ți păstrez datele de contact?');
+    expect(e8.subject).not.toMatch(/urgent|gratuit|garantat|!|\$/i);
+  });
+
+  it('conține linkul de reconfirmare și fereastra de răspuns', () => {
+    expect(e8.text).toContain(linkReconfirmare);
+    expect(e8.text).toMatch(/30 de zile/);
+  });
+
+  it('semnătura și subsolul comun — aceleași ca la cele 7 aprobate', () => {
+    expect(e8.text).toContain('Ciprian Micu - Deep Logic');
+    expect(e8.text).toContain('Deep Logic · Satu Mare, România');
+  });
+
+  it('HTML din nume e scăpat, la fel ca la celelalte 7', () => {
+    const rauVoitor = email8RetentieDate({ nume: '<img src=x onerror=alert(1)>', linkReconfirmare });
+    expect(rauVoitor.html).not.toContain('<img src=x onerror=alert(1)>');
+  });
+
+  it('fără preț, urgență fabricată sau cifre de piață — aceleași invarianți ca pagina', () => {
+    const tot = e8.subject + '\n' + e8.text;
+    expect(tot).not.toMatch(/\blei\b/i);
+    expect(tot).not.toMatch(/€|\$/);
+    expect(tot).not.toMatch(/ultima șansă|grăbește-te/i);
+  });
+
+  it('fără ş/ţ cu sedilă', () => {
+    expect(e8.text.match(/[şţŞŢ]/g)).toBeNull();
   });
 });

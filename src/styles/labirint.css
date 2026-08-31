@@ -1,0 +1,256 @@
+/*
+ * labirint.css — placa (v5) și tot ce ține de materializarea ei.
+ *
+ * Fișier separat de `tokens.css` deliberat: `scripts/lint-decor.mjs` îl
+ * verifică integral, regulă cu regulă, și pică build-ul dacă vreun selector
+ * care setează `opacity`, `transform`, `clip-path`, `mask`, `filter`,
+ * `visibility` sau `display` se poate potrivi pe un element din afara
+ * mulțimii decorative. Ca să poată fi verificat mecanic, trebuie să fie
+ * delimitat mecanic.
+ *
+ * ══ Constrângerea 1: conținutul nu depinde de animație ═══════════════════
+ *
+ * `.sticla` din v4 era UN element care purta și suprafața, și textul. În v5
+ * se sparge în doi frați:
+ *
+ *   .placa                      ← wrapper; primește DOAR tilt-ul (pointer)
+ *     .sticla-chrome            ← tentă, muchie, specular, umbră. SE ANIMĂ.
+ *     .continut                 ← textul. ZERO proprietăți animate. Niciodată.
+ *
+ * Nu „textul nu dispare" — textul nu e țintă de animație deloc. Nu e scalat
+ * (deci nici nu se re-rasterizează la scări fracționare, ceea ce e și un
+ * câștig de calitate), nu e mascat, nu e clipat, nu i se atinge opacitatea.
+ *
+ * Și, mai important decât separarea: **valoarea implicită CSS a fiecărei
+ * variabile de progres e starea SOSITĂ.** `scale(var(--pc-s, 1))`,
+ * `opacity: var(--pc-o, 1)`. Fără JS, cu JS căzut, cu JS blocat de browserul
+ * in-app din WhatsApp — fiecare placă e la scale 1, opacitate 1. Starea
+ * „neajunsă" nu EXISTĂ în CSS; poate fi doar scrisă de JS. E inversul exact
+ * al pattern-ului periculos, și e aceeași lecție pe care `tokens.css` o are
+ * deja scrisă pentru `.js-reveal`, dusă un pas mai departe: aici nici măcar
+ * clasa de pe `<html>` nu e necesară.
+ *
+ * ══ Ce s-a schimbat față de brief, cu motivul măsurat ════════════════════
+ *
+ * Brief §6.3 cere `opacity: 0.30 + 0.70·e` pe `.sticla-chrome`, iar §8.1
+ * afirmă că tentele 0.82 / 0.88 rămân valide. Ambele produc text ilizibil, și
+ * nu marginal:
+ *
+ *   1. Tenta translucidă + subiectul. Brief §8.3 calculează subiectul (α 0.32)
+ *      DIRECT peste fundalul registrului — dar subiectul circulă pe coridor,
+ *      adică e mereu peste o linie de labirint (α 0.25). Compus, α efectivă e
+ *      1 − (1−0.25)(1−0.32) = **0.49**, nu 0.32. Sub tenta 0.82, `--text-muted`
+ *      `#637474` cade la **4.45:1**. Pică AA.
+ *   2. Rampa de opacitate. La `--pc-o` = 0.30, textul (care rămâne opac, prin
+ *      constrângerea 1) stă peste o placă transparentă în proporție de 70%:
+ *      `--text-muted` ajunge la **3.2:1**. Ca să treacă AA, podeaua ar trebui
+ *      urcată la 0.86 — adică rampa n-ar mai fi vizibilă.
+ *
+ * Rezolvarea, care satisface și cerința userului („cardurile deschise să se
+ * citească clar ca plăci"), și gate-ul:
+ *
+ *   · Pe registrele DESCHISE placa e **opacă** (α = 1). Pierdem înmuierea a
+ *     ceva care era la 3% delta de luminanță — invizibil, per calculul din
+ *     brief §8.1. Câștigăm: toate perechile de contrast de pe registrele
+ *     deschise colapsează pe perechile PLATE deja verificate, iar subiectul
+ *     poate rămâne la 0.32.
+ *   · Translucența ȘI `backdrop-filter` rămân exact acolo unde brief-ul le
+ *     justifică prin măsurătoare: **registrul închis**, unde o linie sub tenta
+ *     0.70 dă 1.59:1 — vizibil, și acolo blurul chiar are ce înmuia.
+ *   · Rampa de `--pc-o` se mută de pe umplere pe **definiție** (muchie +
+ *     umbră + specular, în pseudo-elemente). Umplerea rămâne opacă tot timpul,
+ *     deci textul are întotdeauna contrastul plat. Ce se materializează e
+ *     conturul plăcii — care e chiar lucrul pe care ochiul îl citește ca
+ *     „placa a sosit".
+ */
+
+/* ── Wrapper-ul: doar tilt ────────────────────────────────────────────────
+   `data-tilt="card"` s-a mutat aici de pe `.continut.sticla` (v4). Wrapper-ul
+   înclină ambele straturi împreună; `.sticla-chrome` își păstrează scale-ul
+   propriu, pe alt element, deci cele două nu se bat pe `transform`. */
+.placa {
+  position: relative;
+  /* Deasupra labirintului (1) și a subiectului (2). Vezi Labirint.astro. */
+  z-index: 3;
+  margin-inline: auto;
+  width: 100%;
+  /*
+   * FĂRĂ `max-height: 84%`, deși brief-ul îl cere ca plafon. Regula benzii
+   * trăiește deja în padding-ul cardului (`--banda-sus` / `--banda-jos`,
+   * Sectiune.astro), care o garantează prin construcție. Un `max-height`
+   * peste ea ar fi fost activ EXACT în cazul pe care nu-l acoperă: un card cu
+   * conținut mai lung decât cardul. Acolo cutia s-ar fi oprit la 84%, iar
+   * textul ar fi curs vizibil în afara plăcii — cromul e `inset: 0` pe o cutie
+   * care nu mai acoperă conținutul. Comportamentul corect e cel existent:
+   * placa crește, cardul derulează intern (`overflow-y: auto`, permanent), iar
+   * banda rămâne vizibilă la începutul cardului.
+   */
+}
+
+/* ── Cromul: singura suprafață care se animă ──────────────────────────────
+   Element-FRUNZĂ, fără copii. Nu e o preferință de structură: `--pc-s` și
+   `--pc-o` se scriu pe el la fiecare cadru, iar scrierea unei proprietăți
+   custom invalidează stilul întregului subarbore. Pe `<section>` ar fi
+   însemnat ~50 de elemente de text × 16 carduri, de 60 de ori pe secundă. Pe
+   o frunză, scope-ul de invalidare e un element. */
+.sticla-chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--sticla-radius);
+  background: var(--bg-registru, var(--bg));
+  transform: scale(var(--pc-s, 1));
+  /*
+   * Originea creșterii = poziția checkpointului cardului. `--org-x` e scris o
+   * dată de controller din tabelul de coloane (11 poziții distincte pe 16
+   * carduri; cele 4 CTA împart deliberat centrul). `--org-y` e constant: în
+   * modelul de bandă derulantă, checkpointul e la 9.4% din înălțimea
+   * ecranului la fiecare oprire, adică imediat DEASUPRA marginii de sus a
+   * plăcii — de unde valoarea negativă.
+   */
+  transform-origin: var(--org-x, 50%) var(--org-y, -5%);
+  pointer-events: none;
+  /* FĂRĂ `transition` pe `transform`/`opacity`. Niciodată. Un `transition:
+     transform 220ms` pe un element care primește `transform` în fiecare cadru
+     e o dublă interpolare: întârziere vizibilă și „elastic" exact la
+     inversarea gestului. Tilt-ul își păstrează tranziția — dar e pe alt
+     element (`.placa`). */
+}
+
+/*
+ * Muchia + umbra — „definiția" plăcii. Ele se materializează, nu umplerea.
+ *
+ * Muchia e VIZIBILĂ, nu sugerată: în v4 era `color-mix(--bg-registru 55%,
+ * transparent)`, adică alb 55% peste alb pe registrul primar — literalmente
+ * invizibilă. Verificat live la 390×844: 11 din 16 carduri nu se citeau deloc
+ * ca plăci. Acum e o linie de contrast, nu o linie de aceeași culoare.
+ */
+.sticla-chrome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--muchie, rgba(42, 52, 57, 0.16));
+  box-shadow:
+    0 1px 2px rgba(27, 36, 38, 0.05),
+    0 3px 8px -2px rgba(27, 36, 38, 0.07),
+    0 26px 50px -26px rgba(27, 36, 38, 0.38);
+  opacity: var(--pc-o, 1);
+}
+
+/* Highlight specular — o singură linie de 1px sus, semnătura „liquid glass",
+   păstrată din v4. Pe registrul primar (alb) e un no-op vizual; pe secundar și
+   pe închis desenează muchia. E și ținta primei bătăi din licărire. */
+.sticla-chrome::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  transform-origin: top;
+  border-radius: var(--sticla-radius) var(--sticla-radius) 0 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--specular, rgba(255, 255, 255, 0.7)) 50%,
+    transparent
+  );
+  opacity: var(--pc-o, 1);
+}
+
+/* ── Registrul închis: singurul loc unde sticla rămâne sticlă ─────────────
+   Tenta translucidă și `backdrop-filter` se aplică DOAR pe cardul activ ȘI
+   pe registrul închis. `.camp-activ` (max 3 carduri din 16) rămâne plafonul
+   unic de cost, comutat de același controller. `color-mix` nesuportat →
+   declarația e invalidă și se cade automat pe `background`-ul opac de mai
+   sus: degradare gratuită, fără `@supports`. */
+[data-card].camp-activ[data-fundal='inchis'] .sticla-chrome {
+  background: color-mix(in srgb, var(--bg-registru, var(--bg)) var(--sticla-alpha), transparent);
+  -webkit-backdrop-filter: blur(var(--sticla-raza)) saturate(115%);
+  backdrop-filter: blur(var(--sticla-raza)) saturate(115%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-card].camp-activ[data-fundal='inchis'] .sticla-chrome {
+    background: var(--bg-registru, var(--bg));
+  }
+}
+
+/* ── Licărirea — singura animație NEscrubată din tot sistemul ─────────────
+ *
+ * „Licărire statică", reinterpretată explicit (D28). Varianta literală — o
+ * pâlpâire de luminozitate pe toată placa — e greșită din trei motive
+ * independente: (1) o schimbare mare de luminanță pe >25% din aria de 10° a
+ * viewportului e risc de fotosensibilitate WCAG 2.3.1, iar o placă de ecran
+ * plin e exact acel caz; (2) o pâlpâire e un EVENIMENT, nu o stare — legată de
+ * progresul de scroll, stroboscopează la tremuratul degetului; (3) un flash alb
+ * pe card e cel mai rapid mod de a face pagina să arate ieftin.
+ *
+ * În loc: o descărcare pe MUCHIE. Două bătăi, 190ms, sub 2% din suprafața
+ * plăcii — sub pragul de 25% din WCAG 2.3.1, deci regulile de flash nu sunt
+ * structural angajate. Citește ca un tub fluorescent care se aprinde: două
+ * ezitări, apoi lumină stabilă.
+ *
+ * Nu atinge `opacity` pe niciunul din cele două pseudo-elemente, deliberat:
+ * `opacity` e deja legată de `--pc-o`, iar o animație care se termină ar fi
+ * produs un salt înapoi la valoarea scrubată. Bătaia 1 scalează linia
+ * speculară, bătaia 2 aprinde culoarea muchiei — ambele revin natural la
+ * valoarea de bază la sfârșitul animației.
+ */
+.sticla-chrome.licar::after {
+  animation: licar-specular 190ms steps(1, end) 1;
+}
+.sticla-chrome.licar::before {
+  animation: licar-muchie 190ms linear 1;
+}
+
+@keyframes licar-specular {
+  0% {
+    transform: scaleY(2);
+  }
+  47% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes licar-muchie {
+  0%,
+  68% {
+    border-color: var(--muchie, rgba(42, 52, 57, 0.16));
+  }
+  69%,
+  92% {
+    border-color: var(--muchie-aprins, rgba(42, 52, 57, 0.34));
+  }
+  100% {
+    border-color: var(--muchie, rgba(42, 52, 57, 0.16));
+  }
+}
+
+/* ── Conținutul ───────────────────────────────────────────────────────────
+   Nicio proprietate animată, nicio mască, niciun clip, niciun plafon de
+   înălțime. Regula asta e verificată mecanic de `scripts/lint-decor.mjs` și
+   în browser de `tests/e2e/labirint-continut.spec.ts`. */
+.placa > .continut {
+  position: relative;
+  z-index: 1;
+  padding: var(--pad-sticla);
+}
+
+/* ── Degradare ───────────────────────────────────────────────────────────
+   Sub `prefers-reduced-motion` controller-ul nu se instanțiază, deci `--pc-*`
+   nu se scriu niciodată și cascada cade pe valorile implicite = starea
+   sosită. Regulile de aici sunt centura de siguranță pentru cazul în care
+   cineva ar scrie totuși variabilele. */
+@media (prefers-reduced-motion: reduce) {
+  .sticla-chrome {
+    transform: none;
+  }
+  .sticla-chrome::before,
+  .sticla-chrome::after {
+    opacity: 1;
+    animation: none;
+  }
+}

@@ -307,6 +307,57 @@ export async function checkRateLimit(
   return data;
 }
 
+/* ── Retenția de 1 an (migrația 0006) ────────────────────────────────────────
+ * Vezi docs/DECIZII.md § „F9 — Politica de Confidențialitate": politica
+ * promitea această automatizare înainte să existe; acum e verificată de
+ * tests/db/retention.sql. Scop pe `contacts`, nu pe `event_registrations` —
+ * politica promite ștergerea datelor personale, care trăiesc pe contact.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export interface ContactScadentRetentie {
+  contact_id: string;
+  email: string;
+  nume: string;
+  retention_token: string;
+}
+
+/** Contactele cu 1 an de la ultima (re)confirmare, nenotificate încă în ciclul curent. */
+export async function gasesteContacteScadenteRetentie(): Promise<ContactScadentRetentie[]> {
+  const { data, error } = await supabaseAdmin().rpc('find_contacts_due_for_retention_notice');
+  if (error) throw new SupabaseRpcError('find_contacts_due_for_retention_notice', error);
+  return data ?? [];
+}
+
+export async function marcheazaNotificareRetentieTrimisa(contactId: string): Promise<void> {
+  const { error } = await supabaseAdmin().rpc('mark_retention_notice_sent', {
+    p_contact_id: contactId,
+  });
+  if (error) throw new SupabaseRpcError('mark_retention_notice_sent', error);
+}
+
+export type ReconfirmaRetentieRezultat = 'reconfirmat' | 'invalid';
+
+/** Link din emailul de retenție — repornește ceasul de 1 an de la momentul apelului. */
+export async function reconfirmaRetentie(token: string): Promise<ReconfirmaRetentieRezultat> {
+  const { data, error } = await supabaseAdmin()
+    .rpc('reconfirm_retention', { p_token: token })
+    .single<ReconfirmaRetentieRezultat>();
+
+  if (error) throw new SupabaseRpcError('reconfirm_retention', error);
+  return data;
+}
+
+/**
+ * Șterge contactele notificate de peste 30 de zile fără reconfirmare.
+ * Întoarce DOAR un număr — jurnalul unui job care șterge date personale n-are
+ * voie să rețină exact ce a șters.
+ */
+export async function curataRetentieExpirata(): Promise<number> {
+  const { data, error } = await supabaseAdmin().rpc('purge_expired_retention').single<number>();
+  if (error) throw new SupabaseRpcError('purge_expired_retention', error);
+  return data;
+}
+
 /* ── Eroare tipată ───────────────────────────────────────────────────────── */
 
 /**

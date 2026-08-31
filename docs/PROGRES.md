@@ -74,8 +74,50 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 - [x] `tests/e2e/formular.spec.ts` — **16/16** pe mobil-360 și desktop
 - [x] `astro check` — 0 erori, 0 avertismente, 0 sugestii
 - [x] Build: 68 KB HTML cu CSS inline
-- [ ] **OG image 1200×630, sub 300KB (B5)** — referențiat în `copy.ts`, fișierul lipsește
-- [ ] Foto `public/ciprian-micu.jpg` — §11 rulează text-only până apare
+- [x] **OG image 1200×630, sub 300KB (B5)** — construit, vezi „Gate-urile OG, B2, .ics"
+- [x] Foto `public/ciprian-micu.jpg` — reală, la un eveniment, primită de la Ciprian
+      (28 august 2026). Rotată automat (EXIF orientation 8), decupată 4:5 cu
+      detecție de atenție (libvips), 880×1100, 94KB. §11 randează complet acum.
+
+### Design vizual — 3D și motion (28 august 2026, cerut explicit de Ciprian)
+
+Feedback inițial („sterilă, doar text, nimic grafic") rezolvat într-o primă trecere
+(fonturi, tokens, structură §01-§17). A doua cerere, separată: efect 3D pe fiecare
+secțiune/card + animații de scroll mai prezente. **Obiecție ridicată explicit înainte de
+implementare** (risc de performanță pe 4G/WhatsApp in-app, risc de clișeu „AI-generated" —
+tilt 3D universal e la fel de comun ca glassmorphism-ul), propusă o variantă calibrată.
+**Ciprian a ales explicit varianta cerută inițial**, nu cea recomandată — vezi
+`docs/DECIZII.md` § „Efecte 3D pe carduri și secțiuni" pentru argumentul complet.
+
+- [x] `tokens.css` — reveal-ul global (`data-reveal`) trecut de la `translateY(8px)` la
+      intrare cu perspectivă 3D reală (`perspective(900px) translateY(22px) rotateX(7deg)`)
+- [x] `data-reveal` extins la 13 din 17 secțiuni (S02-S15, minus S01 hero/S16 formular/S17
+      footer — excluse deliberat, vezi motivele în `DECIZII.md`)
+- [x] Tilt 3D interactiv (`data-tilt`, urmărește cursorul) pe cele două grile de carduri
+      reale — S09 (zonele de use-case) și S06 (blocurile numerotate, restilizate ca
+      oarde cu bordură+umbră ca să aibă unde să „poarte" efectul)
+- [x] **Capcană tehnică găsită și reparată înainte să ajungă pe ecran**: reveal (560ms) și
+      tilt (150ms) ar fi concurat pe `transform`/`transition` pe ACELAȘI element — regula
+      CSS mai specifică ar fi câștigat tot lanțul, iar tilt-ul ar fi devenit la fel de lent
+      ca intrarea. Fix: separate pe două elemente DOM (`.zona`/`.bloc` cu data-reveal,
+      `.zona-tilt`/`.bloc-tilt` cu data-tilt), nu prin trucuri de specificitate.
+- [x] **Al doilea bug găsit după raportarea lui Ciprian** („încă tot nu e acolo"): tilt-ul
+      era dezactivat deliberat pe touch (corect, ca să nu ceară `touchmove`+`preventDefault`
+      și să blocheze scroll-ul) — dar rezultatul practic era că efectul cerut explicit
+      era invizibil pe telefonul lui, dispozitivul de test. Fix: tilt scurt la
+      `touchstart`/`touchend` (`{ passive: true }`, nu blochează scroll-ul niciodată).
+- [x] Verificat cu evenimente touch REALE prin CDP (`Input.dispatchTouchEvent`), nu
+      `locator.tap()` — acela e prea rapid ca să prindă starea din timpul atingerii.
+- [x] `tests/e2e/motion.spec.ts` — 4 teste noi (tilt pe hover desktop, tilt pe touch,
+      revine curat la ieșire/ridicare deget) + toate cele 5 teste vechi tot verzi
+      (reduced-motion, fără JS, non-repetare la scroll înapoi)
+- [x] Trecere de critică vizuală, secțiune cu secțiune, la cererea lui Ciprian („vezi ai cu
+      front end designer ce se mai poate ajusta"): singurul gol vizual real identificat era
+      §11 fără fotografie — restul paginii e deliberat fără carduri (decizie originală de
+      design, nu omisiune), confirmat corect să rămână așa.
+- [x] Verificat: `npm run check` (0 erori/66 fișiere), 38/38 teste e2e (Playwright,
+      mobil-360 + desktop), 135/135 teste unitare, `npm run contrast` (18/18), build de
+      producție complet, screenshot-uri mobil 390px + desktop 1280px.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
@@ -201,7 +243,73 @@ Migrația 0005 înlocuiește cu `expire_if_unconfirmed(registration_id)`, per r�
 
 ## F9 — Legal
 
-- [ ] `/termeni`, `/confidentialitate` — draft de validat
+- [x] `/termeni`, `/confidentialitate` — construite din `legal/*.md` (texte deja redactate
+      de Ciprian, găsite în proiect, nu draft nou). Layout comun `src/layouts/Legal.astro`.
+- [x] Cross-check copy vs. cod, înainte de publicare — 4 mismatch-uri găsite și corectate în
+      `legal/Politica_de_Confidentialitate_DeepLogic.md`:
+      - §2.1 nu declara setul de 5 întrebări de calificare (Q1–Q5) pe care formularul chiar
+        le colectează — adăugat.
+      - §2.2 descria două bife opționale („marketing" + „newsletter") — formularul are UNA
+        singură (`vrea_discutie`, „Vreau o discuție"), și încă din F4 decizia fusese explicit
+        să evităm semnalul „urmează un apel de vânzare". Rescris ca să reflecte bifa reală.
+      - §2.4 declara WhatsApp ca și canal Deep Logic → participant — fals: formularul nu
+        colectează telefon, ciclul Inngest trimite exclusiv email. Corectat + eliminat
+        „WhatsApp Business" din tabelul de procesatori (§3), transferul internațional (§4) și
+        securitate (§8). WhatsApp rămâne documentat corect ca și canal de DISTRIBUIRE
+        peer-to-peer a linkului, nu de comunicare inițiată de Deep Logic.
+      - §5 declara la timpul prezent o „automatizare dedicată" de ștergere a datelor la
+        expirarea termenului de 1 an — verificat, nu exista în cod. Decizia lui Ciprian
+        (după ce i s-a semnalat): **construim automatizarea reală**, nu doar reformulăm
+        textul. Vezi „Retenția de 1 an — construită și verificată" mai jos. §5 a rămas la
+        timpul prezent, corect din nou, pentru că acum chiar e adevărat.
+      `Termeni_si_Conditii_DeepLogic.md` — o singură observație, nu corectată: §3 declară
+      „minimum 18 ani, confirmat prin înscriere", fără câmp sau bifă de vârstă în formular.
+      Formulare juridică standard (confirmare implicită prin actul înscrierii), nu o
+      contradicție tehnică precum celelalte — semnalată lui Ciprian, nu schimbată unilateral.
+- [x] Verificat: `npm run check` (0 erori/64 fișiere), `npm run build` (toate rutele
+      prerandate static compilează), `npm run contrast` (18/18 perechi peste prag), 0 erori
+      consolă Playwright pe /termeni + /confidentialitate la 360px și 1280px.
+- [x] Tabelul de procesatori (§3 confidențialitate) — verificat prin DOM, nu vizual: la
+      360px scrolează intern (`scrollWidth` 512 > `clientWidth` 319, `overflow-x: auto`),
+      iar `body.scrollWidth` rămâne egal cu viewport-ul — zero scroll orizontal pe pagină.
+
+### Retenția de 1 an — construită și verificată, nu doar reformulată
+
+Migrația `0006_retention.sql`: 3 coloane noi pe `contacts` (`retention_notice_sent_at`,
+`retention_reconfirmed_at`, `retention_token`) + 4 funcții atomice
+(`find_contacts_due_for_retention_notice`, `mark_retention_notice_sent`,
+`reconfirm_retention`, `purge_expired_retention`), toate cu `security definer` +
+`revoke ... from public, anon, authenticated`, exact tiparul din 0001. Scop pe `contacts`,
+nu pe `event_registrations` — politica promite ștergerea datelor personale, care trăiesc pe
+contact; `on delete cascade` ia cu el și înscrierile. **Limitare cunoscută, deliberat
+neadresată**: la un al doilea eveniment viitor, ștergerea unui contact ar lua cu ea și o
+înscriere recentă la evenimentul nou — arhitectura multi-eveniment e explicit în afara
+scopului (vezi „Ce a rămas deliberat în afara scopului").
+
+- [x] `src/inngest/functions/retention-sweep.ts` — cron zilnic, `TZ=Europe/Bucharest 0 9 * * *`,
+      nu event-triggered (spre deosebire de restul ciclului, legat de datele fixe ale
+      evenimentului — retenția n-are ancoră de calendar). Curăță expirații, apoi notifică
+      scadenții, un `step.run` per contact (idempotency key `email8/${contact_id}`).
+- [x] `GET /pastreaza-datele` + `POST /api/pastreaza-datele` — regula B2, identică cu
+      `/raspuns` și `/checkin`: GET doar randează, POST mută starea. Rate limiting propriu
+      (`pastreaza-datele`, 20/15min).
+- [x] Stare nouă `datePastrate` în `copy.ts` / `rezultat.astro`.
+- [x] `tests/db/retention.sql` — scadență, notificare-o-singură-dată, reconfirmare care
+      repornește ceasul, curățenie doar după fereastra de răspuns, cascadă către
+      înscrieri. Rulează în `tests/db/run.sh`, alături de restul suitei DB.
+- [x] `tests/emails.test.ts` — 7 teste noi pentru email 8, separate deliberat de `TOATE`
+      (array-ul „cele 7 aprobate"), ca distincția draft/aprobat să rămână vizibilă și în teste.
+- [x] **Verificat LIVE, pe proiectul Supabase real** (`mwmkggktwlxlrokbvgwx`), nu doar local:
+      migrația aplicată, `get_advisors` — doar cele 3 notice-uri INFO deja cunoscute, nimic
+      nou; contact de test cu `created_at` vechi de 400 de zile → apare corect ca scadent;
+      `POST /api/pastreaza-datele` cu tokenul lui, prin dev server real → `retention_reconfirmed_at`
+      setat, dispare din lista de scadenți; `purge_expired_retention()` șterge exact contactul
+      notificat acum 40 de zile, lasă neatinse cel reconfirmat și cel nenotificat.
+- [x] **Emailul 8 trimis real** prin Resend (`delivered@resend.dev`) — status confirmat
+      **„delivered"** (nu doar acceptat de API), conținut byte-identic cu ce randează codul.
+      **Aprobat de Ciprian pe 28 august 2026**, fără modificări — vezi `docs/EMAILURI.md` § Email 8.
+- [x] Toate datele de test șterse din Supabase după verificare — 0 contacte, 0 înscrieri
+      rămase în proiectul real.
 
 ## F10 — QA și code review
 
@@ -213,18 +321,35 @@ Migrația 0005 înlocuiește cu `expire_if_unconfirmed(registration_id)`, per r�
 
 ## Gates de lansare
 
-- [ ] `LEGAL` — Termeni + Confidențialitate publicate și linkate din bifă
+- [x] `LEGAL` — Termeni + Confidențialitate publicate și linkate din bifă (F9), inclusiv
+      automatizarea de retenție de 1 an promisă în §5, construită și verificată live — nu
+      mai e doar text. Politica de Confidențialitate corectată, confirmată de Ciprian
+      (28 august 2026). Emailul 8 aprobat, fără modificări (28 august 2026). **Gate complet.**
 - [x] `EMAIL` — SPF/DKIM/DMARC verzi + cele 4 emailuri din ciclul principal livrate real,
       cu succes, conținut verificat. Rămâne doar deschiderea vizuală pe Gmail mobil/Outlook
       (test cosmetic, nu funcțional).
-- [ ] `OG` — card randat corect pe un telefon real, prin WhatsApp
+- [x] `OG` — imaginea `public/og-workshop-16-09.png` (1200×630, 39.8KB, sub pragul de 300KB)
+      construită și livrată — nu mai lipsea doar textul, lipsea fișierul. Randată din
+      `src/pages/og-card.astro` (fonturile reale ale site-ului, nu o aproximare) prin
+      `scripts/genereaza-og.mjs` (Playwright, screenshot 1200×630). Verificat prin pixeli,
+      nu vizual: zero artefacte în fișierul final. Rămâne un singur pas, imposibil de făcut
+      din acest scaun: trimis efectiv pe WhatsApp către un telefon real, de către Ciprian.
 - [x] `CONCURENȚĂ` — 20/20 rulări, un singur câștigător; verificat că testul pică fără lock
 - [x] `B1` — complet: `debounce`+`singleton` pe `seat-freed.ts`, verificat live (no-show la
       cutoff → un singur `seat_freed` → broadcast).
-- [ ] `B2` — prefetch pe linkul de anulare nu schimbă nicio stare
+- [x] `B2` — verificat LIVE pe Supabase real: 5 cereri GET pe `/raspuns?...&r=nu` (inclusiv cu
+      user-agent Outlook Safe Links) → status neschimbat; `POST` ulterior → mută corect starea.
+      Aceeași verificare pe `/checkin`. Plus test automat de regresie,
+      `tests/e2e/b2-siguranta-get.spec.ts` (intercepție de rețea: zero cereri către rutele
+      API doar din încărcarea paginii), acoperă și `/pastreaza-datele`.
 - [x] `CONTRAST` — 13/13 perechi peste prag
 - [x] `DIACRITICE` — 221 caractere ș/ț cu virgulă randate corect pe toate cele 5 breakpoint-uri, 0 cu sedilă
-- [ ] `.ics` — 14:00 EEST în Google + Apple + Outlook
+- [x] `.ics` — RFC 5545 verificat de `tests/ics.test.ts` (12 teste: VTIMEZONE, TZID, regula
+      EU de schimbare a orei, line-folding). Cross-check independent cu `node-ical` (bibliotecă
+      terță, nu codul propriu care generează fișierul) pe `public/eveniment.ics` real: rezolvă
+      exact la 14:00 Europe/Bucharest = 11:00 UTC. Rămâne, ca și la OG, un pas de mână: import
+      real în Google/Apple/Outlook — solid acoperit programatic, dar nedeschis fizic în cele
+      trei aplicații.
 - [x] `COPY` — 49/49 invarianți trec
 
 ---
@@ -234,11 +359,22 @@ Migrația 0005 înlocuiește cu `expire_if_unconfirmed(registration_id)`, per r�
 Toate cele 5 credențiale sunt rezolvate (Resend, Cloudflare, Supabase, Turnstile, Inngest —
 vezi F0). Rămân doar assets și decizii de conținut:
 
-1. **Pagini legale** (D11) — singurul asset absent. Propun draft în F9.
-2. **Foto** `public/ciprian-micu.jpg` — reală, la lucru sau la un eveniment.
-3. **Review `docs/EMAILURI.md`** înainte să intre în cod.
-4. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.
-5. **`ALERT_EMAIL`** gol în `.env` — unde ajung alertele de reconciliere (B11)? Nu mai
+1. **Review `docs/EMAILURI.md`** (emailurile 1-7) înainte să intre în cod.
+2. **Verificat** în `copy.ts`: `footer.linkedin` e o presupunere — confirmă URL-ul real.
+3. **`ALERT_EMAIL`** gol în `.env` — unde ajung alertele de reconciliere (B11)? Nu mai
    blochează (F4 l-a făcut opțional), dar tot trebuie completat înainte de F6.
-6. **Cloudflare re-autorizare** — tokenul MCP a expirat în sesiunea asta. N-a blocat F4
-   (rate limiting mutat în Postgres), dar va fi nevoie de el pentru deploy (F6+).
+4. **Decizia de a publica pe `workshop.deeplogic.ro`** — tehnic posibil oricând: `wrangler`
+   CLI e autentificat (`ciprian.micu@gmail.com`, drepturi de scriere pe Workers), verificat
+   28 august. Domeniul arată încă eroarea veche („Worker threw exception", niciodată
+   publicat cu codul real) până la un `wrangler deploy` explicit. Ciprian a ales să rămână
+   pe tunel (`cloudflared`) până sunt gata toate gate-urile — nepublicat DELIBERAT, nu blocat
+   tehnic. (Notă separată: tokenul plugin-ului MCP Cloudflare din Claude Code a expirat —
+   irelevant pentru deploy, care merge prin `wrangler` CLI, autentificat separat.)
+
+**Rezolvat**: foto `public/ciprian-micu.jpg` (28 august) — reală, la un eveniment, decupată
+4:5 automat. §11 randează complet.
+
+**Rezolvat**: Politica de Confidențialitate (corectată, confirmată 28 august) și emailul 8
+(aprobat, fără modificări, 28 august) — vezi F9 și `docs/DECIZII.md`. Opțional, netratat:
+`Termeni_si_Conditii` §3 („minimum 18 ani") n-are verificare de vârstă în formular —
+formulare juridică standard, semnalată, nu schimbată unilateral.

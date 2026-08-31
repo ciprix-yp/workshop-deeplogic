@@ -10,7 +10,7 @@ import { stari, EVENIMENT } from '../content/copy';
  */
 export const prerender = false;
 
-const STARI_VALIDE = ['reconfirmat', 'anulat', 'locRevendicat', 'locLuat', 'tokenInvalid', 'checkinReusit'] as const;
+const STARI_VALIDE = ['reconfirmat', 'anulat', 'locRevendicat', 'locLuat', 'tokenInvalid', 'checkinReusit', 'datePastrate'] as const;
 type StareValida = (typeof STARI_VALIDE)[number];
 
 const param = Astro.url.searchParams.get('stare');

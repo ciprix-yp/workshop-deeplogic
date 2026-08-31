@@ -168,3 +168,31 @@ export function email7Leftover(p: { nume: string }): EmailGata {
     html: randeazaHtml(continut),
   };
 }
+
+/* ── Email 8 — Retenție date, la 1 an (aprobat 28 august 2026) ───────────────
+ * Vezi docs/EMAILURI.md § Email 8. `FEREASTRA_RASPUNS_RETENTIE_ZILE` e
+ * literal în text, nu citit din SQL: dacă `purge_expired_retention()`
+ * (migrația 0006) își schimbă DEFAULT-ul, editează manual și aici.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+const FEREASTRA_RASPUNS_RETENTIE_ZILE = 30;
+
+export function email8RetentieDate(p: { nume: string; linkReconfirmare: string }): EmailGata {
+  const continut = {
+    salut: p.nume,
+    paragrafe: [
+      'A trecut un an de când mi-ai lăsat datele de contact, la înscrierea la un eveniment Deep Logic. Le păstrez maximum un an, apoi le șterg — așa am promis în politica de confidențialitate.',
+      'Dacă vrei să le păstrez în continuare, apasă linkul de mai jos.',
+    ],
+    butoane: [{ text: 'Păstrează-mi datele', href: p.linkReconfirmare }],
+    notePicior: [
+      `Dacă nu răspunzi în ${FEREASTRA_RASPUNS_RETENTIE_ZILE} de zile, le șterg automat din bază — nu trebuie să faci nimic ca să se întâmple asta.`,
+    ],
+    semnatura: SEMNATURA,
+  };
+  return {
+    subject: 'Vrei să-ți păstrez datele de contact?',
+    text: randeazaText(continut),
+    html: randeazaHtml(continut),
+  };
+}

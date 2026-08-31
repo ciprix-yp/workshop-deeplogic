@@ -12,8 +12,8 @@ import Sectiune from './Sectiune.astro';
   <h2>{detalii.h2}</h2>
 
   <dl>
-    {detalii.randuri.map(([eticheta, valoare]) => (
-      <div class="rand">
+    {detalii.randuri.map(([eticheta, valoare], i) => (
+      <div class="rand" data-reveal style={`--intarziere: ${i * 50}ms`}>
         <dt>{eticheta}</dt>
         <dd>{valoare}</dd>
       </div>

@@ -46,7 +46,7 @@ import Cta from './Cta.astro';
   .cap {
     display: grid;
     gap: var(--sp-xs);
-    margin-bottom: var(--sp-xl);
+    margin-bottom: var(--sp-lg);
   }
 
   @media (min-width: 48rem) {
@@ -91,7 +91,12 @@ import Cta from './Cta.astro';
     column-gap: var(--sp-md);
     row-gap: var(--sp-xs);
     align-items: start;
-    padding-block: var(--sp-lg);
+    /* Retunat (iterația 2, QA #2): sp-md în loc de sp-lg — cinci rânduri de
+       document, nu cinci carduri; padding-ul generos conta dublu (sus+jos)
+       pe fiecare din cele 5 linii, cel mai mare contribuitor la overflow-ul
+       secțiunii. Verificat live: reduce overflow-ul rezidual la 1920×1080
+       la zero. */
+    padding-block: var(--sp-md);
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   }
 
@@ -128,7 +133,7 @@ import Cta from './Cta.astro';
 
   .corp {
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-xs);
   }
 
   h3 {

@@ -95,3 +95,76 @@ test('bara sticky nu apare pe desktop', async ({ page }) => {
   await page.waitForTimeout(300);
   await expect(page.locator('#cta-sticky')).toBeHidden();
 });
+
+/**
+ * Tilt 3D pe carduri — decizie explicită (Ciprian, 28 august), împotriva
+ * recomandării inițiale de restrângere. Verificat aici ca regresia să nu
+ * depindă de memorie: tilt-ul chiar mișcă, revine curat la ieșire, și nu
+ * intră în conflict cu tranziția de 560ms a dezvăluirii la scroll (cele
+ * două trăiesc pe elemente DOM separate — `.zona`/`.bloc` cu data-reveal,
+ * `.zona-tilt`/`.bloc-tilt` cu data-tilt — vezi comentariul din
+ * S09UseCases.astro pentru motiv).
+ */
+test('cardurile cu tilt răspund la cursor și revin curat la ieșire', async ({ browser }) => {
+  // Context explicit, non-touch: proiectul `mobil-360` rulează pe profilul
+  // Pixel 5 (`hasTouch: true`), unde scriptul de tilt NU se atașează deloc —
+  // pe bună dreptate, e ghidul `(hover:hover) and (pointer:fine)` din
+  // Base.astro. Testul ăsta verifică ramura cu mouse real, nu touch.
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, hasTouch: false });
+  const page = await ctx.newPage();
+  await page.goto('/');
+  const card = page.locator('#use-cases [data-tilt]').first();
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveCSS('transform', 'none');
+
+  const box = await card.boundingBox();
+  if (!box) throw new Error('cardul nu are boundingBox — nu poate fi vizibil');
+  await page.mouse.move(box.x + box.width * 0.15, box.y + box.height * 0.15);
+  await page.waitForTimeout(250);
+  await expect(card).not.toHaveCSS('transform', 'none');
+
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(250);
+  await expect(card).toHaveCSS('transform', 'none');
+
+  await ctx.close();
+});
+
+/**
+ * Pe touch, tilt-ul se activează SCURT, la apăsare — nu urmărește degetul
+ * continuu (asta ar cere `touchmove` cu `preventDefault`, care ar bloca
+ * scroll-ul paginii). Verificat cu evenimente touch reale, prin CDP, nu
+ * `locator.tap()` — acela trimite touchstart+touchend prea rapid ca să
+ * apuci starea DIN TIMPUL atingerii, exact ce trebuie dovedit aici.
+ */
+test('pe touch, tilt-ul răspunde scurt la apăsare și revine curat la ridicarea degetului', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage();
+  const erori: string[] = [];
+  page.on('pageerror', (e) => erori.push(e.message));
+
+  await page.goto('/');
+  const card = page.locator('#use-cases [data-tilt]').first();
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveCSS('transform', 'none');
+
+  const box = await card.boundingBox();
+  if (!box) throw new Error('cardul nu are boundingBox — nu poate fi vizibil');
+  const x = box.x + box.width * 0.15;
+  const y = box.y + box.height * 0.15;
+
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x, y }],
+  });
+  await page.waitForTimeout(150);
+  await expect(card).not.toHaveCSS('transform', 'none');
+
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await page.waitForTimeout(150);
+  await expect(card).toHaveCSS('transform', 'none');
+
+  expect(erori).toEqual([]);
+  await ctx.close();
+});

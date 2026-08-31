@@ -261,6 +261,44 @@ workshop următor confirmat.
 
 ---
 
+## Email 8 — Retenție date, la 1 an
+
+**Trimis:** de sweep-ul zilnic Inngest (`retention-sweep.ts`), către orice contact
+cu 1 an de la ultima (re)confirmare, o singură dată per ciclu.
+**Subiect:** `Vrei să-ți păstrez datele de contact?`
+
+```
+Salut, {{nume}},
+
+A trecut un an de când mi-ai lăsat datele de contact, la înscrierea la un
+eveniment Deep Logic. Le păstrez maximum un an, apoi le șterg — așa am promis
+în politica de confidențialitate.
+
+Dacă vrei să le păstrez în continuare, apasă linkul de mai jos.
+
+[Păstrează-mi datele] → {{link_reconfirmare}}
+
+Dacă nu răspunzi în 30 de zile, le șterg automat din bază — nu trebuie să
+faci nimic ca să se întâmple asta.
+
+Ciprian Micu - Deep Logic
+
+{{subsol}}
+```
+
+**Notă tehnică:** `{{link_reconfirmare}}` = `/pastreaza-datele?token={{retention_token}}`.
+Fereastra de 30 de zile trăiește ca DEFAULT în `purge_expired_retention()`
+(migrația 0006) — dacă se schimbă acolo, textul de mai sus trebuie actualizat
+manual, nu se citește dinamic din SQL.
+
+**Aprobat de Ciprian pe 28 august 2026**, fără modificări față de draft — același
+proces ca emailurile 1-7. A apărut din decizia din aceeași zi de a construi
+automatizarea de retenție promisă în Politica de Confidențialitate (vezi
+`docs/DECIZII.md`), nu dintr-un text scris de el de la zero, dar a trecut prin
+aceeași aprobare explicită înainte de producție.
+
+---
+
 ## Subsol comun
 
 Aceeași linie, la finalul fiecărui email — semnal de legitimitate pentru

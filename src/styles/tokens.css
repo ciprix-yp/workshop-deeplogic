@@ -12,7 +12,23 @@
   --bg: #ffffff;
   --bg-secundar: #e4e7e7;
   --text: #2a3439;              /* 12.74:1 pe alb */
-  --text-muted: #637474;        /* 4.91:1 pe alb — coloana ÎNAINTE din §05 */
+  --text-muted: #637474;        /* 4.91:1 pe alb (NU și pe secundar — vezi mai jos) */
+  /*
+   * Defect preexistent, găsit la recalcularea perechilor pentru sticla v4 și
+   * decis de Ciprian (v4): `--text-muted` pe `--bg-secundar` dă 3.94:1, sub
+   * pragul AA — §05 (coloana ÎNAINTE, etichetele `td::before`, `thead th`) și
+   * §13 sunt amândouă `fundal="secundar"`. Comentariul vechi din
+   * S05InainteDupa.astro („4.91:1") era corect pe ALB, dar secțiunea nu e pe alb.
+   * `#576565` = 4.89:1 plat pe secundar, 4.73:1 sub tenta de sticlă (0.88) —
+   * păstrează tonul șters intenționat al coloanei „înainte", spre deosebire de
+   * `--secundar` (7.18:1), care ar fi trecut pragul ștergând nuanța.
+   *
+   * Se aplică prin REDEFINIREA lui `--text-muted` în interiorul registrului
+   * secundar (Sectiune.astro, plus sub-blocurile cu fundal propriu), nu prin
+   * editarea fiecărei reguli `color:` — o proprietate moștenită, un singur
+   * punct de adevăr, imposibil de ratat pe o componentă viitoare.
+   */
+  --text-muted-pe-secundar: #576565;  /* 4.89:1 pe #E4E7E7, 4.73:1 sub sticlă */
 
   --accent: #376a66;            /* 6.15:1 pe alb, 4.94:1 pe secundar — CTA, linkuri */
   --accent-hover: #2d5854;      /* 7.97:1 — hover/active pe CTA */
@@ -85,6 +101,61 @@
   --radius: 4px;           /* discret; pagina nu e o aplicație */
   --radius-lg: 8px;
 
+  /* ── Cardul de sticlă (v4) ────────────────────────────────────────────
+   * Vezi docs/design/DESIGN_BRIEF.md v4, „Cardul de sticlă — anatomie cu
+   * valori". Raza de 20px e deliberat ≫ --radius (4px): 4px e limbajul
+   * controalelor („pagina nu e o aplicație"); placa de sticlă e alt obiect,
+   * la altă scară. */
+  --sticla-radius: 20px;
+  --sticla-raza: 20px;                       /* raza de blur; 12px sub 48rem */
+  --marja-sticla: clamp(12px, 3vw, 28px);    /* placa ↔ marginile cardului 100dvh */
+  --pad-sticla: clamp(0.9rem, 2.6vw, 2rem);  /* aerul dintre sticlă și text */
+  /*
+   * Alpha tentei. v5: se aplică DOAR pe registrul închis — pe registrele
+   * deschise placa e opacă. Motivul e măsurat, nu preferat: la tenta pe care
+   * o cerea contrastul (0.82/0.88), o linie de labirint sub placă ajungea la
+   * ~3% delta de luminanță, adică invizibilă, în timp ce subiectul care
+   * circulă pe coridor (α 0.32 peste linia de 0.25 = 0.49 compus) trăgea
+   * `--text-muted` la 4.45:1 — sub AA. Pe registrul închis aceeași linie sub
+   * tenta 0.70 dă 1.59:1, vizibilă, iar textul deschis rămâne la 5.89:1.
+   * Asimetria nu e un compromis, e unde duce calculul.
+   * Sursa de adevăr partajată cu `scripts/check-contrast.mjs`
+   * (`ALPHA_TENTA_STICLA`). Vezi src/styles/labirint.css.
+   */
+  --sticla-alpha: 82%;     /* nefolosit pe registrul primar — vezi mai sus */
+
+  /*
+   * Muchia plăcii. v5: VIZIBILĂ, nu sugerată.
+   *
+   * În v4 era `color-mix(--bg-registru 55%, transparent)` — adică alb la 55%
+   * peste alb pe registrul primar, literalmente invizibilă. Verificat live la
+   * 390×844: placa nu se citea deloc ca obiect pe 11 din 16 carduri, iar
+   * odată scos `backdrop-filter`-ul ar fi fost și mai rău. `#2A3439` la 16%
+   * peste alb dă ≈ `#DDE0E1` — o linie care se vede, fără să devină chenar.
+   * Nu colorată-accent (vezi ban-urile din craft-floor.md).
+   *
+   * Tenta plăcii NU s-a putut întuneca deloc, deși ar fi fost calea evidentă
+   * spre „se citește ca obiect": `--text-muted` sub subiect e la 4.58:1, cu
+   * 0.08 marjă peste AA. Chiar și 2% de tentă o consumă. Deci greutatea
+   * vizuală vine integral din muchie + umbră, nu din umplere.
+   */
+  --muchie: rgba(42, 52, 57, 0.16);
+  --muchie-aprins: rgba(42, 52, 57, 0.34);   /* a doua bătaie a licăririi */
+  --specular: rgba(255, 255, 255, 0.7);
+
+  /*
+   * Banda de labirint — spațiul pe care cardul îl cedează ca să se vadă
+   * fundalul. Fără ea, la 360×800 placa acoperă ~95% din ecran și labirintul
+   * e desen pe care nimeni nu-l vede (criteriul V8 din brief e chiar un prag
+   * de KILL: sub 3 celule vizibile vertical, mișcarea onestă e să-l tai).
+   * 12dvh sus + 8dvh jos = 160px la 800px înălțime = 3.2 celule. Banda de jos
+   * e mai mică pentru că sub 48rem `CtaSticky` îi mai ia ~64px; peste 48rem
+   * bara dispare și cele două se egalizează.
+   * Preț recunoscut, nu ascuns: mai multe carduri au scroll intern.
+   */
+  --banda-sus: max(var(--marja-sticla), 12dvh);
+  --banda-jos: max(var(--marja-sticla), 8dvh);
+
   /* Ținta de atingere minimă. 44px e pragul WCAG 2.2 (SC 2.5.8) și, practic,
      lățimea unui deget pe un telefon ținut cu o mână în timp ce mergi. */
   --touch: 44px;
@@ -101,6 +172,18 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+}
+
+/*
+ * v4: cât timp Lenis e activ (clasa `lenis` o pune el pe <html>), scroll-ul
+ * neted NATIV trebuie oprit — altfel, la fiecare `lenis.scrollTo`, browserul
+ * și-ar rula propria animație peste cea interpolată, iar cele două s-ar
+ * bate pe aceeași proprietate. Regula e condiționată de clasă, nu ștearsă:
+ * fără JS și sub `prefers-reduced-motion` (unde Lenis nici nu se
+ * instanțiază), `scroll-behavior: smooth` rămâne exact ca azi.
+ */
+html.lenis {
+  scroll-behavior: auto;
 }
 
 body {
@@ -162,28 +245,81 @@ img {
   border-radius: var(--radius);
 }
 
-/* ── Dezvăluire la scroll ───────────────────────────────────────────────── */
+/* ── Dezvăluire la scroll — intrare cu perspectivă 3D ────────────────────── */
 /*
- * Regula de bază: fără JS, TOTUL e vizibil. Starea ascunsă se aplică doar
- * după ce scriptul adaugă `.js-reveal` pe <html> — adică doar când există
- * cineva care s-o și scoată. Varianta inversă (ascuns în CSS, arătat de JS)
- * face pagina complet goală dacă scriptul pică, iar în browserul in-app din
- * WhatsApp asta se întâmplă mai des decât ai crede.
+ * Regula de bază, neschimbată: fără JS, TOTUL e vizibil. Starea ascunsă se
+ * aplică doar după ce scriptul adaugă `.js-reveal` pe <html> — adică doar
+ * când există cineva care s-o și scoată. Varianta inversă (ascuns în CSS,
+ * arătat de JS) face pagina complet goală dacă scriptul pică, iar în
+ * browserul in-app din WhatsApp asta se întâmplă mai des decât ai crede.
  *
- * 8px, nu 40: mișcarea confirmă că elementul a intrat în cadru, nu îl anunță.
- * Copy-ul susține „fără teatru" — motion-ul n-are voie să-l contrazică.
+ * Decizie explicită (Ciprian, 28 august): mișcare mai prezentă decât varianta
+ * inițială de 8px — element „basculează" ușor din perspectivă pe măsură ce
+ * intră în cadru, nu doar alunecă. `perspective()` ca funcție de transform,
+ * nu proprietate pe părinte: fiecare element își poartă propriul context 3D,
+ * fără să ceară `perspective` pe `Sectiune.astro`.
  */
 .js-reveal [data-reveal] {
   opacity: 0;
-  transform: translateY(8px);
+  transform: perspective(900px) translateY(22px) rotateX(7deg);
+  transform-origin: center bottom;
 }
 
 .js-reveal [data-reveal].vazut {
   opacity: 1;
-  transform: none;
+  transform: perspective(900px) translateY(0) rotateX(0deg);
   transition:
-    opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms),
-    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms);
+    opacity 560ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms),
+    transform 560ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms);
+}
+
+/* ── Tilt 3D interactiv pe blocurile mici (data-tilt fără valoare) ───────
+ * Doar pe dispozitive cu pointer fin și hover real — pe touch, mousemove nu
+ * există, deci scriptul din Base.astro nici nu se atașează acolo (vezi
+ * media query-ul din script). Blocul rămâne „ridicat" static prin umbră,
+ * fără tilt fantomă care s-ar bloca la ultima poziție a degetului.
+ *
+ * `:not([data-tilt='card'])` — v4: placa de sticlă (`data-tilt="card"`) își
+ * poartă propria umbră, propriul easing și propria calibrare, mai jos.
+ */
+[data-tilt]:not([data-tilt='card']) {
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+  box-shadow: 0 1px 2px rgba(27, 36, 38, 0.06), 0 10px 28px -14px rgba(27, 36, 38, 0.22);
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-tilt]:not([data-tilt='card']):hover {
+    box-shadow: 0 4px 10px rgba(27, 36, 38, 0.08), 0 24px 44px -16px rgba(27, 36, 38, 0.32);
+  }
+}
+
+/* Placa de sticlă: 220ms, cubic-bezier(0.22,0.61,0.36,1) — sticla e grea,
+   nu sare (brief v4, „efectul 3D pe card, recalibrat din nou": 2°→1.2°,
+   perspective 1600→2000px, translateZ 6px→0). Umbra vine din `.sticla`. */
+[data-tilt='card'] {
+  transition:
+    transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/*
+ * `will-change: transform` DOAR unde tilt-ul chiar urmărește continuu un
+ * cursor. Pe touch, tilt-ul de card e un puls scurt la `touchstart` —
+ * promovarea permanentă a 16 plăci de ecran plin în memoria video ar fi
+ * exact costul pe care brief-ul îl interzice pentru `backdrop-filter`,
+ * plătit pe altă proprietate, pe fix dispozitivul care și-l permite cel
+ * mai puțin (Android mediu, 4G, browserul in-app din WhatsApp).
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-tilt='card'] {
+    will-change: transform;
+  }
+  [data-tilt='card']:hover {
+    box-shadow:
+      0 2px 4px rgba(27, 36, 38, 0.07),
+      0 28px 56px -22px rgba(27, 36, 38, 0.34);
+  }
 }
 
 /* ── Respectă preferința de mișcare redusă ──────────────────────────────── */
@@ -204,6 +340,26 @@ img {
   .js-reveal [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+  [data-tilt] {
+    transition: none;
+  }
+}
+
+/*
+ * Placa de sticlă trăiește acum în `src/styles/labirint.css` (v5), unde poate
+ * fi verificată mecanic de `scripts/lint-decor.mjs`. Aici rămân doar
+ * tokenii ei.
+ *
+ * Plafon dur pe mobil (brief v4, pragul 3 de performanță): costul lui
+ * `backdrop-filter` crește cu raza. 12px păstrează efectul și taie aproape
+ * jumătate din muncă exact pe dispozitivul care și-o permite cel mai puțin.
+ * Tenta NU se schimbă — calculul de contrast nu depinde de rază. În v5
+ * blurul mai are un singur consumator (§08), deci regula atinge un card.
+ */
+@media (max-width: 47.99rem) {
+  :root {
+    --sticla-raza: 12px;
   }
 }
 

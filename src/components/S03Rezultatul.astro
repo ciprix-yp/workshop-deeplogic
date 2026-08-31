@@ -3,7 +3,7 @@ import { rezultatul } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="rezultatul">
+<Sectiune id="rezultatul" camp="zgomot">
   <h2>{rezultatul.h2}</h2>
 
   <ol class="lista">
@@ -82,6 +82,10 @@ import Sectiune from './Sectiune.astro';
   .granita {
     margin-top: var(--sp-xl);
     background: var(--bg-secundar);
+    /* v3/v4: registru local (tenta sticlei) + fix de contrast pe secundar —
+       defensiv, vezi tokens.css `--text-muted-pe-secundar`. */
+    --bg-registru: var(--bg-secundar);
+    --text-muted: var(--text-muted-pe-secundar);
     padding: var(--sp-lg);
     border-radius: var(--radius-lg);
     display: grid;

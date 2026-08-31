@@ -134,6 +134,374 @@ cod, e specific mailbox-ului propriu al lui Ciprian, nu afectează adrese reale 
 RECEPȚIE). Nu s-a investigat mai departe — irelevant pentru producție, unde adresele vin
 de la participanți, nu de la testare pe domeniul propriu.
 
+### F9 — Politica de Confidențialitate găsită gata scrisă, corectată pe 3 puncte
+
+Ciprian avea deja `legal/Termeni_si_Conditii_DeepLogic.md` și
+`legal/Politica_de_Confidentialitate_DeepLogic.md`, redactate complet (identitate operator,
+GDPR, drepturi, procesatori). Documente scrise ca șablon general Deep Logic (acoperă și
+site-ul principal deeplogic.ro), nu specific pentru workshop — corect ca atare pentru
+secțiunile despre companie.
+
+Cross-check obligatoriu (§6.4 din planul original: „un copy care minte e un bug") a găsit
+4 afirmații concret false despre ce colectează și ce face sistemul CHIAR construit în
+sesiunea asta:
+
+1. **§2.1** nu declara cele 5 întrebări de calificare (Q1–Q5, `form-schema.ts`) — formularul
+   colectează mai multe date decât recunoștea politica.
+2. **§2.2** descria două bife opționale distincte („marketing" + „newsletter"). Formularul
+   are UNA (`BIFE.discutie`, id `vrea_discutie`, label „Vreau o discuție despre procesele
+   mele") — și, mai important, decizia de la F4 fusese explicit să NU semnalăm „apel de
+   vânzare" (§16 din spec-ul de copy). Cuvântul „marketing" în politică contrazicea propria
+   decizie de produs.
+3. **§2.4** declara WhatsApp ca și canal de comunicare Deep Logic → participant. Fals pe
+   toată linia: formularul nu are câmp de telefon, iar ciclul Inngest (F6) trimite exclusiv
+   email prin Resend. WhatsApp e corect doar ca și canal de DISTRIBUIRE a linkului între
+   membri BIZZ.CLUB — Deep Logic nu-l folosește și nu-l poate folosi, neavând numărul
+   nimănui. Eliminat și din tabelul de procesatori (§3), transferul internațional (§4) și
+   securitate (§8) din același motiv.
+4. **§5** declara la timpul prezent: „Curățenia bazei de date la expirarea termenului
+   [1 an] este realizată printr-o automatizare dedicată." Verificat: nu există — cele 4
+   funcții Inngest (`registered`, `waitlisted`, `seat-freed`, `leftover-waitlist-notice`)
+   acoperă doar ciclul scurt al evenimentului, zero `pg_cron` sau job de retenție pe termen
+   lung în migrațiile Supabase. Mai grav decât punctele 1–3: nu doar formulare descrisă
+   greșit, ci un mecanism de ștergere promis public care, dacă lipsește, contrazice direct
+   principiul de limitare a stocării din GDPR (art. 5.1.e).
+
+   Prima mișcare a fost rapidă — trecut la viitor („va fi realizată"), automatizarea reală
+   amânată în backlog (termenul natural era ~august 2027, primele date ajungând atunci la
+   1 an). **Ciprian a respins soluția rapidă**: „O să construim automatizarea, promisiunea
+   rămâne, cere și gdpr" — nu doar o corecție de copy, o cerere explicită de construi
+   mecanismul real, acum, nu la termen.
+
+   **Construit și verificat același ciclu**: migrația `0006_retention.sql` (3 coloane pe
+   `contacts`, 4 funcții atomice `security definer`), `src/inngest/functions/retention-sweep.ts`
+   (cron zilnic `TZ=Europe/Bucharest 0 9 * * *` — primul job din proiect care nu e legat de
+   datele fixe ale evenimentului), rutele `/pastreaza-datele` + `/api/pastreaza-datele` (regula
+   B2, identică cu restul), email 8 (draft, nesemnat de Ciprian — vezi mai jos). Verificat
+   LIVE pe proiectul Supabase real (`mwmkggktwlxlrokbvgwx`), nu doar pe Postgres local:
+   contact de test cu `created_at` backdatat 400 de zile → apare corect scadent → reconfirmat
+   prin dev server real → dispare din listă → un al doilea contact, notificat acum 40 de
+   zile, șters corect de `purge_expired_retention()`. Emailul 8 trimis real prin Resend către
+   `delivered@resend.dev`, status confirmat „delivered". Toate datele de test șterse din
+   Supabase după verificare. §5 a rămas la timpul prezent — de data asta chiar e adevărat.
+
+   **De reținut**: distincția dintre „corectăm ce spune textul" și „construim ce promite
+   textul" nu e întotdeauna a mea de decis — la text cu greutate juridică (GDPR, nu copy de
+   conversie), implicația corectă e să ofer opțiunea, nu s-o aleg eu. Aici a fost oferită
+   explicit (AskUserQuestion, recomandare pe varianta rapidă) — Ciprian a ales cealaltă.
+
+5. **A doua rundă pe §2.1 — o sursă externă, nu codul.** Ciprian a încărcat o versiune
+   revizuită a Politicii, produsă într-o altă conversație, fără acces la `form-schema.ts`.
+   Acea revizuire a înlocuit lista corectă de la punctul 1 cu întrebări inventate
+   („așteptările de la eveniment", „interesul pentru un workshop in-company", o pretinsă
+   opțiune de text liber) — niciuna reală. Verificat: documentul „Bloc 2" care a produs
+   confuzia nu există nicăieri în acest repo, deci nu era o notă de plan veche rătăcită
+   aici, ci ceva extern conversației. Corectat din nou, linie cu linie față de schema
+   reală, păstrând restul îmbunătățirilor din versiunea încărcată (§2.2, §2.4, §6, §3 —
+   toate corecte). **Confirmat de Ciprian: „Politica e ok!"**
+
+   De reținut, complementar la punctul 4 de mai sus: verificarea „împotriva sursei" nu e
+   suficientă dacă sursa însăși e stală. Un cross-check corect ca proces poate produce un
+   rezultat greșit dacă referința lui nu e codul.
+
+6. **Emailul 8 aprobat**, fără modificări față de draft — 28 august 2026. Confirmat de
+   Ciprian: „E ok acum". Marcat aprobat în `docs/EMAILURI.md`, `templates.ts`,
+   `tests/emails.test.ts`. Gate-ul `LEGAL` e complet.
+
+`Termeni_si_Conditii_DeepLogic.md` — o singură observație, nesemnalată ca discrepanță
+tehnică: §3 declară „minimum 18 ani, confirmat prin înscriere", dar formularul n-are niciun
+câmp sau bifă de vârstă. E formulare juridică standard (confirmare implicită prin actul
+înscrierii) — spre deosebire de punctele 1–4, nu contrazice un comportament de sistem
+existent, doar nu-l operaționalizează explicit. Semnalat lui Ciprian, netins.
+
+**De reținut pentru sesiuni viitoare**: documentele legale nu sunt copy obișnuit — corecțiile
+de mai sus sunt verificabile obiectiv (câmp există/nu există în schema Zod, canal
+implementat/nu implementat), dar au greutate juridică. Publicate, dar Ciprian trebuie să le
+confirme explicit înainte de lansare (vezi „Blocat pe Ciprian" în PROGRES.md), la fel cum a
+confirmat cele 7 texte de email la F5.
+
+---
+
+## Efecte 3D pe carduri și secțiuni — decizie împotriva recomandării
+
+Ciprian a cerut efect 3D pe fiecare secțiune și card, plus animații de scroll mai
+prezente. Obiecție ridicată explicit, înainte de implementare: risc de performanță pe
+publicul țintă (4G, browser in-app WhatsApp, Android) și risc de „clișeu AI-generated"
+(tilt 3D pe toate cardurile e la fel de universal ca glassmorphism-ul). Propusă o
+variantă calibrată (un singur moment bold, micro-interacțiuni discrete). **Ciprian a ales
+explicit varianta cerută inițial**, nu cea recomandată — implementată ca atare, cu grijă
+la exact riscurile semnalate.
+
+**Ce s-a construit:**
+- Sistemul global de reveal (`data-reveal`, `tokens.css`) trecut de la translateY(8px) la
+  o intrare cu perspectivă 3D reală (`perspective(900px) translateY(22px) rotateX(7deg)`)
+  — acoperă automat tot ce avea deja `data-reveal` (S02, S03, S05, S08) și tot ce s-a
+  adăugat acum (S04, S06, S07, S09, S10-S15) — 13 din 17 secțiuni. Rămase neatinse
+  deliberat: S01 (hero, vizibil imediat, fără scroll), S16 (formular — nu i se aplică
+  decor, e singurul lucru care contează pe ecran), S17 (footer).
+- Tilt 3D interactiv real (`data-tilt`, urmărește cursorul prin `pointermove`) pe
+  singurele două grile de carduri autentice din pagină: S09 (zonele de use-case) și S06
+  (blocurile numerotate ale demonstrației, restilizate ca oarde cu bordură+umbră ca să
+  aibă unde să „poarte" efectul). Dezactivat explicit pe touch
+  (`(hover:hover) and (pointer:fine)`) — pe telefon nu există `pointermove` continuu, deci
+  un tilt care rămâne blocat la ultima atingere ar arăta ca un bug, nu ca un efect; cardul
+  rămâne „ridicat" static prin umbră.
+
+**Capcană găsită înainte să ajungă pe ecran, nu după**: reveal-ul (560ms) și tilt-ul
+(150ms) manipulează amândouă `transform` — pe ACELAȘI element, regula CSS mai specifică
+ar câștiga tot lanțul de tranziție, iar tilt-ul ar deveni la fel de lent ca intrarea la
+scroll (inacceptabil pentru un efect care trebuie să simtă cursorul, nu să-l urmeze cu
+întârziere). Fix: separate pe DOUĂ elemente DOM (`.zona`/`.bloc` cu `data-reveal`,
+`.zona-tilt`/`.bloc-tilt` cu `data-tilt`), nu prin trucuri de specificitate CSS.
+
+**Verificat**: `npm run check` (0 erori/66 fișiere), toate cele 135 teste unitare, 38
+teste e2e (Playwright, incluzând 2 noi dedicate tilt-ului — răspunde la cursor pe
+desktop, rămâne static pe touch fără erori), `npm run contrast` (18/18), build de
+producție complet. Screenshot-uri mobil 360px + desktop confirmă vizual.
+
+---
+
+## Tilt pe touch, apoi foto reală — ultimele goluri vizuale închise
+
+Ciprian a testat tunelul pe telefonul propriu (dispozitivul real de test) și a raportat
+„încă tot nu e acolo". Cauza: tilt-ul 3D era dezactivat deliberat pe touch (motivul B2-like
+din decizia inițială — fără `pointermove` continuu, ar fi rămas blocat la ultima atingere).
+Rezultat practic: efectul cerut explicit era invizibil pe exact dispozitivul pe care-l
+verifica. Fix: `touchstart`/`touchend` cu `{ passive: true }` — tilt scurt la apăsare, fără
+să blocheze scroll-ul (asta ar fi cerut `touchmove` + `preventDefault`). Verificat cu
+evenimente touch reale prin CDP (`Input.dispatchTouchEvent`), nu `locator.tap()` (prea rapid
+ca să prindă starea DIN TIMPUL atingerii).
+
+Cerut apoi o trecere de critică vizuală („front end designer"). Verdict: restul paginii
+(§02-05, §07, §10, §12-15) e deliberat fără carduri — corect, nu o omisiune — iar singurul
+gol vizual real era §11 (Cine ține workshopul), complet gol de imagine. Ciprian a trimis o
+fotografie reală, la un eveniment (gest animat, context de local, nu portret corporate).
+Procesată: rotație automată după EXIF (orientation 8 — fișierul brut era culcat 90°),
+decupare 4:5 cu detecție de atenție a libvips (`sharp.strategy.attention`, centrează automat
+pe zona cu cea mai multă „saliență" — aici, fața), 880×1100, 94KB. §11 randează complet.
+
+---
+
+## Gate-urile OG, B2, `.ics` — verificate
+
+### OG — cardul lipsea fizic, nu doar textul
+
+`copy.ts` referenția `/og-workshop-16-09.png` de la F3, dar fișierul nu exista niciodată —
+gate-ul era blocat pe un asset, nu pe cod. Construit `src/pages/og-card.astro` (pagină reală,
+nu un SVG separat, ca să folosească exact fonturile self-hostate ale site-ului) +
+`scripts/genereaza-og.mjs` (Playwright, capturează la 1200×630).
+
+**Capcană găsită la prima captură**: o pilulă cu iconițe apărea în colțul de jos al fiecărei
+imagini generate. Diagnosticat prin eliminare, nu presupunere — o pagină complet goală,
+randată fără server Astro (`page.setContent`), nu avea artefactul; pagina reală, servită de
+`astro dev`, îl avea. Concluzie: **`<astro-dev-toolbar>`**, injectat automat de Astro în
+FIECARE pagină în modul dev, absent din producție. Fixul: eliminat elementul din DOM
+(`page.evaluate`) înainte de screenshot. **De reținut pentru orice captură viitoare a unei
+pagini din acest proiect, prin `astro dev`**: toolbar-ul e acolo, invizibil cu ochiul liber pe
+un ecran normal (se auto-ascunde pe interacțiune), dar apare pe un screenshot automat.
+
+### B2 — verificat live, apoi acoperit permanent
+
+Verificare manuală, contra Supabase real: 5 cereri GET pe `/raspuns?...&r=nu`, inclusiv cu
+user-agent Outlook Safe Links, status neschimbat; `POST` imediat după, mută corect. Aceeași
+verificare pe `/checkin`. Plus, ca regresia să nu depindă de memorie: test Playwright nou
+(`tests/e2e/b2-siguranta-get.spec.ts`) care interceptează rețeaua și cere zero cereri către
+rutele `/api/*` doar din încărcarea paginii — acoperă `/raspuns`, `/checkin` și
+`/pastreaza-datele`.
+
+### `.ics` — cross-check cu un parser independent
+
+`tests/ics.test.ts` verifica deja structura RFC 5545 (12 teste). Adăugat un cross-check cu
+`node-ical` (bibliotecă terță, instalată temporar cu `--no-save`, nu intră în `package.json`)
+pe fișierul REAL generat, nu pe cod — parserul independent rezolvă DTSTART-ul la exact 14:00
+Europe/Bucharest (11:00 UTC). Rămâne, ca și la OG, un pas fizic imposibil de la acest scaun:
+import real în Google/Apple/Outlook. Verificarea programatică e solidă; deschiderea în cele
+trei aplicații rămâne a lui Ciprian.
+
+### Link public pentru verificare vizuală
+
+Ciprian a cerut un link, nu de pe aceeași mașină. Instalat `cloudflared` (tunel rapid,
+fără cont), adăugat `vite.server.allowedHosts: true` în `astro.config.mjs` (Vite blochează
+implicit host-uri necunoscute — protecție DNS-rebinding; afectează DOAR `astro dev`, zero
+impact pe build-ul de producție). **Atenționare dată explicit**: tunelul expune server-ul de
+dev conectat la Supabase și Resend REALE — cineva care ar completa formularul prin acel link
+ar crea o înscriere reală și ar trimite un email real. Link temporar, netrimis mai departe.
+
+---
+
+## Layout „cartonaș" + scroll hijack real — decizie împotriva recomandării (faza de design)
+
+Ciprian a cerut, după livrarea primei variante a brief-ului de design: (1) fiecare
+secțiune să devină un „card" de `100dvh`, cu efectul 3D deja existent (`data-tilt`)
+extins la nivel de card; (2) un scroll hijack real, dependent de viteza gestului — scroll
+rapid sare direct la cardul următor, scroll lent rămâne liber, ca un feed social (gen
+TikTok/Reels).
+
+Obiecție ridicată explicit, înainte de a actualiza brief-ul: liniile 116-117 din
+`src/layouts/Base.astro` declară textual „zero scroll deturnat" ca principiu deliberat al
+codebase-ului; ce se cere acum e exact opusul — necesită JS custom care ascultă viteza
+gestului (wheel/touch) și decide, per gest, dacă preia controlul de la scroll-ul nativ.
+Oferită explicit alternativa non-hijack (`scroll-snap-type: y proximity`, fără JS), cu
+downside-urile ei declarate (rupe trackpad/tastatură fin-controlate, risc de motion
+sickness, e un pattern deja documentat, nu un anti-pattern nou de evitat cu orice preț).
+**Ciprian a ales explicit hijack-ul real, cu bună știință despre trade-off.**
+
+Principiul „zero scroll deturnat" din `Base.astro` e **suprascris pentru acest layer**,
+nu abandonat ca valoare generală — rămâne default pentru orice altă interacțiune viitoare
+care nu a cerut explicit altfel. Constrângeri obligatorii, negociate ca parte a acordului:
+`prefers-reduced-motion: reduce` dezactivează hijack-ul complet (bail-out înainte de orice
+`addEventListener`, ca în cele două scripturi `is:inline` deja existente din `Base.astro`)
+și cade pe scroll nativ plat; navigarea de tastatură (Page Down/Space/săgeți) trebuie să
+avanseze coerent la cardul următor, implementată ca handler separat de sistemul de viteză,
+cu excepție explicită când focusul e într-un câmp de formular (`§16` are 5 blocuri radio —
+Space/săgețile trebuie să rămână ale câmpului, nu ale navigării de pagină).
+
+Aspect ratio: fiecare card trebuie să încapă fără tăiere pe intervalul real de dispozitive,
+via tipografie fluidă; sub `100dvh` = 560px (practic, telefon în landscape), cardul
+primește scroll intern cu indicator vizibil — nu încalcă regula „`§02`/`§08` nu se taie la
+mobil" din `CLAUDE.md` §2, pentru că nimic nu se taie, doar devine derulabil.
+
+Mecanismul de viteză (hand-rolled vs. Lenis ca senzor de fallback), recalibrarea
+`data-tilt` pentru scara de card, și reconcilierea firului cu structura de carduri:
+`docs/design/DESIGN_BRIEF.md`, secțiunile „Nivel de motion" și „Element-semnătură".
+
+---
+
+## Cardul de sticlă + Lenis — schimbare de poziție pe bază de dovadă (v4 de design)
+
+Ciprian a testat live pe telefon varianta v3 (carduri `100dvh` + Câmpul, layer de linii pe
+fundal, scrim-uri solide per-paragraf pentru contrast). Respinsă, cu trei defecte
+confirmate prin măsurare la 390×844 (screenshot + `getComputedStyle`), nu prin impresie:
+Câmpul citea ca zgârieturi (linii prea groase, prea rare, contrast prea mare, traversând
+H1-ul); scrim-urile solide tăiau vizibil liniile, producând același artefact „cutie" pe
+negativ; și nu exista niciun card vizual (`border-radius: 0px` măsurat pe toate cele 16,
+zero elevație, zero separare între secțiuni).
+
+Cerut explicit: carduri vizuale reale cu aspect „liquid glass" (Apple) și scroll super
+fluid la gest normal, cu salt la segmentul următor pe gest rapid.
+
+**Cardul de sticlă înlocuiește scrim-urile per-element** — un singur mecanism în locul a
+două: conținutul fiecărei secțiuni stă pe o placă translucidă, scrim-urile per-paragraf din
+`tokens.css` se șterg complet, iar liniile Câmpului nu mai sunt tăiate — se văd difuz *prin*
+sticlă, ceea ce e chiar mecanismul care face efectul să citească drept sticlă.
+
+**Contrastul rămâne garantat mecanic, nu prin speranță.** Ce e sub sticlă e cunoscut și
+mărginit (doar liniile Câmpului peste fundalul registrului), deci compozitul worst-case e
+calculabil exact cu formula din `scripts/check-contrast.mjs`. Alpha minimă a tentei,
+calculată per registru: 0.707 pe primar, 0.804 pe secundar, 0.000 pe închis (registrul
+închis n-are constrângere). Recomandate cu marjă: 0.82 / 0.88 / 0.70. Costul sticlei e
+mărginit la ~0.3 puncte de ratio. `check-contrast.mjs` trebuie extins cu perechile
+compozite, altfel gate-ul `CONTRAST` din CLAUDE.md §6 nu mai acoperă ce e efectiv pe ecran.
+
+**Lenis — poziție schimbată, a treia oară fiind cea bună.** Recomandasem împotriva lui în
+v1 și v2, cu rezerva scrisă explicit: „fallback acceptabil dacă dovada empirică o cere".
+Dovada a venit — argumentul principal de atunci era că majoritatea gesturilor trebuie să
+rămână 100% native, deci virtualizarea întregului scroll e disproporționată. Premisa a
+căzut: Ciprian nu mai vrea scroll nativ la gest lent, vrea scroll interpolat, exact ce
+livrează Lenis. În plus, `lenis.velocity` rezolvă senzorul de viteză cross-browser
+(trackpad vs. rotiță vs. inerție iOS) — o slăbiciune pe care o numisem eu însumi în v2 ca
+fiind greu de rezolvat de mână. Contractul de accesibilitate rămâne neatins:
+`prefers-reduced-motion` face bail-out înainte de `new Lenis()`, tastatura rămâne handler
+separat, ancorele `#inscriere` se rutează prin `lenis.scrollTo`.
+
+**Defect preexistent găsit la recalcularea perechilor**, fără legătură cu redesign-ul:
+`--text-muted` `#637474` pe `--bg-secundar` `#E4E7E7` dă **3.94:1**, sub pragul AA. §05
+(`S05InainteDupa.astro`) e `fundal="secundar"` și colorează coloana ÎNAINTE, etichetele
+`td::before` și `thead th` cu exact acest token; comentariul din cod spune „4.91:1", corect
+pe alb, dar secțiunea nu e pe alb. `npm run contrast` nu îl prinde pentru că perechea e
+declarată doar contra `bgPrimar`. E exact capcana pentru care `#3A716D` a fost respins mai
+sus în acest document — același tipar, alt token. Nu poate fi reparat de sticlă (pică deja
+la 0% sticlă). Opțiuni măsurate: `#576565` (4.89 plat / 4.73 sub sticlă, păstrează intenția
+„muted", hex nou) sau `#2F4F4F` (7.18 / 6.95, zero hex nou, vizual mai puțin stins).
+Semnalat lui Ciprian, nedecis unilateral — introducerea unui hex nou în paletă e decizia
+lui.
+
+Anatomia plăcii de sticlă, geometria redesenată a Câmpului, pragurile de performanță pentru
+`backdrop-filter` și recalibrarea tilt-ului (1.2°, de la 2° — un tilt pe placă cu margini
+vizibile citește mai puternic decât pe conținut fără contur):
+`docs/design/DESIGN_BRIEF.md`, v4.
+
+---
+
+## Labirintul — răsturnarea regulii „fundal curat" (29 august 2026)
+
+**Statut: decizie asumată, luată informat, după avertisment explicit.** Se documentează ca
+răsturnare, nu ca omisiune — regula veche n-a fost uitată, a fost cântărită și schimbată.
+
+### Ce s-a întâmplat, în ordine
+
+La începutul sesiunii Ciprian a cerut un fundal cu temă de labirint. **A fost avertizat
+explicit, atunci, că intră în conflict cu propria lui regulă din `CLAUDE.md` §2** — „Fundal
+curat. Fără imagini generice cu roboți, creiere sau rețele neuronale." A ales, în acel moment,
+varianta abstractă. Din ea au ieșit patru iterații: v1 (Firul, rail decorativ), v2 (carduri
+`100dvh`), v3 (Câmpul — respins pe telefon: „zgârieturi/crăpături"), v4 (cardul de sticlă, în
+implementare).
+
+După ce le-a văzut pe toate patru, s-a întors la labirint. **Nu e aceeași cerere repetată** —
+e aceeași cerere cu patru iterații de dovadă în spate, inclusiv o respingere măsurată a
+alternativei abstracte. Asta schimbă calitatea deciziei, nu doar frecvența ei.
+
+### Regula nouă — formulare propusă pentru `CLAUDE.md` §2
+
+Se înlocuiește rândul „**Fundal curat.** Fără imagini generice cu roboți, creiere sau rețele
+neuronale." cu:
+
+> - **Fundal autorat, nu procurat.** Fundalul are voie să poarte un motiv geometric abstract,
+>   desenat de noi, dacă motivul e cerut de copy-ul paginii și nu doar de gust. **Rămân
+>   interzise:** roboți, creiere, rețele neuronale, circuite, „AI brain", particule
+>   plutitoare, stock art de orice fel, orice imagine rasterizată procurată din afară, orice
+>   gradient mesh generic. **Devine permis:** un motiv vectorial autorat, ortogonal, de
+>   contrast scăzut, care trece criteriile vizuale V1–V14 din
+>   `docs/design/DESIGN_BRIEF-labirint.md` §14 și plafonul de opacitate din §8.2.
+>   Testul: *motivul citează un cuvânt din copy-ul paginii, sau doar umple spațiul?* Dacă doar
+>   umple, cade sub regula veche.
+
+**Motivul răsturnării, nu doar faptul ei.** Regula veche a fost scrisă împotriva **fundalului
+procurat** — imaginea de stoc cu creierul-circuit, care semnalează „pagină de AI generică" și
+n-a fost desenată pentru pagina asta. Un labirint desenat de noi, ortogonal, la 1.2–1.8:1
+contrast, e categoria opusă: **nu e o imagine pusă în spate, e o figură din text mutată în
+geometrie.** §02 spune de patru ori „n-ai o hartă" (`copy.ts` liniile 87, 90, 282, 486, 661).
+Un labirint e definiția vizuală a absenței hărții. Regula veche nu-l acoperea; îl prindea din
+greșeală, pentru că era formulată prin subiect („roboți, creiere") în loc de prin proveniență
+(„procurat vs. autorat"). **Formularea nouă mută testul de la ce reprezintă motivul la de
+unde vine și ce muncă face.**
+
+### Ce s-a decis odată cu el
+
+| # | Decizie | Motiv |
+|---|---|---|
+| **D22** | Fundalul de labirint e o **direcție alternativă documentată separat** (`docs/design/DESIGN_BRIEF-labirint.md`), nu o editare a v4 | v4 se implementează în paralel chiar acum. Două documente care coexistă fără conflict de fișiere; adoptarea e o decizie ulterioară, nu un fapt împlinit. |
+| **D23** | `backdrop-filter` **dispare de pe cele 14 carduri deschise**, rămâne doar pe registrul închis (§02, §08), pe cardul activ | Măsurat, nu preferat: la tenta pe care o cere contrastul (0.82/0.88), backdropul e spălat la ~3% delta de luminanță — blurul cheltuia 4–10ms/cadru înmuind ceva deja invizibil. Pe registrul închis (tentă 0.70) delta e vizibilă (1.59:1), acolo blurul își plătește costul. **Niciun număr de contrast nu se schimbă**, pentru că v4 calculase deja totul presupunând că blurul nu contribuie. |
+| **D24** | **Labirintul și sticla mată nu încap amândouă pe mobil.** Dacă D23 se refuză, labirintul pică. | Android mediu, 4G, browser in-app WhatsApp, 360px. Trei plăci de ecran plin cu `backdrop-filter` + Lenis + tilt + un element care se mișcă permanent în backdrop (ceea ce împiedică definitiv cache-uirea blurului). Trade-ul se declară acum, nu se improvizează la QA — asta s-a plătit deja în iterațiile 1–3. |
+| **D25** | Plafonul de opacitate al fundalului trece de la `stroke-opacity` moștenit la **`<g opacity>`** | **Obligatoriu, nu cosmetic.** Câmpul v4 e format din verticale paralele care nu se intersectează niciodată, deci `stroke-opacity` era un plafon corect. Un labirint se intersectează prin definiție: două stroke-uri la 0.25 care se suprapun compun la 0.4375 — cu 75% peste plafon, exact în punctele cele mai numeroase ale desenului, iar `npm run contrast` ar fi raportat verde peste el (citește constanta, nu pixelii). `opacity` de grup aplatizează întâi și aplică valoarea o dată: maximul devine structural imposibil de depășit. |
+| **D26** | Opacitatea subiectului: **0.32** pe registrele deschise, **0.50** pe cel închis | Calculat, nu ales. La 0.39, `--text-muted` `#637474` sub tenta primară pică la **3.99:1**. La 0.32 rămâne la **4.60:1**. Marja e de 0.10 — subțire, deci pusă sub gate: `ALPHA_SUBIECT` + 5 perechi noi în `scripts/check-contrast.mjs`, cu o aserțiune care explică *de ce* pică, nu doar *că* pică. |
+| **D27** | **Firul se absoarbe în labirint.** `<nav class="rail-fir">` se șterge; controller-ul (`actualizeazaRail` + Lenis + tastatură + ancore) supraviețuiește intact, fișierul se redenumește `ControlerCarduri.astro`. | Railul și coridorul spun exact același lucru (unde ești din 16, care 4 sunt CTA). Justificarea din v4 — „trei scări diferite, nu concurează" — funcționa cât timp fundalul purta zero informație; labirintul poartă, deci expiră. Coridorul spune în plus și *forma* a ce urmează. Zero cost pe accesibilitate: railul era `aria-hidden` + `pointer-events: none`. |
+| **D28** | „Licitare statică" **reinterpretată**: nu pâlpâire de luminozitate pe placă, ci **descărcare pe muchie** — 2 bătăi, 190ms, <2% din suprafață | Trei motive independente: (1) WCAG 2.3.1 — un flash mare, repetabil, pe >25% din aria de 10° e risc de fotosensibilitate, iar o placă de ecran plin e exact acel caz; (2) o pâlpâire e un *eveniment*, nu o *stare* — scrubată la scroll, stroboscopează la tremuratul degetului, contra cerinței „înainte și înapoi"; (3) un flash alb pe card e cel mai rapid mod de a face pagina să arate ieftin. Rezolvarea: latch cu histerezis 0.72↑/0.45↓ (≈216px), cooldown 400ms, plafon 2 bătăi, zero sub `prefers-reduced-motion`. Refolosește linia speculară pe care v4 o are deja. |
+| **D29** | **Zero dependințe noi.** Fără GSAP, fără ScrollTrigger, fără MotionPathPlugin. | ~40KB gzip peste o pagină al cărei JS total e azi ~6KB. `scrub` e primitiva corectă conceptual, dar aici înseamnă 8 elemente și o singură funcție de progres — ~40 de linii. Aceeași disciplină prin care `lenis` a fost admis abia la a treia rundă, după ce a justificat **două** funcții. CSS scroll-driven rămâne candidat pentru o iterație viitoare, respins acum pentru că ar introduce o a doua sursă de progres (contra principiului „un senzor în loc de două", deja scris în controller). |
+| **D30** | **Placa cedează ≥16vh** (nu depășește 84% din înălțimea cardului) | Fără bandă vizibilă, labirintul e invizibil pe mobil (placa acoperă azi ~95% din ecran la 360×800). Preț recunoscut: mai multe carduri vor avea scroll intern. Nimic nu se taie (`overflow-y: auto` e permanent), deci „§02/§08 nu se taie la mobil" rămâne respectat — dar e o degradare reală de fit, declarată ca preț, nu ascunsă. |
+
+### Criteriu de renunțare, scris înainte, nu după
+
+Dacă la QA, la 360×800 cu CPU throttled 4×, se ajunge la nivelul **D4 sau mai jos** din scara
+de degradare (`DESIGN_BRIEF-labirint.md` §10.2), direcția nu se susține pe mobil. Mișcarea
+corectă atunci **nu** e să se livreze podeaua pentru toți — e fallback-ul de reduced-motion sub
+48rem și varianta completă doar peste. Un labirint la podea e un fundal static cu overhead de
+JS: plătești costul fără să primești efectul.
+
+Al doilea criteriu, vizual: dacă la 360×800, în repaus, se văd **sub 3 celule complete** de
+labirint (criteriul V8), labirintul e decor pe care nu-l poți citi și se taie.
+
+### Lecția de proces, pentru rundele următoare
+
+Iterația 3 a trecut QA-ul ca „gata de livrare" fiind în același timp urâtă, pentru că
+verificarea a măsurat contrast, performanță și regresii — dar nimeni n-a dat verdict pe
+imagine. `DESIGN_BRIEF-labirint.md` §14 conține 14 criterii vizuale cu prag numeric (densitate,
+grosime, contrast de câmp, ortogonalitate, testul de mijire, contact sheet 4×4, testul de
+inversare, testul de tremurat). **Regulă nouă de QA: un raport nu are voie să spună „gata de
+livrare" fără o secțiune estetică separată, cu verdict individual pe V1–V14 și screenshot
+lângă fiecare.** „Contrast OK, perf OK, zero regresii" e exact propoziția care a trecut o
+pagină urâtă mai departe.
+
 ---
 
 ## Ce a rămas deliberat în afara scopului

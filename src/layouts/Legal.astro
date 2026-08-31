@@ -1,0 +1,173 @@
+---
+/**
+ * Layout comun pentru /termeni și /confidentialitate — aceeași tipografie de
+ * proză (h2/h3/p/ul/tabel), un singur loc de întreținut pentru amândouă.
+ */
+import Base from './Base.astro';
+import S17Footer from '../components/S17Footer.astro';
+
+interface Props {
+  titlu: string;
+  descriere: string;
+  ultimaActualizare: string;
+}
+
+const { titlu, descriere, ultimaActualizare } = Astro.props;
+---
+
+<Base titlu={`${titlu} — Deep Logic`} descriere={descriere}>
+  <main id="continut">
+    <div class="container pagina">
+      <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
+
+      <header>
+        <h1>{titlu}</h1>
+        <p class="data">Ultima actualizare: {ultimaActualizare}</p>
+      </header>
+
+      <div class="corp">
+        <slot />
+      </div>
+    </div>
+  </main>
+
+  <S17Footer />
+</Base>
+
+<style>
+  main {
+    padding-block: var(--sp-2xl) var(--sp-xl);
+  }
+
+  .pagina {
+    max-width: 42rem;
+  }
+
+  .inapoi {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch);
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: var(--sp-lg);
+  }
+
+  .inapoi:hover,
+  .inapoi:focus-visible {
+    color: var(--accent);
+  }
+
+  header {
+    margin-bottom: var(--sp-xl);
+    padding-bottom: var(--sp-lg);
+    border-bottom: 1px solid var(--bg-secundar);
+  }
+
+  h1 {
+    font-size: var(--t-h1);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .data {
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+  }
+
+  /*
+   * `:global()` obligatoriu aici: conținutul din <slot /> e randat de pagina
+   * consumatoare (termeni.astro / confidentialitate.astro), deci poartă
+   * data-astro-cid-ul EI, nu al acestui layout — exact bug-ul de scoping
+   * documentat în CLAUDE.md (Cta/cta-hero) dacă omit :global().
+   */
+  .corp :global(h2) {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-h2);
+    line-height: var(--lh-strans);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-top: var(--sp-2xl);
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .corp :global(h3) {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-h3);
+    line-height: var(--lh-strans);
+    color: var(--text);
+    margin-top: var(--sp-xl);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .corp :global(p) {
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp :global(ul) {
+    margin: 0 0 var(--sp-md);
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--sp-xs);
+  }
+
+  .corp :global(strong) {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .corp :global(a) {
+    color: var(--accent);
+  }
+
+  .corp :global(a:hover) {
+    color: var(--accent-hover);
+  }
+
+  .corp :global(.tabel-scroll) {
+    overflow-x: auto;
+    margin-block: var(--sp-lg);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .corp :global(table) {
+    width: 100%;
+    min-width: 32rem;
+    border-collapse: collapse;
+    font-size: var(--t-mic);
+  }
+
+  .corp :global(th),
+  .corp :global(td) {
+    text-align: left;
+    padding: var(--sp-sm);
+    border-bottom: 1px solid var(--bg-secundar);
+    vertical-align: top;
+  }
+
+  .corp :global(th) {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+  }
+
+  .corp :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--bg-secundar);
+    margin-block: var(--sp-xl);
+  }
+
+  .corp :global(.nota-finala) {
+    font-size: var(--t-eyebrow);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .corp :global(address) {
+    font-style: normal;
+  }
+</style>

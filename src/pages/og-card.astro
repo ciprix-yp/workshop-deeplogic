@@ -1,0 +1,97 @@
+---
+/**
+ * Sursa cardului OG — randată o dată, capturată la 1200×630 prin Playwright
+ * (vezi scripts/genereaza-og.mjs), salvată ca public/og-workshop-16-09.png.
+ *
+ * Pagină reală, nu un SVG separat: folosește exact fonturile self-hostate
+ * (latin-ext, pentru ș/ț) și tokens.css ale site-ului, deci cardul nu poate
+ * diverge vizual de restul paginii. Rămâne în proiect — dacă titlul sau data
+ * se schimbă vreodată, cardul se regenerează din aceeași sursă de adevăr
+ * (`copy.ts`), nu editat manual într-un tool extern.
+ *
+ * Fără imagerie generică (interzis de CLAUDE.md §2) — tipografie pură, pe
+ * registrul întunecat, ca §08.
+ */
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import { meta, EVENIMENT, footer } from '../content/copy';
+
+export const prerender = true;
+---
+
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <title>OG card — {EVENIMENT.titlu}</title>
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body>
+    <div class="card">
+      <p class="eyebrow">Workshop · {EVENIMENT.oras}</p>
+      <h1>{meta.ogTitlu}</h1>
+      <p class="detalii">{EVENIMENT.dataScurt} · {EVENIMENT.ora} · {EVENIMENT.capacitate} de locuri</p>
+      <p class="brand">{footer.brand}</p>
+    </div>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg-inchis);
+    display: flex;
+    align-items: center;
+  }
+
+  .card {
+    width: 100%;
+    padding: 0 88px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-clar);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: 68px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text-pe-inchis);
+    max-width: 920px;
+  }
+
+  .detalii {
+    margin: 0;
+    font-family: var(--font-corp);
+    font-size: 28px;
+    color: var(--text-pe-inchis-muted);
+  }
+
+  .brand {
+    margin: 20px 0 0;
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--text-pe-inchis);
+  }
+</style>

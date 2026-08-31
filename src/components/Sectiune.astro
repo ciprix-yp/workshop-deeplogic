@@ -1,4 +1,6 @@
 ---
+import IndicatorScrollIntern from './IndicatorScrollIntern.astro';
+
 interface Props {
   id?: string;
   /**
@@ -12,29 +14,115 @@ interface Props {
   /** Lățimea conținutului: `proza` pentru text lung, `larg` pentru tabele/grid. */
   latime?: 'proza' | 'larg';
   clasa?: string;
+  /**
+   * `card` (implicit): secțiunea ocupă exact `100dvh`, centrată vertical —
+   * parte din sistemul de hijack + fir segmentat v2 (vezi
+   * docs/design/DESIGN_BRIEF.md, „Layout"). `normal` păstrează fluxul
+   * continuu v1; nefolosit azi de nicio secțiune din pagină, păstrat
+   * pentru eventuale secțiuni viitoare explicit în afara sistemului de
+   * carduri (§17/footer, de exemplu, nu trece prin Sectiune.astro deloc).
+   */
+  inaltime?: 'card' | 'normal';
+  /**
+   * Forțează fallback-ul de scroll intern indiferent de înălțimea
+   * viewport-ului — cazul §16: 5 blocuri de întrebări, bife, Turnstile,
+   * buton, conținut inerent mai lung decât încape la orice scară de
+   * tipografie rezonabilă. Excepție așteptată, nu eșec al fit-ului.
+   */
+  scrollIntern?: boolean;
+  /**
+   * v3/v4: varianta Câmpului. v5: Câmpul a fost înlocuit de un singur strat
+   * fix (Labirint.astro), iar gramatica „zgomot până la §07, clar de la §08"
+   * a migrat în DENSITATEA PE RÂNDURI a labirintului — rândurile 2–7 poartă
+   * 2–4 ramuri-fundătură, rândurile 8–16 poartă 0–1. Prop-ul rămâne acceptat
+   * ca să nu forțeze o editare în toate cele 15 secțiuni și pentru că e
+   * documentația vie a mapării; nu mai are efect vizual.
+   */
+  camp?: 'zgomot' | 'clar';
 }
-const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
+const {
+  id,
+  fundal = 'primar',
+  latime = 'proza',
+  clasa = '',
+  inaltime = 'card',
+  scrollIntern = false,
+} = Astro.props;
+
+const esteCard = inaltime === 'card';
 ---
 
-<section id={id} class:list={['sectiune', fundal]} data-fundal={fundal}>
-  <div class:list={['continut', latime, clasa]}>
-    <slot />
-  </div>
+<section
+  id={id}
+  class:list={['sectiune', fundal, esteCard && 'card', esteCard && scrollIntern && 'scroll-intern']}
+  data-fundal={fundal}
+  data-card={esteCard ? '' : undefined}
+>
+  {/*
+    v5: placa se sparge în doi frați — cromul (suprafață, se animă) și
+    conținutul (text, ZERO proprietăți animate). Vezi src/styles/labirint.css
+    pentru mecanismul complet și pentru de ce valoarea implicită a fiecărei
+    variabile de progres e starea SOSITĂ.
+
+    `data-tilt="card"` stă pe wrapper: înclină ambele straturi împreună, iar
+    cromul își păstrează `scale`-ul propriu pe alt element — deci tilt-ul și
+    scrub-ul nu se bat niciodată pe același `transform`.
+  */}
+  {esteCard ? (
+    <div class:list={['placa', latime]} data-tilt="card">
+      <div class="sticla-chrome" aria-hidden="true" data-chrome></div>
+      <div class:list={['continut', latime, clasa]}><slot /></div>
+    </div>
+  ) : (
+    <div class:list={['continut', latime, clasa]}><slot /></div>
+  )}
+  {esteCard && <IndicatorScrollIntern fundal={fundal} />}
 </section>
 
 <style>
   .sectiune {
     padding-block: var(--sp-2xl);
     padding-inline: var(--lat);
+    /* Expune registrul curent descendenților (v3) — citit acum de TENTA
+       plăcii de sticlă din tokens.css (`--bg-registru`), nu de scrim-ul
+       per-element, care a fost șters în v4. Orice sub-bloc cu fundal propriu
+       (`.vacarm-bloc`, `.granita`, `.bife`...) își republică valoarea local,
+       ca descendenții lui să nu moștenească greșit registrul cardului. */
+    --bg-registru: var(--bg);
+    /* Alpha tentei, per registru — calculată WCAG în DESIGN_BRIEF.md v4 și
+       oglindită în scripts/check-contrast.mjs (`ALPHA_TENTA_STICLA`). */
+    --sticla-alpha: 82%;
   }
 
   .sectiune.secundar {
     background: var(--bg-secundar);
+    --bg-registru: var(--bg-secundar);
+    --sticla-alpha: 88%;
+    /*
+     * Fix de contrast preexistent (v4, decis de Ciprian): `--text-muted`
+     * `#637474` dă 3.94:1 pe `#E4E7E7` — sub AA. Redefinit AICI, o singură
+     * dată, în loc de editat în fiecare regulă `color:` din §05/§13/
+     * IndicatorScrollIntern: `--text-muted` e o proprietate moștenită, deci
+     * tot ce trăiește în registrul secundar primește automat valoarea
+     * corectă, inclusiv o componentă viitoare care încă nu există.
+     * Vezi tokens.css pentru cifrele complete.
+     */
+    --text-muted: var(--text-muted-pe-secundar);
   }
 
   .sectiune.inchis {
     background: var(--bg-inchis);
     color: var(--text-pe-inchis-muted);
+    --bg-registru: var(--bg-inchis);
+    /* Pe întuneric, o muchie închisă e invizibilă. Aceeași greutate optică,
+       polaritate inversă. */
+    --muchie: rgba(255, 255, 255, 0.13);
+    --muchie-aprins: rgba(255, 255, 255, 0.32);
+    /* 0.70 nu vine dintr-o constrângere de contrast (pe registrul închis nu
+       există una: o linie deschisă peste un fundal foarte închis rămâne mai
+       închisă decât textul), ci dintr-o alegere estetică — sticla citește cel
+       mai bine pe întuneric, deci are voie să fie vizibil mai translucidă. */
+    --sticla-alpha: 70%;
     /* Secțiunile închise primesc mai mult aer: pe întuneric, aceeași spațiere
        arată mai strânsă decât e. */
     padding-block: calc(var(--sp-2xl) * 1.15);
@@ -42,12 +130,144 @@ const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
 
   .continut {
     margin-inline: auto;
+    position: relative;
   }
   .continut.proza {
     max-width: var(--max-proza);
   }
   .continut.larg {
     max-width: var(--max-continut);
+  }
+
+  /* Placa adaugă padding INTERIOR (`--pad-sticla`, aplicat pe `.continut` din
+     labirint.css). Cu `box-sizing: border-box` global, asta ar fi îngustat
+     coloana de text cu ~64px pe desktop — adică ar fi schimbat tăcut lungimea
+     de linie calibrată în v1 (`--max-proza` ≈ 70 de caractere). Compensat pe
+     PLACĂ, nu pe text: măsura rămâne identică, doar placa e mai lată. */
+  .placa.proza {
+    max-width: calc(var(--max-proza) + 2 * var(--pad-sticla));
+  }
+  .placa.larg {
+    max-width: calc(var(--max-continut) + 2 * var(--pad-sticla));
+  }
+
+  /* ── Modul „card" (v2) ──────────────────────────────────────────────────
+     Fiecare secțiune ocupă exact 100dvh, centrată vertical. `height` fix
+     (nu doar `min-height`): granițele cardului trebuie să fie deterministe
+     pentru sistemul de hijack — fiecare „salt" din RailFir.astro țintește
+     exact începutul cardului următor, calculat din poziții absolute în
+     document. `overflow-y: auto` rămâne activ tot timpul, nu doar în
+     fallback: dacă tipografia fluidă nu ajunge perfect pe un viewport
+     neprevăzut, cardul devine derulabil în loc să taie conținutul — regula
+     „§02/§08 nu se taie la mobil" din CLAUDE.md §2 e practic imposibil de
+     încălcat cu setup-ul ăsta. Indicatorul vizibil (IndicatorScrollIntern)
+     se arată doar în cele două cazuri proiectate explicit acolo, nu de
+     fiecare dată când overflow e tehnic activ.
+
+     Declarat AICI, după `.sectiune.inchis` de mai sus: la specificitate
+     egală (două clase fiecare), regula mai recentă din foaia de stil
+     câștigă — `padding-top`/`padding-bottom` explicite din regula asta
+     înlocuiesc `padding-block`-ul (și multiplicatorul de 1.15) moștenit de
+     la `.inchis`, fără să mai fie nevoie de o regulă `.card.inchis`
+     separată. Verificat, nu presupus: ordinea contează, nu doar
+     specificitatea.
+
+     `justify-content: safe center` (iterația 2, fix QA #1): centrarea
+     „unsafe" simplă împingea vârful conținutului (inclusiv h2) DEASUPRA
+     ariei vizibile pe orice card cu overflow real — verificat live, `§02`
+     avea h2 la -494px la 360×800, inaccesibil prin orice scroll (`scrollTop`
+     pornește la 0, deja sub h2). `safe` e fallback-ul NATIV, exact pentru
+     cazul ăsta (CSS Box Alignment L3): centrează cât timp încape, cade pe
+     `flex-start` exact când centrarea ar pierde conținut — fără nicio
+     dependență de JS/timing (spre deosebire de varianta alternativă,
+     `.deruleaza-real { justify-content: flex-start }`, care ar fi corectă
+     abia după ce scriptul de overflow din RailFir.astro rulează, cu o
+     fereastră de FOUC posibilă între primul paint și `fonts.ready`). Bonus:
+     browserele care nu recunosc încă `safe` (sintaxă necunoscută → declarația
+     întreagă e ignorată, nu doar cuvântul `safe`) cad pe valoarea inițială
+     `normal`, care în flex se comportă ca `flex-start` — deci fallback-ul
+     „greșit" e tot safe, nu unsafe. Nu am adăugat și varianta cu
+     `.deruleaza-real` — ar fi un al doilea mecanism care rezolvă exact
+     aceeași problemă, contrar principiului „un sistem mai puțin" deja
+     stabilit pentru acest controller (vezi RailFir.astro). */
+  .sectiune.card {
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    overflow-y: auto;
+    /*
+     * v5: `position: relative` RĂMÂNE (containing block pentru indicator),
+     * dar `z-index: 0` A DISPĂRUT — și asta e o schimbare structurală, nu o
+     * curățenie. Cu un context de stacking propriu pe fiecare card, placa ar
+     * fi rămas prizonieră sub `<Labirint>`/`<Subiect>` (`position: fixed`,
+     * z-index 1 și 2 la rădăcină), oricât de mare i-am fi dat z-index-ul.
+     * Fără el, `.placa` (z-index 3) se compară direct cu ele la nivelul
+     * rădăcinii, iar fundalurile de secțiune — care se pictează în stratul de
+     * fundal, sub tot ce e poziționat — rămân sub labirint. Exact ierarhia
+     * cerută: fundal < labirint < subiect < placă.
+     * Clipping-ul de `overflow-y: auto` nu depinde de stacking și rămâne
+     * neatins — un descendent `position: relative` e tăiat de scroller
+     * indiferent de z-index.
+     */
+    position: relative;
+    /* FĂRĂ overscroll-behavior-y: contain — deliberat, verificat prin
+       eșec. Blochează scroll-chaining-ul nativ dinspre card spre document
+       la epuizarea overflow-ului intern (sau chiar și fără overflow deloc,
+       unde nu are ce să „conțină"): un gest lent, care ar trebui să
+       curgă nativ de la un card la altul, rămânea complet înghețat.
+       Exact opusul cerinței „gest lent → zero interceptare". */
+    scrollbar-gutter: stable;
+    box-sizing: border-box;
+
+    /* Padding vertical mai strâns decât restul paginii (--sp-md fix, nu
+       --sp-2xl fluid până la 6rem): bugetul e acum plafonat la 100dvh, nu
+       la flux nelimitat — fiecare rem de padding e un rem luat direct din
+       spațiul de conținut. Verificat direct (Playwright, 360×800): chiar
+       și așa, majoritatea cardurilor tot depășesc 100dvh cu conținutul lor
+       actual — fitul perfect pe toate cere o retunare de tipografie/spațiere
+       PER SECȚIUNE, în afara scopului acestei treceri (vezi
+       IMPLEMENTATION_NOTES.md). Padding-ul de-aici recuperează ce se poate
+       recupera fără să atingă conținutul intern al fiecărei componente. */
+    /* v4: padding-ul cardului E marginea plăcii. v5: marginea devine BANDĂ
+       DE LABIRINT — `--banda-sus` / `--banda-jos` (tokens.css), nu mai
+       `--marja-sticla`. Fără ea, placa acoperă ~95% din ecran la 360×800 și
+       labirintul e desen pe care nimeni nu-l vede. Aerul dintre placă și text
+       e separat (`--pad-sticla`, interior). */
+    padding-top: calc(var(--banda-sus) + env(safe-area-inset-top, 0px));
+    padding-inline: calc(var(--marja-sticla) + env(safe-area-inset-left, 0px))
+      calc(var(--marja-sticla) + env(safe-area-inset-right, 0px));
+    /* Rezervă permanentă pentru CtaSticky (~56–64px + safe-area) pe
+       cardurile sub 48rem lățime — vezi CtaSticky.astro. Cost mic de
+       spațiu neutilizat pe cardurile unde bara nu apare azi (hero, §16):
+       preferat unui calcul dinamic prin IntersectionObserver, care ar
+       trebui resincronizat exact cu bugetul de tipografie la fiecare
+       schimbare de vizibilitate a barei. */
+    padding-bottom: calc(var(--banda-jos) + env(safe-area-inset-bottom, 0px) + 4rem);
+  }
+
+  @media (min-width: 48rem) {
+    .sectiune.card {
+      /* CtaSticky dispare de la 48rem — vezi media query-ul din
+         CtaSticky.astro. Banda de jos se egalizează cu cea de sus: fără bară
+         care s-o acopere, asimetria n-ar mai avea motiv. */
+      padding-bottom: calc(var(--banda-sus) + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* Când cardul e cunoscut dinainte ca fiind mai lung decât 100dvh (§16)
+     sau viewport-ul e prea scund ca fitul garantat să mai fie realist,
+     conținutul pornește de sus, nu centrat — altfel, cu overflow real,
+     centrarea ar începe randarea la jumătatea conținutului, nu la Q1. */
+  .sectiune.card.scroll-intern {
+    justify-content: flex-start;
+  }
+
+  @media (max-height: 559.98px) {
+    .sectiune.card {
+      justify-content: flex-start;
+    }
   }
 </style>
 

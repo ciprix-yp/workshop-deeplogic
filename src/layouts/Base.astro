@@ -1,6 +1,7 @@
 ---
 import '../styles/fonts.css';
 import '../styles/tokens.css';
+import '../styles/labirint.css';
 import { meta, EVENIMENT, footer } from '../content/copy';
 
 interface Props {
@@ -151,6 +152,69 @@ const jsonLd = {
             if (t.getBoundingClientRect().top < window.innerHeight) arata(t);
           }
         });
+      })();
+    </script>
+
+    {/*
+      Tilt 3D pe carduri (data-tilt) — două căi separate, nu una singură cu
+      excepții:
+
+      1. Pointer fin + hover real (mouse): urmărește cursorul continuu,
+         `pointermove`/`pointerleave`.
+      2. Touch: NU poate urmări degetul în timp ce se mișcă — `touchmove` ar
+         trebui să blocheze scroll-ul paginii ca să funcționeze (`preventDefault`),
+         exact experiența pe care n-o vrem pe un site mobile-first. În loc de
+         asta, un tilt scurt la apăsare (`touchstart`), spre punctul atins,
+         revenit la `touchend` — `{ passive: true }` pe amândouă, deci scroll-ul
+         normal nu e atins niciodată. Fără asta, efectul cerut explicit era
+         literalmente invizibil pe telefon — exact dispozitivul de test.
+
+      Selector: `[data-tilt]:not([data-tilt="card"])` — exclude deliberat
+      cardurile de 100dvh (§01–§16, v2). Acelea au propriul script, cu
+      MAX_GRADE și perspective recalibrate pentru scara mare
+      (RailFir.astro) — dacă scriptul ăsta le-ar prinde și pe ele,
+      ambele ar scrie pe `style.transform` al aceluiași element la fiecare
+      `pointermove`, fiecare cu propria constantă, alternând imprevizibil.
+    */}
+    <script is:inline>
+      (() => {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (reduce.matches) return;
+
+        const MAX_GRADE = 8;
+        const calculTilt = (card, clientX, clientY) => {
+          const r = card.getBoundingClientRect();
+          const x = (clientX - r.left) / r.width - 0.5;
+          const y = (clientY - r.top) / r.height - 0.5;
+          return `perspective(700px) rotateX(${(-y * MAX_GRADE).toFixed(2)}deg) rotateY(${(x * MAX_GRADE).toFixed(2)}deg) translateZ(6px)`;
+        };
+
+        const poatePlana = window.matchMedia('(hover: hover) and (pointer: fine)');
+        const cards = document.querySelectorAll('[data-tilt]:not([data-tilt="card"])');
+
+        if (poatePlana.matches) {
+          for (const card of cards) {
+            card.addEventListener('pointermove', (ev) => {
+              card.style.transform = calculTilt(card, ev.clientX, ev.clientY);
+            });
+            card.addEventListener('pointerleave', () => {
+              card.style.transform = '';
+            });
+          }
+        } else if ('ontouchstart' in window) {
+          for (const card of cards) {
+            card.addEventListener(
+              'touchstart',
+              (ev) => {
+                const t = ev.touches[0];
+                card.style.transform = calculTilt(card, t.clientX, t.clientY);
+              },
+              { passive: true },
+            );
+            card.addEventListener('touchend', () => { card.style.transform = ''; }, { passive: true });
+            card.addEventListener('touchcancel', () => { card.style.transform = ''; }, { passive: true });
+          }
+        }
       })();
     </script>
   </body>

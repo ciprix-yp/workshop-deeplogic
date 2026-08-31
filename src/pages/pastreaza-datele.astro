@@ -1,0 +1,122 @@
+---
+/**
+ * Link din emailul 8 (retenție date, la 1 an). Regula B2, aceeași ca la
+ * /raspuns și /checkin: GET-ul de aici doar randează — Outlook Safe Links și
+ * scanerele antivirus fac prefetch pe linkurile din email, iar un GET care
+ * ar muta starea ar însemna oameni cu datele „reconfirmate" fără să fi dat
+ * click. Mutarea reală trăiește exclusiv în POST /api/pastreaza-datele.
+ */
+import Base from '../layouts/Base.astro';
+import { EVENIMENT } from '../content/copy';
+
+export const prerender = false;
+
+const token = Astro.url.searchParams.get('token');
+---
+
+<Base titlu={`Păstrează-mi datele — ${EVENIMENT.titlu}`} noindex>
+  <main id="continut" class="pagina-raspuns">
+    {!token ? (
+      <div class="card">
+        <h1>Linkul ăsta nu e complet.</h1>
+        <p>Scrie-mi la contact@deeplogic.ro și rezolv eu manual.</p>
+      </div>
+    ) : (
+      <div class="card">
+        <h1>Vrei să-ți păstrez datele?</h1>
+        <p>Apasă butonul — ceasul de 1 an repornește de azi.</p>
+
+        <form id="form-retentie" method="POST" action="/api/pastreaza-datele">
+          <input type="hidden" name="token" value={token} />
+          <button type="submit" class="cta-retentie">Păstrează-mi datele</button>
+        </form>
+
+        <p class="rezultat" id="rezultat" role="status" aria-live="polite" hidden></p>
+      </div>
+    )}
+  </main>
+</Base>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById('form-retentie');
+    if (!form) return;
+    const buton = form.querySelector('button');
+    const rezultat = document.getElementById('rezultat');
+    const textInitial = buton.textContent;
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      buton.disabled = true;
+      buton.textContent = 'Se trimite…';
+      try {
+        const r = await fetch('/api/pastreaza-datele', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const date = await r.json();
+        if (date.ok) {
+          window.location.href = date.redirect;
+          return;
+        }
+        rezultat.hidden = false;
+        rezultat.textContent = date.mesaj ?? 'Ceva s-a rupt. Încearcă din nou.';
+      } catch {
+        rezultat.hidden = false;
+        rezultat.textContent = 'N-am putut trimite. Verifică conexiunea și încearcă din nou.';
+      } finally {
+        buton.disabled = false;
+        buton.textContent = textInitial;
+      }
+    });
+  })();
+</script>
+
+<style>
+  .pagina-raspuns {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-2xl) var(--lat);
+    text-align: center;
+  }
+  .card {
+    max-width: 26rem;
+    display: grid;
+    gap: var(--sp-md);
+    justify-items: center;
+  }
+  h1 {
+    font-size: var(--t-h2);
+  }
+  p {
+    color: var(--secundar);
+    line-height: var(--lh-lejer);
+  }
+  .cta-retentie {
+    font-family: var(--font-titlu);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: var(--sp-md) var(--sp-xl);
+    min-height: var(--touch);
+    cursor: pointer;
+  }
+  .cta-retentie:hover:not(:disabled),
+  .cta-retentie:focus-visible:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .cta-retentie:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .rezultat {
+    color: var(--eroare);
+    font-weight: 600;
+  }
+</style>

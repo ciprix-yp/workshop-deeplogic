@@ -1,0 +1,322 @@
+---
+/**
+ * Labirintul — element-semnătură v5. UN SINGUR strat `position: fixed` pentru
+ * toată pagina, care conține banda de labirint, cele 16 checkpointuri și
+ * subiectul cu coada lui. Înlocuiește Câmpul (v3/v4), care avea 16 instanțe
+ * absolute, una per card, fiecare cu propriile `@keyframes`.
+ *
+ * ── De ce e câștigat de brief, nu lipit peste el ──────────────────────────
+ *
+ * §02 spune, cuvânt cu cuvânt: „Problema ta nu e că nu vrei AI. E că n-ai o
+ * hartă." — și „hartă" mai apare de patru ori în copy (§08, §15, OG). Un
+ * labirint e definiția vizuală a absenței hărții. Pagina nu primește un fundal
+ * cu temă de labirint pentru că labirinturile arată bine; primește figura pe
+ * care propriul ei text o numește. Vezi DESIGN_BRIEF-labirint.md §5.1 și
+ * intrarea „Labirintul — răsturnarea regulii «fundal curat»" din DECIZII.md.
+ *
+ * ── Un singur strat pentru amândouă, deliberat ────────────────────────────
+ *
+ * Labirintul și subiectul trăiesc în ACELAȘI container translatat. Prima
+ * variantă avea două straturi fixe separate, fiecare cu transformul lui — și
+ * ar fi funcționat, cu o condiție pe care n-o poate garanta nimeni: cele două
+ * scrieri de `transform` să nu se despartă niciodată. Un singur container face
+ * ca subiectul să fie prins DE hartă prin construcție, nu prin sincronizare.
+ * Bonus: o singură scriere de transform pe cadru pentru cameră.
+ *
+ * ── Plafonul de opacitate: `<g opacity>`, NU `stroke-opacity` (D25) ───────
+ *
+ * Singurul mecanism din fișier care e obligatoriu, nu preferat. Câmpul v4 era
+ * format din verticale paralele — care nu se intersectează niciodată — deci
+ * `stroke-opacity: 0.25` moștenit era un plafon corect. Un labirint se
+ * intersectează prin definiție (colțuri, joncțiuni în T, ramuri): două
+ * stroke-uri separate la 0.25 care se suprapun compun la
+ * `1 − (1 − 0.25)² = 0.4375`, cu 75% peste plafon, exact în punctele cele mai
+ * numeroase ale desenului. `npm run contrast` ar fi raportat verde peste el,
+ * pentru că scriptul citește constanta, nu pixelii.
+ *
+ * `opacity` pe grup randează copiii într-un buffer offscreen, îi aplatizează,
+ * apoi aplică valoarea O SINGURĂ DATĂ — alfa rezultată la orice pixel nu poate
+ * depăși valoarea grupului, oricâte suprapuneri ar fi. Plafon structural, nu
+ * convenție care se rupe la următoarea ramură.
+ *
+ * ── Cele două registre ────────────────────────────────────────────────────
+ *
+ * Un strat fix nu poate ști pe ce fundal stă. Cele două grupuri (deschis /
+ * închis) există amândouă în DOM și se schimbă între ele prin `data-registru`,
+ * scris de controller la schimbarea cardului dominant — adică exact când
+ * granița trece de mijlocul ecranului, singurul prag corect pentru o comutare
+ * unică. Fără JS și sub `prefers-reduced-motion` rămâne grupul deschis:
+ * `#468984` la 0.25 peste `#1B2426` dă 1.28:1, adică TOT în banda cerută de
+ * criteriul V3 (1.2–1.8). Degradarea e o pierdere de rafinament, nu de
+ * vizibilitate.
+ */
+import {
+  genereazaLabirint,
+  LAT,
+  INALT,
+  CURSA_VIEWPORTURI,
+  INALTIME_VIEWPORTURI,
+} from '../lib/labirint-geometrie';
+
+const lab = genereazaLabirint();
+
+/** Cât din înălțimea BENZII se translatează pe tot documentul (0…1). */
+const cursaRelativa = CURSA_VIEWPORTURI / INALTIME_VIEWPORTURI;
+
+const date = JSON.stringify({
+  lut: lab.lut,
+  cp: lab.checkpointuri.map((c) => [c.xp, c.yp]),
+  cursa: Math.round(cursaRelativa * 1e6) / 1e6,
+});
+---
+
+<div class="labirint" aria-hidden="true" data-labirint data-registru="primar">
+  <div class="banda" data-banda style={`height:${INALTIME_VIEWPORTURI * 100}%`}>
+    <svg viewBox={`0 0 ${LAT} ${INALT}`} preserveAspectRatio="none" focusable="false">
+      <defs>
+        {/*
+          `preserveAspectRatio="none"` distorsionează celula (32.5×52.7px la
+          390×844, 106.7×56.3px la 1280×900) — acceptat deliberat: un `slice`
+          care taie din lățime ar muta jumătate din checkpointuri în afara
+          ecranului, iar ele TREBUIE să fie la poziții cunoscute și necropate
+          la orice viewport, pentru că din ele crește placa.
+
+          `vector-effect` pe FIECARE path, nu pe grup: nu e o proprietate
+          moștenită (nici în SVG 1.1, nici în SVG 2). Prima versiune îl avea pe
+          `<g>` și n-avea niciun efect — verificat pe screenshot, nu presupus:
+          liniile orizontale ieșeau la ~6.6px și cele verticale la ~4px, adică
+          exact artefactul „crăpături" care a omorât v3, plus o asimetrie care
+          n-ar fi avut nicio explicație.
+        */}
+        <g id="labirint-desen" fill="none" stroke="currentColor">
+          <path d={lab.grila} stroke-width="0.5" vector-effect="non-scaling-stroke" />
+          <path d={lab.ramuri} stroke-width="1" vector-effect="non-scaling-stroke" />
+          <path
+            d={lab.coridor}
+            stroke-width="1.25"
+            stroke-linecap="square"
+            vector-effect="non-scaling-stroke"
+          />
+        </g>
+      </defs>
+
+      <g class="grup deschis" opacity="0.25"><use href="#labirint-desen" /></g>
+      <g class="grup inchis" opacity="0.2"><use href="#labirint-desen" /></g>
+    </svg>
+
+    {/*
+      Checkpointurile și subiectul: elemente DOM, nu copii SVG. Două motive,
+      ambele structurale:
+        (a) `preserveAspectRatio="none"` întinde celula, deci un `<rect>` ar fi
+            fost un „pătrat" de 32×53px. Un element DOM își păstrează proporția.
+        (b) mișcarea subiectului nu murdărește rasterul labirintului — stratul
+            de desen rămâne static în coordonatele benzii și cache-uit de
+            compozitor; subiectul e singurul care produce muncă pe cadru.
+    */}
+    {lab.checkpointuri.map((c, i) => (
+      <span
+        class:list={['checkpoint', c.cta && 'cta']}
+        data-checkpoint={i}
+        style={`left:${c.xp}%; top:${c.yp}%`}
+      />
+    ))}
+
+    {/* Capul + 3 fantome. Ordinea în DOM = ordinea de pictare: fantoma cea mai
+        veche dedesubt, capul deasupra. */}
+    <span class="subiect fantoma f3" data-subiect="3"></span>
+    <span class="subiect fantoma f2" data-subiect="2"></span>
+    <span class="subiect fantoma f1" data-subiect="1"></span>
+    <span class="subiect cap" data-subiect="0"></span>
+  </div>
+</div>
+
+<script type="application/json" data-labirint-date is:inline set:html={date}></script>
+
+<style>
+  .labirint {
+    position: fixed;
+    inset: 0;
+    /*
+     * z-index 1 = DEASUPRA fundalurilor de secțiune, DEDESUBTUL plăcii (3).
+     * Ordinea asta e motivul pentru care `.sectiune.card` și `.hero` și-au
+     * pierdut `z-index: 0` în v5: cu un context de stacking propriu pe fiecare
+     * card, placa ar fi rămas prizonieră sub stratul fix, oricât de mare i-am
+     * fi dat z-index-ul. Fără el, se compară direct la nivelul rădăcinii.
+     * Clipping-ul de `overflow-y: auto` al cardului rămâne neatins — clipping
+     * și stacking sunt mecanisme separate.
+     */
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+    /*
+     * Plafon de lățime: fără el, la 1920px celula ajunge la 2.4:1 și
+     * coridoarele citesc ca dungi orizontale, nu ca labirint.
+     */
+    margin-inline: auto;
+    max-width: 90rem;
+    /* Fără `size` — dimensiunea vine din `inset`, nu din conținut. */
+    contain: layout paint style;
+    color: var(--accent-decor);
+    --subiect-dim: clamp(10px, 2.4vmin, 16px);
+    --cp-dim: clamp(7px, 1.7vmin, 11px);
+    /*
+     * 0.32 nu e o alegere de gust — e ultimul număr rotund sub pragul la care
+     * cel mai slab text al paginii pică AA. Oglindit în `ALPHA_SUBIECT` din
+     * scripts/check-contrast.mjs, unde stă sub gate cu o aserțiune care explică
+     * DE CE pică, nu doar că pică.
+     */
+    --subiect-opacitate: 0.32;
+  }
+
+  .labirint[data-registru='inchis'] {
+    color: var(--accent-clar);
+    /* Pe întuneric o formă deschisă are nevoie de mai multă alfa ca să fie la
+       fel de prezentă, iar constrângerea de contrast e mai lejeră: textul de pe
+       registrul închis e deschis, iar compozitul rămâne mult mai închis decât
+       el (5.89:1, verificat în check-contrast.mjs). */
+    --subiect-opacitate: 0.5;
+  }
+
+  @media (min-width: 90rem) {
+    .labirint {
+      /* Fade pe flancuri, ca muchia plafonului de lățime să nu se citească ca
+         o tăietură. */
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+    }
+  }
+
+  /*
+   * Banda: ~6.75 ecrane de labirint, translatată cu scroll-ul. `--lab-y` e
+   * scris de controller; valoarea implicită (0) e poziția de start, adică
+   * exact ce trebuie să se vadă fără JS și sub `prefers-reduced-motion`.
+   */
+  .banda {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+  }
+
+  .grup {
+    /* Tranziția e pe OPACITATE, nu pe culoare: culorile celor două grupuri sunt
+       fixe, se schimbă doar care e vizibil. 260ms — destul cât să nu se vadă
+       comutarea, destul de scurt cât să se termine înainte ca următorul card să
+       ajungă la repaus. */
+    transition: opacity 260ms linear;
+  }
+  .grup.inchis {
+    opacity: 0;
+  }
+  .labirint[data-registru='inchis'] .grup.deschis {
+    opacity: 0;
+  }
+  .labirint[data-registru='inchis'] .grup.inchis {
+    opacity: 0.2;
+  }
+
+  /* ── Checkpointurile ───────────────────────────────────────────────────
+     La plafonul labirintului (0.25 / 0.20), nu la cel al subiectului: sunt
+     mobilier de hartă, nu obiectul care se mișcă. */
+  .checkpoint {
+    position: absolute;
+    width: var(--cp-dim);
+    height: var(--cp-dim);
+    margin: calc(var(--cp-dim) * -0.5);
+    border: 1px solid currentColor;
+    background: transparent;
+    opacity: 0.25;
+    transition: background-color 220ms linear;
+  }
+  .labirint[data-registru='inchis'] .checkpoint {
+    opacity: 0.2;
+  }
+
+  /*
+   * Cele patru carduri-CTA (§01, §05, §08, §16) poartă `--accent` și o muchie
+   * de 1.5px — exact gramatica pe care railul o avea pe `circle`-urile-nod.
+   * `--accent` rămâne rezervat punctelor de acțiune; subiectul nu e un al
+   * cincilea, deci nu-l primește. Pe registrul închis cade pe `--accent-clar`,
+   * ca pe rail: `#376A66` pe `#1B2426` e practic invizibil.
+   */
+  .checkpoint.cta {
+    color: var(--accent);
+    border-width: 1.5px;
+  }
+  .labirint[data-registru='inchis'] .checkpoint.cta {
+    color: var(--accent-clar);
+  }
+
+  /* Vizitat = plin. ≤16 comutări de clasă pe toată pagina — nu 60 pe secundă,
+     care e exact motivul pentru care „traseul parcurs luminat" prin
+     `stroke-dashoffset` e interzis (ar repicta banda la fiecare cadru). */
+  .checkpoint.vizitat {
+    background: currentColor;
+  }
+
+  /* ── Subiectul ─────────────────────────────────────────────────────────
+     Pătrat, nu cerc: labirintul e ortogonal și construit pe o grilă pătrată, un
+     cerc ar fi obiect străin. Același glif e și checkpoint — contur gol =
+     nevizitat, plin = vizitat, plin + inel = subiectul acum. Un vocabular. */
+  .subiect {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--subiect-dim);
+    height: var(--subiect-dim);
+    margin: calc(var(--subiect-dim) * -0.5);
+    background: currentColor;
+    opacity: var(--subiect-opacitate);
+  }
+
+  .subiect.cap::after {
+    content: '';
+    position: absolute;
+    inset: calc(var(--subiect-dim) * -0.45);
+    border: 1px solid currentColor;
+    opacity: 0.4;
+  }
+
+  /*
+   * Coada: trei fantome, fiecare cu propriul lerp (în controller). Varianta
+   * evidentă — un offset semnat pe traseu, `p − 0.004·sign(v)` — ar fi făcut
+   * coada să SARĂ pe partea cealaltă de fiecare dată când viteza trece prin
+   * zero, adică la fiecare oprire. Lerp-uri diferite produc coada fără să
+   * întrebe vreodată în ce direcție mergem: rămâne în urmă în orice direcție și
+   * se așază peste cap când te oprești. Bidirecțional prin construcție.
+   */
+  .fantoma.f1 {
+    opacity: calc(var(--subiect-opacitate) * 0.4);
+  }
+  .fantoma.f2 {
+    opacity: calc(var(--subiect-opacitate) * 0.22);
+  }
+  .fantoma.f3 {
+    opacity: calc(var(--subiect-opacitate) * 0.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Labirintul RĂMÂNE — e harta, și harta nu e mișcare. Subiectul NU: un
+       marcaj nemișcat e un referent fără referință, și nu poartă nicio
+       informație pe care harta să n-o poarte deja. */
+    .subiect {
+      display: none;
+    }
+    .banda {
+      will-change: auto;
+    }
+    .grup,
+    .checkpoint {
+      transition: none;
+    }
+  }
+</style>

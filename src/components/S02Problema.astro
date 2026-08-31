@@ -8,7 +8,7 @@ import Sectiune from './Sectiune.astro';
   Legislația (AI Act, GDPR) apare AICI ca zgomot pe care îl aude cititorul —
   niciodată în pagină ca promisiune că o rezolvă Deep Logic.
 */}
-<Sectiune id="problema" latime="larg">
+<Sectiune id="problema" latime="larg" camp="zgomot">
   <div class="cap">
     <h2>{problema.h2}</h2>
     <p class="intro">{problema.intro}</p>
@@ -72,16 +72,23 @@ import Sectiune from './Sectiune.astro';
   /* ── Blocul de vacarm ───────────────────────────────────────────────── */
 
   .vacarm-bloc {
-    margin-top: var(--sp-xl);
+    /* Retunat (iterația 2, QA #2 — reducere de overflow pe cardul cel mai
+       lung): sp-lg în loc de sp-xl. Vezi mai jos, `.blocuri`, pentru
+       explicația generală a strategiei. */
+    margin-top: var(--sp-lg);
     background: var(--bg-inchis);
+    /* v3: republică registrul local pentru scrim-ul de contrast al Câmpului
+       (tokens.css) — fără asta, textul de-aici ar moșteni greșit registrul
+       primar al cardului (alb), nu întunecatul lui bloc propriu. */
+    --bg-registru: var(--bg-inchis);
     color: var(--text-pe-inchis-muted);
     border-radius: var(--radius-lg);
-    padding: var(--sp-lg) var(--sp-md);
+    padding: var(--sp-md);
   }
 
   @media (min-width: 40rem) {
     .vacarm-bloc {
-      padding: var(--sp-xl) var(--sp-lg);
+      padding: var(--sp-lg);
     }
   }
 
@@ -91,7 +98,7 @@ import Sectiune from './Sectiune.astro';
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--accent-clar);
-    margin-bottom: var(--sp-md);
+    margin-bottom: var(--sp-sm);
   }
 
   .vacarm {
@@ -99,13 +106,13 @@ import Sectiune from './Sectiune.astro';
     padding: 0;
     margin: 0;
     display: grid;
-    gap: var(--sp-md);
+    gap: var(--sp-sm);
   }
 
   @media (min-width: 52rem) {
     .vacarm {
       grid-template-columns: 1fr 1fr;
-      gap: var(--sp-md) var(--sp-xl);
+      gap: var(--sp-sm) var(--sp-xl);
     }
   }
 
@@ -126,8 +133,8 @@ import Sectiune from './Sectiune.astro';
   }
 
   .pivot {
-    margin-top: var(--sp-lg);
-    padding-top: var(--sp-md);
+    margin-top: var(--sp-md);
+    padding-top: var(--sp-sm);
     border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
 
@@ -147,11 +154,32 @@ import Sectiune from './Sectiune.astro';
 
   /* ── Diagnosticele, pe alb ──────────────────────────────────────────── */
 
+  /*
+   * Retunat (iterația 2, QA #2): `margin-top`/`gap` reduse de la `--sp-2xl`
+   * (fluid, până la 6rem) la `--sp-xl` fix — pe un card plafonat la 100dvh,
+   * fiecare rem economisit contează, iar cele trei diagnostice n-au nevoie
+   * de aceeași respirație generoasă ca separarea dintre secțiuni normale.
+   *
+   * `max-width: var(--max-proza)` eliminat: pe viewport-uri largi (≥64rem),
+   * cele trei blocuri trec pe 3 coloane — exact pattern-ul deja folosit în
+   * S09UseCases (grid responsive) pentru „multe elemente scurte", în loc de
+   * stivuire verticală nelimitată. Sub 64rem, `.blocuri` rămâne o singură
+   * coloană, fără schimbare de comportament vizual — doar lățimea nu mai e
+   * plafonată artificial la `--max-proza` (nu contează, fiindcă `.continut`
+   * părinte oricum limitează lățimea la `--max-continut`, 62rem). Verificat
+   * live: la 1920×1080, elimină overflow-ul rezidual (singurul card care mai
+   * depășea `100dvh` din cele patru semnalate de QA).
+   */
   .blocuri {
-    margin-top: var(--sp-2xl);
+    margin-top: var(--sp-xl);
     display: grid;
-    gap: var(--sp-2xl);
-    max-width: var(--max-proza);
+    gap: var(--sp-xl);
+  }
+
+  @media (min-width: 64rem) {
+    .blocuri {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   .bloc h3 {
@@ -160,7 +188,7 @@ import Sectiune from './Sectiune.astro';
        între zgomot și claritate, iar tipografia trebuie să facă la fel. */
     font-size: var(--t-h2);
     max-width: 20ch;
-    margin-bottom: var(--sp-md);
+    margin-bottom: var(--sp-sm);
   }
 
   .corp {

@@ -1,0 +1,101 @@
+---
+/**
+ * Fallback de scroll intern (v2, layout „cartonaș") — chevron autorat +
+ * scrim, afișate DOAR când cardul-părinte nu încape întreg în `100dvh`:
+ * fie structural (viewport sub pragul de 560px, `@media (max-height:
+ * 559.98px)`), fie forțat explicit (`.scroll-intern`, cazul §16 — vezi
+ * docs/design/DESIGN_BRIEF.md, „Fit garantat + fallback pe cazuri extreme").
+ *
+ * Ambele condiții sunt pur CSS — elementul e mereu în DOM (progressive
+ * enhancement, ca restul paginii), vizibilitatea comută doar prin
+ * `[data-card]`/`.scroll-intern` de pe cardul-părinte (Sectiune.astro,
+ * S01Hero.astro), fără nicio dependență de JS.
+ *
+ * Text de accesibilitate ascuns vizual, nu doar `aria-label`: elementul
+ * are nevoie de un NUME pentru cititoarele de ecran — `.vizual-ascuns`
+ * (clasa deja existentă în tokens.css) e mecanismul stabilit în proiect.
+ * Fără copy de marketing — un singur microcopy de accesibilitate, cerut
+ * explicit de brief.
+ */
+interface Props {
+  fundal?: 'primar' | 'secundar' | 'inchis';
+}
+const { fundal = 'primar' } = Astro.props;
+
+const scrimBg =
+  fundal === 'inchis' ? 'var(--bg-inchis)' : fundal === 'secundar' ? 'var(--bg-secundar)' : 'var(--bg)';
+const culoare = fundal === 'inchis' ? 'var(--text-pe-inchis-muted)' : 'var(--text-muted)';
+---
+
+<div class="indicator-scroll" style={`--scrim-bg:${scrimBg}; --scrim-culoare:${culoare};`}>
+  <span class="vizual-ascuns">Secțiunea continuă mai jos — derulează în interiorul cardului.</span>
+  <svg class="chevron" viewBox="0 0 24 12" width="24" height="12" aria-hidden="true" focusable="false">
+    <polyline
+      points="2,2 12,10 22,2"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</div>
+
+<style>
+  .indicator-scroll {
+    /* Ascuns implicit — vizibil doar în cele două cazuri proiectate,
+       comutate mai jos prin selectori `:global()` pe cardul-părinte. */
+    display: none;
+    position: sticky;
+    inset-inline: 0;
+    bottom: 0;
+    /* v5: 2 → 4. Cardul nu mai creează context de stacking propriu (vezi
+       Sectiune.astro), deci z-index-ul indicatorului se compară acum direct
+       cu straturile fixe ale labirintului (1) și ale subiectului (2) și cu
+       placa (3). La 2 ar fi ajuns SUB placă, adică invizibil. */
+    z-index: 4;
+    justify-content: center;
+    align-items: flex-end;
+    height: 48px;
+    padding-bottom: var(--sp-xs);
+    margin-top: auto;
+    /* Pur informativ — nu fură scroll/tap de la conținutul din spate. */
+    pointer-events: none;
+    color: var(--scrim-culoare);
+    background: linear-gradient(to bottom, transparent, var(--scrim-bg) 65%);
+  }
+
+  /* Declanșatoare — citesc starea de pe elementul-card dintr-o altă
+     componentă (Sectiune.astro sau S01Hero.astro). `:global()` iese din
+     scoping-ul Astro doar pentru partea din stânga a selectorului.
+
+     Trei condiții, oricare suficientă:
+     1. `.scroll-intern` — forțat explicit (§16).
+     2. `@media (max-height: 559.98px)` — pragul structural din brief,
+        pur CSS, valabil și fără JS.
+     3. `.deruleaza-real` — overflow efectiv, detectat de RailFir.astro
+        (independent de reduced-motion). Acoperă cazurile în care
+        tipografia fluidă nu ajunge perfectă pe un card anume, deasupra
+        pragului de 560px — vezi comentariul din RailFir.astro. */
+  :global([data-card].scroll-intern) .indicator-scroll,
+  :global([data-card].deruleaza-real) .indicator-scroll {
+    display: flex;
+  }
+
+  @media (max-height: 559.98px) {
+    :global([data-card]) .indicator-scroll {
+      display: flex;
+    }
+  }
+
+  /* Fix QA #4 (iterația 2): ascuns când cardul a fost derulat complet până
+     la capăt — indicatorul nu mai are ce anunța, „mai e conținut mai jos"
+     ar fi un semnal fals. `.scroll-vazut-complet` e togglat pe `scroll` din
+     RailFir.astro. Specificitate egală cu regulile de mai sus
+     ([data-card] + o clasă) — câștigă prin ordine (declarat ultimul), și
+     oricum câștigă față de regula din media query (specificitate mai mică,
+     un singur selector combinat descendent). */
+  :global([data-card].scroll-vazut-complet) .indicator-scroll {
+    display: none;
+  }
+</style>

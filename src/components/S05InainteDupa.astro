@@ -4,7 +4,7 @@ import Sectiune from './Sectiune.astro';
 import Cta from './Cta.astro';
 ---
 
-<Sectiune id="inainte-dupa" fundal="secundar" latime="larg">
+<Sectiune id="inainte-dupa" fundal="secundar" latime="larg" camp="zgomot">
   <h2>{inainteDupa.h2}</h2>
 
   {/*
@@ -87,7 +87,20 @@ import Cta from './Cta.astro';
   }
 
   .inainte {
-    color: var(--text-muted); /* 4.91:1 — nu opacitate 70%, care pica AA */
+    /*
+     * v4 — comentariul de aici a fost GREȘIT de la prima zi: „4.91:1" e
+     * ratio-ul lui `#637474` pe ALB, dar §05 e `fundal="secundar"`, unde
+     * aceeași valoare dă 3.94:1, sub AA. `npm run contrast` nu l-a prins
+     * pentru că perechea `coloana ÎNAINTE` era declarată doar contra
+     * fundalului primar (unghi mort reparat în același commit).
+     *
+     * `--text-muted` se rezolvă acum la `--text-muted-pe-secundar`
+     * (`#576565`, 4.89:1 plat / 4.73:1 sub sticlă), pentru că registrul
+     * secundar îl redefinește în Sectiune.astro. Nu opacitate, nu o culoare
+     * scrisă local: o proprietate moștenită, corectă și pentru `td::before`
+     * și `thead th` de mai jos, fără trei editări separate.
+     */
+    color: var(--text-muted);
   }
 
   .dupa {

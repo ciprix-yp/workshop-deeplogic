@@ -11,16 +11,16 @@ import Sectiune from './Sectiune.astro';
   culoare de text, aceeași greutate. Dacă „nu e pentru tine" arată mai mic sau
   mai gri, filtrul devine decorativ și nu mai filtrează pe nimeni.
 */}
-<Sectiune id="pentru-cine" latime="larg">
+<Sectiune id="pentru-cine" latime="larg" camp="zgomot">
   <div class="grila">
-    <div class="coloana">
+    <div class="coloana" data-reveal>
       <h2>{pentruCine.da.h2}</h2>
       <ul class="lista da">
         {pentruCine.da.lista.map((l) => <li>{l}</li>)}
       </ul>
     </div>
 
-    <div class="coloana">
+    <div class="coloana" data-reveal style="--intarziere: 90ms">
       <h2>{pentruCine.nu.h2}</h2>
       <ul class="lista nu">
         {pentruCine.nu.lista.map((l) => <li>{l}</li>)}
@@ -32,7 +32,10 @@ import Sectiune from './Sectiune.astro';
 <style>
   .grila {
     display: grid;
-    gap: var(--sp-xl);
+    /* Retunat (iterația 2, QA #2): sp-lg în loc de sp-xl — era la doar 50px
+       peste 100dvh la 360×800, cel mai apropiat card de fit perfect din
+       lista raportată de QA; un gol mai mic ajunge singur să-l încapă. */
+    gap: var(--sp-lg);
   }
 
   @media (min-width: 48rem) {
@@ -44,7 +47,7 @@ import Sectiune from './Sectiune.astro';
 
   h2 {
     font-size: var(--t-h3);
-    margin-bottom: var(--sp-md);
+    margin-bottom: var(--sp-sm);
   }
 
   .lista {
@@ -52,7 +55,7 @@ import Sectiune from './Sectiune.astro';
     padding: 0;
     margin: 0;
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-xs);
   }
 
   .lista li {

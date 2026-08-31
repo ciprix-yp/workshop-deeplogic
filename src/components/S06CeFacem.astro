@@ -3,16 +3,21 @@ import { ceFacem } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="ce-facem">
+<Sectiune id="ce-facem" camp="zgomot">
   <h2>{ceFacem.h2}</h2>
 
   <div class="blocuri">
-    {ceFacem.blocuri.map((bloc) => (
-      <article class="bloc" data-reveal>
-        <p class="numar" aria-hidden="true">{bloc.numar}</p>
-        <div class="corp">
-          <h3>{bloc.titlu}</h3>
-          {bloc.corp.map((p) => <p>{p}</p>)}
+    {ceFacem.blocuri.map((bloc, i) => (
+      // Vezi S09UseCases pentru motivul separării: `.bloc` (data-reveal, intrare
+      // la scroll) și `.bloc-tilt` (data-tilt, urmărește cursorul) nu pot trăi
+      // pe același element fără ca tranzițiile lor să se bată pe `transform`.
+      <article class="bloc" data-reveal style={`--intarziere: ${i * 70}ms`}>
+        <div class="bloc-tilt" data-tilt>
+          <p class="numar" aria-hidden="true">{bloc.numar}</p>
+          <div class="corp">
+            <h3>{bloc.titlu}</h3>
+            {bloc.corp.map((p) => <p>{p}</p>)}
+          </div>
         </div>
       </article>
     ))}
@@ -33,19 +38,44 @@ import Sectiune from './Sectiune.astro';
 <style>
   h2 {
     font-size: var(--t-h2);
-    margin-bottom: var(--sp-lg);
+    margin-bottom: var(--sp-md);
   }
 
+  /*
+   * Retunat (iterația 2, QA #2): gap redus de la `--sp-xl` la `--sp-lg`, și
+   * cele trei blocuri trec pe 3 coloane de la ≥64rem — același pattern ca
+   * S02Problema.astro și S09UseCases (grid responsive pentru elemente
+   * scurte multiple, în loc de stivuire verticală nelimitată). Verificat
+   * live: elimină overflow-ul rezidual la 1920×1080.
+   */
   .blocuri {
     display: grid;
-    gap: var(--sp-xl);
+    gap: var(--sp-lg);
+  }
+
+  @media (min-width: 64rem) {
+    .blocuri {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   .bloc {
     display: grid;
+  }
+
+  .bloc-tilt {
+    display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--sp-md);
     align-items: start;
+    padding: var(--sp-md);
+    border: 1px solid rgba(47, 79, 79, 0.15);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    /* v3: registru local pentru scrim-ul Câmpului — defensiv (§06 e deja pe
+       registrul primar, aceeași valoare, dar explicit dacă vreodată nu mai
+       e). Vezi S02Problema.astro. */
+    --bg-registru: var(--bg);
   }
 
   .numar {
@@ -70,9 +100,11 @@ import Sectiune from './Sectiune.astro';
   }
 
   .format {
-    margin-top: var(--sp-xl);
-    padding: var(--sp-md) var(--sp-lg);
+    margin-top: var(--sp-lg);
+    padding: var(--sp-sm) var(--sp-lg);
     background: var(--succes-bg);
+    /* v3: registru local pentru scrim-ul Câmpului — vezi S02Problema.astro. */
+    --bg-registru: var(--succes-bg);
     border-radius: var(--radius-lg);
     display: grid;
     gap: var(--sp-2xs);
@@ -81,7 +113,7 @@ import Sectiune from './Sectiune.astro';
   }
 
   .final {
-    margin-top: var(--sp-lg);
+    margin-top: var(--sp-md);
     color: var(--secundar);
   }
 </style>

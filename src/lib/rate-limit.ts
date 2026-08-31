@@ -39,6 +39,7 @@ const LIMITE: Record<string, LimitaConfig> = {
   register: { limita: 12, fereastraSecunde: 15 * 60 },
   raspuns: { limita: 20, fereastraSecunde: 15 * 60 },
   checkin: { limita: 20, fereastraSecunde: 15 * 60 },
+  'pastreaza-datele': { limita: 20, fereastraSecunde: 15 * 60 },
 };
 
 export type RutaLimitata = keyof typeof LIMITE;

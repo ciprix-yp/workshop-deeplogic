@@ -627,6 +627,12 @@ export const stari = {
     titlu: 'Bine ai venit.',
     corp: ['Te-am bifat. Ia loc unde vrei.'],
   },
+
+  // Link din emailul 8 (retenție date, la 1 an) — vezi src/inngest/functions/retention-sweep.ts
+  datePastrate: {
+    titlu: 'Gata. Îți păstrez datele.',
+    corp: ['Ceasul repornește de azi — te caut din nou peste un an.'],
+  },
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

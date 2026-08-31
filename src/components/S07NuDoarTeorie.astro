@@ -3,10 +3,10 @@ import { nuDoarTeorie } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="nu-doar-teorie">
+<Sectiune id="nu-doar-teorie" camp="zgomot">
   <h2>{nuDoarTeorie.h2}</h2>
   <ul>
-    {nuDoarTeorie.lista.map((l) => <li>{l}</li>)}
+    {nuDoarTeorie.lista.map((l, i) => <li data-reveal style={`--intarziere: ${i * 60}ms`}>{l}</li>)}
   </ul>
 </Sectiune>
 

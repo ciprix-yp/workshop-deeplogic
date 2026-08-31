@@ -1,0 +1,319 @@
+---
+/**
+ * Transcris din legal/Politica_de_Confidentialitate_DeepLogic.md — sursa de
+ * adevăr pentru textul juridic rămâne acel fișier.
+ *
+ * Istoric de corecții, toate verificate direct în cod, nu doar citite:
+ * §2.1 nu declara setul de 5 întrebări de calificare (Q1–Q5) pe care
+ * formularul chiar le colectează; §2.2 descria două bife opționale
+ * (marketing + newsletter) când formularul are una singură („vreau o
+ * discuție"); §2.4 declara WhatsApp ca și canal de comunicare Deep Logic →
+ * participant, deși formularul nu colectează telefon și ciclul Inngest
+ * trimite exclusiv email; §5 declara la timpul prezent o automatizare de
+ * ștergere la 1 an care, la prima corecție, nu exista încă în cod —
+ * readusă la prezent după ce automatizarea a fost construită și verificată
+ * live (migrația 0006, `src/inngest/functions/retention-sweep.ts`).
+ *
+ * A doua rundă pe §2.1: o revizuire externă (fără acces la `form-schema.ts`,
+ * pornind de la un document de plan depășit) a înlocuit lista corectă cu
+ * întrebări inventate — inclusiv o pretinsă opțiune de text liber care nu
+ * există. Corectat din nou, verificat linie cu linie față de schema reală.
+ */
+import Legal from '../layouts/Legal.astro';
+
+export const prerender = true;
+---
+
+<Legal
+  titlu="Politica de Confidențialitate"
+  descriere="Ce date personale colectează Deep Logic, în ce scop, pe ce bază legală și ce drepturi aveți asupra lor, conform GDPR."
+  ultimaActualizare="28 august 2026"
+>
+  <p>
+    Acest document explică ce date cu caracter personal colectează Deep Logic, în ce scop, pe ce bază legală, cât timp
+    le păstrează și ce drepturi aveți în legătură cu aceste date, conform Regulamentului (UE) 2016/679 (GDPR).
+  </p>
+
+  <h2>1. Operatorul de date</h2>
+  <p>
+    <strong>DEEP LOGIC S.R.L.</strong><br />
+    CUI/CIF: RO55361150<br />
+    Nr. de înregistrare Registrul Comerțului: J2026000619000<br />
+    Sediu social: Str. Careiului nr. 45, sat Vetiș, com. Vetiș, jud. Satu Mare<br />
+    Email de contact pentru chestiuni legate de date personale: contact@deeplogic.ro
+  </p>
+
+  <h2>2. Ce date colectăm și de ce</h2>
+  <p>
+    Site-ul Deep Logic colectează date cu caracter personal în mai multe situații distincte, fiecare cu bază legală
+    proprie.
+  </p>
+
+  <h3>2.1 Înscrierea la un eveniment (obligatoriu pentru participare)</h3>
+  <p>Pentru înscrierea la un eveniment (ex. workshopul „Prima Mutare spre un Asistent Digital"), colectăm:</p>
+  <ul>
+    <li>nume</li>
+    <li>email</li>
+    <li>companie / rol</li>
+    <li>cine v-a invitat la eveniment</li>
+    <li>ce proces din firma dumneavoastră consumă cel mai mult timp</li>
+    <li>nivelul actual de utilizare a instrumentelor AI</li>
+    <li>unealta AI pe care ați folosit-o cel mai recent</li>
+    <li>ce v-a oprit până acum să folosiți AI mai mult</li>
+    <li>domeniul de activitate al firmei</li>
+    <li>dacă aveți deja un proces țintă pentru sesiunea practică din workshop</li>
+    <li>câte persoane din firmă ating acel proces, în afară de dumneavoastră</li>
+  </ul>
+  <p>
+    Toate cele 5 întrebări de mai sus (de la „unealta AI" la „câte persoane") au răspuns ales dintr-o listă
+    predefinită de variante — niciuna nu presupune un câmp de text liber.
+  </p>
+  <p>
+    <strong>Scop:</strong> organizarea evenimentului (confirmare loc, comunicare logistică, reconfirmare participare,
+    gestionarea listei de așteptare, evitarea neprezentărilor), pregătirea unui document personalizat livrat după
+    eveniment, și identificarea celui mai relevant follow-up pentru afacerea dumneavoastră, inclusiv eventuale
+    servicii ulterioare Deep Logic.
+  </p>
+  <p>
+    <strong>Temei legal:</strong> consimțământul dumneavoastră, exprimat explicit la completarea formularului de
+    înscriere. Acest consimțământ este <strong>obligatoriu</strong> pentru a putea participa la eveniment.
+  </p>
+
+  <h3>2.2 Consimțământ opțional — solicitare de discuție</h3>
+  <p>
+    Separat de consimțământul obligatoriu de mai sus, formularul de înscriere include o singură bifă opțională:
+    <strong>„Vreau o discuție despre procesele mele"</strong>.
+  </p>
+  <p>
+    Dacă bifați această opțiune, ne autorizați să vă contactăm ulterior, individual, pentru o discuție despre
+    serviciile Deep Logic. Dacă nu bifați această opțiune, nu veți fi contactat în acest scop — participarea la
+    eveniment nu este afectată în niciun fel de această alegere.
+  </p>
+  <p>
+    <strong>Temei legal:</strong> consimțământul dumneavoastră explicit, exprimat separat de cel obligatoriu pentru
+    organizarea evenimentului.
+  </p>
+
+  <h3>2.3 Alte interacțiuni opționale pe site</h3>
+  <ul>
+    <li>
+      <strong>Trimiterea rezultatului autoevaluării pe email</strong>: colectăm doar adresa de email, exclusiv dacă
+      alegeți activ această opțiune. Autoevaluarea în sine nu necesită nicio dată de contact.
+    </li>
+    <li>
+      <strong>Programarea unei discuții („book a call")</strong>: se realizează prin platforma terță
+      <strong>Calendly</strong>, care colectează datele necesare programării (nume, email, și alte date pe care le
+      introduceți în procesul de programare). Utilizarea Calendly este supusă și propriei politici de confidențialitate
+      a acestei platforme.
+    </li>
+  </ul>
+  <p><strong>Temei legal:</strong> consimțământul dumneavoastră, exprimat prin acțiunea de a folosi aceste opțiuni.</p>
+
+  <h3>2.4 Comunicare prin email</h3>
+  <p>
+    Comunicările legate de un eveniment (confirmare înscriere, reconfirmare, mementouri, check-in) sunt trimise
+    exclusiv prin <strong>email</strong>, prin platforma Resend. Formularul de înscriere nu colectează număr de
+    telefon, iar acest flux de comunicare nu folosește WhatsApp.
+  </p>
+
+  <h3>2.5 Verificarea datelor firmei prin surse publice ANAF</h3>
+  <p>
+    Pentru participanții care se înscriu în numele unei firme, Deep Logic poate consulta informații
+    <strong>publice</strong>, puse la dispoziție de Agenția Națională de Administrare Fiscală (ANAF), pentru
+    verificarea sau completarea datelor de identificare ale firmei (ex. denumire, status TVA, în baza CUI). Nu se
+    transmit date către ANAF — se consultă doar informații deja publice, oferite de ANAF prin propriile servicii.
+  </p>
+  <p>
+    <strong>Temei legal:</strong> interesul legitim al Deep Logic de a verifica identitatea reală a participanților și
+    firmelor cu care interacționează (art. 6 alin. 1 lit. f din GDPR).
+  </p>
+
+  <h3>2.6 Fotografii și materiale video la evenimente</h3>
+  <p>
+    În cadrul evenimentelor fizice organizate de Deep Logic pot fi realizate fotografii și materiale video, folosite
+    ulterior în scop de promovare (site, social media, materiale de prezentare Deep Logic).
+  </p>
+  <p>
+    <strong>Temei legal:</strong> interesul legitim al Deep Logic de a documenta și promova activitatea sa (art. 6
+    alin. 1 lit. f din GDPR).
+  </p>
+  <p>
+    La începutul fiecărui eveniment, organizatorul anunță verbal acest aspect participanților. Dacă nu doriți să
+    apăreți în fotografii sau materiale video, puteți comunica acest lucru organizatorului la fața locului, sau
+    ulterior, prin email la contact@deeplogic.ro, pentru a solicita neutilizarea sau eliminarea din materialele
+    nepublicate.
+  </p>
+
+  <h2>3. Cui transmitem datele</h2>
+  <p>
+    Datele dumneavoastră sunt prelucrate prin intermediul următorilor furnizori de servicii (procesatori de date),
+    folosiți de Deep Logic pentru operarea site-ului, organizarea evenimentelor și comunicarea cu participanții:
+  </p>
+  <div class="tabel-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Furnizor</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Locația infrastructurii</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Supabase</strong></td>
+          <td>bază de date centrală (înscrieri, stare eveniment, consimțăminte, comunicări)</td>
+          <td>Uniunea Europeană (Frankfurt, Germania)</td>
+        </tr>
+        <tr>
+          <td><strong>Inngest</strong></td>
+          <td>orchestrarea automată a fluxurilor (confirmări, reconfirmări, listă de așteptare, check-in)</td>
+          <td>Statele Unite ale Americii</td>
+        </tr>
+        <tr>
+          <td><strong>Resend</strong></td>
+          <td>trimiterea email-urilor automate</td>
+          <td>Statele Unite ale Americii</td>
+        </tr>
+        <tr>
+          <td><strong>Cloudflare</strong></td>
+          <td>găzduirea site-ului și protecție anti-spam la formulare (Turnstile)</td>
+          <td>
+            rețea globală (companie din SUA); fără o configurare suplimentară de tip „Regional Services", datele pot
+            tranzita și servere din SUA
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Calendly</strong></td>
+          <td>programarea discuțiilor („book a call")</td>
+          <td>Statele Unite ale Americii</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Deep Logic nu vinde și nu închiriază datele dumneavoastră către terți în scop comercial. Datele pot fi divulgate
+    autorităților publice doar dacă legea o impune expres.
+  </p>
+
+  <h2>4. Transferul internațional de date</h2>
+  <p>
+    Din furnizorii de mai sus, doar <strong>Supabase</strong> găzduiește infrastructura în Uniunea Europeană. Toți
+    ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly) sunt companii din Statele Unite ale Americii, iar
+    datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
+  </p>
+  <p>Acest transfer se realizează în baza unor mecanisme legale recunoscute de GDPR:</p>
+  <ul>
+    <li>
+      <strong>Clauzele Contractuale Standard (SCC)</strong>, incluse în acordurile de prelucrare a datelor ale
+      acestor furnizori;
+    </li>
+    <li>
+      <strong>Cadrul de transfer de date UE-SUA (EU-U.S. Data Privacy Framework)</strong>, la care furnizorii
+      menționați aderă, prin care se angajează să asigure un nivel de protecție a datelor echivalent celui din
+      Uniunea Europeană.
+    </li>
+  </ul>
+  <p>
+    Dacă furnizorii folosiți de Deep Logic sau locația infrastructurii acestora se schimbă, această secțiune va fi
+    actualizată corespunzător.
+  </p>
+
+  <h2>5. Cât timp păstrăm datele</h2>
+  <p>Datele cu caracter personal colectate prin situațiile descrise mai sus sunt păstrate timp de <strong>1 an</strong> de la data colectării.</p>
+  <p>
+    La expirarea acestui termen, veți fi contactat pentru <strong>reconfirmarea</strong> dorinței de a vă păstra
+    datele în continuare. În lipsa reconfirmării, datele sunt șterse.
+  </p>
+  <p>
+    Curățenia bazei de date la expirarea termenului este realizată printr-o automatizare dedicată, pentru a asigura
+    respectarea consecventă a acestui termen.
+  </p>
+  <p>
+    Vă puteți retrage consimțământul și solicita ștergerea datelor în orice moment, înainte de expirarea acestui
+    termen, conform secțiunii 6.
+  </p>
+
+  <h2>6. Drepturile dumneavoastră</h2>
+  <p>Conform GDPR, aveți următoarele drepturi în legătură cu datele dumneavoastră cu caracter personal:</p>
+  <ul>
+    <li><strong>Dreptul de acces</strong> — să aflați ce date deținem despre dumneavoastră.</li>
+    <li><strong>Dreptul la rectificare</strong> — să corectați date incorecte sau incomplete.</li>
+    <li>
+      <strong>Dreptul la ștergere</strong> („dreptul de a fi uitat") — să solicitați ștergerea datelor, cu excepția
+      cazurilor în care legea impune păstrarea lor.
+    </li>
+    <li>
+      <strong>Dreptul la restricționarea prelucrării</strong> — să limitați modul în care vă folosim datele, în
+      anumite condiții.
+    </li>
+    <li>
+      <strong>Dreptul la portabilitatea datelor</strong> — să primiți datele într-un format structurat, utilizabil,
+      sau să solicitați transferul lor direct către un alt operator.
+    </li>
+    <li>
+      <strong>Dreptul la opoziție</strong> — să vă opuneți prelucrării datelor bazate pe interes legitim (inclusiv
+      fotografiilor/materialelor video sau verificării datelor firmei prin surse ANAF), în orice moment.
+    </li>
+    <li>
+      <strong>Dreptul de a vă retrage consimțământul</strong> — în orice moment, fără a afecta legalitatea
+      prelucrării efectuate anterior retragerii.
+    </li>
+    <li>
+      <strong>Dreptul de a depune plângere</strong> la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu
+      Caracter Personal (ANSPDCP), dacă considerați că prelucrarea datelor dumneavoastră încalcă legislația
+      aplicabilă.
+    </li>
+  </ul>
+  <p>Pentru exercitarea oricăruia dintre aceste drepturi, ne puteți contacta la <strong>contact@deeplogic.ro</strong>.</p>
+  <p>
+    <strong>Autoritatea de supraveghere:</strong><br />
+    Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal<br />
+    B-dul G-ral. Gheorghe Magheru nr. 28-30, Sector 1, București<br />
+    <a href="https://www.dataprotection.ro" rel="noopener noreferrer" target="_blank">www.dataprotection.ro</a>
+  </p>
+
+  <h2>7. Decizii automate și profilare</h2>
+  <p>
+    Deep Logic nu ia decizii automate cu efecte juridice asupra dumneavoastră și nu realizează profilare automată în
+    sensul art. 22 din GDPR.
+  </p>
+  <p>
+    Automatizările folosite (ex. Inngest) servesc exclusiv scopuri operaționale — logistica evenimentelor, confirmări,
+    gestionarea listei de așteptare, curățenia periodică a bazei de date — și nu produc efecte juridice sau decizii
+    semnificative care vă privesc individual, fără posibilitatea intervenției umane.
+  </p>
+
+  <h2>8. Securitatea datelor</h2>
+  <p>
+    Deep Logic aplică măsuri tehnice și organizatorice rezonabile pentru protejarea datelor colectate împotriva
+    accesului neautorizat, pierderii sau divulgării accidentale, folosind furnizori de servicii cu propriile politici
+    și măsuri de securitate (Supabase, Inngest, Resend, Cloudflare, Calendly).
+  </p>
+
+  <h2>9. Cookie-uri</h2>
+  <p>
+    Site-ul poate folosi cookie-uri strict necesare funcționării sale, inclusiv cele necesare protecției anti-spam a
+    formularelor (Cloudflare Turnstile). Pe viitor, în cazul introducerii de cookie-uri de analiză sau marketing, veți
+    fi informat printr-un banner de consimțământ dedicat, iar detaliile vor fi publicate într-o Politică de
+    Cookie-uri separată.
+  </p>
+
+  <h2>10. Modificarea acestei politici</h2>
+  <p>
+    Deep Logic poate actualiza periodic această politică, pentru a reflecta modificări legale sau ale modului de
+    operare al site-ului, inclusiv modificări ale furnizorilor de servicii folosiți. Data ultimei actualizări este
+    afișată la începutul documentului.
+  </p>
+
+  <h2>11. Contact</h2>
+  <p>
+    Pentru orice întrebare legată de prelucrarea datelor dumneavoastră cu caracter personal, ne puteți contacta la:
+    <strong>contact@deeplogic.ro</strong>
+  </p>
+
+  <hr />
+  <p class="nota-finala">
+    Acest document face parte din pagina „Legal" a site-ului Deep Logic, alături de
+    <a href="/termeni">Termenii și Condițiile</a> de utilizare.
+  </p>
+</Legal>

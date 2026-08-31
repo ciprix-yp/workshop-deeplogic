@@ -92,13 +92,15 @@ begin
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
       and p.proname in ('register_participant','claim_waitlist_seat','respond_to_invite',
-                        'expire_unconfirmed','check_in','walk_in_check_in','mark_welcome_sent')
+                        'expire_if_unconfirmed','check_in','walk_in_check_in','mark_welcome_sent',
+                        'find_contacts_due_for_retention_notice','mark_retention_notice_sent',
+                        'reconfirm_retention','purge_expired_retention')
   loop
     if not has_function_privilege('service_role', r.oid, 'EXECUTE') then
       raise exception 'PICA: service_role NU poate executa %() — revoke-ul a mers prea departe', r.proname;
     end if;
   end loop;
-  raise notice '  ok  service_role execută toate cele 7 funcții de aplicație';
+  raise notice '  ok  service_role execută toate cele 11 funcții de aplicație';
 end $$;
 
 \echo ''

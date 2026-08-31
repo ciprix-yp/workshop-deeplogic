@@ -17,18 +17,18 @@ import Sectiune from './Sectiune.astro';
 <Sectiune id="de-ce-gratuit">
   <h2>{deCeGratuit.h2}</h2>
 
-  <div class="corp">
+  <div class="corp" data-reveal>
     {deCeGratuit.corp.map((p) => <p>{p}</p>)}
   </div>
 
-  <div class="sub">
+  <div class="sub" data-reveal>
     <h3>{deCeGratuit.include.h3}</h3>
     <ul>
       {deCeGratuit.include.lista.map((l) => <li>{l}</li>)}
     </ul>
   </div>
 
-  <div class="sub">
+  <div class="sub" data-reveal>
     <h3>{deCeGratuit.deCe25.h3}</h3>
     <p>{deCeGratuit.deCe25.corp}</p>
   </div>

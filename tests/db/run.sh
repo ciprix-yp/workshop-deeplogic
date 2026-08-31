@@ -94,5 +94,8 @@ psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/permissions.sql" 2>&1 \
 psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/rate-limit.sql" 2>&1 \
   | grep -E "NOTICE|PICA|──|✓" | sed "s/^psql:[^ ]* //; s/^NOTICE: *//"
 
+psql -d "$DB" -v ON_ERROR_STOP=1 -f "$RADACINA/tests/db/retention.sql" 2>&1 \
+  | grep -E "NOTICE|PICA|──|✓" | sed "s/^psql:[^ ]* //; s/^NOTICE: *//"
+
 echo
 bash "$RADACINA/tests/db/race.sh"

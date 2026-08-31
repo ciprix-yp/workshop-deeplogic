@@ -61,5 +61,12 @@ export default defineConfig({
     build: {
       cssMinify: 'lightningcss',
     },
+    // Permite accesarea `astro dev` printr-un tunel (ex. cloudflared quick
+    // tunnel, host `*.trycloudflare.com`) pentru verificare vizuală rapidă pe
+    // telefon real. Afectează DOAR `astro dev` — build-ul de producție nu
+    // pornește un server Vite, deci nu are `allowedHosts`.
+    server: {
+      allowedHosts: true,
+    },
   },
 });
