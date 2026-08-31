@@ -13,14 +13,14 @@ import Sectiune from './Sectiune.astro';
 */}
 <Sectiune id="pentru-cine" latime="larg" scene="bascula">
   <div class="grila">
-    <div class="coloana" data-reveal data-el="filtru-da">
+    <div class="coloana" data-el="filtru-da">
       <h2>{pentruCine.da.h2}</h2>
       <ul class="lista da">
         {pentruCine.da.lista.map((l) => <li>{l}</li>)}
       </ul>
     </div>
 
-    <div class="coloana" data-reveal style="--intarziere: 90ms" data-el="filtru-nu">
+    <div class="coloana" data-el="filtru-nu">
       <h2>{pentruCine.nu.h2}</h2>
       <ul class="lista nu">
         {pentruCine.nu.lista.map((l) => <li>{l}</li>)}

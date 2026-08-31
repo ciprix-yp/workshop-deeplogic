@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
 test('elementele se dezvăluie la scroll', async ({ page }) => {
   await page.goto('/');
 
-  const tinta = page.locator('#rezultatul [data-reveal]').first();
+  const tinta = page.locator('#problema [data-reveal]').first();
   await expect(tinta).toHaveCSS('opacity', '0');
 
   await tinta.scrollIntoViewIfNeeded();
@@ -21,7 +21,7 @@ test('elementele se dezvăluie la scroll', async ({ page }) => {
 
 test('dezvăluirea nu se repetă la scroll înapoi', async ({ page }) => {
   await page.goto('/');
-  const tinta = page.locator('#rezultatul [data-reveal]').first();
+  const tinta = page.locator('#problema [data-reveal]').first();
 
   await tinta.scrollIntoViewIfNeeded();
   await expect(tinta).toHaveCSS('opacity', '1', { timeout: 3000 });
@@ -41,7 +41,7 @@ test('cu prefers-reduced-motion, totul e vizibil imediat', async ({ browser }) =
   // Scriptul nici nu pornește, deci `.js-reveal` nu se aplică și nimic nu e
   // ascuns vreodată.
   await expect(page.locator('html')).not.toHaveClass(/js-reveal/);
-  const tinta = page.locator('#rezultatul [data-reveal]').first();
+  const tinta = page.locator('#problema [data-reveal]').first();
   await expect(tinta).toHaveCSS('opacity', '1');
 
   await ctx.close();

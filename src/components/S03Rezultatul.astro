@@ -8,7 +8,7 @@ import Sectiune from './Sectiune.astro';
 
   <ol class="lista" data-el="lista-cinci">
     {rezultatul.lista.map((item, i) => (
-      <li data-reveal style={`--intarziere: ${i * 50}ms`}>
+      <li>
         <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
         <span class="text">
           <strong>{item.titlu}</strong>
@@ -25,7 +25,7 @@ import Sectiune from './Sectiune.astro';
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
   */}
-  <aside class="granita" data-reveal data-el="text-granita">
+  <aside class="granita" data-el="text-granita">
     <h3>{rezultatul.granita.h3}</h3>
     {rezultatul.granita.corp.map((p) => (
       <p>{p}</p>

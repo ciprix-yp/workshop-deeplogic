@@ -59,62 +59,97 @@
       {
         id: 'vacarm',
         elements: [
-          { el: 'linia-angajati', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.35 },
-          { el: 'linia-legislator', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.45 },
-          { el: 'linia-furnizori', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.55 },
-          { el: 'linia-antreprenor', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.65 },
-          { el: 'pivot-intrebari', from: { opacity: 0, y: 16, scale: 0.98 }, to: { opacity: 1, y: 0, scale: 1 }, reveal: 0.95 },
+          { el: 'linia-angajati', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.5 },
+          { el: 'linia-legislator', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.62 },
+          { el: 'linia-furnizori', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.74 },
+          { el: 'linia-antreprenor', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.86 },
+          { el: 'pivot-intrebari', from: { opacity: 0, y: 16, scale: 0.98 }, to: { opacity: 1, y: 0, scale: 1 }, reveal: 0.97 },
         ],
         mobileElements: [
-          { el: 'linia-angajati', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.35 },
-          { el: 'linia-legislator', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
-          { el: 'linia-furnizori', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.65 },
-          { el: 'linia-antreprenor', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.8 },
-          { el: 'pivot-intrebari', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.95 },
+          { el: 'linia-angajati', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'linia-legislator', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.62 },
+          { el: 'linia-furnizori', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.74 },
+          { el: 'linia-antreprenor', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.86 },
+          { el: 'pivot-intrebari', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.97 },
         ],
       },
-      /*
-       * „granita" (§03) nu apare aici, deliberat: „cel mai gol cadru din
-       * pagină" (textul de graniță, singur, sosit târziu) se obține gratis
-       * din fluxul normal al documentului — lista de cinci a ieșit deja din
-       * viewport până ajunge cititorul la bloc. Nicio coregrafie scrubuită
-       * nu adaugă ceva ce fluxul normal + `data-reveal` (existent, baseline)
-       * nu oferă deja. Treapta cea mai ieftină care obține efectul.
-       */
-      /*
-       * „bascula" (§04+§05) și „sala" (§06+§07) nu apar aici, deliberat:
-       * sunt scene de sprijin, nu semnătura — doctrina de restricție a
-       * skill-ului („Un moment-semnătură per pagină. Restul scenelor îl
-       * servesc sau se dau la o parte") + regula treptei celei mai ieftine.
-       * `data-reveal` (existent, baseline, deja testat) obține exact același
-       * efect de intrare fără un al doilea mecanism paralel de scrubuit.
-       * Bugetul de coregrafie reală merge la „harta" — singurul loc unde
-       * chiar cumpără ceva ce reveal-ul simplu n-ar putea.
-       */
+      {
+        id: 'granita',
+        elements: [
+          { el: 'lista-cinci', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
+          { el: 'text-granita', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.95 },
+        ],
+        mobileElements: [
+          { el: 'lista-cinci', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
+          { el: 'text-granita', from: { opacity: 0, y: 12 }, to: { opacity: 1, y: 0 }, reveal: 0.95 },
+        ],
+      },
+      {
+        id: 'bascula',
+        elements: [
+          { el: 'filtru-da', from: { opacity: 0, x: -20 }, to: { opacity: 1, x: 0 }, reveal: 0.5 },
+          { el: 'filtru-nu', from: { opacity: 0, x: 20 }, to: { opacity: 1, x: 0 }, reveal: 0.5 },
+          { el: 'randuri-inainte-dupa', from: { opacity: 0.4 }, to: { opacity: 1 }, reveal: 0.9 },
+        ],
+        mobileElements: [
+          { el: 'filtru-da', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'filtru-nu', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
+          { el: 'randuri-inainte-dupa', from: { opacity: 0.5 }, to: { opacity: 1 }, reveal: 0.9 },
+        ],
+      },
+      {
+        id: 'sala',
+        elements: [
+          { el: 'bloc-conversatia', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.5 },
+          { el: 'bloc-delegarea', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.7 },
+          { el: 'bloc-agentul', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.9 },
+        ],
+        mobileElements: [
+          { el: 'bloc-conversatia', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'bloc-delegarea', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.7 },
+          { el: 'bloc-agentul', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.9 },
+        ],
+      },
       {
         // Momentul-semnătură — vezi storyboard.json „harta". Zero pinning.
         id: 'harta',
         elements: [
-          { el: 'item-harta-scrisa', from: { opacity: 0, x: -40, y: 20 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.3 },
-          { el: 'item-document-24h', from: { opacity: 0, x: 40, y: -16 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.42 },
-          { el: 'item-structura-prompt', from: { opacity: 0, x: -30, y: -10 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.54 },
-          { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.66 },
-          { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.78 },
-          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.96 }, to: { opacity: 1, scale: 1 }, reveal: 0.9 },
+          { el: 'item-harta-scrisa', from: { opacity: 0, x: -40, y: 20 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.55 },
+          { el: 'item-document-24h', from: { opacity: 0, x: 40, y: -16 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.63 },
+          { el: 'item-structura-prompt', from: { opacity: 0, x: -30, y: -10 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.71 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.79 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
+          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.96 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
         ],
         mobileElements: [
-          { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.3 },
-          { el: 'item-document-24h', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.42 },
-          { el: 'item-structura-prompt', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.54 },
-          { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.66 },
-          { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.78 },
-          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.97 }, to: { opacity: 1, scale: 1 }, reveal: 0.9 },
+          { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.55 },
+          { el: 'item-document-24h', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.63 },
+          { el: 'item-structura-prompt', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.71 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.79 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.87 },
+          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.97 }, to: { opacity: 1, scale: 1 }, reveal: 0.96 },
         ],
         // Bătaie discretă, NU scrubuită — latch cu histerezis, pe traseul
         // propriu al elementului „harta-asamblata" (nu al scenei). Evită
         // exact eroarea de flash/strobe (WCAG 2.3.1) găsită în explorarea
         // abandonată din 29-31 august (docs/DECIZII.md).
-        latch: { el: 'bataie-latch', of: 'harta-asamblata', up: 0.72, down: 0.45 },
+        latch: { el: 'bataie-latch', of: 'harta-asamblata', up: 0.86, down: 0.6 },
+      },
+      {
+        id: 'registrul',
+        elements: [
+          { el: 'foto-facilitator', from: { opacity: 0, y: 12 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'bloc-continut', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+        ],
+        mobileElements: [
+          { el: 'foto-facilitator', from: { opacity: 0, y: 6 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'bloc-continut', from: { opacity: 0, y: 4 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+        ],
+      },
+      {
+        id: 'mutarea',
+        elements: [{ el: 'formular', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
+        mobileElements: [{ el: 'formular', from: { opacity: 0, y: 8 }, to: { opacity: 1, y: 0 }, reveal: 0.5 }],
       },
     ];
 

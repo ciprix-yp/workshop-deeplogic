@@ -11,10 +11,10 @@ const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
 
   <div class="blocuri">
     {ceFacem.blocuri.map((bloc, i) => (
-      // Vezi S09UseCases pentru motivul separării: `.bloc` (data-reveal, intrare
-      // la scroll) și `.bloc-tilt` (data-tilt, urmărește cursorul) nu pot trăi
-      // pe același element fără ca tranzițiile lor să se bată pe `transform`.
-      <article class="bloc" data-reveal style={`--intarziere: ${i * 70}ms`} data-el={NUME_BLOC[i]}>
+      // Vezi S09UseCases pentru motivul separării: `.bloc` (data-el, scrubuit
+      // de MotionEngine) și `.bloc-tilt` (data-tilt, urmărește cursorul) nu pot
+      // trăi pe același element fără ca tranzițiile lor să se bată pe `transform`.
+      <article class="bloc" data-el={NUME_BLOC[i]}>
         <div class="bloc-tilt" data-tilt>
           <p class="numar" aria-hidden="true">{bloc.numar}</p>
           <div class="corp">

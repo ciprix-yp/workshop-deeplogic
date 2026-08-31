@@ -158,7 +158,7 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.5,
           "ease": "linear"
         },
         {
@@ -172,7 +172,7 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.62,
           "ease": "linear",
           "notes": "AI Act/GDPR — apare o singură dată pe toată pagina, aici, ca zgomot pe care cititorul îl aude. Niciodată ca promisiune de conformitate (invariant CLAUDE.md)."
         },
@@ -187,7 +187,7 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.74,
           "ease": "linear"
         },
         {
@@ -201,7 +201,7 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.86,
           "ease": "linear"
         },
         {
@@ -217,7 +217,7 @@
             "y": 0,
             "scale": 1
           },
-          "reveal": 0.34,
+          "reveal": 0.97,
           "ease": "linear",
           "notes": "'Exact... începem ce? De unde?...' — sosește singură, ultima, chiar înainte de tăietură. E tensiunea maximă a scenei, nu rezoluția ei."
         }
@@ -242,7 +242,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2,
+            "reveal": 0.5,
             "ease": "linear"
           },
           {
@@ -256,7 +256,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2,
+            "reveal": 0.62,
             "ease": "linear"
           },
           {
@@ -270,7 +270,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2,
+            "reveal": 0.74,
             "ease": "linear"
           },
           {
@@ -284,7 +284,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2,
+            "reveal": 0.86,
             "ease": "linear"
           },
           {
@@ -298,7 +298,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.32,
+            "reveal": 0.97,
             "ease": "linear"
           }
         ]
@@ -313,7 +313,7 @@
         "start": 0.1447,
         "end": 0.2242
       },
-      "technique": "css",
+      "technique": "scroll-linked",
       "pinned": false,
       "camera": "pull-back",
       "elements": [
@@ -328,8 +328,9 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 0.2,
-          "notes": "Cele cinci 'vei ști' — reveal simplu la intrarea în viewport (data-reveal existent, technique css), nu scrubuit. Se așază devreme și rămân nemișcate tot restul scenei."
+          "reveal": 0.55,
+          "notes": "Cele cinci 'vei ști' — reveal simplu la intrarea în viewport (data-reveal existent, technique css), nu scrubuit. Se așază devreme și rămân nemișcate tot restul scenei.",
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='granita'] [data-el='text-granita']",
@@ -342,8 +343,9 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 0.2,
-          "notes": "'Ce NU vei ști la final' — sosește singur, târziu, în propriul bloc, mult mai jos în flux decât lista de cinci (deja ieșită din viewport până ajunge aici — 'cel mai gol cadru din pagină' se obține prin flux normal + margini generoase, nu prin ascunderea altceva). Reveal simplu (data-reveal), declanșat o singură dată la intrarea în viewport, nu scrubuit cu poziția de scroll."
+          "reveal": 0.95,
+          "notes": "'Ce NU vei ști la final' — sosește singur, târziu, în propriul bloc, mult mai jos în flux decât lista de cinci (deja ieșită din viewport până ajunge aici — 'cel mai gol cadru din pagină' se obține prin flux normal + margini generoase, nu prin ascunderea altceva). Reveal simplu (data-reveal), declanșat o singură dată la intrarea în viewport, nu scrubuit cu poziția de scroll.",
+          "ease": "linear"
         }
       ],
       "mobile": {
@@ -351,7 +353,7 @@
           "start": 0.143,
           "end": 0.2084
         },
-        "technique": "css",
+        "technique": "scroll-linked",
         "pinned": false,
         "notes": "§03 e una din cele două secțiuni care nu se scurtează NICIODATĂ la mobil (regulă CLAUDE.md, alături de §08). Fără cameră pull-back pe mobil — nu înseamnă nimic pe un ecran care oricum nu poate ține două planuri simultan. Ambele blocuri (cele cinci + granița) devin reveal simplu la intrarea în viewport (IntersectionObserver), fiecare complet, niciodată tăiat. Fracțiunea crește mult (18%) pentru că textul complet, needitat, stivuit vertical, ocupă mult mai mult spațiu decât pe desktop.",
         "elements": [
@@ -366,7 +368,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 1
+            "reveal": 0.55,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='granita'] [data-el='text-granita']",
@@ -379,7 +382,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 1
+            "reveal": 0.95,
+            "ease": "linear"
           }
         ]
       },
@@ -393,7 +397,7 @@
         "start": 0.2242,
         "end": 0.3138
       },
-      "technique": "css",
+      "technique": "scroll-linked",
       "pinned": false,
       "camera": "pan",
       "elements": [
@@ -408,8 +412,9 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
-          "notes": "Greutate finală IDENTICĂ cu 'filtru-nu' — regulă explicită CLAUDE.md ('cele două liste rămân vizual egale'). Diferența e doar direcția de intrare, niciodată opacitatea de repaus."
+          "reveal": 0.5,
+          "notes": "Greutate finală IDENTICĂ cu 'filtru-nu' — regulă explicită CLAUDE.md ('cele două liste rămân vizual egale'). Diferența e doar direcția de intrare, niciodată opacitatea de repaus.",
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='bascula'] [data-el='filtru-nu']",
@@ -422,7 +427,8 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2
+          "reveal": 0.5,
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='bascula'] [data-el='randuri-inainte-dupa']",
@@ -433,8 +439,9 @@
           "to": {
             "opacity": 1
           },
-          "reveal": 0.2,
-          "notes": "Cele cinci rânduri înainte/după — aici DA e o transformare intenționată (nu un filtru): celula 'înainte' rămâne lizibilă (0.4, nu 0), cea 'după' se așază la greutate completă, staggerat rând cu rând de-a lungul scenei."
+          "reveal": 0.9,
+          "notes": "Cele cinci rânduri înainte/după — aici DA e o transformare intenționată (nu un filtru): celula 'înainte' rămâne lizibilă (0.4, nu 0), cea 'după' se așază la greutate completă, staggerat rând cu rând de-a lungul scenei.",
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='bascula'] [data-el='cta-dupa-05']",
@@ -456,7 +463,7 @@
           "start": 0.2084,
           "end": 0.3071
         },
-        "technique": "css",
+        "technique": "scroll-linked",
         "pinned": false,
         "notes": "Fără x lateral pe filtru-da/nu — devin stagger vertical simplu, aceeași greutate finală. Rândurile înainte/după rămân staggerate dar cu amplitudine redusă. Fracțiune mai mare (18%) — cinci rânduri de comparație stivuite vertical sunt lungi pe 360px.",
         "elements": [
@@ -471,7 +478,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2
+            "reveal": 0.5,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='bascula'] [data-el='filtru-nu']",
@@ -484,7 +492,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2
+            "reveal": 0.55,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='bascula'] [data-el='randuri-inainte-dupa']",
@@ -495,7 +504,8 @@
             "to": {
               "opacity": 1
             },
-            "reveal": 0.2
+            "reveal": 0.9,
+            "ease": "linear"
           }
         ]
       },
@@ -509,7 +519,7 @@
         "start": 0.3138,
         "end": 0.4309
       },
-      "technique": "css",
+      "technique": "scroll-linked",
       "pinned": false,
       "camera": "pan",
       "elements": [
@@ -524,7 +534,8 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2
+          "reveal": 0.5,
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='sala'] [data-el='bloc-delegarea']",
@@ -537,7 +548,8 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2
+          "reveal": 0.7,
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='sala'] [data-el='bloc-agentul']",
@@ -550,8 +562,9 @@
             "opacity": 1,
             "x": 0
           },
-          "reveal": 0.2,
-          "notes": "Demo-ul de agent — cel mai concret dintre cele trei (propune, el aprobă; nu scrie singur în date). Numerotarea 01/02/03 folosește IBM Plex Mono — singurul loc din pagină alături de §01/§13/§16 unde apare (regulă art-direction: mono rămâne 'dată/număr', nu devine temă)."
+          "reveal": 0.9,
+          "notes": "Demo-ul de agent — cel mai concret dintre cele trei (propune, el aprobă; nu scrie singur în date). Numerotarea 01/02/03 folosește IBM Plex Mono — singurul loc din pagină alături de §01/§13/§16 unde apare (regulă art-direction: mono rămâne 'dată/număr', nu devine temă).",
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='sala'] [data-el='nota-format']",
@@ -573,7 +586,7 @@
           "start": 0.3071,
           "end": 0.4143
         },
-        "technique": "css",
+        "technique": "scroll-linked",
         "pinned": false,
         "notes": "Fără pan lateral — cele trei blocuri devin stivă verticală cu stagger simplu pe y (10px), aceeași ordine.",
         "elements": [
@@ -588,7 +601,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2
+            "reveal": 0.5,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='sala'] [data-el='bloc-delegarea']",
@@ -601,7 +615,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2
+            "reveal": 0.7,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='sala'] [data-el='bloc-agentul']",
@@ -614,7 +629,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2
+            "reveal": 0.9,
+            "ease": "linear"
           }
         ]
       },
@@ -645,7 +661,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.55,
           "ease": "linear"
         },
         {
@@ -661,7 +677,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.2,
+          "reveal": 0.63,
           "ease": "linear"
         },
         {
@@ -677,7 +693,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.51,
+          "reveal": 0.71,
           "ease": "linear"
         },
         {
@@ -693,7 +709,7 @@
             "x": 0,
             "y": 0
           },
-          "reveal": 0.51,
+          "reveal": 0.79,
           "ease": "linear"
         },
         {
@@ -707,7 +723,7 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 0.95,
+          "reveal": 0.87,
           "ease": "linear"
         },
         {
@@ -721,7 +737,7 @@
             "opacity": 1,
             "scale": 1
           },
-          "reveal": 0.95,
+          "reveal": 0.96,
           "ease": "linear",
           "notes": "Momentul de 'click' al asamblării — cele cinci piese, deja așezate, se citesc ca UN obiect. Fundal alb, spațiere generoasă (bugetul de design al paginii se cheltuiește aici, pe scară/margini — nu pe decor)."
         },
@@ -734,7 +750,7 @@
           "to": {
             "opacity": 0.12
           },
-          "reveal": 0.51,
+          "reveal": 0.86,
           "notes": "NU se scrubuiește continuu — latch cu histerezis: declanșează o singură dată la trecerea LOCALĂ 0.72 în sus, se rearmează doar sub 0.45, cooldown 400ms, maximum 2 declanșări per parcurgere, acoperă <2% din suprafață. Evită exact eroarea de flash/strobe (WCAG 2.3.1) găsită și corectată în explorarea abandonată din 29-31 august (vezi docs/DECIZII.md + docs/design/IMPLEMENTATION_NOTES.md). Fără `ease` — nu e o interpolare continuă, e un eveniment discret."
         }
       ],
@@ -772,7 +788,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.2,
+            "reveal": 0.55,
             "ease": "linear"
           },
           {
@@ -786,7 +802,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.88,
+            "reveal": 0.63,
             "ease": "linear"
           },
           {
@@ -800,7 +816,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.88,
+            "reveal": 0.71,
             "ease": "linear"
           },
           {
@@ -814,7 +830,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.88,
+            "reveal": 0.79,
             "ease": "linear"
           },
           {
@@ -828,7 +844,7 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 0.88,
+            "reveal": 0.87,
             "ease": "linear"
           },
           {
@@ -842,7 +858,7 @@
               "opacity": 1,
               "scale": 1
             },
-            "reveal": 0.88,
+            "reveal": 0.96,
             "ease": "linear"
           },
           {
@@ -854,7 +870,7 @@
             "to": {
               "opacity": 0.12
             },
-            "reveal": 0.88
+            "reveal": 0.86
           }
         ]
       },
@@ -869,7 +885,7 @@
         "start": 0.5073,
         "end": 0.8605
       },
-      "technique": "css",
+      "technique": "scroll-linked",
       "pinned": false,
       "camera": "static",
       "elements": [
@@ -884,8 +900,9 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 1,
-          "notes": "Singura fotografie reală din pagină (§11, Ciprian Micu) — de-aia e subiectul acestei scene, deși vine la mijlocul unui registru altfel textual."
+          "reveal": 0.5,
+          "notes": "Singura fotografie reală din pagină (§11, Ciprian Micu) — de-aia e subiectul acestei scene, deși vine la mijlocul unui registru altfel textual.",
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='registrul'] [data-el='bloc-continut']",
@@ -898,8 +915,9 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 1,
-          "notes": "O singură gramatică de reveal, repetată identic pe toate blocurile din §09/§10/§12/§13/§14/§15 (grid use-cases, despre Deep Logic, precedent, detalii, de ce gratuit, FAQ) — reveal-on-enter prin IntersectionObserver, declanșat independent per bloc, nu scrubuit cu poziția de scroll. Deliberat monoton: e informație de verificat, nu de trăit."
+          "reveal": 0.5,
+          "notes": "O singură gramatică de reveal, repetată identic pe toate blocurile din §09/§10/§12/§13/§14/§15 (grid use-cases, despre Deep Logic, precedent, detalii, de ce gratuit, FAQ) — reveal-on-enter prin IntersectionObserver, declanșat independent per bloc, nu scrubuit cu poziția de scroll. Deliberat monoton: e informație de verificat, nu de trăit.",
+          "ease": "linear"
         }
       ],
       "mobile": {
@@ -907,7 +925,7 @@
           "start": 0.4911,
           "end": 0.8323
         },
-        "technique": "css",
+        "technique": "scroll-linked",
         "pinned": false,
         "notes": "Fracțiune mare (16%) — șapte secțiuni reale de conținut, grid-ul de use-case-uri devine o coloană, FAQ-ul stivuiește complet, deci ocupă mult mai mult din scroll-ul total decât pe desktop. Amplitudine redusă (y:4px).",
         "elements": [
@@ -922,7 +940,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 1
+            "reveal": 0.5,
+            "ease": "linear"
           },
           {
             "selector": "[data-scene='registrul'] [data-el='bloc-continut']",
@@ -935,7 +954,8 @@
               "opacity": 1,
               "y": 0
             },
-            "reveal": 1
+            "reveal": 0.5,
+            "ease": "linear"
           }
         ]
       },
@@ -949,7 +969,7 @@
         "start": 0.8605,
         "end": 1
       },
-      "technique": "css",
+      "technique": "scroll-linked",
       "pinned": false,
       "camera": "static",
       "elements": [
@@ -964,7 +984,8 @@
             "opacity": 1,
             "y": 0
           },
-          "reveal": 1
+          "reveal": 0.5,
+          "ease": "linear"
         },
         {
           "selector": "[data-scene='mutarea'] [data-el='cta-final']",
@@ -999,7 +1020,7 @@
           "start": 0.8323,
           "end": 1
         },
-        "technique": "css",
+        "technique": "scroll-linked",
         "pinned": false,
         "notes": "Identic cu desktop, tehnică și amplitudine — camera 'locked-off' e deja minimă, nimic de simplificat suplimentar."
       },

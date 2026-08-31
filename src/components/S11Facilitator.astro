@@ -20,7 +20,7 @@ const areFoto = existsSync(caleFoto);
 <Sectiune id="facilitator" latime="larg" scene="registrul">
   <h2>{facilitator.h2}</h2>
 
-  <div class:list={['aranjament', areFoto && 'cu-foto']} data-reveal data-el="bloc-continut">
+  <div class:list={['aranjament', areFoto && 'cu-foto']} data-el="bloc-continut">
     {areFoto && (
       <img
         class="foto"
