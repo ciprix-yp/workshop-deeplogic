@@ -42,7 +42,7 @@
           },
           "to": {
             "opacity": 0.5,
-            "blur": 2
+            "blur": 1.4
           },
           "reveal": 0.4,
           "ease": "linear",
@@ -53,7 +53,7 @@
           "role": "subject",
           "from": {
             "opacity": 0.4,
-            "blur": 3,
+            "blur": 2.1,
             "y": 12
           },
           "to": {
@@ -101,7 +101,7 @@
         },
         "technique": "scroll-linked",
         "pinned": false,
-        "notes": "Aceeași coregrafie, amplitudine redusă: blur maxim 1.2px (nu 2), fără y pe linia 2 (doar opacitate). Fracțiunea scade la 5% pentru că restul paginii se îngroașă mult mai mult pe ecran îngust — nu pentru că scena a fost scurtată.",
+        "notes": "Aceeași coregrafie, amplitudine redusă: blur maxim 0.84px (nu 1.4), fără y pe linia 2 (doar opacitate). Fracțiunea scade la 5% pentru că restul paginii se îngroașă mult mai mult pe ecran îngust — nu pentru că scena a fost scurtată.",
         "elements": [
           {
             "selector": "[data-scene='ruptura'] [data-el='h1-linia-1']",
@@ -112,7 +112,7 @@
             },
             "to": {
               "opacity": 0.55,
-              "blur": 1.2
+              "blur": 0.84
             },
             "reveal": 0.4,
             "ease": "linear"
@@ -122,7 +122,7 @@
             "role": "subject",
             "from": {
               "opacity": 0.5,
-              "blur": 1.5
+              "blur": 1.05
             },
             "to": {
               "opacity": 1,
@@ -152,7 +152,7 @@
           "role": "support",
           "from": {
             "opacity": 0,
-            "x": -24
+            "x": -12
           },
           "to": {
             "opacity": 1,
@@ -166,7 +166,7 @@
           "role": "support",
           "from": {
             "opacity": 0,
-            "x": 24
+            "x": 12
           },
           "to": {
             "opacity": 1,
@@ -181,7 +181,7 @@
           "role": "support",
           "from": {
             "opacity": 0,
-            "x": -24
+            "x": -12
           },
           "to": {
             "opacity": 1,
@@ -195,7 +195,7 @@
           "role": "support",
           "from": {
             "opacity": 0,
-            "x": 24
+            "x": 12
           },
           "to": {
             "opacity": 1,
@@ -236,7 +236,7 @@
             "role": "support",
             "from": {
               "opacity": 0,
-              "y": 10
+              "y": 6
             },
             "to": {
               "opacity": 1,
@@ -250,7 +250,7 @@
             "role": "support",
             "from": {
               "opacity": 0,
-              "y": 10
+              "y": 6
             },
             "to": {
               "opacity": 1,
@@ -264,7 +264,7 @@
             "role": "support",
             "from": {
               "opacity": 0,
-              "y": 10
+              "y": 6
             },
             "to": {
               "opacity": 1,
@@ -278,7 +278,7 @@
             "role": "support",
             "from": {
               "opacity": 0,
-              "y": 10
+              "y": 6
             },
             "to": {
               "opacity": 1,

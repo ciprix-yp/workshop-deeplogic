@@ -30,13 +30,13 @@ import Sectiune from './Sectiune.astro';
     margin-bottom: var(--sp-md);
   }
 
-  /* Retunat (iterația 2, QA #2): gap redus de la sp-lg la sp-md — 7 întrebări
-     scurte, nu 7 secțiuni; sp-lg (32px) între fiecare din cele 6 goluri era
-     cel mai mare contribuitor singular la overflow-ul cardului. */
+  /* Retunat (iterația 2, QA #2; strâns din nou pentru „un ecran" pe mobil):
+     sp-lg (32px) → sp-md (20px) → sp-sm (12px) — 7 întrebări scurte, nu 7
+     secțiuni; era cel mai mare contribuitor singular la lungimea cardului. */
   dl {
     margin: 0;
     display: grid;
-    gap: var(--sp-md);
+    gap: var(--sp-sm);
   }
 
   .qa {
