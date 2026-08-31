@@ -1,0 +1,245 @@
+{/*
+  Motor de motion scroll-linked, vanilla — vezi docs/design/storyboard.json.
+
+  De ce nu framer-motion (treapta 2 implicită din skill-ul cinematic-web):
+  proiectul e 100% static, zero framework client-side. A introduce React doar
+  ca să obții `useScroll`/`useTransform` ar fi exact escaladarea nejustificată
+  pe care skill-ul o avertizează („escaladarea are un cost pe care îl plătește
+  proiectul, nu scena") — bugetul de JS al paginii (contează pe 4G, WhatsApp
+  in-app) ar crește cu greutatea unui runtime întreg pentru câteva interpolări
+  liniare. Acest fișier e echivalentul lui `useScroll` + `useTransform`, scris
+  direct, urmând exact regulile de perf din references/performance.md.
+
+  Progresul se calculează PER ELEMENT (propriul traseu prin viewport —
+  `offset: ['start end', 'end start']`, exact pattern-ul din
+  references/motion-stack.md), nu per scenă-container. Motivul e practic:
+  câteva scene din storyboard ([]„bascula" = §04+§05, „sala" = §06+§07) sunt
+  două componente Astro separate, fără un singur wrapper DOM peste amândouă;
+  iar „vacarm" își are elementele adânc într-un sub-bloc (`.vacarm-bloc`) al
+  unei secțiuni mult mai late (§02 întreg). Un progres calculat pe containerul
+  scenei ar desincroniza reveal-ul de momentul în care elementul chiar intră
+  în ecran. `data-scene` rămâne în DOM ca graniță pentru
+  scripts/verify-storyboard.mjs, dar nu participă la calcul aici.
+*/}
+<script is:inline>
+  (() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduce.matches) return;
+
+    const desktopMQ = window.matchMedia('(min-width: 48rem)');
+
+    /*
+     * Oglindă runtime a docs/design/storyboard.json (doar câmpurile
+     * necesare la execuție). Sursa de adevăr pentru INTENȚIE rămâne JSON-ul —
+     * scripts/verify-storyboard.mjs verifică pagina construită împotriva
+     * lui, nu împotriva acestui fișier. Ancorele (CTA, etichete statice) nu
+     * apar aici: `from` = `to`, deci n-au nimic de interpolat.
+     */
+    const SCENES = [
+      {
+        // Hero-ul e VIZIBIL de la scroll 0 — formula „start end/end start"
+        // (progres pe traseul propriu prin viewport) nu are sens aici: la
+        // scroll 0, elementul e deja adânc în fereastra lui de vizibilitate,
+        // deci progresul ar porni la jumătate din tranziție, nu la 0. Găsit
+        // vizual, la prima verificare cu server-ul real (linia 1 apărea deja
+        // defocalizată, linia 2 deja clară, ÎNAINTE de orice scroll). Singura
+        // scenă cu `progressMode: 'scroll'`: progres pe DISTANȚA de scroll de
+        // la vârful paginii, nu pe traseul prin viewport.
+        id: 'ruptura',
+        progressMode: 'scroll',
+        elements: [
+          { el: 'h1-linia-1', from: { opacity: 1, blur: 0 }, to: { opacity: 0.5, blur: 2 }, reveal: 0.4 },
+          { el: 'h1-linia-2', from: { opacity: 0.4, blur: 3, y: 12 }, to: { opacity: 1, blur: 0, y: 0 }, reveal: 0.85 },
+        ],
+        mobileElements: [
+          { el: 'h1-linia-1', from: { opacity: 1, blur: 0 }, to: { opacity: 0.55, blur: 1.2 }, reveal: 0.4 },
+          { el: 'h1-linia-2', from: { opacity: 0.5, blur: 1.5 }, to: { opacity: 1, blur: 0 }, reveal: 0.85 },
+        ],
+      },
+      {
+        id: 'vacarm',
+        elements: [
+          { el: 'linia-angajati', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.35 },
+          { el: 'linia-legislator', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.45 },
+          { el: 'linia-furnizori', from: { opacity: 0, x: -24 }, to: { opacity: 1, x: 0 }, reveal: 0.55 },
+          { el: 'linia-antreprenor', from: { opacity: 0, x: 24 }, to: { opacity: 1, x: 0 }, reveal: 0.65 },
+          { el: 'pivot-intrebari', from: { opacity: 0, y: 16, scale: 0.98 }, to: { opacity: 1, y: 0, scale: 1 }, reveal: 0.95 },
+        ],
+        mobileElements: [
+          { el: 'linia-angajati', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.35 },
+          { el: 'linia-legislator', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.5 },
+          { el: 'linia-furnizori', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.65 },
+          { el: 'linia-antreprenor', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.8 },
+          { el: 'pivot-intrebari', from: { opacity: 0, y: 10 }, to: { opacity: 1, y: 0 }, reveal: 0.95 },
+        ],
+      },
+      /*
+       * „granita" (§03) nu apare aici, deliberat: „cel mai gol cadru din
+       * pagină" (textul de graniță, singur, sosit târziu) se obține gratis
+       * din fluxul normal al documentului — lista de cinci a ieșit deja din
+       * viewport până ajunge cititorul la bloc. Nicio coregrafie scrubuită
+       * nu adaugă ceva ce fluxul normal + `data-reveal` (existent, baseline)
+       * nu oferă deja. Treapta cea mai ieftină care obține efectul.
+       */
+      /*
+       * „bascula" (§04+§05) și „sala" (§06+§07) nu apar aici, deliberat:
+       * sunt scene de sprijin, nu semnătura — doctrina de restricție a
+       * skill-ului („Un moment-semnătură per pagină. Restul scenelor îl
+       * servesc sau se dau la o parte") + regula treptei celei mai ieftine.
+       * `data-reveal` (existent, baseline, deja testat) obține exact același
+       * efect de intrare fără un al doilea mecanism paralel de scrubuit.
+       * Bugetul de coregrafie reală merge la „harta" — singurul loc unde
+       * chiar cumpără ceva ce reveal-ul simplu n-ar putea.
+       */
+      {
+        // Momentul-semnătură — vezi storyboard.json „harta". Zero pinning.
+        id: 'harta',
+        elements: [
+          { el: 'item-harta-scrisa', from: { opacity: 0, x: -40, y: 20 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.3 },
+          { el: 'item-document-24h', from: { opacity: 0, x: 40, y: -16 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.42 },
+          { el: 'item-structura-prompt', from: { opacity: 0, x: -30, y: -10 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.54 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, x: 30, y: 14 }, to: { opacity: 1, x: 0, y: 0 }, reveal: 0.66 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 24 }, to: { opacity: 1, y: 0 }, reveal: 0.78 },
+          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.96 }, to: { opacity: 1, scale: 1 }, reveal: 0.9 },
+        ],
+        mobileElements: [
+          { el: 'item-harta-scrisa', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.3 },
+          { el: 'item-document-24h', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.42 },
+          { el: 'item-structura-prompt', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.54 },
+          { el: 'item-regula-confidentialitate', from: { opacity: 0, y: -12 }, to: { opacity: 1, y: 0 }, reveal: 0.66 },
+          { el: 'item-cheat-sheet', from: { opacity: 0, y: 16 }, to: { opacity: 1, y: 0 }, reveal: 0.78 },
+          { el: 'harta-asamblata', from: { opacity: 0, scale: 0.97 }, to: { opacity: 1, scale: 1 }, reveal: 0.9 },
+        ],
+        // Bătaie discretă, NU scrubuită — latch cu histerezis, pe traseul
+        // propriu al elementului „harta-asamblata" (nu al scenei). Evită
+        // exact eroarea de flash/strobe (WCAG 2.3.1) găsită în explorarea
+        // abandonată din 29-31 august (docs/DECIZII.md).
+        latch: { el: 'bataie-latch', of: 'harta-asamblata', up: 0.72, down: 0.45 },
+      },
+    ];
+
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    function applyState(target, from, to, t) {
+      if ('opacity' in to || 'opacity' in from) {
+        target.style.opacity = String(lerp(from.opacity ?? 1, to.opacity ?? 1, t));
+      }
+      const temAny = ['x', 'y', 'scale', 'rotate'].some((k) => k in to || k in from);
+      if (temAny) {
+        const x = lerp(from.x ?? 0, to.x ?? 0, t);
+        const y = lerp(from.y ?? 0, to.y ?? 0, t);
+        const scale = lerp(from.scale ?? 1, to.scale ?? 1, t);
+        const rotate = lerp(from.rotate ?? 0, to.rotate ?? 0, t);
+        target.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      }
+      if ('blur' in to || 'blur' in from) {
+        const blur = lerp(from.blur ?? 0, to.blur ?? 0, t);
+        target.style.filter = blur > 0.02 ? `blur(${blur.toFixed(2)}px)` : '';
+      }
+    }
+
+    /** @type {Map<string, {node: Element, top: number, height: number}>} */
+    let bounds = new Map();
+
+    function trackEl(name) {
+      if (bounds.has(name)) return;
+      const node = document.querySelector(`[data-el="${name}"]`);
+      if (!node) return;
+      bounds.set(name, { node, top: 0, height: 1 });
+    }
+    for (const scene of SCENES) {
+      for (const def of scene.elements) trackEl(def.el);
+      if (scene.mobileElements) for (const def of scene.mobileElements) trackEl(def.el);
+      if (scene.latch) trackEl(scene.latch.el);
+    }
+
+    function recalc() {
+      for (const entry of bounds.values()) {
+        const rect = entry.node.getBoundingClientRect();
+        entry.top = rect.top + window.scrollY;
+        entry.height = entry.node.offsetHeight || 1;
+      }
+    }
+
+    // will-change: doar cât elementul e aproape de viewport, niciodată
+    // permanent (references/performance.md).
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          entry.target.style.willChange = entry.isIntersecting ? 'transform, opacity' : '';
+        }
+      },
+      { rootMargin: '50% 0px 50% 0px' },
+    );
+    for (const { node } of bounds.values()) io.observe(node);
+
+    /** Progres 0→1 pe traseul PROPRIU al elementului prin viewport — offset ['start end','end start']. */
+    function progresPropriu(entry, vh, scrollY) {
+      const topViewport = entry.top - scrollY;
+      return clamp((vh - topViewport) / (entry.height + vh), 0, 1);
+    }
+
+    /** Progres 0→1 pe distanța de scroll de la vârful paginii — pentru scene vizibile din start. */
+    function progresScroll(vh, scrollY) {
+      return clamp(scrollY / (vh * 0.5), 0, 1);
+    }
+
+    function progresScena(scene, entry, vh, scrollY) {
+      return scene.progressMode === 'scroll' ? progresScroll(vh, scrollY) : progresPropriu(entry, vh, scrollY);
+    }
+
+    function apply() {
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+      const mobile = !desktopMQ.matches;
+
+      for (const scene of SCENES) {
+        const elements = mobile ? (scene.mobileElements ?? null) : scene.elements;
+        if (!elements) continue; // scena se retrage complet — vezi „granita"
+
+        for (const def of elements) {
+          const entry = bounds.get(def.el);
+          if (!entry) continue;
+          const p = progresScena(scene, entry, vh, scrollY);
+          const t = clamp(p / def.reveal, 0, 1);
+          applyState(entry.node, def.from, def.to, t);
+        }
+
+        if (scene.latch) {
+          const of = bounds.get(scene.latch.of);
+          const target = bounds.get(scene.latch.el)?.node;
+          if (of && target) {
+            const p = progresScena(scene, of, vh, scrollY);
+            const latched = target.dataset.latched === 'true';
+            if (!latched && p >= scene.latch.up) target.dataset.latched = 'true';
+            else if (latched && p <= scene.latch.down) target.dataset.latched = 'false';
+          }
+        }
+      }
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        apply();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      recalc();
+      apply();
+    });
+    document.fonts?.ready?.then(() => {
+      recalc();
+      apply();
+    });
+
+    recalc();
+    apply(); // sincron, înainte de primul paint — vezi comentariul din Base.astro
+  })();
+</script>

@@ -4,7 +4,7 @@ import Sectiune from './Sectiune.astro';
 import Cta from './Cta.astro';
 ---
 
-<Sectiune id="inainte-dupa" fundal="secundar" latime="larg" camp="zgomot">
+<Sectiune id="inainte-dupa" fundal="secundar" latime="larg" scene="bascula">
   <h2>{inainteDupa.h2}</h2>
 
   {/*
@@ -15,7 +15,7 @@ import Cta from './Cta.astro';
     devine o pereche stivuită, cu etichete vizibile, păstrând semantica de tabel
     pentru cititoarele de ecran.
   */}
-  <table>
+  <table data-el="randuri-inainte-dupa">
     <thead>
       <tr>
         <th scope="col">{inainteDupa.capIntai}</th>
@@ -36,7 +36,7 @@ import Cta from './Cta.astro';
     Primul punct din pagină în care cititorul e „cald". CTA repetat aici,
     deliberat — e a doua din cele patru apariții.
   */}
-  <Cta spatiuSus />
+  <Cta spatiuSus dataEl="cta-dupa-05" />
 </Sectiune>
 
 <style>

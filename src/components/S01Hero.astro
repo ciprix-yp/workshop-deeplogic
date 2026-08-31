@@ -1,113 +1,65 @@
 ---
 import { hero, EVENIMENT } from '../content/copy';
 import Cta from './Cta.astro';
-import IndicatorScrollIntern from './IndicatorScrollIntern.astro';
 ---
 
-<header class="hero" data-card data-fundal="primar">
-  {/* v5: crom + conținut, doi frați — vezi Sectiune.astro și labirint.css. */}
-  <div class="placa larg" data-tilt="card">
-    <div class="sticla-chrome" aria-hidden="true" data-chrome></div>
-    <div class="continut">
-      <p class="eyebrow">{hero.eyebrow}</p>
+<header class="hero" data-scene="ruptura">
+  <div class="continut">
+    <p class="eyebrow">{hero.eyebrow}</p>
 
-      {/*
-        H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
-        propoziții E mesajul — pe un singur rând se pierde.
-      */}
-      <h1>
-        {hero.h1.map((rand, i) => (
-          <span class:list={['rand', i === 1 && 'accentuat']}>{rand}</span>
-        ))}
-      </h1>
+    {/*
+      H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
+      propoziții E mesajul — pe un singur rând se pierde. Scena „ruptura"
+      (docs/design/storyboard.json) defocalizează rândul 1 pe măsură ce
+      rândul 2 se așază: mișcarea FACE contrastul, nu doar îl arată static.
+    */}
+    <h1>
+      {hero.h1.map((rand, i) => (
+        <span class:list={['rand', i === 1 && 'accentuat']} data-el={i === 0 ? 'h1-linia-1' : 'h1-linia-2'}>
+          {rand}
+        </span>
+      ))}
+    </h1>
 
-      {/*
-        Sub titlu, două coloane pe desktop. Înainte, argumentul stătea singur
-        pe stânga și jumătatea dreaptă rămânea goală — arăta a pagină
-        neterminată, nu a spațiu deliberat. Informația practică umple coloana a
-        doua și primește o formă proprie: fișa evenimentului, în limbajul
-        documentului de lucru pe care îl promite pagina.
-      */}
-      <div class="sub">
-        <div class="argument">
-          <p class="subheadline">{hero.subheadline}</p>
-          <p class="pentru-cine">{hero.pentruCine}</p>
-          <Cta marime="mare" spatiuSus />
-        </div>
-
-        <aside class="fisa">
-          <dl>
-            <div><dt>Data</dt><dd>{EVENIMENT.dataText}</dd></div>
-            <div><dt>Ora</dt><dd>{EVENIMENT.ora}</dd></div>
-            <div><dt>Locul</dt><dd>{EVENIMENT.locatie}<span>{EVENIMENT.oras}</span></dd></div>
-            <div><dt>Locuri</dt><dd>{EVENIMENT.capacitate}</dd></div>
-          </dl>
-
-          <div class="micro-proof">
-            {hero.microProof.map((linie) => <p>{linie}</p>)}
-          </div>
-        </aside>
+    {/*
+      Sub titlu, două coloane pe desktop. Înainte, argumentul stătea singur
+      pe stânga și jumătatea dreaptă rămânea goală — arăta a pagină
+      neterminată, nu a spațiu deliberat. Informația practică umple coloana a
+      doua și primește o formă proprie: fișa evenimentului, în limbajul
+      documentului de lucru pe care îl promite pagina.
+    */}
+    <div class="sub">
+      <div class="argument">
+        <p class="subheadline">{hero.subheadline}</p>
+        <p class="pentru-cine">{hero.pentruCine}</p>
+        <Cta marime="mare" spatiuSus dataEl="cta-hero" />
       </div>
+
+      <aside class="fisa" data-el="meta-linie">
+        <dl>
+          <div><dt>Data</dt><dd>{EVENIMENT.dataText}</dd></div>
+          <div><dt>Ora</dt><dd>{EVENIMENT.ora}</dd></div>
+          <div><dt>Locul</dt><dd>{EVENIMENT.locatie}<span>{EVENIMENT.oras}</span></dd></div>
+          <div><dt>Locuri</dt><dd>{EVENIMENT.capacitate}</dd></div>
+        </dl>
+
+        <div class="micro-proof">
+          {hero.microProof.map((linie) => <p>{linie}</p>)}
+        </div>
+      </aside>
     </div>
   </div>
-  <IndicatorScrollIntern fundal="primar" />
 </header>
 
 <style>
-  /* Hero = cardul #1 al secvenței, aceeași regulă „card" din Sectiune.astro
-     (§16-DESIGN_BRIEF, „Layout"), scrisă direct aici pentru că hero nu
-     trece prin componenta Sectiune. `safe center` — același fix QA #1 din
-     Sectiune.astro, motivat acolo pe larg: fără `safe`, un hero cu overflow
-     real (măsurat 118px la 360×800) își împinge h1-ul deasupra ariei
-     vizibile, inaccesibil prin scroll. */
   .hero {
     /* Fundal curat. Fără imagine generică cu roboți, creiere sau rețele
        neuronale — regula e explicită în documentul sursă. */
     background: var(--bg);
-    /* v3/v4: registrul curent — citit de tenta plăcii de sticlă (tokens.css).
-       Vezi comentariul identic din Sectiune.astro. */
-    --bg-registru: var(--bg);
-    --sticla-alpha: 82%;
-
-    height: 100dvh;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: safe center;
-    overflow-y: auto;
-    /* v5: `position: relative` da, `z-index: 0` NU — vezi comentariul lung
-       din Sectiune.astro (`.sectiune.card`): un context de stacking pe card
-       ar fi ținut placa sub stratul fix al labirintului. */
-    position: relative;
-    /* FĂRĂ overscroll-behavior-y: contain — vezi comentariul din
-       Sectiune.astro: blochează scroll-chaining-ul nativ spre document. */
-    scrollbar-gutter: stable;
-    box-sizing: border-box;
-
-    /* v5: padding-ul cardului E banda de labirint — vezi Sectiune.astro. */
-    padding-top: calc(var(--banda-sus) + env(safe-area-inset-top, 0px));
-    padding-inline: calc(var(--marja-sticla) + env(safe-area-inset-left, 0px))
-      calc(var(--marja-sticla) + env(safe-area-inset-right, 0px));
-    padding-bottom: calc(var(--banda-jos) + env(safe-area-inset-bottom, 0px) + 4rem);
+    padding-block: var(--sp-2xl);
+    padding-inline: var(--lat);
   }
 
-  @media (min-width: 48rem) {
-    .hero {
-      padding-bottom: calc(var(--banda-sus) + env(safe-area-inset-bottom, 0px));
-    }
-  }
-
-  @media (max-height: 559.98px) {
-    .hero {
-      justify-content: flex-start;
-    }
-  }
-
-  /* Compensarea padding-ului plăcii — vezi Sectiune.astro: măsura de text
-     rămâne identică, doar placa e mai lată cu exact padding-ul ei. */
-  .placa.larg {
-    max-width: calc(var(--max-continut) + 2 * var(--pad-sticla));
-  }
   .continut {
     max-width: var(--max-continut);
     margin-inline: auto;

@@ -18,8 +18,6 @@ import S15Faq from '../components/S15Faq.astro';
 import S16Inscriere from '../components/S16Inscriere.astro';
 import S17Footer from '../components/S17Footer.astro';
 import CtaSticky from '../components/CtaSticky.astro';
-import ControlerCarduri from '../components/ControlerCarduri.astro';
-import Labirint from '../components/Labirint.astro';
 
 /**
  * Prerandată integral. Nimic din §01–§17 nu e dinamic — formularul face POST
@@ -30,16 +28,6 @@ export const prerender = true;
 ---
 
 <Base>
-  {/*
-    Labirintul — un singur strat `position: fixed` pentru toată pagina (v5),
-    care conține banda, cele 16 checkpointuri și subiectul. Înlocuiește cele
-    16 instanțe de <Campul>, câte una per card. Ordinea în DOM nu contează
-    pentru randare (z-index explicit), dar contează pentru parsare:
-    payload-ul JSON al labirintului trebuie să existe înainte ca
-    ControlerCarduri (randat ultimul) să-l citească.
-  */}
-  <Labirint />
-
   <S01Hero />
 
   <main id="continut">
@@ -62,20 +50,4 @@ export const prerender = true;
 
   <S17Footer />
   <CtaSticky />
-
-  {/*
-    Controllerul de carduri — doar pe pagina asta: layout-ul de card + hijack
-    e o suprascriere pentru ACEST layer (vezi docs/DECIZII.md, „Layout
-    «cartonaș» + scroll hijack real"), nu un principiu general al
-    layout-ului Base.astro, care rămâne „zero scroll deturnat" pentru orice
-    altă pagină/interacțiune viitoare.
-
-    Randat ULTIMUL, deliberat: scriptul lui `is:inline` face
-    `document.querySelectorAll('[data-card]')` la parsare — dacă ar rula
-    ÎNAINTE ca hero/secțiunile să fie în DOM, ar prinde o listă goală și ar
-    ieși imediat (`if (cards.length === 0) return`), fără să mai atașeze
-    niciun listener. Nu randează nimic vizibil, deci poziția nu are efect
-    vizual — doar pe ordinea de execuție.
-  */}
-  <ControlerCarduri />
 </Base>

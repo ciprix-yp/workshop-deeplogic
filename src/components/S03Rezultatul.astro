@@ -3,10 +3,10 @@ import { rezultatul } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="rezultatul" camp="zgomot">
+<Sectiune id="rezultatul" scene="granita">
   <h2>{rezultatul.h2}</h2>
 
-  <ol class="lista">
+  <ol class="lista" data-el="lista-cinci">
     {rezultatul.lista.map((item, i) => (
       <li data-reveal style={`--intarziere: ${i * 50}ms`}>
         <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
@@ -25,7 +25,7 @@ import Sectiune from './Sectiune.astro';
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
   */}
-  <aside class="granita">
+  <aside class="granita" data-reveal data-el="text-granita">
     <h3>{rezultatul.granita.h3}</h3>
     {rezultatul.granita.corp.map((p) => (
       <p>{p}</p>
@@ -82,9 +82,7 @@ import Sectiune from './Sectiune.astro';
   .granita {
     margin-top: var(--sp-xl);
     background: var(--bg-secundar);
-    /* v3/v4: registru local (tenta sticlei) + fix de contrast pe secundar —
-       defensiv, vezi tokens.css `--text-muted-pe-secundar`. */
-    --bg-registru: var(--bg-secundar);
+    /* Fix de contrast — vezi tokens.css `--text-muted-pe-secundar`. */
     --text-muted: var(--text-muted-pe-secundar);
     padding: var(--sp-lg);
     border-radius: var(--radius-lg);

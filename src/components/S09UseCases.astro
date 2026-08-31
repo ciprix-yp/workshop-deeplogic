@@ -3,7 +3,7 @@ import { useCases } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="use-cases" latime="larg">
+<Sectiune id="use-cases" latime="larg" scene="registrul">
   <h2>{useCases.h2}</h2>
 
   {/*
@@ -76,9 +76,6 @@ import Sectiune from './Sectiune.astro';
     border: 1px solid rgba(47, 79, 79, 0.15);
     border-radius: var(--radius-lg);
     background: var(--bg);
-    /* v3: registru local pentru scrim-ul Câmpului — defensiv, vezi
-       S02Problema.astro. */
-    --bg-registru: var(--bg);
     display: grid;
     gap: var(--sp-2xs);
     align-content: start;

@@ -17,10 +17,10 @@ const caleFoto = fileURLToPath(new URL(`../../public${facilitator.foto.src}`, im
 const areFoto = existsSync(caleFoto);
 ---
 
-<Sectiune id="facilitator" latime="larg">
+<Sectiune id="facilitator" latime="larg" scene="registrul">
   <h2>{facilitator.h2}</h2>
 
-  <div class:list={['aranjament', areFoto && 'cu-foto']} data-reveal>
+  <div class:list={['aranjament', areFoto && 'cu-foto']} data-reveal data-el="bloc-continut">
     {areFoto && (
       <img
         class="foto"
@@ -30,6 +30,7 @@ const areFoto = existsSync(caleFoto);
         height="550"
         loading="lazy"
         decoding="async"
+        data-el="foto-facilitator"
       />
     )}
 

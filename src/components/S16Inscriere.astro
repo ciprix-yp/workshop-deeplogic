@@ -9,13 +9,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x0000000000000000
 const conditionale = JSON.stringify(SURSA_CONDITIONAL);
 ---
 
-{/*
-  `scrollIntern`: §16 e excepția documentată în DESIGN_BRIEF.md — 5 blocuri
-  de întrebări, bife, Turnstile, buton. Forțează fallback-ul de scroll
-  intern indiferent de înălțimea viewport-ului, ca să nu se comprime
-  tipografia formularului până la ilizibil doar ca să încapă în 100dvh.
-*/}
-<Sectiune id="inscriere" latime="larg" clasa="bloc-inscriere" scrollIntern>
+<Sectiune id="inscriere" latime="larg" clasa="bloc-inscriere" scene="mutarea">
   <div class="antet">
     <h2>{ctaFinal.h2}</h2>
     <p class="corp">{ctaFinal.corp}</p>
@@ -29,7 +23,7 @@ const conditionale = JSON.stringify(SURSA_CONDITIONAL);
     răspunde cu redirect. Un formular care are nevoie de JS ca să existe e un
     formular care pierde înscrieri fără să știi.
   */}
-  <form id="form-inscriere" method="POST" action="/api/register" novalidate>
+  <form id="form-inscriere" method="POST" action="/api/register" novalidate data-el="formular">
     {BLOCURI.map((bloc) => (
       <fieldset class="bloc">
         {bloc.titlu && (
@@ -157,7 +151,7 @@ const conditionale = JSON.stringify(SURSA_CONDITIONAL);
     </div>
 
     <div class="trimite">
-      <button type="submit" class="cta-submit">{CTA.text}</button>
+      <button type="submit" class="cta-submit" data-el="cta-final">{CTA.text}</button>
       <p class="microcopy sub-cta">{ctaFinal.microcopy}</p>
     </div>
 
@@ -434,9 +428,7 @@ const conditionale = JSON.stringify(SURSA_CONDITIONAL);
     gap: var(--sp-sm);
     padding: var(--sp-md);
     background: var(--bg-secundar);
-    /* v3/v4: registru local — citit de tenta plăcii de sticlă (tokens.css). */
-    --bg-registru: var(--bg-secundar);
-    /* v4: același fix de contrast ca în registrul secundar (Sectiune.astro).
+    /* Același fix de contrast ca în registrul secundar (Sectiune.astro).
        `.bifa .microcopy` de mai jos e `--text-muted` PE `--bg-secundar` —
        3.94:1 cu valoarea veche, sub AA. §16 e `fundal="primar"`, deci
        redefinirea de pe `.sectiune.secundar` nu ajunge până aici. */
@@ -521,9 +513,7 @@ const conditionale = JSON.stringify(SURSA_CONDITIONAL);
     padding: var(--sp-md);
     border-radius: var(--radius-lg);
     background: var(--bg-secundar);
-    /* v3/v4: registru local + fix de contrast pe secundar — defensiv, ca
-       un mesaj viitor scris aici să pornească deja pe valorile corecte. */
-    --bg-registru: var(--bg-secundar);
+    /* Fix de contrast pe secundar — vezi tokens.css. */
     --text-muted: var(--text-muted-pe-secundar);
     color: var(--eroare);
     font-weight: 600;

@@ -2,17 +2,31 @@
 import { cePleciCuTine } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 import Cta from './Cta.astro';
+
+/** §08 — scena „harta" (momentul-semnătură). Vezi docs/design/storyboard.json. */
+const NUME_EL = [
+  'item-harta-scrisa',
+  'item-document-24h',
+  'item-structura-prompt',
+  'item-regula-confidentialitate',
+  'item-cheat-sheet',
+];
 ---
 
 {/*
   A doua cea mai importantă secțiune. Răspunsul direct la „am mai fost la unul
-  și n-am plecat cu nimic". Nu se taie la mobil.
+  și n-am plecat cu nimic". Nu se taie la mobil. Momentul-semnătură al paginii:
+  cele cinci lucruri separate se asamblează într-un singur obiect concret —
+  răspunsul literal la „n-ai o hartă" din §02.
 
-  Singura secțiune întunecată din pagină, deliberat: e locul unde se răspunde
-  la obiecția cea mai scumpă, iar greutatea vizuală face argumentul să pară
-  ce e — substanța, nu un bonus. ITEM 5 (cheat-sheet tipărit) vine din D7.
+  Pe alb, deliberat — nu pe registrul întunecat folosit până acum (28 august).
+  Greutatea livrabilului vine din scară și spațiere, nu din inversare de
+  culoare: un al doilea moment întunecat, chiar la rezoluția promisă de brief
+  („liniștit"), ar repeta zgomotul din §02 exact unde pagina trebuie să se
+  calmeze. Bugetul de design al paginii se cheltuiește AICI. ITEM 5
+  (cheat-sheet tipărit) vine din D7.
 */}
-<Sectiune id="ce-pleci-cu-tine" fundal="inchis" latime="larg">
+<Sectiune id="ce-pleci-cu-tine" latime="larg" scene="harta">
   <div class="cap">
     <h2>{cePleciCuTine.h2}</h2>
     <p class="numar-total">
@@ -26,10 +40,19 @@ import Cta from './Cta.astro';
     Varianta cu `display: contents` pe `.corp` arunca al doilea paragraf într-un
     rând de grid nou, iar `gap`-ul dintre rânduri devenea o gaură de 3rem în
     mijlocul livrabilului. Trei coloane reale, trei elemente reale — fără trucuri.
+
+    `data-el="harta-asamblata"` stă pe container: cele cinci `.item` (fiecare cu
+    propriul `data-el`) converg spre el pe măsură ce intră în ecran; odată
+    așezate, containerul însuși se așază la opacitate/scară completă — „click"-ul
+    de asamblare. `.bataie-latch` e o bară discretă, NU scrubuită (vezi
+    MotionEngine): se aprinde o singură dată, cu histerezis, nu urmărește
+    scroll-ul cadru cu cadru — exact fixul pentru eroarea de flash/strobe
+    găsită în explorarea abandonată din 29-31 august.
   */}
-  <div class="itemi">
+  <div class="itemi" data-el="harta-asamblata">
+    <div class="bataie-latch" data-el="bataie-latch" aria-hidden="true"></div>
     {cePleciCuTine.itemi.map((item, i) => (
-      <article class="item" data-reveal style={`--intarziere: ${i * 60}ms`}>
+      <article class="item" data-el={NUME_EL[i]}>
         <p class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
         <h3>{item.titlu}</h3>
         <div class="corp">
@@ -39,7 +62,7 @@ import Cta from './Cta.astro';
     ))}
   </div>
 
-  <Cta spatiuSus pe="inchis" />
+  <Cta spatiuSus />
 </Sectiune>
 
 <style>
@@ -67,7 +90,7 @@ import Cta from './Cta.astro';
     font-size: var(--t-mic);
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: var(--accent-clar);
+    color: var(--accent);
   }
 
   .numar-total span {
@@ -76,12 +99,28 @@ import Cta from './Cta.astro';
   }
 
   .itemi {
+    position: relative;
     display: grid;
     gap: 0;
-    /* Linii de câmp, nu carduri. Cardurile pe fundal închis cer un al doilea
-       ton de fundal și pagina capătă straturi pe care nu le folosește nicăieri
-       altundeva; liniile păstrează limbajul de document de lucru. */
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    /* Linii de câmp, nu carduri — limbajul de document de lucru pe care îl
+       promite pagina, nu o listă de feature-uri. */
+    border-top: 1px solid rgba(47, 79, 79, 0.18);
+  }
+
+  .bataie-latch {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--accent-decor);
+    opacity: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .bataie-latch[data-latched='true'] {
+    opacity: 0.55;
+    transform: scaleX(1);
   }
 
   .item {
@@ -91,13 +130,8 @@ import Cta from './Cta.astro';
     column-gap: var(--sp-md);
     row-gap: var(--sp-xs);
     align-items: start;
-    /* Retunat (iterația 2, QA #2): sp-md în loc de sp-lg — cinci rânduri de
-       document, nu cinci carduri; padding-ul generos conta dublu (sus+jos)
-       pe fiecare din cele 5 linii, cel mai mare contribuitor la overflow-ul
-       secțiunii. Verificat live: reduce overflow-ul rezidual la 1920×1080
-       la zero. */
     padding-block: var(--sp-md);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(47, 79, 79, 0.18);
   }
 
   .item h3,
@@ -126,7 +160,7 @@ import Cta from './Cta.astro';
     font-family: var(--font-mono);
     font-size: var(--t-corp);
     font-weight: 500;
-    color: var(--accent-clar);
+    color: var(--accent-decor);
     padding-top: 0.15em;
     grid-row: 1;
   }

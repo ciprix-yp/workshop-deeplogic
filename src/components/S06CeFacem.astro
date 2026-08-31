@@ -1,9 +1,12 @@
 ---
 import { ceFacem } from '../content/copy';
 import Sectiune from './Sectiune.astro';
+
+/** Scena „sala" — vezi docs/design/storyboard.json. */
+const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
 ---
 
-<Sectiune id="ce-facem" camp="zgomot">
+<Sectiune id="ce-facem" scene="sala">
   <h2>{ceFacem.h2}</h2>
 
   <div class="blocuri">
@@ -11,7 +14,7 @@ import Sectiune from './Sectiune.astro';
       // Vezi S09UseCases pentru motivul separării: `.bloc` (data-reveal, intrare
       // la scroll) și `.bloc-tilt` (data-tilt, urmărește cursorul) nu pot trăi
       // pe același element fără ca tranzițiile lor să se bată pe `transform`.
-      <article class="bloc" data-reveal style={`--intarziere: ${i * 70}ms`}>
+      <article class="bloc" data-reveal style={`--intarziere: ${i * 70}ms`} data-el={NUME_BLOC[i]}>
         <div class="bloc-tilt" data-tilt>
           <p class="numar" aria-hidden="true">{bloc.numar}</p>
           <div class="corp">
@@ -28,7 +31,7 @@ import Sectiune from './Sectiune.astro';
     altor antreprenori". E motivul principal de neînscriere la un format ca
     ăsta — deci nu se îngroapă vizual într-o notă de subsol.
   */}
-  <aside class="format">
+  <aside class="format" data-el="nota-format">
     {ceFacem.notaFormat.map((p) => <p>{p}</p>)}
   </aside>
 
@@ -72,10 +75,6 @@ import Sectiune from './Sectiune.astro';
     border: 1px solid rgba(47, 79, 79, 0.15);
     border-radius: var(--radius-lg);
     background: var(--bg);
-    /* v3: registru local pentru scrim-ul Câmpului — defensiv (§06 e deja pe
-       registrul primar, aceeași valoare, dar explicit dacă vreodată nu mai
-       e). Vezi S02Problema.astro. */
-    --bg-registru: var(--bg);
   }
 
   .numar {
@@ -103,8 +102,6 @@ import Sectiune from './Sectiune.astro';
     margin-top: var(--sp-lg);
     padding: var(--sp-sm) var(--sp-lg);
     background: var(--succes-bg);
-    /* v3: registru local pentru scrim-ul Câmpului — vezi S02Problema.astro. */
-    --bg-registru: var(--succes-bg);
     border-radius: var(--radius-lg);
     display: grid;
     gap: var(--sp-2xs);

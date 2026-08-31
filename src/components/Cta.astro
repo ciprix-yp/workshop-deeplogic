@@ -16,11 +16,13 @@ interface Props {
   spatiuSus?: boolean;
   /** Pe fundal închis, butonul se inversează: accent clar cu text închis. */
   pe?: 'deschis' | 'inchis';
+  /** `data-el` pentru motorul de motion — vezi docs/design/storyboard.json. */
+  dataEl?: string;
 }
-const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
+const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.props;
 ---
 
-<div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
+<div class:list={['invelis', spatiuSus && 'spatiu-sus']} data-el={dataEl}>
   <a href={CTA.ancora} class:list={['cta', marime, pe === 'inchis' && 'pe-inchis']}>
     {CTA.text}
   </a>

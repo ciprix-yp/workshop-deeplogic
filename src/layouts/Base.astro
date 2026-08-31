@@ -1,8 +1,8 @@
 ---
 import '../styles/fonts.css';
 import '../styles/tokens.css';
-import '../styles/labirint.css';
 import { meta, EVENIMENT, footer } from '../content/copy';
+import MotionEngine from '../components/MotionEngine.astro';
 
 interface Props {
   titlu?: string;
@@ -169,12 +169,9 @@ const jsonLd = {
          normal nu e atins niciodată. Fără asta, efectul cerut explicit era
          literalmente invizibil pe telefon — exact dispozitivul de test.
 
-      Selector: `[data-tilt]:not([data-tilt="card"])` — exclude deliberat
-      cardurile de 100dvh (§01–§16, v2). Acelea au propriul script, cu
-      MAX_GRADE și perspective recalibrate pentru scara mare
-      (RailFir.astro) — dacă scriptul ăsta le-ar prinde și pe ele,
-      ambele ar scrie pe `style.transform` al aceluiași element la fiecare
-      `pointermove`, fiecare cu propria constantă, alternând imprevizibil.
+      Selector: `[data-tilt]:not([data-tilt="card"])` — varianta „card" a
+      fost parte din direcția de design abandonată (v4, placa de sticlă) și
+      nu mai există în DOM; excluderea rămâne ca gardă, nu ca activă.
     */}
     <script is:inline>
       (() => {
@@ -217,6 +214,8 @@ const jsonLd = {
         }
       })();
     </script>
+
+    <MotionEngine />
   </body>
 </html>
 
