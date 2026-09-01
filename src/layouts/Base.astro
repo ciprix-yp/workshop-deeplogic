@@ -2,7 +2,7 @@
 import '../styles/fonts.css';
 import '../styles/tokens.css';
 import { meta, EVENIMENT, footer } from '../content/copy';
-import MotionEngine from '../components/MotionEngine.astro';
+import BaraScarcity from '../components/BaraScarcity.astro';
 
 interface Props {
   titlu?: string;
@@ -112,110 +112,46 @@ const jsonLd = {
 
   <body>
     <a class="skip" href="#continut">Sari la conținut</a>
+    <BaraScarcity />
     <slot />
 
     {/*
-      Dezvăluire la scroll. ~700 bytes, zero dependințe, zero scroll deturnat.
-      Rulează inline în <head>-ul logic al paginii ca să adauge `.js-reveal`
-      ÎNAINTE de prima pictare — altfel elementele apar o clipă, apoi dispar
-      ca să se anime, ceea ce se vede ca un clipit.
+      Lenis + GSAP — global, o singură dată. Pivot de arhitectură deliberat
+      (2026-09-01, Ciprian): motorul de scroll custom (MotionEngine.astro +
+      docs/design/storyboard.json, opt de scene coregrafiate individual) e
+      retras în favoarea Lenis (scroll cu inerție) + GSAP ScrollTrigger,
+      folosit DOAR în §06 CeFacem (cei cinci pași ai metodologiei — vezi
+      scriptul din S06CeFacem.astro). Restul paginii rămâne static, fără
+      fade-up, fără tilt pe carduri — cost acceptat: JS real (Lenis + GSAP),
+      nu mai 0KB, în schimbul scroll-ului cu inerție și al unui pin/scrub
+      matur pe singura secțiune care încă animă la scroll.
+
+      Script de MODUL (nu `is:inline`): are nevoie de `import`-uri npm, pe
+      care bundler-ul Vite le rezolvă doar pentru scripturi procesate.
     */}
-    <script is:inline>
-      (() => {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (reduce.matches || !('IntersectionObserver' in window)) return;
+    <script>
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-        document.documentElement.classList.add('js-reveal');
+      gsap.registerPlugin(ScrollTrigger);
 
-        const arata = (el) => el.classList.add('vazut');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        const obs = new IntersectionObserver(
-          (intrari) => {
-            for (const i of intrari) {
-              if (!i.isIntersecting) continue;
-              arata(i.target);
-              obs.unobserve(i.target); // o singură dată; nu re-animăm la scroll înapoi
-            }
-          },
-          // Declanșează puțin înainte ca elementul să intre complet: pe mobil,
-          // cu degetul pe ecran, un prag de 0 face mișcarea să pară întârziată.
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
-        );
+      // Ancorele (`#inscriere`, `#continut`) trebuie să rămână funcționale —
+      // fără `anchors: true`, Lenis blochează scroll-ul spre `id`-uri, exact
+      // ținta CTA-urilor de pe pagină.
+      const lenis = new Lenis({ anchors: true, autoRaf: false });
 
-        const tinte = document.querySelectorAll('[data-reveal]');
-        for (const t of tinte) obs.observe(t);
+      // Lenis nu se oprește singur când utilizatorul cere mișcare redusă —
+      // fără scroll cu inerție, ci nativ, dar tot fluid (Lenis rămâne activ
+      // pentru ancore, doar fără easing-ul de impuls).
+      if (reduceMotion) lenis.options.duration = 0;
 
-        // Plasă de siguranță: dacă observerul n-a apucat să ruleze (tab în
-        // fundal, restaurare din bfcache), nimic nu rămâne invizibil.
-        window.addEventListener('pageshow', () => {
-          for (const t of tinte) {
-            if (t.getBoundingClientRect().top < window.innerHeight) arata(t);
-          }
-        });
-      })();
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
     </script>
-
-    {/*
-      Tilt 3D pe carduri (data-tilt) — două căi separate, nu una singură cu
-      excepții:
-
-      1. Pointer fin + hover real (mouse): urmărește cursorul continuu,
-         `pointermove`/`pointerleave`.
-      2. Touch: NU poate urmări degetul în timp ce se mișcă — `touchmove` ar
-         trebui să blocheze scroll-ul paginii ca să funcționeze (`preventDefault`),
-         exact experiența pe care n-o vrem pe un site mobile-first. În loc de
-         asta, un tilt scurt la apăsare (`touchstart`), spre punctul atins,
-         revenit la `touchend` — `{ passive: true }` pe amândouă, deci scroll-ul
-         normal nu e atins niciodată. Fără asta, efectul cerut explicit era
-         literalmente invizibil pe telefon — exact dispozitivul de test.
-
-      Selector: `[data-tilt]:not([data-tilt="card"])` — varianta „card" a
-      fost parte din direcția de design abandonată (v4, placa de sticlă) și
-      nu mai există în DOM; excluderea rămâne ca gardă, nu ca activă.
-    */}
-    <script is:inline>
-      (() => {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (reduce.matches) return;
-
-        const MAX_GRADE = 8;
-        const calculTilt = (card, clientX, clientY) => {
-          const r = card.getBoundingClientRect();
-          const x = (clientX - r.left) / r.width - 0.5;
-          const y = (clientY - r.top) / r.height - 0.5;
-          return `perspective(700px) rotateX(${(-y * MAX_GRADE).toFixed(2)}deg) rotateY(${(x * MAX_GRADE).toFixed(2)}deg) translateZ(6px)`;
-        };
-
-        const poatePlana = window.matchMedia('(hover: hover) and (pointer: fine)');
-        const cards = document.querySelectorAll('[data-tilt]:not([data-tilt="card"])');
-
-        if (poatePlana.matches) {
-          for (const card of cards) {
-            card.addEventListener('pointermove', (ev) => {
-              card.style.transform = calculTilt(card, ev.clientX, ev.clientY);
-            });
-            card.addEventListener('pointerleave', () => {
-              card.style.transform = '';
-            });
-          }
-        } else if ('ontouchstart' in window) {
-          for (const card of cards) {
-            card.addEventListener(
-              'touchstart',
-              (ev) => {
-                const t = ev.touches[0];
-                card.style.transform = calculTilt(card, t.clientX, t.clientY);
-              },
-              { passive: true },
-            );
-            card.addEventListener('touchend', () => { card.style.transform = ''; }, { passive: true });
-            card.addEventListener('touchcancel', () => { card.style.transform = ''; }, { passive: true });
-          }
-        }
-      })();
-    </script>
-
-    <MotionEngine />
   </body>
 </html>
 
@@ -239,6 +175,14 @@ const jsonLd = {
     transition: top 0.15s ease;
   }
   .skip:focus {
-    top: var(--sp-md);
+    top: calc(var(--h-bara-scarcity) + var(--sp-md));
+  }
+</style>
+
+<style is:global>
+  /* Bara de scarcity e fixă, deasupra fluxului normal — fără padding pe
+     body, hero-ul (primul element al paginii) ar începe acoperit de ea. */
+  body {
+    padding-top: var(--h-bara-scarcity);
   }
 </style>

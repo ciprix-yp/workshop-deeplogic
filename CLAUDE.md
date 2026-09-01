@@ -1,7 +1,9 @@
-# CLAUDE.md — Workshop „Prima Mutare spre un Asistent Digital"
+# CLAUDE.md — Workshop „PRIMUL PAS"
 
 Landing + înscriere. Deep Logic · miercuri, 16 septembrie 2026 · Satu Mare.
-Live pe `workshop.deeplogic.ro`.
+Live pe `workshop.deeplogic.ro`. Pivot de produs (2026-08-31): fostul „Prima Mutare
+spre un Asistent Digital" devine „PRIMUL PAS" — copy nou, 30 de locuri (nu 25),
+contor live de locuri activat deliberat. Vezi §1 pentru istoricul deciziei.
 
 **Sursele de adevăr:** [`docs/landing-workshop-16-09.md`](docs/landing-workshop-16-09.md) (copy)
 și [`docs/spec-tehnic-inscriere-16-09.md`](docs/spec-tehnic-inscriere-16-09.md) (arhitectură).
@@ -21,16 +23,34 @@ Nu apar pe pagină, **deliberat**. Sunt verificați automat de
   niciuna pe pagină.
 - **Promisiuni de conformitate legală.** AI Act, GDPR, NIS2 apar **o singură dată**, în
   §02, ca zgomot pe care îl aude cititorul. Niciodată ca promisiune că le rezolvă Deep Logic.
-- **Countdown, „ultimele locuri", exit-intent, contor de locuri live.** Rarefierea e reală
-  (25 de locuri) și se spune o dată, calm.
-- **Testimoniale.** Nu există pe formatul ăsta. Nu se inventează. §12 rămâne exact cum e scris,
-  inclusiv ultima propoziție — pare că slăbește pagina, nu o slăbește.
+- **Testimoniale.** Nu există pe formatul ăsta. Nu se inventează.
 - **Logo-uri de clienți, badge-uri de autoritate.**
 - **Telefon, cifră de afaceri, număr de angajați în formular.** Toate trei semnalează
   „urmează un apel de vânzare" către exact cititorul care nu te cunoaște încă.
+- **Notificări false de tip „cineva tocmai s-a înscris".** Interzis explicit de sursă,
+  chiar și după reversarea de mai jos — vezi corolarul.
 
-**Corolarul:** pagina afirmă „25 de locuri", sistemul acceptă 30 (buffer de no-show, decizie
-asumată). Rămâne onest **atâta timp cât nu punem contor live**. Nu punem.
+**Reversare deliberată (2026-08-31, Ciprian):** înainte, countdown-ul, „ultimele locuri" și
+orice contor live erau interzise — regula veche era „rarefierea e reală (25 de locuri) și se
+spune o dată, calm". Motivul declarat al reversării: pagina nouă (PRIMUL PAS) capătă o bară
+fixă (`BaraScarcity.astro`) cu locuri disponibile + countdown real, plus o insignă pe fiecare
+CTA cu numărul de locuri rămase. **Regula care rămâne literă de lege, neschimbată de reversare:
+„fără deficit fals; afișează doar date reale"** (din sursa PRIMUL PAS, secțiunea
+„Countdown și locuri"). Corolarul practic:
+
+- **Capacitatea e unificată la 30, peste tot** — pagină ȘI bază de date. Vechea asimetrie
+  (pagina afirma 25, sistemul accepta 30, ca buffer ascuns de no-show) nu mai există: un
+  contor live ar fi expus-o direct, deci a fost eliminată la sursă
+  (`supabase/migrations/0007_capacitate_unificata.sql`, `CAPACITATE` în `src/lib/supabase.ts`).
+- **Numărul afișat trebuie calculat din exact același prag pe care îl aplică
+  `register_participant`** la decizia inscris-vs-așteptare (`locuriDisponibilePublic()` în
+  `src/lib/supabase.ts`) — altfel bara ar putea arăta „N locuri disponibile" chiar în
+  momentul în care un submit real ar fi trimis pe listă de așteptare.
+- **Fără JS, bara arată STRICT fallback-ul static** (capacitate maximă + data/ora din
+  `copy.ts`), niciodată un număr ghicit. Fără fetch reușit, la fel.
+- **CTA-ul rămâne textual fix** („Rezervă-ți locul") — insigna cu numărul de locuri e un
+  element separat, ascuns implicit, completat doar după un fetch reușit (vezi `Cta.astro`,
+  `data-locuri-cta`). Nu schimbă regula de mai jos, „un singur CTA, text fix".
 
 ---
 
@@ -45,6 +65,24 @@ asumată). Rămâne onest **atâta timp cât nu punem contor live**. Nu punem.
 - **Fundal curat.** Fără imagini generice cu roboți, creiere sau rețele neuronale.
 - **Tot copy-ul trăiește în [`src/content/copy.ts`](src/content/copy.ts).** Un singur loc,
   tipat. Nicio secțiune nu-și scrie textul inline.
+
+**Motion — pivot de arhitectură (2026-09-01, Ciprian, împotriva recomandării inițiale):**
+motorul de scroll custom (vanilla TS, opt scene coregrafiate individual, 0KB dependințe) a
+fost retras în favoarea **Lenis + GSAP ScrollTrigger**. Reversează `docs/DECIZII.md` D29
+(„zero dependințe noi... ~40KB gzip peste o pagină al cărei JS total e azi ~6KB") — decizia
+veche rămâne corectă ca istoric, nu ca regulă curentă. Cost măsurat după swap: **~49KB gzip
+JS total pe pagină** (Lenis + GSAP core + ScrollTrigger + scripturile proprii). Regulile care
+rămân, neschimbate de pivot:
+
+- **GSAP ScrollTrigger trăiește STRICT în `S06CeFacem.astro`** (pin + scrub pe cei cinci pași
+  ai metodologiei) — nicio altă secțiune. Restul paginii e static prin construcție, nu doar
+  „fără JS": nu există niciun alt mecanism de reveal-la-scroll sau hover de dezactivat.
+- **Lenis global, o singură dată, în `Base.astro`**, cu `anchors: true` — CTA-urile ancorează
+  spre `#inscriere`/`#continut`; fără opțiunea asta, Lenis blochează exact acel scroll.
+- **Guard obligatoriu `prefers-reduced-motion` pe pin/scrub-ul din §06** (GSAP nu îl respectă
+  singur, spre deosebire de Lenis). Cu mișcare redusă, cei cinci pași rămân direct vizibili.
+- **Fără parallax pe fundal, cursor custom, particule, WebGL, React/Vue.** Astro rulează
+  Lenis/GSAP nativ, ca `<script>` de modul — n-a fost nevoie de framework UI ca să le pornească.
 
 ---
 
@@ -88,8 +126,8 @@ Mașina de stări e partea care poate aloca fizic același scaun de două ori. R
   înseamnă oameni marcați absenți fără să fi dat click, cu locul plecat instant prin broadcast.
 - **Toate `UPDATE`-urile sunt condiționate pe starea așteptată:** `WHERE ... AND status = '<starea de plecare>'`.
   Niciodată read-then-write.
-- **Cursa din waitlist trece prin `pg_advisory_xact_lock`.** Cap dur 25, verificat *în interiorul*
-  tranzacției. Bufferul soft de 30 de la înscriere e separat și nu folosește lock.
+- **Cursa din waitlist trece prin `pg_advisory_xact_lock`.** Cap dur 30 (unificat cu bufferul
+  de la înscriere — vezi §1), verificat *în interiorul* tranzacției.
 - **`workshop/seat_freed` are `debounce` + `singleton` pe `event_slug`.** La cutoff-ul de
   11:00 pe 16 septembrie, toți nereconfirmații devin `no_show` în același moment. Fără
   coalescing, fiecare om de pe waitlist primește câte un email pentru fiecare loc eliberat.
@@ -124,8 +162,10 @@ Plus, pentru orice atinge emailuri sau stare: emailul trimis **real** și deschi
 mobil + Outlook; fluxul parcurs end-to-end, nu doar testat unitar.
 
 **Cross-check de copy, la fiecare rundă:** fiecare afirmație din pagină verificată împotriva
-a ce face sistemul efectiv. „25 și, la mine, chiar sunt 25" — sistemul respectă?
-„Dacă n-o bifezi, nu te caută nimeni" — bifa e chiar opțională?
+a ce face sistemul efectiv. „30 și, la mine, chiar sunt 30" — sistemul respectă?
+„Dacă n-o bifezi, nu te caută nimeni" — bifa e chiar opțională? Contorul de locuri de pe bară
+și de pe CTA — vine din `locuriDisponibilePublic()`, sau ar putea vreodată să fie un număr
+scris de mână?
 **Pe pagina asta, un copy care minte e un bug.**
 
 ---

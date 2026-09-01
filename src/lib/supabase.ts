@@ -64,13 +64,21 @@ export interface RegisterParticipantResult {
 }
 
 /**
- * Praguri hardcodate aici, nu doar în semnătura SQL: dacă cineva schimbă
- * default-ul din migrație fără să știe că valoarea contează și pentru copy
- * (§13 „Maximum 25", §16 „25 de locuri"), diferența trebuie să fie vizibilă
- * în cod, nu ascunsă într-un DEFAULT din altă parte a repo-ului.
+ * Capacitate unificată (migrația 0007) — până la 2026-08-31 existau două
+ * cifre: un buffer soft de 30 la înscriere (`register_participant`) și un
+ * cap dur de 25 la revendicarea unui loc din waitlist (`claim_waitlist_seat`).
+ * Asimetria era intenționată ȘI ascunsă: pagina afirma 25, sistemul accepta
+ * 30. Odată ce pagina capătă un contor LIVE de locuri, asimetria devine
+ * vizibil neonestă — contorul ar putea arăta locuri libere chiar când
+ * bufferul e deja plin, sau invers. Cifra stată pe pagină (30) e acum și
+ * cifra hard aplicată în bază, la ambele praguri.
+ *
+ * Hardcodată aici, nu doar în semnătura SQL: dacă cineva schimbă default-ul
+ * din migrație fără să știe că valoarea contează și pentru copy
+ * (EVENIMENT.capacitate din src/content/copy.ts), diferența trebuie să fie
+ * vizibilă în cod, nu ascunsă într-un DEFAULT din altă parte a repo-ului.
  */
-export const PRAG_WAITLIST = 30;
-export const CAPACITATE_REALA = 25;
+export const CAPACITATE = 30;
 
 export async function registerParticipant(
   input: RegisterParticipantInput,
@@ -88,7 +96,7 @@ export async function registerParticipant(
       p_consimtamant_comunicare: input.consimtamant_comunicare,
       p_vrea_discutie: input.vrea_discutie,
       p_event_slug: EVENT_SLUG,
-      p_prag_waitlist: PRAG_WAITLIST,
+      p_prag_waitlist: CAPACITATE,
     })
     .single<RegisterParticipantResult>();
 
@@ -118,7 +126,7 @@ export async function claimWaitlistSeat(token: string): Promise<ClaimRezultat> {
     .rpc('claim_waitlist_seat', {
       p_token: token,
       p_event_slug: EVENT_SLUG,
-      p_capacitate: CAPACITATE_REALA,
+      p_capacitate: CAPACITATE,
     })
     .single<ClaimRezultat>();
 
@@ -253,11 +261,17 @@ export async function listWaitlist(): Promise<IntrareWaitlist[]> {
 }
 
 /**
- * Câte locuri sunt libere ACUM, sub capacitatea reală (25) — nu un contor de
- * evenimente. La cutoff, până la 30 de tranziții spre `no_show` pot avea loc
- * simultan; interogarea directă, la momentul rulării funcției debounced,
+ * Câte locuri sunt libere ACUM, sub capacitatea unificată (30) — nu un contor
+ * de evenimente. La cutoff, până la 30 de tranziții spre `no_show` pot avea
+ * loc simultan; interogarea directă, la momentul rulării funcției debounced,
  * reflectă starea reală mai fidel decât ar face suma evenimentelor primite
  * (pe care Inngest oricum le coalesce, nu le agregă).
+ *
+ * Numără DOAR `reconfirmat`/`prezent` — locuri fizic confirmate, folosit de
+ * broadcast-ul intern către waitlist (email 6) când se eliberează un loc
+ * real. Diferit de `locuriDisponibilePublic()` de mai jos, care numără și
+ * `inscris`/`asteptare` — pragul care decide dacă un NOU înscris intră direct
+ * sau pe listă.
  */
 export async function locuriLibere(): Promise<number> {
   const { count, error } = await supabaseAdmin()
@@ -267,7 +281,30 @@ export async function locuriLibere(): Promise<number> {
     .in('status', ['reconfirmat', 'prezent']);
 
   if (error) throw new SupabaseRpcError('count locuri ocupate', error);
-  return Math.max(0, CAPACITATE_REALA - (count ?? 0));
+  return Math.max(0, CAPACITATE - (count ?? 0));
+}
+
+/**
+ * Contorul PUBLIC de pe pagină (BaraScarcity.astro + insigna de pe CTA).
+ *
+ * Numără exact același set de statusuri ca `v_ocupate` din
+ * `register_participant` (migrația 0001) — `inscris`, `asteptare`,
+ * `reconfirmat`, `prezent`. Dacă ar număra altceva (de exemplu doar
+ * `reconfirmat`/`prezent`, ca `locuriLibere()` de mai sus), pagina ar putea
+ * arăta „3 locuri disponibile" chiar în momentul în care un submit real ar
+ * fi trimis pe listă de așteptare — exact genul de neonestitate pe care
+ * regula sursei o interzice explicit („fără deficit fals; afișează doar
+ * date reale").
+ */
+export async function locuriDisponibilePublic(): Promise<{ ramase: number; maxime: number }> {
+  const { count, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_slug', EVENT_SLUG)
+    .in('status', ['inscris', 'asteptare', 'reconfirmat', 'prezent']);
+
+  if (error) throw new SupabaseRpcError('count ocupate (public)', error);
+  return { ramase: Math.max(0, CAPACITATE - (count ?? 0)), maxime: CAPACITATE };
 }
 
 /**

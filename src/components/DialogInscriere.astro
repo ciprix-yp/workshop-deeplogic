@@ -1,5 +1,5 @@
 ---
-import { ctaFinal, CTA, stari } from '../content/copy';
+import { inscriere, CTA, stari } from '../content/copy';
 import { BLOCURI, BIFE, SURSA_CONDITIONAL } from '../content/form-schema';
 
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
@@ -29,9 +29,9 @@ const stariClient = JSON.stringify({
   comportă ca un bloc normal, în flux, exact unde e plasat în DOM — un
   formular funcțional, accesibil prin ancora `#inscriere`, POST nativ către
   /api/register. Cu JS activ, scriptul de mai jos apelează `.close()`
-  SINCRON, înainte de primul paint (același contract ca `.js-reveal` din
-  Base.astro) — nu există cadru intermediar în care dialogul apare deschis,
-  apoi dispare. CTA-urile (Cta.astro, `href="#inscriere"`) rămân neschimbate:
+  SINCRON, înainte de primul paint — nu există cadru intermediar în care
+  dialogul apare deschis, apoi dispare. CTA-urile (Cta.astro,
+  `href="#inscriere"`) rămân neschimbate:
   scriptul le interceptează global și cheamă `.showModal()` în loc să lase
   browserul să sară la ancoră.
 */}
@@ -43,13 +43,21 @@ const stariClient = JSON.stringify({
   </button>
 
   <div class="continut">
-    <h2 id="dialog-titlu">{ctaFinal.h2}</h2>
+    <h2 id="dialog-titlu">{inscriere.h2}</h2>
 
     <div data-pas="formular">
-      <p class="corp">{ctaFinal.corp}</p>
-      <p class="meta">{ctaFinal.meta}</p>
+      <p class="corp">{inscriere.corp}</p>
+      <p class="meta">{inscriere.meta}</p>
+      {/*
+        Numărul live de locuri — completat de scriptul din BaraScarcity.astro
+        (aceeași sursă unică de date, același selector `data-locuri-*` pe care
+        îl actualizează deja insigna de pe CTA-uri). Nu un fetch separat aici:
+        două cicluri de reîmprospătare independente ar putea afișa, o clipă,
+        două numere diferite pe același ecran.
+      */}
+      <p class="locuri-live" data-locuri-live hidden></p>
 
-      <form id="form-inscriere" method="POST" action="/api/register" novalidate data-el="formular">
+      <form id="form-inscriere" method="POST" action="/api/register" novalidate>
         {BLOCURI.map((bloc) => (
           <fieldset class="bloc">
             {bloc.titlu && (
@@ -164,7 +172,7 @@ const stariClient = JSON.stringify({
 
         <div class="trimite">
           <button type="submit" class="cta-submit">{CTA.text}</button>
-          <p class="microcopy sub-cta">{ctaFinal.microcopy}</p>
+          <p class="microcopy sub-cta">{inscriere.microcopy}</p>
         </div>
 
         {/* Rezultatul, când JS-ul e activ și submit-ul EȘUEAZĂ. Confirmarea de
@@ -414,6 +422,17 @@ const stariClient = JSON.stringify({
     font-family: var(--font-mono);
     color: var(--secundar);
     margin-top: var(--sp-md);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .locuri-live {
+    font-family: var(--font-mono);
+    font-size: var(--t-mic);
+    /* Culoarea reală (alb→roșu, pe raportul de ocupare) e setată inline de
+       scriptul din BaraScarcity.astro — la fel ca bara de sus, nu doar text
+       static. Valoarea de-aici e un fallback vizibil doar dacă JS n-a apucat
+       să seteze `style.color` încă. */
+    color: var(--secundar);
     margin-bottom: var(--sp-xl);
   }
 

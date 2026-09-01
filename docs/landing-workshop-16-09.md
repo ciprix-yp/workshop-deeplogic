@@ -1,636 +1,600 @@
-# Landing page — „Prima Mutare spre un Asistent Digital"
-**Workshop gratuit · miercuri, 16 septembrie 2026 · Satu Mare**
+# Landing page — „PRIMUL PAS"
+**Workshop gratuit by Deep Logic · miercuri, 16 septembrie 2026 · 14:00–17:00 · Satu Mare**
 
-> Fișier de producție pentru Claude Code. Conține **copy final** + **spec de implementare**.
-> Copy-ul din blocurile `COPY` se folosește ca atare. Comentariile `<!-- NOTĂ -->` sunt instrucțiuni de build, nu text pentru pagină.
-> Secțiunile marcate `⚠ DECIZIE` au nevoie de input de la Ciprian înainte de publicare — vezi lista de la final.
+> Sursă de adevăr pentru copy — vezi CLAUDE.md, secțiunea „Sursele de adevăr". Implementarea
+> completă trăiește în [`src/content/copy.ts`](../src/content/copy.ts); acest fișier descrie
+> INTENȚIA, copy.ts descrie STAREA EXACTĂ (inclusiv completările de propoziții tăiate și
+> titlurile adăugate, marcate acolo).
 
 ---
 
-## META — tokens & reguli globale
+## PIVOT DE PRODUS (2026-08-31)
+
+Landing page-ul „Prima Mutare spre un Asistent Digital" (25 de locuri, poziționare pe
+demonstrații live — ofertare You Protect, agent de monitorizare a sănătății) e înlocuit
+integral de „PRIMUL PAS" (30 de locuri, poziționare pe lucru propriu al participantului pe
+compania lui, fără demo-uri personale ale lui Ciprian).
+
+Sursa acestei rescrieri: un PDF de producție trimis de Ciprian („PRIMULPASLandingPageV2"),
+cu propriul format §01–§17. Arhitectura tehnică a paginii (17 componente `Sxx*.astro`,
+motor de scroll custom, dialog modal de înscriere) **nu s-a schimbat** — doar conținutul.
+Fiindcă PDF-ul sursă are alt număr de secțiuni cu altă formă decât arhitectura existentă de
+componente, maparea de mai jos e **pe conținut, nu pe poziție**:
+
+| Componentă (poziție pe pagină) | Conținut sursă (secțiunea PDF) |
+|---|---|
+| S01 Hero | §01 Hero |
+| S02 Problema | §02 Problema |
+| S03 Rezultatul | §04 Cu ce pleci + §05 Ce nu vei ști |
+| S04 PentruCine | §09 Pentru cine este |
+| S05 InainteDupa | §03 Ce se schimbă (tabel) |
+| S06 CeFacem | §08 Metodologia Deep Logic — jumătatea „cei 5 pași" |
+| S07 NuDoarTeorie | §10 „Dar eu nu știu ce aș putea face cu AI" |
+| S08 CePleciCuTine (scena-semnătură „harta") | §07 Poate problema ta arată așa (5 din 6 categorii) |
+| S09 UseCases | §07 Poate problema ta arată așa (grid complet, 6 categorii) |
+| S10 DespreDeepLogic | §08 Metodologia Deep Logic — jumătatea „de ce lucrăm invers" |
+| S11 Facilitator | §11 Despre Ciprian Micu |
+| S12 Precedent | §06 Formatul (20%/80%) |
+| S13 Detalii | §14 Detalii practice |
+| S14 DeCeGratuit | §12 De ce este gratuit |
+| S15 Faq | §13 Întrebări frecvente |
+| DialogInscriere (antet) | §15 Înscriere |
+| S16 Inscriere (CTA final + antet-fallback dialog) | §16 CTA final |
+| S17 Footer | §17 Footer |
+
+Două componente (S07, S12) nu mai aveau conținut sursă — vechile lor teme („trei sisteme
+care rulează azi", „nu e prima dată / Ardudana") sunt acum interzise explicit de noua listă
+„ce nu apare deliberat" mai jos. Realocate din secțiuni PDF care altfel n-ar fi avut casă în
+arhitectura existentă de componente.
+
+Peste 20 de propoziții erau tăiate la marginea paginii în PDF-ul sursă (blocurile de cod nu
+se înfășoară la randare) — completate în `copy.ts`, marcate `[completare]`, ancorate în
+vocabularul restului documentului. Revizuire de Ciprian înainte de publicare.
+
+---
+
+## META — reguli globale
 
 ```yaml
 brand: Deep Logic
-produs: "Prima Mutare spre un Asistent Digital"
+produs: "PRIMUL PAS"
 limba: ro
-ton: direct, practic, fără fluff, fără corporatism
+ton: direct, matur, curios, aplicat, fără hype și fără jargon gratuit
 
-culori:
-  fundal_primar: "#FFFFFF"
-  fundal_secundar: "#E4E7E7"
-  text: "#2A3439"
-  accent_cta: "#468984"
-  secundar: "#2F4F4F"
-  succes: "#C9E3D0"
-  eroare: "#B85C5C"
+eveniment:
+  data: "16 septembrie 2026"
+  ora: "14:00–17:00"
+  oras: "Satu Mare"
+  locuri_maxime: 30
+  cost: "Gratuit"
 
-fonturi:
-  titluri: "Inter, Work Sans, sans-serif"
-  corp: "Source Sans Pro, Nunito Sans, sans-serif"
-  date_cod: "IBM Plex Mono, monospace"
+format:
+  context: "20%"
+  lucru_aplicat: "80%"
+
+scarcity:
+  countdown: real
+  locuri_ramase: dinamic
+  regula: "fără deficit fals; afișează doar date reale"
 
 cta_text: "Rezervă-ți locul"
 cta_ancora: "#inscriere"
 cta_repetat_la: [hero, dupa_sectiunea_5, dupa_sectiunea_8, sectiunea_16]
 ```
 
-**Reguli de build:**
-- Mobile-first. Cel puțin 40% din trafic vine din link trimis pe WhatsApp de un membru BIZZ.CLUB.
-- Un singur CTA pe toată pagina. Fără CTA secundar, fără „află mai multe".
-- Fără countdown, fără „ultimele locuri" animat, fără popup de exit-intent. Rarefierea e reală (25 de locuri), se spune o dată, calm.
-- Fără logo-uri de clienți, fără badge-uri, fără cifre de piață.
-- Secțiunile 2 și 8 sunt cele mai importante. Dacă tai ceva la mobil, nu de acolo.
+**Reguli de copy și build:**
+- Un singur CTA pe toată pagina: „Rezervă-ți locul". Mobile-first, scanabil din WhatsApp.
+- Nu transformăm pagina într-un curs despre AI. Vindem claritatea și primul pas, nu tehnologia.
+- Nu promitem că în 3 ore găsim implementarea corectă. Promitem că participantul își
+  clarifică nevoia, începe să-i estimeze impactul și pleacă cu un roadmap de validare.
+- Nu promitem agenți, automatizări, prompturi sau tool-uri. Nu menționăm demo-uri-surpriză.
+- AI apare unde e necesar pentru claritate, nu în fiecare titlu.
+- Ordinea Deep Logic se simte în toată pagina: business → problemă → oameni → proces →
+  impact → tehnologie.
+- **Countdown-ul și numărul de locuri rămase sunt alimentate din date reale** — vezi
+  `BaraScarcity.astro` și `src/pages/api/locuri-disponibile.ts`. Regula: „fără deficit fals".
+- Locația exactă rămâne pe pagină (decizie D6, moștenită din documentul precedent).
 
 ---
 ---
-
-<!-- ================= §01 HERO ================= -->
 
 ## §01 — HERO
 
-**Scop:** îl oprește din scroll numind problema lui, nu soluția mea.
-
 ```COPY
 [EYEBROW]
-PRIMA MUTARE SPRE UN ASISTENT DIGITAL
+PRIMUL PAS · Workshop by Deep Logic
 
 [H1]
-Toată lumea îți spune să adopți AI.
-Nimeni nu-ți spune de unde să începi.
+Toată lumea îți spune să folosești AI.
+Dar în compania ta, de unde începi?
 
 [SUBHEADLINE]
-În trei ore nu implementezi AI. Decizi unde merită — și pleci cu prima ta ipoteză, scrisă.
+În 3 ore lucrezi pe propria companie ca să formulezi nevoia pe care vrei s-o rezolvi, să-i
+estimezi impactul și să pleci cu un prim pas concret.
 
-[PENTRU CINE]
-Pentru antreprenori și decidenți din firme de 7–50 de oameni.
+[MICROCOPY]
+Nu este încă un curs despre AI.
+Nu trebuie să fii IT-ist.
+Și nu trebuie să știi deja ce ai putea face cu AI.
 
 [META]
 Miercuri, 16 septembrie 2026 · 14:00–17:00 · Satu Mare
+20% context · 80% lucru aplicat · Participare gratuită · Maximum 30 de locuri
 
 [CTA]
 Rezervă-ți locul
 
-[MICRO-PROOF]
-25 de locuri. Fără laptop, fără cont, fără instalări — vii cu un pix.
-Demo live pe sisteme care rulează azi, nu slide-uri despre viitor.
+[SCARCITY REALĂ]
+[X locuri disponibile din 30]
+[COUNTDOWN până la 16 septembrie 2026, 14:00]
 ```
 
-<!-- NOTĂ: H1 pe două rânduri, break forțat înainte de „Nimeni". Contrastul e mesajul. -->
-<!-- NOTĂ: eyebrow-ul e numele produsului, cu literă mică ca greutate vizuală. Nu concurează cu H1. -->
-<!-- NOTĂ: fără imagine de fundal generică cu roboți/creiere/rețele neuronale. Fundal curat #FFFFFF. -->
+<!-- NOTĂ: H1 pe două rânduri, break forțat înainte de „Dar". Contrastul e mesajul. -->
+<!-- NOTĂ: fără imagine de fundal generică cu roboți/creiere/rețele neuronale. -->
 
 ---
-
-<!-- ================= §02 PROBLEMA ================= -->
 
 ## §02 — PROBLEMA
 
-**Scop:** îi recunosc vacarmul cu cuvintele lui, apoi îi numesc problema reală. Cea mai importantă secțiune a paginii.
-
 ```COPY
 [H2]
-AI-ul e peste tot. În firma ta, încă nu e nicăieri.
+AI-ul e peste tot. În compania ta, întrebarea încă rămâne.
 
 [CORP]
-Vezi reclame despre AI în fiecare zi. Auzi despre „agenți" — și nu-ți e clar ce naiba sunt ăia. Ți se spune că dacă nu adopți AI, rămâi în urmă.
+ChatGPT. Copiloți. Agenți. Automatizări. Demo-uri care par să facă totul în câteva secunde.
 
-Între timp:
+În același timp apar alte întrebări:
 
-— Angajații tăi se tem că vine să-i înlocuiască. Așa că îl evită.
-— Legislatorul îți spune să ai grijă: AI Act, GDPR.
-— Furnizorii de soluții nu-ți garantează confidențialitatea. Cei de sisteme nu-ți garantează securitatea.
-— Iar tu, ca antreprenor, știi că vrei AI.
+— Ce date pot folosi și ce date nu?
+— Ce va spune echipa?
+— Cât costă cu adevărat?
+— Ce merită construit și ce este doar o jucărie interesantă?
+— Cum îmi dau seama dacă există un ROI înainte să investesc?
 
-Bun. Am stabilit. Hai să începem.
-
-Exact… începem ce? De unde? Ce presupune? Ce riscuri am? Ce costuri? Ce ROI?
+Și, după tot zgomotul, rămâne o întrebare mult mai simplă:
 
 [H3]
-Problema ta nu e că nu vrei AI. E că n-ai o hartă.
+„Bun. Eu de unde încep?"
 
 [CORP]
-Nu știi unde are sens în firma ta și unde sunt bani aruncați. Nu știi ce presupune, ce riști, cât costă, ce iese la capăt.
+Poate ai încercat deja câteva instrumente și ai rămas cu o utilizare ocazională.
+Poate ai văzut lucruri impresionante, dar nu le-ai putut traduce în realitatea companiei tale.
+Sau poate n-ai început deloc pentru că nu ești IT-ist și nu știi ce ai putea face concret.
 
-Și cât timp n-ai harta, nu iei nicio decizie. Mai citești un articol.
+Toate trei sunt puncte de plecare normale.
+
+Problema nu este că nu ai adoptat suficient AI.
+Problema este că, fără o întrebare bună de business, poți pierde luni testând unelte,
+cumpărând licențe și citind materiale care nu duc nicăieri.
 
 [H3]
-Sau poate n-ai vacarmul ăsta deloc.
+PRIMUL PAS începe înainte de tool.
 
 [CORP]
-Poate ai deschis ChatGPT o dată, ți-a scos o prostie, și ai închis subiectul.
-Poate ai decis deja că AI-ul e pentru firme de software și agenții de marketing, nu pentru una ca a ta.
-
-Workshopul ăsta e și pentru tine. O să vezi exact unde s-a rupt treaba.
-
-[H3]
-Costul nu e că începi greșit. E că nu începi deloc.
-
-[CORP]
-Trec lunile. Citești despre AI, te uiți la reclame, îți pui aceleași întrebări. În firmă nu se schimbă nimic.
-
-Trei ore de miercuri după-amiază, o dată, ca să iasă din buclă.
+Începe cu ce vrei să schimbi în compania ta.
 ```
 
-<!-- NOTĂ: liniile cu „—" sunt listă vizuală, nu bullet-uri rotunde. Păstrează ritmul de vorbire. -->
-<!-- NOTĂ: legislația apare AICI ca zgomot pe care el îl aude. NU apare nicăieri în pagină ca promisiune că o rezolv eu. -->
-<!-- NOTĂ: al doilea H3 („sau poate n-ai vacarmul") prinde cititorul care a decis deja că nu i se aplică. Nu-l tăia — e felia cea mai greu de convertit. -->
+<!-- NOTĂ: 5 întrebări, nu 4 — vacarmul de business (date/echipă/cost/scop/ROI), nu frica
+     angajaților sau legislația. Scena „vacarm" din storyboard.json are 5 elemente. -->
 
 ---
 
-<!-- ================= §03 REZULTATUL ================= -->
-
-## §03 — REZULTATUL
-
-**Scop:** ce poate face participantul după, nu ce predau eu. Include granița onestă.
+## §03 — CE SE SCHIMBĂ
 
 ```COPY
 [H2]
-La final vei ști să faci cinci lucruri pe care azi nu le poți face
-
-[LISTĂ]
-
-1. Distingi între ce poate face AI-ul azi și ce doar pare că poate.
-   Pentru că îl vei prinde greșind. Cu mâna ta, nu pentru că ți-am spus eu.
-
-2. Ceri altfel — și primești altceva.
-   Există o structură. Când o folosești, se vede imediat în ce iese.
-
-3. Spui ce e un agent AI și ce nu e.
-   După ce vezi unul funcționând, nu după ce ți se explică pe slide.
-
-4. Tragi linia dintre ce poate ieși din firmă și ce nu iese niciodată.
-   Prețuri, date de client, contracte — unde stau și cum le ții acolo.
-
-5. Numești primul proces din firma ta care merită atins. Și pe cel care nu.
-   Scris, nu în cap.
-
-[H3]
-Ce NU vei ști la final
-
-[CORP]
-Dacă ipoteza ta e corectă.
-
-Asta cere acces la procesele și datele tale reale, la oamenii tăi, la cifrele tale. E o zi de lucru împreună, nu o după-amiază într-o sală cu 25 de oameni.
-
-Ți-o spun acum, nu la final.
-```
-
-<!-- NOTĂ: blocul „Ce NU vei ști" e obligatoriu. E singura formă de credibilitate care funcționează la un om saturat de promisiuni. Stilizare: fundal #E4E7E7, fără chenar roșu, fără iconiță de avertizare. E onestitate, nu alertă. -->
-
----
-
-<!-- ================= §04 PENTRU CINE ================= -->
-
-## §04 — PENTRU CINE ESTE
-
-**Scop:** filtru real, nu politețe. Cu 25 de locuri, o pagină care convinge pe toată lumea e un eșec.
-
-```COPY
-[H2]
-E pentru tine dacă
-
-[LISTĂ-DA]
-— Ești antreprenor, patron sau decident într-o firmă de 7–50 de oameni
-— Ai auzit de AI de o mie de ori și n-ai făcut încă nimic concret cu el
-— Folosești deja ChatGPT, dar haotic: ceva ce deschizi când îți amintești, nu ceva care ține de un proces
-— Ai încercat o dată, n-a mers, și ai lăsat-o baltă
-— Ai o echipă și te întrebi cum reacționează dacă aduci AI în firmă
-
-[H2]
-Nu e pentru tine dacă
-
-[LISTĂ-NU]
-— Cauți o soluție gata făcută, pe care s-o cumperi azi și să meargă mâine
-— Vrei să afli ce va face AI-ul în 2030
-— Nu ai în cap niciun proces al tău la care să te gândești — vii doar să te uiți
-— Ai deja agenți în producție și cauți arhitectură avansată
-```
-
-<!-- NOTĂ: ultima linie din „nu e pentru tine" filtrează în SUS, nu doar în jos. Semnalează că știu că există un nivel peste ce fac azi în sală. -->
-<!-- NOTĂ: cele două liste, vizual egale. Dacă „nu e pentru tine" arată mai mic sau mai gri, filtrul devine decorativ. -->
-
----
-
-<!-- ================= §05 BEFORE → AFTER ================= -->
-
-## §05 — ÎNAINTE → DUPĂ
-
-**Scop:** face concret ce înseamnă „ai o hartă". Tabel, nu proză.
-
-```COPY
-[H2]
-Ce se schimbă efectiv
+De la o senzație difuză la un punct de plecare concret
 
 [TABEL]
-ÎNAINTE                                          | DUPĂ
--------------------------------------------------|--------------------------------------------------
-Deschizi ChatGPT când îți amintești              | Știi în ce situații merită deschis
-Ceri ceva vag, primești ceva vag, te enervezi    | Știi de ce a ieșit prost data trecută
-Nu știi ce e sigur să pui acolo                  | Ai o linie clară: asta iese din firmă, asta nu
-„Agent AI" e un cuvânt din reclame               | Ai văzut unul funcționând și știi ce face
-O senzație difuză că rămâi în urmă               | Un proces numit, scris, cu prima mutare pe el
-```
+ÎNAINTE | DUPĂ PRIMUL PAS
+„Ar trebui să fac ceva cu AI." | „Asta este nevoia pe care vreau s-o explorez."
+Nu știi de unde să începi. | Ai un punct de plecare clar.
+Problema este mai mult o senzație. | Ai început să-i estimezi impactul în business.
+Te gândești direct la soluție. | Știi ce mai trebuie validat înainte de soluție.
+Nu știi cine trebuie implicat. | Ai oamenii-cheie identificați.
+Ai o idee în cap. | Ai un roadmap digital pe care îl poți deschide și continua.
 
-<!-- NOTĂ: coloana ÎNAINTE cu text #2F4F4F la 70% opacitate. Coloana DUPĂ cu accent #468984 pe primul cuvânt. -->
-<!-- NOTĂ: CTA repetat imediat după acest bloc. E primul punct din pagină în care omul e „cald". -->
+[CTA] Rezervă-ți locul
+```
 
 ---
 
-<!-- ================= §06 CE FACEM EFECTIV ================= -->
-
-## §06 — CE FACEM EFECTIV
-
-**Scop:** structura reală a celor două ore de conținut. Scurt, fără jargon de curs.
+## §04 — CU CE PLECI
 
 ```COPY
 [H2]
-Trei blocuri, două ore, zero teorie fără demonstrație
+Nu pleci cu o listă de tool-uri. Pleci cu o direcție.
 
-[BLOC 1]
-01 · CONVERSAȚIA — ce poate și ce nu poate
-Cum ceri, ca să primești ce ai nevoie. Apoi îl prinzi greșind — cu mâna ta, pe telefonul tău.
-La final: ce deschid eu personal și când. ChatGPT, Claude, Gemini, Perplexity — care, pentru ce.
+[ITEM 01] O nevoie clar formulată
+Nu „vreau să folosesc AI". Ci: „Asta este problema sau oportunitatea pe care vreau s-o
+explorez în compania mea."
 
-[BLOC 2]
-02 · DELEGAREA — de la conversație la proces
-Demo live: îmi construiesc o ofertă You Protect în fața ta, de la zero.
-Și îți arăt unde stau datele: fișierele rămân pe calculatorul meu, prețurile nu călătoresc nicăieri.
+[ITEM 02] O primă estimare a impactului
+Cât de des apare problema, câți oameni implică, cât timp consumă. Nu inventăm ROI —
+vedem dacă merită investigată.
 
-[BLOC 3]
-03 · AGENTUL — ce e și, mai ales, ce nu e
-Agentul meu de monitorizare a sănătății. Complet, cum rulează el azi.
-Inclusiv partea care contează: propune, eu aprob. Nu poate scrie singur în date.
+[ITEM 03] O ipoteză despre ce ai putea delega
+„Ce parte din acest proces ar putea fi delegată unui coleg digital — și ce trebuie să
+rămână sub controlul tău?"
 
-[NOTĂ DE FORMAT]
-După fiecare bloc scrii — individual, pe foaia ta.
-Nu discuție de grup. Nu trebuie să vorbești în fața nimănui dacă nu vrei.
+[ITEM 04] Oamenii pe care trebuie să-i implici
+Cei care execută procesul, îl coordonează, primesc rezultatul sau trăiesc consecințele lui.
+
+[ITEM 05] Roadmap-ul tău personalizat
+Nevoia identificată, impactul preliminar, ce mai trebuie validat, oamenii de implicat și
+recomandarea Deep Logic privind continuarea — pe email.
+```
+
+---
+
+## §05 — CE NU VEI ȘTI DUPĂ CELE 3 ORE
+
+```COPY
+[H2]
+Ce NU vei ști la final
+
+[H3]
+Dacă ipoteza ta este corectă.
 
 [CORP]
-De la 16:00, o oră de discuții libere. Fără agendă, fără prezentare.
+Și ar fi incorect să pretind că putem afla asta într-o sală, în trei ore, doar din
+perspectiva ta. Pentru un verdict real trebuie să vorbim cu oamenii care lucrează în
+proces, să vedem cum funcționează lucrurile de fapt, nu doar cum par de la nivelul tău.
+
+PRIMUL PAS îți spune ce merită investigat. Nu pretinde că îți dă răspunsul înainte de
+investigație.
 ```
 
-<!-- NOTĂ: numerotare 01/02/03 cu IBM Plex Mono, accent #468984. -->
-<!-- NOTĂ: [NOTĂ DE FORMAT] răspunde direct fricii „n-o să știu ce să întreb, o să par prost". Nu o îngropa vizual. -->
+<!-- NOTĂ: tratat vizual ca element de credibilitate, nu avertisment. Fundal secundar,
+     fără chenar roșu, fără iconiță de alertă. -->
 
 ---
 
-<!-- ================= §07 NU DOAR TEORIE ================= -->
-
-## §07 — NU DOAR TEORIE
-
-**Scop:** dovada că e demonstrație, nu prezentare. Scurtă, patru linii.
+## §06 — FORMATUL
 
 ```COPY
 [H2]
-Ce face workshopul ăsta diferit
-
-[LISTĂ]
-— Trei sisteme care rulează azi. Nu mockup-uri, nu înregistrări, nu capturi de ecran.
-— Îmi expun propriile procese: ofertele mele și sănătatea mea. Nimeni din sală nu e subiect de demo.
-— Construiesc în fața ta, live. Dacă se blochează ceva, vezi și asta — și vezi ce fac cu ea.
-— Ieși cu un document, nu cu notițe.
-```
-
-<!-- NOTĂ: linia 3 e deliberată. Un demo live care poate pica, admis dinainte, e mai credibil decât o promisiune de perfecțiune. -->
-
----
-
-<!-- ================= §08 CE PLECI CU TINE ================= -->
-
-## §08 — CE PLECI CU TINE
-
-**Scop:** răspunsul direct la „am mai fost la unul și n-am plecat cu nimic". A doua cea mai importantă secțiune.
-
-```COPY
-[H2]
-Ce pleacă acasă cu tine
-
-[ITEM 1]
-Harta ta, scrisă în sală
-În ultimele 15 minute completăm împreună. Nu de la zero — transcrii ce ai scris deja după fiecare bloc.
-Iese: procesele tale, ce e confidențial în ele, ce s-ar putea delega, și prima ta mutare.
-
-[ITEM 2]
-Un document personalizat, pe email, în aceeași zi
-Nu un PDF generic trimis la toată lumea. Al tău: harta ta, prima ta mutare, și prompturile configurate pentru ce faci tu efectiv.
-Ăsta e lucrul pe care îl deschizi joi dimineață.
-
-[ITEM 3]
-Structura de prompt
-Formula pe care o folosesc eu. Patru părți. Funcționează în orice unealtă de chat, indiferent care.
-
-[ITEM 4]
-Regula de confidențialitate
-O singură propoziție care îți spune ce urci și ce nu urci niciodată. Simplă cât s-o ții minte fără s-o cauți.
-```
-
-<!-- ⚠ DECIZIE 1: itemii 1–4 sunt confirmați. Dacă vrei și un cheat-sheet tipărit de prompturi (ieftin de produs, întărește secțiunea), spune și îl adaug ca ITEM 5. Deocamdată NU e pe pagină, pentru că nu e decis. -->
-<!-- NOTĂ: „în aceeași zi" e un angajament operațional. Dacă nu poți garanta livrarea în ziua evenimentului, schimbă în „în 24 de ore" ÎNAINTE de publicare. Nu promite ce nu livrezi — e fix pagina pe care miza e credibilitatea. -->
-<!-- NOTĂ: CTA repetat după acest bloc. -->
-
----
-
-<!-- ================= §09 USE CASES ================= -->
-
-## §09 — DE UNDE PORNESC DE OBICEI FIRMELE
-
-**Scop:** îl ajută să se proiecteze. NU e o listă cu ce acoperă workshopul — e lista de categorii pe care el își mapează propriile procese.
-
-```COPY
-[H2]
-Unde caută oamenii, de obicei
+20% context. 80% lucru pe compania ta.
 
 [CORP]
-Nu acoperim toate zonele astea în trei ore. Le pun aici ca să ai de unde începe când îți cartografiezi propriul proces.
+Nu vreau să petrecem trei ore vorbind despre tehnologie. Contextul e acolo doar cât să
+punem întrebările corecte. Restul timpului lucrezi pe propria companie: ce vrei să
+schimbi, unde se consumă timp sau atenție, cine e implicat, ce valoare ar avea dacă
+problema s-ar rezolva, ce ai putea delega și ce trebuie verificat înainte să construiești
+ceva. Nu pe un business imaginar. Pe al tău.
+
+[H3]
+Nu trebuie să fii IT-ist.
+
+[CORP]
+Rolul tău nu este să știi ce model, API sau arhitectură trebuie folosită. Rolul tău este
+să înțelegi ce merită rezolvat și de ce. Tehnologia vine după.
+```
+
+---
+
+## §07 — POATE PROBLEMA TA ARATĂ AȘA
+
+```COPY
+[H2]
+De unde pornesc, de obicei, întrebările bune
+
+[INTRO]
+Nu înseamnă că vom acoperi toate zonele de mai jos. Sunt doar exemple care te pot ajuta
+să recunoști o problemă reală din compania ta.
 
 [GRID]
 VÂNZĂRI ȘI OFERTARE
-Oferte, devize, propuneri. Răspunsuri la cereri repetitive.
+Ofertele sau devizele se fac greu, manual sau depind prea mult de o singură persoană.
 
-RELAȚIA CU CLIENȚII
-Răspunsuri standard, follow-up, întrebări care se repetă de zece ori pe lună.
+CLIENȚI
+Echipa răspunde din nou și din nou la aceleași întrebări sau follow-up-ul se pierde.
+
+DOCUMENTE ȘI RAPOARTE
+Oamenii mută informații între PDF-uri, emailuri, tabele și sisteme care nu vorbesc între ele.
 
 OPERAȚIONAL
-Rapoarte interne, sinteze, informația care trece de la un om la altul și se pierde pe drum.
+Informația există, dar ajunge greu la omul care trebuie să ia o decizie.
 
-DOCUMENTE ȘI DATE
-Ce e îngropat în PDF-uri, contracte și tabele pe care nu le mai deschide nimeni.
+ONBOARDING, PROCESE ȘI PROCEDURI
+O parte importantă din „cum facem lucrurile aici" există mai mult în capul oamenilor
+decât în vreun document.
 
-MONITORIZARE CONTINUĂ
-Lucruri care ar trebui urmărite permanent și pe care le observi doar când e prea târziu.
+VÂNZARE ȘI DEZVOLTARE
+Știi că există oportunități, dar oamenii potriviți sunt greu de identificat, prioritizat
+sau urmărit în timp.
 
-[CORP]
-Demonstrația live e pe ofertare, pentru că e procesul pe care îl am eu și pot să-l expun fără să expun pe altcineva.
-Mecanismul e același indiferent de zonă.
+[OUTRO]
+Poate problema ta nu seamănă cu nimic de aici. Și asta este în regulă.
+Nu trebuie să vii cu problema perfect formulată. Pentru asta lucrăm.
 ```
 
-<!-- NOTĂ: prima linie de corp e obligatorie. Fără ea, secțiunea promite șapte domenii acoperite în trei ore — și pagina minte. -->
-<!-- NOTĂ: „AI agents" NU apare ca use case separat aici. Apare la §06 bloc 3, ca demonstrație. Aici ar suna a buzzword. -->
+<!-- NOTĂ implementare: grila completă (6 categorii) e la S09UseCases. Primele 5 categorii
+     (Vânzări+Dezvoltare combinate) alimentează și scena-semnătură „harta" la S08
+     CePleciCuTine — vezi copy.ts pentru cum s-au despărțit. -->
 
 ---
 
-<!-- ================= §10 DEEP LOGIC ================= -->
-
-## §10 — DESPRE DEEP LOGIC
-
-**Scop:** cine ține workshopul, la nivel de firmă. Scurt.
+## §08 — METODOLOGIA DEEP LOGIC
 
 ```COPY
 [H2]
-Deep Logic
+Înainte de soluție, trebuie să înțelegem problema.
 
 [CORP]
-Consultanță AI pentru firme românești de 7–50 de oameni.
+Când apare o tehnologie nouă, tentația este să începem cu unealta. Să vedem ce poate face
+și apoi să căutăm unde să o folosim. La Deep Logic facem invers.
 
-Poziția noastră: infrastructură, nu automatizări.
-Diferența e cine deține ce se construiește. Arhitectura rămâne a clientului, nu a furnizorului. Iar sistemele se construiesc pe realitatea fiscală de aici — e-Factura, ANAF — nu pe un model importat care merge în altă parte.
+[STATEMENT]
+Business → problemă → oameni → proces → impact → tehnologie.
 
-Ordinea în care lucrăm: întâi strategia, apoi procesul, apoi tehnologia.
-Nu punem AI peste orice. Căutăm unde produce efect economic real — și spunem când nu produce.
+[CORP]
+Începem cu perspectiva ownerului. Apoi o verificăm în realitatea echipei. Ne uităm la
+procese și proceduri. La date. La efort. La risc. La impact și ROI.
+Și abia după aceea decidem dacă tehnologia are sens.
+
+[STEP 1] PRIMUL PAS
+Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și construim
+ipoteze inițiale de lucru.
+
+[STEP 2] REALITATEA ECHIPEI
+Descoperim nevoile oamenilor care lucrează efectiv în procese și înțelegem ce se întâmplă
+în realitate, nu doar pe hârtie.
+
+[STEP 3] PROCESE + IMPACT + ROI
+Suprapunem perspectiva managementului cu realitatea echipei, procesele și datele disponibile.
+
+[STEP 4] DECIZIA
+Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.
+
+[STEP 5] IMPLEMENTAREA
+Construim doar acolo unde există suficiente motive să o facem.
+
+[STATEMENT FINAL]
+Nu pornim de la „Ce putem face cu AI?"
+Pornim de la: „Ce merită să rezolvăm?"
+
+[CTA] Rezervă-ți locul
 ```
 
-<!-- NOTĂ: zero cifre aici. Fără „X clienți", fără „Y proiecte". Când vor exista date documentate, se adaugă. -->
+<!-- NOTĂ implementare: secțiunea s-a despărțit în două componente — S06 CeFacem ia
+     STEP 1-5 (numerotare 01-05, IBM Plex Mono), S10 DespreDeepLogic ia prefața +
+     STATEMENT. Motiv: S06 randează blocuri numerotate, S10 doar proză; niciuna singură
+     n-avea forma pentru tot conținutul. Vezi copy.ts. -->
 
 ---
 
-<!-- ================= §11 FACILITATOR ================= -->
+## §09 — PENTRU CINE ESTE
+
+```COPY
+[H2]
+Este pentru tine dacă...
+
+— ești antreprenor, owner, CEO, manager sau iei decizii care influențează felul în care
+  funcționează compania ta;
+— ai senzația că anumite lucruri ar putea funcționa mai bine, dar nu știi încă unde
+  tehnologia ar avea sens;
+— folosești deja AI ocazional, dar nu l-ai legat de un proces real de business;
+— n-ai folosit aproape deloc AI și nu știi de unde să începi;
+— vrei să înțelegi problema înainte să cumperi soluția;
+— ești dispus să lucrezi trei ore pe realitatea propriei companii.
+
+[H2]
+Nu este pentru tine dacă...
+
+— cauți o listă cu cele mai bune prompturi;
+— vrei o prezentare cu zeci de tool-uri;
+— te aștepți să construim un agent sau o automatizare completă în trei ore;
+— cauți o rețetă universală pe care s-o copiezi în companie;
+— vrei ca cineva să-ți spună ce trebuie automatizat fără să înțeleagă mai întâi businessul;
+— ai deja o strategie AI matură și cauți arhitectură tehnică avansată.
+
+[OUTRO]
+PRIMUL PAS nu este despre a face mai mult cu AI.
+Este despre a decide mai bine unde merită să începi.
+```
+
+---
+
+## §10 — „DAR EU NU ȘTIU CE AȘ PUTEA FACE CU AI"
+
+```COPY
+[H2]
+„Dar eu nici măcar nu știu ce aș putea face cu AI."
+
+[H3]
+Perfect.
+
+[CORP]
+Nu trebuie să vii cu răspunsul. Pentru asta există PRIMUL PAS.
+Nu trebuie să fii IT-ist. Nu trebuie să cunoști automatizări. Nu trebuie să știi ce este
+un agent sau un API.
+
+Ai nevoie doar să-ți cunoști compania suficient cât să poți spune:
+
+„Aici simt că pierdem timp."
+„Aici depindem prea mult de un om."
+„Aici nu avem vizibilitate."
+„Aici aș vrea să funcționăm mai bine."
+
+De acolo începem.
+```
+
+<!-- NOTĂ implementare: realocat la S07 NuDoarTeorie (vechiul conținut, „trei sisteme
+     care rulează azi", e interzis de noua listă „ce nu apare deliberat"). -->
+
+---
 
 ## §11 — DESPRE CIPRIAN MICU
 
-**Scop:** de ce merită să-l asculți. Pentru cititorul care nu-l cunoaște deloc.
-
 ```COPY
 [H2]
-Cine ține workshopul
+De ce eu?
 
 [CORP]
-Ciprian Micu. Fondator Deep Logic.
+La patru ani am legat mobilierul din camera părinților mei cu elastic. În mintea mea,
+făceam obiectele să comunice.
 
-Lucrez cu AI din decembrie 2022. Am sisteme în producție din 2023 — inclusiv cele pe care ți le arăt pe 16 septembrie. Sunt practician, nu lector: tot ce demonstrez e ceva ce folosesc eu.
+Mult mai târziu, în decembrie 2022, am început să explorez serios AI. Nu pentru că voiam
+să devin „expert în AI" — eram antreprenor și căutam soluții pentru probleme reale din
+propriul business.
 
-În paralel, sunt Business Developer la You Protect, unde vând echipamente de protecție în B2B. De acolo vine demonstrația de ofertare — e procesul meu, pot să-l deschid fără să expun pe nimeni altcineva.
-
-Fac parte din echipa de leadership BIZZ.CLUB Satu Mare.
-
-[OPȚIONAL — vezi DECIZIA 2]
-Înainte de asta am construit o firmă de transport de la zero la aproape 4 milioane de euro în șapte ani. Apoi am dat faliment. De acolo mi-a rămas realismul: știu cum arată o decizie proastă luată cu entuziasm.
-```
-
-<!-- ⚠ DECIZIE 2: blocul [OPȚIONAL] e cel mai puternic element de credibilitate de pe toată pagina pentru audiența asta — un antreprenor care a construit și a pierdut vorbește altfel decât un consultant care n-a riscat nimic. Dar e decizia ta dacă îl pui public. Îl las marcat, nu-l activez singur. -->
-<!-- ASSET NECESAR: fotografie reală, la lucru sau la un eveniment anterior. NU portret corporate pe fundal alb, NU stock. -->
-
----
-
-<!-- ================= §12 PRECEDENT ================= -->
-
-## §12 — PRECEDENT
-
-**Scop:** înlocuiește „social proof". Nu am testimoniale pe formatul ăsta și nu inventez.
-
-```COPY
-[H2]
-Nu e prima dată
-
-[CORP]
-Am ținut o versiune a acestui workshop în iulie, la Ardudana.
-
-Versiunea din septembrie e construită pe ce am învățat acolo: mai puțină prezentare, mai multe demonstrații pe sisteme reale, și un material personalizat după eveniment — care atunci nu exista.
-
-Nu pun testimoniale pentru că n-am colectat pe formatul ăsta. Când voi avea, le voi pune.
-```
-
-<!-- ⚠ DECIZIE 3: dacă ai chiar și două reacții scrise de la Ardudana, secțiunea devine de trei ori mai puternică. Trimite-mi-le și rescriu. Până atunci rămâne așa — precedentul e adevărat, testimonialele nu există. -->
-<!-- NOTĂ: ultima propoziție („nu pun testimoniale pentru că...") pare că slăbește pagina. Nu o slăbește. La un cititor saturat de promisiuni, e cel mai puternic semnal de onestitate de pe toată pagina. Nu o tăia. -->
-
----
-
-<!-- ================= §13 FORMAT ================= -->
-
-## §13 — FORMAT ȘI DETALII
-
-**Scop:** toate informațiile practice, într-un singur loc scanabil.
-
-```COPY
-[H2]
-Detalii practice
-
-[TABEL]
-Data              | Miercuri, 16 septembrie 2026
-Ora               | 14:00 – 17:00
-Structura         | Două ore de workshop, o oră de discuții libere
-Locația           | Satu Mare — adresa exactă, în emailul de confirmare
-Participanți      | Maximum 25
-Ce aduci          | Un pix. Atât.
-Laptop            | Nu e nevoie. Dacă vrei să lucrezi în paralel, adu-l — dar nu e obligatoriu.
-Nivel necesar     | Zero. Dacă n-ai deschis niciodată ChatGPT, e în regulă.
-Cost              | Gratuit
-```
-
-<!-- ASSET NECESAR: adresa sălii. Momentan e „în emailul de confirmare" — funcționează, dar dacă o ai, pune-o direct. Reduce fricțiunea. -->
-
----
-
-<!-- ================= §14 CE INCLUDE / DE CE E GRATUIT ================= -->
-
-## §14 — CE INCLUDE ȘI DE CE E GRATUIT
-
-**Scop:** dezamorsează „e gratuit, deci e un pitch de 3 ore". Fără preț, fără ancoră de preț.
-
-```COPY
-[H2]
-De ce e gratuit
-
-[CORP]
-Pentru că am nevoie de repetiții și de feedback real.
-
-E prima dată când țin workshopul ăsta în forma asta. Vreau să văd pe ce se blochează firmele din Satu Mare când pun mâna pe instrumentele astea — nu ce cred eu că le trebuie.
-
-Deci da, am un interes. Interesul meu e să învăț din sala asta și, dacă mai încolo cineva vrea să lucrăm împreună pe procesele lui, cu atât mai bine. Nu vinde nimeni nimic de la microfon pe 16 septembrie.
+În anii care au urmat am trecut de la a folosi instrumente făcute de alții la a-mi
+construi propriile sisteme. Asta mi-a schimbat perspectiva.
 
 [H3]
-Ce include
-
-[LISTĂ]
-— Două ore de workshop cu demonstrații live pe sisteme reale
-— O oră de discuții libere, după
-— Harta ta, completată în sală
-— Documentul tău personalizat, pe email, în aceeași zi
-
-[H3]
-De ce doar 25 de locuri
+După piatră, am descoperit ciocanul.
 
 [CORP]
-Pentru că peste atât nu mai pot lucra cu fiecare din sală, iar workshopul devine prezentare. Nu e o cifră aleasă ca să sune bine.
+Cu un ciocan poți construi multe lucruri. Dar ciocanul nu îți spune ce trebuie construit.
+
+Și exact asta mi se pare astăzi întrebarea importantă în AI. Nu „ce poate tehnologia?".
+Ci „ce merită să rezolvăm cu ea?". Din întrebarea asta s-a construit și metodologia
+Deep Logic.
+
+— Ciprian Micu, Founder, Deep Logic
 ```
 
-<!-- NOTĂ: fără preț, fără „valoare 2000 lei", fără „normal ar costa X". Workshopul public și cel in-company nu sunt același produs — o ancoră de preț ar revendica o echivalență falsă, iar primul om care compară cele două agende o vede. -->
-<!-- NOTĂ: „Nu vinde nimeni nimic de la microfon" e un angajament public. Respectă-l în sală. -->
+<!-- ASSET NECESAR: fotografie reală cu Ciprian la lucru / workshop / conversație cu
+     antreprenori. Fără stock, fără estetică „guru tech". Vezi S11Facilitator.astro —
+     secțiunea se autoascunde de imagine dacă fișierul lipsește din public/. -->
 
 ---
 
-<!-- ================= §15 FAQ ================= -->
-
-## §15 — ÎNTREBĂRI
-
-**Scop:** ultimele obiecții, înainte de CTA final.
+## §12 — DE CE ESTE GRATUIT
 
 ```COPY
 [H2]
-Întrebări
+De ce este gratuit?
 
+[CORP]
+Pentru că vreau să fac metodologia Deep Logic cunoscută și, în același timp, să o
+validez în situații reale. Nu pe exemple inventate. Pe situații reale aduse de
+antreprenori și oameni de decizie.
+
+Tu vii cu realitatea companiei tale și cu trei ore de atenție. Eu vin cu metodologia,
+facilitarea și roadmap-ul personalizat.
+
+La final îmi doresc ceva foarte simplu de la tine:
+
+[H3]
+feedback sincer.
+
+[CORP]
+Atât.
+
+De aceea această ediție este gratuită și limitată la maximum 30 de participanți.
+```
+
+---
+
+## §13 — ÎNTREBĂRI FRECVENTE
+
+```COPY
 [Q] Trebuie să am experiență cu AI?
-[A] Nu. Dacă n-ai deschis niciodată ChatGPT, e în regulă — începem de la conversație. Dacă îl folosești zilnic, blocurile 2 și 3 sunt oricum peste ce faci acum.
+[A] Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai făcut încă
+    nimic similar.
 
-[Q] Trebuie laptop?
-[A] Nu. Demonstrațiile rulează pe ecranul meu. Ai nevoie doar de telefon, pentru un singur exercițiu. Dacă vrei să lucrezi în paralel pe laptopul tău, adu-l — dar nu-ți trebuie.
+[Q] Trebuie să vin cu problema deja identificată?
+[A] Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine.
+    O parte importantă din workshop e chiar clarificarea problemei.
 
-[Q] E potrivit pentru domeniul meu?
-[A] Demonstrația live e pe ofertare, dar mecanismul nu ține de industrie. În sală vin oameni din producție, servicii, comerț, construcții. Ce cartografiezi tu e propriul proces, nu al meu.
+[Q] Trebuie să fiu IT-ist ca să înțeleg?
+[A] Nu. Nu discutăm arhitecturi tehnice și nu trebuie să știi să programezi. Rolul tău
+    este să înțelegi ce merită rezolvat, nu cum se construiește tehnic.
 
-[Q] Pot să vin cu o problemă reală din firmă?
-[A] Da — și ăsta e scopul. Nu trebuie s-o spui cu voce tare în fața nimănui. Lucrezi pe ea individual, pe foaia ta.
+[Q] Este potrivit pentru domeniul meu?
+[A] Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, există
+    suficient material de lucru, indiferent de domeniu.
 
-[Q] O să-mi vindeți ceva la final?
-[A] Nu de la microfon. Pe formularul de la final există o singură bifă, prin care poți cere o discuție dacă vrei. Dacă n-o bifezi, nu te caută nimeni.
+[Q] Trebuie să aduc laptop?
+[A] Laptopul nu este obligatoriu pentru participare. Dacă va fi util pentru un exercițiu,
+    poți veni cu el, dar nu ai nevoie de el ca să participi.
 
 [Q] Ce primesc după workshop?
-[A] Un document personalizat pe email, în aceeași zi: harta ta, prima ta mutare și prompturile configurate pentru ce faci tu.
+[A] Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar,
+    ce trebuie validat, oamenii de implicat și pașii concreți pentru următorul pas.
 
 [Q] Ce se întâmplă dacă mă înscriu și nu pot ajunge?
-[A] Anunță-mă și eliberez locul pentru altcineva. Sunt 25 și, la mine, chiar sunt 25.
+[A] Anunță-mă și eliberez locul pentru altcineva. Sunt 30 și, la mine, chiar sunt 30.
 ```
-
-<!-- NOTĂ: întrebarea despre vânzare e cea mai importantă din FAQ. Nu o muta mai jos și nu o înmuia. -->
 
 ---
 
-<!-- ================= §16 CTA FINAL ================= -->
+## §14 — DETALII PRACTICE
 
-## §16 — CTA FINAL + FORMULAR
+```COPY
+[TABEL]
+Data | Miercuri, 16 septembrie 2026
+Ora | 14:00–17:00
+Durata | 3 ore de lucru
+Locația | Satu Mare — adresa exactă pe pagină (decizie D6)
+Participanți | Maximum 30
+Format | 20% context · 80% lucru aplicat
+Nivel necesar | Zero cunoștințe tehnice
+Laptop | Nu este obligatoriu
+Cost | Gratuit
 
-**Scop:** închiderea. Repetă rezultatul, nu argumentul.
+[SCARCITY]
+[X locuri disponibile din 30]
+[COUNTDOWN REAL până la 16 septembrie 2026, 14:00]
+
+[CTA] Rezervă-ți locul
+```
+
+---
+
+## §15 — ÎNSCRIERE
 
 ```COPY
 [H2]
-Trei ore, miercuri după-amiază
+Rezervă-ți locul la PRIMUL PAS
 
 [CORP]
-Nu ca să implementezi AI. Ca să știi unde merită și unde nu merită, în firma ta — și să pleci cu prima ta mutare, scrisă.
+Înscrierea durează câteva minute. Pe lângă datele de contact, îți voi pune câteva
+întrebări despre compania ta. Nu trebuie să ai răspunsurile perfecte.
 
-Miercuri, 16 septembrie · 14:00–17:00 · Satu Mare · 25 de locuri
+Întrebările mă ajută să înțeleg cine vine în sală și să pregătesc workshopul pe probleme
+reale, nu pe una imaginară.
 
-[CTA]
-Rezervă-ți locul
+[CTA / SUBMIT] Rezervă-ți locul
 
-[MICROCOPY SUB CTA]
-Îți iau 60 de secunde. Întreb și ce proces îți mănâncă cel mai mult timp — ca să pot pregăti materialul pentru sala care vine efectiv, nu pentru una imaginară.
+[MICROCOPY]
+Maximum 30 de locuri. După înscriere primești confirmarea și detaliile de participare pe
+email.
 ```
 
-### Formular — 6 câmpuri
-
-```yaml
-campuri:
-  - id: nume
-    label: "Nume și prenume"
-    tip: text
-    obligatoriu: true
-
-  - id: email
-    label: "Email"
-    tip: email
-    obligatoriu: true
-    microcopy: "Aici primești confirmarea și, după workshop, materialul tău."
-
-  - id: firma_rol
-    label: "Firma și rolul tău"
-    tip: text
-    obligatoriu: true
-
-  - id: sursa
-    label: "Cine te-a invitat?"
-    tip: select
-    obligatoriu: true
-    optiuni:
-      - "Sunt membru BIZZ.CLUB Satu Mare"
-      - "Am primit invitația de la un membru BIZZ.CLUB"
-      - "Sunt membru DRW"
-      - "Altfel"
-    conditional:
-      trigger: "Am primit invitația de la un membru BIZZ.CLUB"
-      camp: "De la cine?"
-      tip: text
-    conditional_2:
-      trigger: "Altfel"
-      camp: "Cum ai aflat?"
-      tip: text
-
-  - id: proces
-    label: "Ce proces din firma ta îți mănâncă cel mai mult timp?"
-    tip: textarea
-    obligatoriu: true
-    placeholder: "Ex.: fac ofertele de mână, fiecare îmi ia 40 de minute și trimit 15 pe săptămână."
-
-  - id: nivel_ai
-    label: "Folosești AI azi?"
-    tip: select
-    obligatoriu: true
-    optiuni:
-      - "Zilnic, e parte din cum lucrez"
-      - "Din când în când"
-      - "Am încercat și am renunțat"
-      - "Niciodată"
-
-confirmare:
-  mesaj: "Gata. Îți trimit confirmarea pe email, cu adresa exactă. Cu două zile înainte îți scriu să confirmi că vii — dacă nu poți, eliberez locul."
-```
-
-<!-- NOTĂ: fără telefon, fără cifră de afaceri, fără număr de angajați. Toate trei semnalează „urmează un apel de vânzare" către exact cititorul care nu te cunoaște încă. Telefonul se ia în sală. -->
-<!-- NOTĂ: placeholder-ul de la câmpul „proces" e obligatoriu. Fără exemplu concret primești „administrația" și n-ai nimic. -->
-<!-- NOTĂ TEHNICĂ: formular → n8n → Baserow. Secvența anti-no-show: confirmare imediată, reconfirmare activă la 48h (buton „Confirm că vin"), reminder în dimineața zilei. Acceptă ~30 înscrieri pentru 25 de locuri. -->
+**Formular:** se folosește formularul final deja aprobat (Q1–Q5 de calificare,
+`src/content/form-schema.ts`). Doar numele workshopului s-a schimbat la PRIMUL PAS —
+conținutul întrebărilor rămâne neschimbat.
 
 ---
 
-<!-- ================= §17 FOOTER ================= -->
+## §16 — CTA FINAL
+
+```COPY
+[H2]
+3 ore. Compania ta. Primul pas.
+
+[CORP]
+Nu ca să implementezi AI într-o după-amiază. Ci ca să treci de la „Ar trebui să fac ceva
+cu AI." la o nevoie numită, cu impact estimat și cu primul pas scris.
+
+Miercuri, 16 septembrie · 14:00–17:00 · Satu Mare · 30 de locuri
+
+[SCARCITY]
+[X locuri disponibile din 30]
+[COUNTDOWN REAL]
+
+[CTA] Rezervă-ți locul
+
+[CLOSING]
+Peste tot se vorbește despre ce poate face AI.
+Pentru compania ta, întrebarea mai importantă este: „Ce merită să rezolv?"
+Dacă încă nu ai un răspuns clar, e în regulă. Acesta este PRIMUL PAS.
+```
+
+---
 
 ## §17 — FOOTER
 
@@ -638,96 +602,48 @@ confirmare:
 Deep Logic
 Satu Mare, România
 
-[Contact — email]
-[LinkedIn]
-[Website]
+[Contact — email] · [LinkedIn] · [Website]
 
 Termeni · Politica de confidențialitate
 ```
 
-<!-- NOTĂ: footer minimalist, fundal #E4E7E7, text #2F4F4F. Fără newsletter signup, fără social icons multiple, fără sitemap. -->
-<!-- ASSET NECESAR: email de contact, URL LinkedIn, URL website, pagini Termeni + GDPR. -->
-
 ---
 ---
 
-# TEXT DE DISTRIBUIRE — pentru membri BIZZ.CLUB
+# NOTE DE IMPLEMENTARE
 
-**Nu e pe landing page. E mesajul pe care membrul îl trimite personal invitatului lui, pe WhatsApp sau email.**
+**CTA-uri.** Repetă „Rezervă-ți locul" în: 1. Hero, 2. După §03 (tabel), 3. După §08
+(metodologie), 4. §14 (detalii), 5. Formular (submit), 6. §16 (CTA final). Fără CTA
+secundar de tip „Află mai multe". Insigna de locuri live e un element separat, ascuns
+implicit — nu schimbă textul butonului.
 
-## Logica
+**Countdown și locuri.** Countdown real până la 16.09.2026, 14:00, Europe/Bucharest.
+„X locuri disponibile din 30" alimentat din `locuriDisponibilePublic()` — exact același
+prag pe care `register_participant` îl folosește ca să decidă inscris-vs-așteptare. La 0
+locuri, CTA-ul nu se dezactivează — mecanismul de listă de așteptare există deja
+(`/lista-asteptare`). Fără notificări false de tip „cineva tocmai s-a înscris".
 
-Fiecare membru BIZZ.CLUB are o invitație gratuită la eveniment, pe care o oferă unui colaborator — personal, nu prin club. Nu e un link redirecționat. E un privilegiu pe care membrul îl acordă cuiva.
-
-Textul trebuie să vorbească **la persoana I**, ca și cum membrul scrie chiar el, nu ca și cum retransmite un anunț. Dacă sună a flyer copy-paste, mecanismul de încredere moare — invitatul simte diferența dintre „mi-a scris X" și „am primit un forward".
-
-De-asta variantele de mai jos n-au nimic din vocabularul landing page-ului (eyebrow, CTA, micro-proof). Sunt scrise ca mesaj, nu ca reclamă.
-
-## Varianta A — scurtă (WhatsApp)
-
-```COPY
-Salut, [Nume]!
-
-Am o invitație la un workshop despre AI, pe 16 septembrie, în Satu Mare — trei ore, de la 14:00, urmate de discuții libere. Ține Ciprian Micu de la Deep Logic, pe procese reale de-ale lui, nu pe slide-uri.
-
-Mă gândeam la tine pentru ea. Ți-o dau ție.
-
-Detalii și înscriere aici: [link]
-
-Locurile sunt limitate, deci dacă te tentează, nu lăsa pe mai încolo.
-```
-
-## Varianta B — cu context (email sau WhatsApp mai lung)
-
-```COPY
-Salut, [Nume],
-
-Am o invitație gratuită la un workshop despre AI, pe 16 septembrie, la Satu Mare — și m-am gândit la tine.
-
-Îl ține Ciprian Micu, de la Deep Logic. Nu e o prezentare despre AI — arată live cum face el ofertele cu Claude și cum și-a construit un agent care-i urmărește sănătatea. Ideea e să pleci cu o hartă scrisă: unde ar avea sens AI-ul în firma ta și de unde ai începe.
-
-Trei ore, 14:00–17:00, plus o oră de discuții libere după. Fără laptop, fără cont, fără pregătire dinainte.
-
-Sunt doar 25 de locuri, deci dacă vrei să vii, aplică cât mai repede: [link]
-```
-
-## Notă de utilizare
-
-- **[Nume]** și **[link]** se completează manual sau prin merge tag, dacă mesajul e trimis din CRM/Baserow.
-- Varianta A pentru WhatsApp direct. Varianta B unde membrul vrea să dea mai mult context (email, sau invitat mai reticent).
-- Nu adăuga „gratuit" ca prim cuvânt vizibil — apare o singură dată, natural, în propoziție. Cuvântul repetat scade valoarea percepută, exact ca pe landing page.
-
----
-
-# DECIZII DESCHISE
-
-| # | Decizie | Impact | Unde |
-|---|---|---|---|
-| 1 | Adaugi un cheat-sheet tipărit cu prompturi ca ITEM 5? | Întărește §08, care e a doua cea mai importantă secțiune. Ieftin de produs. | §08 |
-| 2 | Activezi blocul despre firma de transport și faliment? | Cel mai puternic element de credibilitate pentru audiența asta. Dar e expunere personală — decizia e a ta. | §11 |
-| 3 | Ai reacții scrise de la Ardudana? | Ar transforma §12 din „precedent" în dovadă socială reală. | §12 |
-| 4 | Confirmi „în aceeași zi" pentru documentul personalizat? | Dacă nu poți garanta, schimbă în „în 24 de ore" înainte de publicare. | §08, §14, §15 |
-| 5 | Adresa sălii — o pui pe pagină sau rămâne în email? | Pusă direct, reduce fricțiunea la înscriere. | §13 |
-
----
-
-# ASSETS NECESARE
-
-- [ ] Fotografie Ciprian — reală, la lucru sau la un eveniment. Nu stock, nu portret corporate.
-- [ ] Adresa exactă a locației
-- [ ] Email de contact
-- [ ] URL LinkedIn + website
-- [ ] Pagini Termeni și Politica de confidențialitate
-- [ ] Text scurt de distribuire (2–3 propoziții) pe care membrii BIZZ.CLUB să-l trimită mai departe pe WhatsApp către invitatul lor. **Nu e pe pagină — e livrabil separat, dar e canalul principal de distribuție. Fără el, pagina nu ajunge la cititorul pentru care a fost scrisă.**
+**Distribuție/invitație.** Formulare recomandată: „30 de locuri, distribuite în principal
+prin invitații în comunitate."
 
 ---
 
 # CE NU APARE PE PAGINĂ — DELIBERAT
 
 - **Preț sau ancoră de preț.** Workshopul public și cel in-company nu sunt același produs.
-- **Cifre de piață, procente, statistici.** Niciuna verificată de tine, deci niciuna pe pagină.
-- **Cifre de ROI.** Zero, până la primul pilot documentat.
-- **Promisiuni de conformitate legală.** AI Act, GDPR, NIS2 apar o singură dată, în §02, ca zgomot pe care îl aude el. Niciodată ca promisiune.
-- **Countdown, „ultimele locuri", exit-intent, fals deficit.** Rarefierea e reală și se spune o dată.
+- **Cifre de piață, procente, statistici.** Niciuna verificată, deci niciuna pe pagină.
+- **Cifre de ROI fără date.** Zero, până la primul pilot documentat.
+- **Promisiuni de conformitate legală.** AI Act, GDPR, NIS2 apar o singură dată, în §02.
 - **Testimoniale.** Nu există pe formatul ăsta. Nu se inventează.
 - **Logo-uri de clienți sau badge-uri de autoritate.**
+- **Demo-ul You Protect, agentul personal de sănătate.** Poziționarea veche („trei sisteme
+  care rulează azi") nu mai există — PRIMUL PAS nu promite demo-uri personale ale lui Ciprian.
+- **Liste de tool-uri, cheat-sheet de prompturi.** Nu mai sunt livrabile ale acestei ediții.
+- **Notificări false de tip „cineva tocmai s-a înscris".**
+- **Valoare artificială de tip „997 € / azi 0 €".** Fără ancoră de preț, nici indirectă.
+- **Promisiunea că ipoteza ownerului este automat și nevoia reală a companiei.** PRIMUL PAS
+  spune explicit ce NU vei ști la final (§05) — validarea reală cere acces la echipă și date.
+
+**Ideea centrală care trebuie protejată în orice rescriere viitoare:** PRIMUL PAS nu
+încearcă să dovedească faptul că ai nevoie de AI. Te ajută să formulezi ce vrei să rezolvi
+și să afli ce trebuie verificat înainte să decizi dacă AI merită folosit.

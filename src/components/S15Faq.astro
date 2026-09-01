@@ -11,12 +11,12 @@ import Sectiune from './Sectiune.astro';
   din listă. Un click în plus pe obiecția decisivă e un click pe care mulți
   nu-l fac. Sunt șapte întrebări scurte; se citesc.
 */}
-<Sectiune id="intrebari" scene="registrul">
+<Sectiune id="intrebari">
   <h2>{faq.h2}</h2>
 
   <dl>
-    {faq.intrebari.map((item, i) => (
-      <div class="qa" data-reveal style={`--intarziere: ${i * 50}ms`}>
+    {faq.intrebari.map((item) => (
+      <div class="qa">
         <dt>{item.q}</dt>
         <dd>{item.a}</dd>
       </div>

@@ -16,15 +16,20 @@ interface Props {
   spatiuSus?: boolean;
   /** Pe fundal închis, butonul se inversează: accent clar cu text închis. */
   pe?: 'deschis' | 'inchis';
-  /** `data-el` pentru motorul de motion — vezi docs/design/storyboard.json. */
-  dataEl?: string;
 }
-const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.props;
+const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
 ---
 
-<div class:list={['invelis', spatiuSus && 'spatiu-sus']} data-el={dataEl}>
+<div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
   <a href={CTA.ancora} class:list={['cta', marime, pe === 'inchis' && 'pe-inchis']}>
     {CTA.text}
+    {/*
+      Insignă de locuri live — completată de BaraScarcity.astro după ce
+      răspunde /api/locuri-disponibile. Fără JS sau dacă fetch-ul eșuează,
+      rămâne goală și `hidden`: butonul citește exact „Rezervă-ți locul",
+      niciodată un număr inventat.
+    */}
+    <span class="locuri-cta" data-locuri-cta hidden></span>
   </a>
   <slot />
 </div>
@@ -104,6 +109,14 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis', dataEl } = Astro.p
   .cta.pe-inchis:hover,
   .cta.pe-inchis:focus-visible {
     background: #a3e2d8;
+  }
+
+  .locuri-cta {
+    margin-left: 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    font-weight: 400;
+    opacity: 0.85;
   }
 
   @media (hover: hover) and (pointer: fine) {

@@ -8,12 +8,12 @@ import Sectiune from './Sectiune.astro';
   Adresa e acum aici, completă (D6) — nu „în emailul de confirmare". Reduce
   fricțiunea exact în momentul deciziei.
 */}
-<Sectiune id="detalii" fundal="secundar" scene="registrul">
+<Sectiune id="detalii" fundal="secundar">
   <h2>{detalii.h2}</h2>
 
   <dl>
-    {detalii.randuri.map(([eticheta, valoare], i) => (
-      <div class="rand" data-reveal style={`--intarziere: ${i * 50}ms`}>
+    {detalii.randuri.map(([eticheta, valoare]) => (
+      <div class="rand">
         <dt>{eticheta}</dt>
         <dd>{valoare}</dd>
       </div>

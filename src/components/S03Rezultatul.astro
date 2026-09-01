@@ -3,10 +3,10 @@ import { rezultatul } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="rezultatul" scene="granita">
+<Sectiune id="rezultatul">
   <h2>{rezultatul.h2}</h2>
 
-  <ol class="lista" data-el="lista-cinci">
+  <ol class="lista">
     {rezultatul.lista.map((item, i) => (
       <li>
         <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
@@ -25,7 +25,7 @@ import Sectiune from './Sectiune.astro';
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
   */}
-  <aside class="granita" data-el="text-granita">
+  <aside class="granita">
     <h3>{rezultatul.granita.h3}</h3>
     {rezultatul.granita.corp.map((p) => (
       <p>{p}</p>

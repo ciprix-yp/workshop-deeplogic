@@ -1,26 +1,25 @@
 ---
 import { ceFacem } from '../content/copy';
 import Sectiune from './Sectiune.astro';
-
-/** Scena „sala" — vezi docs/design/storyboard.json. */
-const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
 ---
 
-<Sectiune id="ce-facem" scene="sala">
+{/*
+  Singura secțiune animată la scroll din toată pagina (pivot 2026-09-01) —
+  restul e static prin construcție. Container pinat, cei cinci pași se
+  dezvăluie pe măsură ce se scrollează prin el (GSAP ScrollTrigger, scriptul
+  de mai jos). Guard obligatoriu de `prefers-reduced-motion`: dacă e activ,
+  pașii rămân direct vizibili, fără pin.
+*/}
+<Sectiune id="ce-facem">
   <h2>{ceFacem.h2}</h2>
 
   <div class="blocuri">
-    {ceFacem.blocuri.map((bloc, i) => (
-      // Vezi S09UseCases pentru motivul separării: `.bloc` (data-el, scrubuit
-      // de MotionEngine) și `.bloc-tilt` (data-tilt, urmărește cursorul) nu pot
-      // trăi pe același element fără ca tranzițiile lor să se bată pe `transform`.
-      <article class="bloc" data-el={NUME_BLOC[i]}>
-        <div class="bloc-tilt" data-tilt>
-          <p class="numar" aria-hidden="true">{bloc.numar}</p>
-          <div class="corp">
-            <h3>{bloc.titlu}</h3>
-            {bloc.corp.map((p) => <p>{p}</p>)}
-          </div>
+    {ceFacem.blocuri.map((bloc) => (
+      <article class="bloc" data-pas>
+        <p class="numar" aria-hidden="true">{bloc.numar}</p>
+        <div class="corp">
+          <h3>{bloc.titlu}</h3>
+          {bloc.corp.map((p) => <p>{p}</p>)}
         </div>
       </article>
     ))}
@@ -31,12 +30,42 @@ const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
     altor antreprenori". E motivul principal de neînscriere la un format ca
     ăsta — deci nu se îngroapă vizual într-o notă de subsol.
   */}
-  <aside class="format" data-el="nota-format">
+  <aside class="format">
     {ceFacem.notaFormat.map((p) => <p>{p}</p>)}
   </aside>
 
   <p class="final">{ceFacem.final}</p>
 </Sectiune>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sectiune = document.getElementById('ce-facem');
+  const pasi = sectiune ? Array.from(sectiune.querySelectorAll('[data-pas]')) : [];
+
+  if (!reduceMotion && sectiune && pasi.length) {
+    gsap.set(pasi, { opacity: 0, y: 32 });
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: sectiune,
+        start: 'top top',
+        // 350px de scroll per pas — suficient cât să simtă fiecare pas
+        // propriul moment, fără să transforme secțiunea într-o derulare
+        // interminabilă pe un telefon.
+        end: `+=${pasi.length * 350}`,
+        scrub: true,
+        pin: true,
+      },
+    }).to(pasi, { opacity: 1, y: 0, stagger: 1, ease: 'none' });
+  }
+  // Cu mișcare redusă: `gsap.set` nu rulează, pașii rămân la starea lor
+  // naturală din CSS — vizibili direct, fără pin, fără scrub.
+</script>
 
 <style>
   h2 {
@@ -64,10 +93,6 @@ const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
 
   .bloc {
     display: grid;
-  }
-
-  .bloc-tilt {
-    display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--sp-sm);
     align-items: start;
@@ -79,10 +104,16 @@ const NUME_BLOC = ['bloc-conversatia', 'bloc-delegarea', 'bloc-agentul'];
 
   .numar {
     font-family: var(--font-mono);
-    font-size: var(--t-h3);
+    /*
+     * Fix de contrast (audit impeccable, 2026-09-01): `--accent-decor` e
+     * 4.06:1 — trece AA doar la ≥24px (regula e documentată chiar pe token,
+     * în tokens.css). Fosta valoare `var(--t-h3)` cobora sub 24px la
+     * viewporturi înguste (20px la 360px lățime) — sub prag exact acolo
+     * unde majoritatea traficului chiar citește pagina. Clamp propriu, cu
+     * podea la 24px indiferent de viewport.
+     */
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
     font-weight: 500;
-    /* Accent decorativ la dimensiune mare — peste pragul de 24px unde 4.06:1
-       trece AA Large. */
     color: var(--accent-decor);
     line-height: 1;
   }

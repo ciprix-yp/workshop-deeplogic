@@ -90,9 +90,16 @@ describe('fără preț sau ancoră de preț', () => {
 });
 
 describe('fără cifre de piață, procente sau ROI', () => {
-  it('nu conține procente', () => {
-    // Niciuna verificată de Ciprian, deci niciuna pe pagină.
-    expect(TEXT).not.toMatch(/\d+\s*%/);
+  it('nu conține procente — cu excepția formatului propriu al sesiunii', () => {
+    // „20% context · 80% lucru aplicat" descrie STRUCTURA PROPRIE a sesiunii
+    // (decizia lui Ciprian asupra propriului format), nu o statistică de
+    // piață externă și neverificată — genul pe care regula interzice.
+    // Testul verifică absența oricărui ALT procent, nu a acestei perechi.
+    // Apare în două formulări ușor diferite („80% lucru aplicat" la §01/§14,
+    // „80% lucru pe compania ta" la §12/Formatul) — ambele descriu același
+    // raport 20/80, deci ambele intră în excepție.
+    const faraFormat = TEXT.replace(/20%\s*context/gi, '').replace(/80%\s*lucru\b/gi, '');
+    expect(faraFormat).not.toMatch(/\d+\s*%/);
     expect(TEXT_LOWER).not.toMatch(/\d+\s*la sută/);
   });
 
@@ -111,14 +118,13 @@ describe('fără cifre de piață, procente sau ROI', () => {
   });
 });
 
-describe('legislația apare o singură dată, ca zgomot — niciodată ca promisiune', () => {
-  it('AI Act și GDPR apar doar în §02', () => {
-    const inProblema = JSON.stringify(copy.problema);
-    expect(inProblema).toMatch(/AI Act/);
-    expect(inProblema).toMatch(/GDPR/);
-
-    // Restul paginii: curat. Excepție legitimă — linkul din footer și eticheta
-    // bifei de consimțământ, care sunt obligații legale, nu promisiuni de marketing.
+describe('legislația, dacă apare, apare o singură dată, ca zgomot — niciodată ca promisiune', () => {
+  it('AI Act/GDPR/NIS2, dacă apar undeva, apar doar în §02', () => {
+    // PRIMUL PAS (pivot 2026-08-31) nu mai menționează AI Act/GDPR în §02 —
+    // vacarmul de business (date/echipă/cost/ROI) a înlocuit unghiul legislativ
+    // din „Prima Mutare". Regula rămâne o constrângere de LOCAȚIE, nu un
+    // mandat de prezență: dacă cineva reintroduce o mențiune legislativă
+    // oriunde altundeva decât §02, testul pică.
     const restul = [
       copy.hero, copy.rezultatul, copy.pentruCine, copy.inainteDupa,
       copy.ceFacem, copy.nuDoarTeorie, copy.cePleciCuTine, copy.useCases,
@@ -126,7 +132,7 @@ describe('legislația apare o singură dată, ca zgomot — niciodată ca promis
       copy.deCeGratuit, copy.faq, copy.ctaFinal, copy.stari, copy.meta,
     ];
     for (const sectiune of restul) {
-      expect(JSON.stringify(sectiune)).not.toMatch(/AI Act|NIS2/i);
+      expect(JSON.stringify(sectiune)).not.toMatch(/AI Act|NIS2|GDPR/i);
     }
   });
 
@@ -137,24 +143,36 @@ describe('legislația apare o singură dată, ca zgomot — niciodată ca promis
   });
 });
 
-describe('fără presiune artificială', () => {
+describe('fără presiune fabricată — dar scarcity-ul REAL e permis (reversare 2026-08-31)', () => {
+  // Interdicția veche ("nu punem contor live") a fost reversată deliberat de
+  // Ciprian — vezi CLAUDE.md §1. Ce rămâne interzis, neschimbat de reversare:
+  // urgență FABRICATĂ, nu scarcity real alimentat din date reale.
   it.each([
-    [/ultimele?\s+locuri/i, '„ultimele locuri"'],
-    [/mai (sunt|rămân)\s+\d+\s+locuri/i, 'contor de locuri'],
     [/se apropie termenul/i, 'urgență fabricată'],
     [/grăbește-te/i, '„grăbește-te"'],
     [/ofertă limitată/i, '„ofertă limitată"'],
     [/doar azi/i, '„doar azi"'],
-    [/countdown/i, 'countdown'],
+    [/cineva tocmai s-a înscris/i, 'notificare falsă de înscriere'],
   ])('nu conține %s (%s)', (tipar) => {
     expect(TEXT).not.toMatch(tipar);
   });
 
-  it('rarefierea se afirmă calm — „25 de locuri", nu un contor', () => {
-    expect(TEXT).toMatch(/25 de locuri/);
-    // Cifra e statică. Dacă apare o formulare care implică actualizare live,
-    // bufferul de 30 din spate devine vizibil și pagina se contrazice.
-    expect(TEXT_LOWER).not.toMatch(/locuri (rămase|disponibile|libere)/);
+  it('capacitatea (30) e afirmată static în copy — numărul LIVE nu e niciodată hardcodat', () => {
+    expect(TEXT).toMatch(/30 de locuri|Maximum 30/);
+    // Regula sursei: „fără deficit fals; afișează doar date reale". Un număr
+    // de locuri rămase scris direct în copy.ts (ex. „12 locuri disponibile")
+    // ar fi exact deficitul fals interzis — cifra reală vine STRICT din
+    // /api/locuri-disponibile (BaraScarcity.astro), niciodată din text static.
+    // `[ \t]+`, nu `\s+`: valorile aplatizate sunt unite cu `\n`, deci un
+    // număr terminând o valoare (ex. „14:00") urmat întâmplător de eticheta
+    // DIN ALT câmp n-are voie să conteze ca potrivire — trebuie să fie
+    // aceeași frază, nu doi vecini de-a-ntâmplarea.
+    expect(TEXT_LOWER).not.toMatch(/\d+[ \t]+locuri[ \t]+(rămase|disponibile|libere)/);
+  });
+
+  it('eticheta de scarcity e un șablon generic, fără cifră scrisă de mână', () => {
+    expect(copy.scarcity.etichetaLocuri).not.toMatch(/\d/);
+    expect(copy.scarcity.etichetaCountdown).not.toMatch(/\d/);
   });
 });
 
@@ -165,14 +183,6 @@ describe('fără testimoniale sau dovadă socială inventată', () => {
     expect(TEXT_LOWER).not.toMatch(/„[^"]{20,}"\s*[—–-]\s*[A-ZȘȚĂÎÂ]/);
     expect(TEXT_LOWER).not.toMatch(/ce spun participanții/);
     expect(TEXT_LOWER).not.toMatch(/recomandat de/);
-  });
-
-  it('§12 păstrează propoziția care explică absența lor', () => {
-    // Pare că slăbește pagina. Nu o slăbește — la un cititor saturat de
-    // promisiuni e cel mai puternic semnal de onestitate de pe toată pagina.
-    expect(copy.precedent.corp.join(' ')).toMatch(
-      /nu pun testimoniale pentru că n-am colectat pe formatul ăsta/i,
-    );
   });
 
   it('nu conține logo-uri de clienți sau badge-uri de autoritate', () => {
@@ -212,21 +222,6 @@ describe('formularul nu cere ce semnalează un apel de vânzare', () => {
    2. Ce TREBUIE să apară — deciziile aplicate peste tot
    ═══════════════════════════════════════════════════════════════════════════ */
 
-describe('D5 — „în 24 de ore", nu „în aceeași zi"', () => {
-  it('formularea veche a dispărut complet', () => {
-    // Era în trei locuri: §08 ITEM 2, §14 „Ce include", §15 FAQ. Un angajament
-    // operațional ratat pe primul livrabil de după eveniment costă mai mult
-    // decât câștigi din formularea mai tare.
-    expect(TEXT_LOWER).not.toMatch(/în aceeași zi/);
-  });
-
-  it('apare în toate cele trei locuri', () => {
-    expect(JSON.stringify(copy.cePleciCuTine)).toMatch(/în 24 de ore/);
-    expect(JSON.stringify(copy.deCeGratuit)).toMatch(/în 24 de ore/);
-    expect(JSON.stringify(copy.faq)).toMatch(/în 24 de ore/);
-  });
-});
-
 describe('D6 — adresa exactă e pe pagină', () => {
   it('§13 conține adresa, nu trimiterea la email', () => {
     const detalii = JSON.stringify(copy.detalii);
@@ -245,17 +240,6 @@ describe('D6 — adresa exactă e pe pagină', () => {
   });
 });
 
-describe('D7 — cheat-sheet-ul tipărit e ITEM 5 în §08', () => {
-  it('§08 are cinci livrabile', () => {
-    expect(copy.cePleciCuTine.itemi).toHaveLength(5);
-    expect(copy.cePleciCuTine.itemi[4]!.titlu).toMatch(/cheat-sheet/i);
-  });
-
-  it('apare și în lista „ce include" din §14', () => {
-    expect(copy.deCeGratuit.include.lista.join(' ')).toMatch(/cheat-sheet/i);
-  });
-});
-
 describe('D8 / D9 — ce a rămas în afara paginii', () => {
   it('blocul despre faliment nu e inclus', () => {
     expect(TEXT_LOWER).not.toMatch(/faliment/);
@@ -263,13 +247,28 @@ describe('D8 / D9 — ce a rămas în afara paginii', () => {
   });
 });
 
+describe('PRIMUL PAS (pivot 2026-08-31) — „ce nu apare deliberat", lista nouă', () => {
+  // Sursa: docs/landing-workshop-16-09.md, secțiunea cu același nume. Poziția
+  // veche promitea demonstrații live pe sistemele personale ale lui Ciprian
+  // (ofertare You Protect, agent de sănătate) și un cheat-sheet tipărit —
+  // toate trei explicit interzise acum.
+  it.each([
+    [/you protect/i, 'demo-ul You Protect'],
+    [/agent(ul)? (personal )?de sănătate/i, 'agentul personal de sănătate'],
+    [/cheat-sheet/i, 'cheat-sheet de prompturi'],
+    [/997\s*€/i, 'valoare artificială de tip 997€/azi 0€'],
+  ])('nu conține %s (%s)', (tipar) => {
+    expect(TEXT).not.toMatch(tipar);
+  });
+});
+
 describe('consistență internă', () => {
-  it('capacitatea e aceeași peste tot', () => {
-    expect(copy.EVENIMENT.capacitate).toBe(25);
-    expect(copy.hero.microProof.join(' ')).toMatch(/25 de locuri/);
-    expect(JSON.stringify(copy.detalii)).toMatch(/Maximum 25/);
-    expect(copy.ctaFinal.meta).toMatch(/25 de locuri/);
-    expect(copy.faq.intrebari.at(-1)!.a).toMatch(/Sunt 25/);
+  it('capacitatea e aceeași peste tot — 30, unificată cu pragul din bază (migrația 0007)', () => {
+    expect(copy.EVENIMENT.capacitate).toBe(30);
+    expect(JSON.stringify(copy.detalii)).toMatch(/Maximum 30/);
+    expect(copy.ctaFinal.meta).toMatch(/30 de locuri/);
+    expect(copy.faq.intrebari.at(-1)!.a).toMatch(/Sunt 30/);
+    expect(JSON.stringify(copy.deCeGratuit.deCe25)).toMatch(/30 de/);
   });
 
   it('data e miercuri, 16 septembrie 2026 — peste tot', () => {
@@ -295,11 +294,11 @@ describe('consistență internă', () => {
     expect(BIFE.discutie.microcopy).toMatch(/nu te caută nimeni/);
   });
 
-  it('microcopy-ul de sub CTA nu mai promite 60 de secunde', () => {
-    // Cu cele cinci întrebări de calificare adăugate, „60 de secunde" a devenit
-    // neadevărat. Pe pagina asta, un copy care minte e un bug.
-    expect(copy.ctaFinal.microcopy).not.toMatch(/60 de secunde/);
-    expect(copy.ctaFinal.microcopy).toMatch(/două minute/);
+  it('microcopy-ul de lângă formular nu promite un timp de completare fals', () => {
+    // Nu promitem „60 de secunde" pentru un formular cu 5 întrebări de
+    // calificare — pe pagina asta, un copy care minte e un bug.
+    expect(copy.inscriere.microcopy).not.toMatch(/60 de secunde/);
+    expect(copy.inscriere.microcopy).not.toMatch(/\bun minut\b/);
   });
 });
 

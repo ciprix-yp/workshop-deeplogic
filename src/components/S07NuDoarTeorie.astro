@@ -5,15 +5,30 @@ import Sectiune from './Sectiune.astro';
 
 <Sectiune id="nu-doar-teorie">
   <h2>{nuDoarTeorie.h2}</h2>
+  <div class="intro">
+    {nuDoarTeorie.intro.map((p) => <p>{p}</p>)}
+  </div>
   <ul>
-    {nuDoarTeorie.lista.map((l, i) => <li data-reveal style={`--intarziere: ${i * 60}ms`}>{l}</li>)}
+    {nuDoarTeorie.lista.map((l) => <li>{l}</li>)}
   </ul>
+  <p class="outro">{nuDoarTeorie.outro}</p>
 </Sectiune>
 
 <style>
   h2 {
     font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--sp-xs);
+    max-width: var(--max-proza);
     margin-bottom: var(--sp-lg);
+  }
+
+  .intro p:first-child {
+    font-weight: 600;
   }
 
   ul {
@@ -35,5 +50,10 @@ import Sectiune from './Sectiune.astro';
     content: '—';
     color: var(--accent-decor);
     font-weight: 600;
+  }
+
+  .outro {
+    margin-top: var(--sp-md);
+    color: var(--secundar);
   }
 </style>

@@ -29,6 +29,9 @@ const TOKENS = {
   textPeInchis: '#FFFFFF',
   textPeInchisMuted: '#B9C4C4',
   accentClar: '#7FD1C4',
+  // Capătul „roșu" al gradientului din BaraScarcity.astro — interpolat în JS
+  // între alb (--text-pe-inchis) și acesta, pe raportul de ocupare a locurilor.
+  eroareClar: '#E08585',
 };
 
 /** @param {string} hex */
@@ -79,6 +82,7 @@ const PERECHI = [
   { nume: 'accent clar pe fundal închis', fg: TOKENS.accentClar, bg: TOKENS.bgInchis, min: 4.5 },
   { nume: 'CTA pe întuneric — text închis pe accent clar', fg: TOKENS.bgInchis, bg: TOKENS.accentClar, min: 4.5 },
   { nume: 'fundal secundar ca text pe închis', fg: TOKENS.bgSecundar, bg: TOKENS.bgInchis, min: 4.5 },
+  { nume: 'BaraScarcity — capăt roșu (0 locuri) pe fundal închis', fg: TOKENS.eroareClar, bg: TOKENS.bgInchis, min: 4.5 },
 ];
 
 let picat = 0;

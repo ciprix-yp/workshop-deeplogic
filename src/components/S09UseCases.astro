@@ -3,7 +3,7 @@ import { useCases } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-<Sectiune id="use-cases" latime="larg" scene="registrul">
+<Sectiune id="use-cases" latime="larg">
   <h2>{useCases.h2}</h2>
 
   {/*
@@ -13,18 +13,10 @@ import Sectiune from './Sectiune.astro';
   <p class="disclaimer">{useCases.disclaimer}</p>
 
   <div class="grila">
-    {useCases.grid.map((z, i) => (
-      // Doi „purtători" de transform separați, deliberat: `.zona` intră în
-      // cadru cu perspectiva de la scroll (560ms, data-reveal); `.zona-tilt`
-      // urmărește cursorul (150ms, data-tilt). Pe același element, cele două
-      // tranziții s-ar bate pe aceeași proprietate `transform` — cea mai
-      // specifică regulă CSS ar câștiga ÎNTREG lanțul, iar tilt-ul ar deveni
-      // la fel de lent ca intrarea. Separate, nu se ating niciodată.
-      <article class="zona" data-reveal style={`--intarziere: ${i * 70}ms`}>
-        <div class="zona-tilt" data-tilt>
-          <h3>{z.titlu}</h3>
-          <p>{z.corp}</p>
-        </div>
+    {useCases.grid.map((z) => (
+      <article class="zona">
+        <h3>{z.titlu}</h3>
+        <p>{z.corp}</p>
       </article>
     ))}
   </div>
@@ -63,15 +55,7 @@ import Sectiune from './Sectiune.astro';
     }
   }
 
-  /* `.zona` (data-reveal) rămâne fără transform propriu în stare de repaus —
-     doar container de layout pentru grid. Tot ce se vede ca „obiect" (bordură,
-     umbră, tilt) trăiește pe `.zona-tilt` (data-tilt), din motivul explicat
-     lângă markup. */
   .zona {
-    display: grid;
-  }
-
-  .zona-tilt {
     padding: var(--sp-sm);
     border: 1px solid rgba(47, 79, 79, 0.15);
     border-radius: var(--radius-lg);
@@ -79,7 +63,6 @@ import Sectiune from './Sectiune.astro';
     display: grid;
     gap: var(--sp-2xs);
     align-content: start;
-    height: 100%;
     box-sizing: border-box;
   }
 

@@ -4,21 +4,19 @@ interface Props {
   /**
    * `secundar` = #E4E7E7. `inchis` = #1B2426.
    *
-   * Registrul închis nu e un pattern care alternează — o singură scenă în
+   * Registrul închis nu e un pattern care alternează — o singură secțiune în
    * toată pagina (vacarmul din §02), aleasă pentru sens. Folosit ritmic,
-   * ar deveni decor și și-ar pierde greutatea. Vezi docs/design/storyboard.json.
+   * ar deveni decor și și-ar pierde greutatea.
    */
   fundal?: 'primar' | 'secundar' | 'inchis';
   /** Lățimea conținutului: `proza` pentru text lung, `larg` pentru tabele/grid. */
   latime?: 'proza' | 'larg';
   clasa?: string;
-  /** `data-scene` pentru motorul de motion — vezi docs/design/storyboard.json. */
-  scene?: string;
 }
-const { id, fundal = 'primar', latime = 'proza', clasa = '', scene } = Astro.props;
+const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
 ---
 
-<section id={id} class:list={['sectiune', fundal]} data-scene={scene}>
+<section id={id} class:list={['sectiune', fundal]}>
   <div class:list={['continut', latime, clasa]}><slot /></div>
 </section>
 

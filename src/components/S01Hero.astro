@@ -3,19 +3,17 @@ import { hero, EVENIMENT } from '../content/copy';
 import Cta from './Cta.astro';
 ---
 
-<header class="hero" data-scene="ruptura">
+<header class="hero">
   <div class="continut">
     <p class="eyebrow">{hero.eyebrow}</p>
 
     {/*
       H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
-      propoziții E mesajul — pe un singur rând se pierde. Scena „ruptura"
-      (docs/design/storyboard.json) defocalizează rândul 1 pe măsură ce
-      rândul 2 se așază: mișcarea FACE contrastul, nu doar îl arată static.
+      propoziții E mesajul — pe un singur rând se pierde.
     */}
     <h1>
       {hero.h1.map((rand, i) => (
-        <span class:list={['rand', i === 1 && 'accentuat']} data-el={i === 0 ? 'h1-linia-1' : 'h1-linia-2'}>
+        <span class:list={['rand', i === 1 && 'accentuat']}>
           {rand}
         </span>
       ))}
@@ -32,10 +30,10 @@ import Cta from './Cta.astro';
       <div class="argument">
         <p class="subheadline">{hero.subheadline}</p>
         <p class="pentru-cine">{hero.pentruCine}</p>
-        <Cta marime="mare" spatiuSus dataEl="cta-hero" />
+        <Cta marime="mare" spatiuSus />
       </div>
 
-      <aside class="fisa" data-el="meta-linie">
+      <aside class="fisa">
         <dl>
           <div><dt>Data</dt><dd>{EVENIMENT.dataText}</dd></div>
           <div><dt>Ora</dt><dd>{EVENIMENT.ora}</dd></div>

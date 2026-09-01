@@ -2,15 +2,6 @@
 import { cePleciCuTine } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 import Cta from './Cta.astro';
-
-/** §08 — scena „harta" (momentul-semnătură). Vezi docs/design/storyboard.json. */
-const NUME_EL = [
-  'item-harta-scrisa',
-  'item-document-24h',
-  'item-structura-prompt',
-  'item-regula-confidentialitate',
-  'item-cheat-sheet',
-];
 ---
 
 {/*
@@ -26,7 +17,7 @@ const NUME_EL = [
   calmeze. Bugetul de design al paginii se cheltuiește AICI. ITEM 5
   (cheat-sheet tipărit) vine din D7.
 */}
-<Sectiune id="ce-pleci-cu-tine" latime="larg" scene="harta">
+<Sectiune id="ce-pleci-cu-tine" latime="larg">
   <div class="cap">
     <h2>{cePleciCuTine.h2}</h2>
     <p class="numar-total">
@@ -40,28 +31,12 @@ const NUME_EL = [
     Varianta cu `display: contents` pe `.corp` arunca al doilea paragraf într-un
     rând de grid nou, iar `gap`-ul dintre rânduri devenea o gaură de 3rem în
     mijlocul livrabilului. Trei coloane reale, trei elemente reale — fără trucuri.
-
-    `data-el="harta-asamblata"` stă pe container: cele cinci `.item` (fiecare cu
-    propriul `data-el`) converg spre el pe măsură ce intră în ecran; odată
-    așezate, containerul însuși se așază la opacitate/scară completă — „click"-ul
-    de asamblare. `.bataie-latch` e o bară discretă, NU scrubuită (vezi
-    MotionEngine): se aprinde o singură dată, cu histerezis, nu urmărește
-    scroll-ul cadru cu cadru — exact fixul pentru eroarea de flash/strobe
-    găsită în explorarea abandonată din 29-31 august.
   */}
-  <div class="itemi" data-el="harta-asamblata">
-    {/*
-      Profunzime, nu decor: un glow static (blur fix, fără imagine) care se
-      mișcă mai încet decât piesele care se asamblează deasupra lui — paralaxă
-      pe un singur strat, `transform` pur, sub conținut (z-index -1). Ancorează
-      vizual asamblarea, nu o ilustrează. `reveal: 1` în MotionEngine — spre
-      deosebire de restul elementelor scenei, NU se așază și se oprește:
-      urmărește scroll-ul continuu, cât timp scena e vizibilă.
-    */}
-    <div class="profunzime" data-el="harta-profunzime" aria-hidden="true"></div>
-    <div class="bataie-latch" data-el="bataie-latch" aria-hidden="true"></div>
+  <div class="itemi">
+    {/* Profunzime, nu decor: glow static (blur fix, fără imagine), sub conținut (z-index -1). */}
+    <div class="profunzime" aria-hidden="true"></div>
     {cePleciCuTine.itemi.map((item, i) => (
-      <article class="item" data-el={NUME_EL[i]}>
+      <article class="item">
         <p class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
         <h3>{item.titlu}</h3>
         <div class="corp">
@@ -128,22 +103,6 @@ const NUME_EL = [
     filter: blur(48px);
     z-index: -1;
     pointer-events: none;
-  }
-
-  .bataie-latch {
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 2px;
-    background: var(--accent-decor);
-    opacity: 0;
-    transform-origin: left;
-    transform: scaleX(0);
-    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .bataie-latch[data-latched='true'] {
-    opacity: 0.55;
-    transform: scaleX(1);
   }
 
   .item {

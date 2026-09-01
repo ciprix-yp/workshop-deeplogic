@@ -12,9 +12,9 @@ import Sectiune from './Sectiune.astro';
   mai puternic semnal de onestitate de pe toată pagina. Nu se taie, și nu se
   stilizează ca notă de subsol.
 */}
-<Sectiune id="precedent" scene="registrul">
+<Sectiune id="precedent">
   <h2>{precedent.h2}</h2>
-  <div class="corp" data-reveal>
+  <div class="corp">
     {precedent.corp.map((p) => <p>{p}</p>)}
   </div>
 </Sectiune>

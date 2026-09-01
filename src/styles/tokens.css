@@ -45,14 +45,18 @@
    * cititorul) e singurul bloc întunecat din pagină — o singură scenă,
    * nu un pattern. §08 (ce pleacă acasă cu tine) rămâne deliberat pe alb:
    * greutatea livrabilului vine din scară și spațiere, nu din inversare de
-   * culoare (vezi docs/design/storyboard.json — direcția v4/v5, care punea
-   * și §08 pe fundal închis, amesteca două sensuri sub același ton și a
-   * fost abandonată din exact acest motiv).
+   * culoare.
    */
   --bg-inchis: #1b2426;         /* 15.83:1 cu alb (AAA), 12.72:1 cu #E4E7E7 */
   --text-pe-inchis: #ffffff;
   --text-pe-inchis-muted: #b9c4c4;
   --accent-clar: #7fd1c4;       /* 8.91:1 pe fundal închis — accent și CTA pe întuneric */
+  --eroare-clar: #e08585;       /* 5.92:1 pe fundal închis — capătul „roșu" al gradientului din BaraScarcity */
+
+  /* Bara fixă de scarcity (BaraScarcity.astro) — înălțime declarată o
+     singură dată, folosită și pentru padding-top pe body (Base.astro), ca
+     să nu acopere hero-ul. */
+  --h-bara-scarcity: 2.75rem;
 
   /* Inelul de focus. Nu se elimină niciodată — jumătate din audiență navighează
      cu tastatura sau cu zoom, iar formularul e singurul lucru care contează pe pagină. */
@@ -181,56 +185,15 @@ img {
   border-radius: var(--radius);
 }
 
-/* ── Dezvăluire la scroll — intrare cu perspectivă 3D ────────────────────── */
-/*
- * Regula de bază, neschimbată: fără JS, TOTUL e vizibil. Starea ascunsă se
- * aplică doar după ce scriptul adaugă `.js-reveal` pe <html> — adică doar
- * când există cineva care s-o și scoată. Varianta inversă (ascuns în CSS,
- * arătat de JS) face pagina complet goală dacă scriptul pică, iar în
- * browserul in-app din WhatsApp asta se întâmplă mai des decât ai crede.
- *
- * Decizie explicită (Ciprian, 28 august): mișcare mai prezentă decât varianta
- * inițială de 8px — element „basculează" ușor din perspectivă pe măsură ce
- * intră în cadru, nu doar alunecă. `perspective()` ca funcție de transform,
- * nu proprietate pe părinte: fiecare element își poartă propriul context 3D,
- * fără să ceară `perspective` pe `Sectiune.astro`.
- */
-.js-reveal [data-reveal] {
-  opacity: 0;
-  transform: perspective(900px) translateY(22px) rotateX(7deg);
-  transform-origin: center bottom;
-}
-
-.js-reveal [data-reveal].vazut {
-  opacity: 1;
-  transform: perspective(900px) translateY(0) rotateX(0deg);
-  transition:
-    opacity 560ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms),
-    transform 560ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--intarziere, 0ms);
-}
-
-/* ── Tilt 3D interactiv pe blocurile mici (data-tilt fără valoare) ───────
- * Doar pe dispozitive cu pointer fin și hover real — pe touch, mousemove nu
- * există, deci scriptul din Base.astro nici nu se atașează acolo (vezi
- * media query-ul din script). Blocul rămâne „ridicat" static prin umbră,
- * fără tilt fantomă care s-ar bloca la ultima poziție a degetului.
- *
- * `:not([data-tilt='card'])` — v4: placa de sticlă (`data-tilt="card"`) își
- * poartă propria umbră, propriul easing și propria calibrare, mai jos.
- */
-[data-tilt]:not([data-tilt='card']) {
-  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
-  box-shadow: 0 1px 2px rgba(27, 36, 38, 0.06), 0 10px 28px -14px rgba(27, 36, 38, 0.22);
-  will-change: transform;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  [data-tilt]:not([data-tilt='card']):hover {
-    box-shadow: 0 4px 10px rgba(27, 36, 38, 0.08), 0 24px 44px -16px rgba(27, 36, 38, 0.32);
-  }
-}
-
 /* ── Respectă preferința de mișcare redusă ──────────────────────────────── */
+/*
+ * Restul paginii e static prin construcție (pivot 2026-09-01) — singura
+ * mișcare la scroll rămasă e pin/scrub-ul GSAP din §06 CeFacem, care își
+ * poartă propriul guard `prefers-reduced-motion` (vezi S06CeFacem.astro).
+ * Regula globală de-aici rămâne ca plasă de siguranță pentru orice tranziție
+ * CSS obișnuită (hover pe CTA, focus-ring etc.), nu pentru scroll-reveal —
+ * acela nu mai există.
+ */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -242,15 +205,6 @@ img {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  /* Nu doar tranziția instantanee — elementul trebuie să pornească VIZIBIL.
-     Altfel, cu tranziția anulată, ar rămâne blocat la opacity 0. */
-  .js-reveal [data-reveal] {
-    opacity: 1;
-    transform: none;
-  }
-  [data-tilt] {
-    transition: none;
   }
 }
 

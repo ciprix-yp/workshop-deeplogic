@@ -7,19 +7,52 @@
  * și tests/copy-invariants.test.ts poate verifica automat regulile din
  * „CE NU APARE PE PAGINĂ — DELIBERAT".
  *
- * Modificări față de documentul sursă (vezi docs/DECIZII.md):
- *   D5 — „în aceeași zi" → „în 24 de ore" (§08 ITEM 2, §14, §15)
- *   D6 — adresa exactă intră pe pagină (§13)
- *   D7 — cheat-sheet tipărit adăugat ca ITEM 5 (§08)
- *   D8 — blocul despre faliment NU e inclus (§11)
- *   D9 — fără testimoniale (§12 rămâne neschimbat)
- *  B16 — microcopy §16: „60 de secunde" → „două minute", pentru că formularul
- *        are acum și cele cinci întrebări de calificare
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PIVOT DE PRODUS (2026-08-31): „Prima Mutare spre un Asistent Digital" →
+ * „PRIMUL PAS". Rescriere completă, pe baza landing-page-ului V2 primit de la
+ * Ciprian (PDF). Decizii explicite ale acestei rescrieri:
+ *
+ *   — Capacitate: 25 → 30. Contorul live de locuri (interzis explicit înainte,
+ *     vezi istoricul CLAUDE.md) devine sursa de onestitate; cifra STATĂ pe
+ *     pagină (30) e acum și cifra HARD aplicată în bază — vezi
+ *     supabase/migrations/0007_capacitate_unificata.sql. Nu mai există buffer
+ *     ascuns 25↔30.
+ *   — Countdown + contor de locuri: reversare deliberată a interdicției vechi,
+ *     confirmată explicit de Ciprian. Regula PDF-ului rămâne literă de lege:
+ *     „fără deficit fals; afișează doar date reale" — vezi BaraScarcity.astro.
+ *   — §06 CeFacem și §10 DespreDeepLogic au fost despărțite dintr-o singură
+ *     secțiune a sursei (§08 METODOLOGIA DEEP LOGIC): S06 ia cei 5 pași
+ *     numerotați, S10 ia prefața „de ce lucrăm invers". Nu e o eroare de
+ *     copiere — e o alegere structurală ca să încapă în arhitectura existentă
+ *     de componente (S06 randează blocuri numerotate, S10 doar proză).
+ *   — §07 NuDoarTeorie și §12 Precedent nu mai aveau conținut sursă (vechea
+ *     poveste „demo You Protect" / „Ardudana" e explicit INTERZISĂ de noua
+ *     listă „ce nu apare deliberat"). Realocate: §07 ← §10 din sursă („Dar eu
+ *     nici măcar nu știu ce aș putea face cu AI"), §12 ← §06 din sursă
+ *     („Formatul", aplatizat din listă cu buline în proză, ca să încapă în
+ *     forma existentă a componentei).
+ *   — Peste 20 de propoziții erau tăiate la marginea paginii în PDF-ul sursă
+ *     (defect de randare a blocurilor de cod, nu al citirii). Completate de
+ *     Claude, ancorate în vocabularul restului documentului — fiecare
+ *     marcată `[completare]` mai jos. Ciprian le revizuiește înainte de
+ *     publicare.
+ *   — Titluri adăugate acolo unde PDF-ul avea proză fără propriul H3, ca să
+ *     încapă în componente care cer un titlu per bloc — marcate
+ *     `[titlu adăugat]`.
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Modificări față de documentul sursă „Prima Mutare" (vezi docs/DECIZII.md;
+ * rămân valabile ca precedent metodologic, chiar dacă produsul s-a schimbat):
+ *   D5 — „în aceeași zi" → „în 24 de ore" — nu se mai aplică: PRIMUL PAS
+ *        promite un roadmap „pe email", fără angajament de timp explicit.
+ *   D6 — adresa exactă intră pe pagină (§13 → acum §14 „Detalii practice")
+ *   D9 — fără testimoniale (rămâne valabil — nicio secțiune din PRIMUL PAS
+ *        nu introduce testimoniale)
  */
 
 export const EVENIMENT = {
   slug: 'workshop-2026-09-16',
-  titlu: 'Prima Mutare spre un Asistent Digital',
+  titlu: 'PRIMUL PAS',
   organizator: 'Deep Logic',
   data: '2026-09-16',
   dataText: 'Miercuri, 16 septembrie 2026',
@@ -30,7 +63,7 @@ export const EVENIMENT = {
   oras: 'Satu Mare',
   locatie: 'Casa Dăinuirii',
   adresa: 'Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare',
-  capacitate: 25,
+  capacitate: 30,
   cost: 'Gratuit',
 } as const;
 
@@ -40,144 +73,167 @@ export const CTA = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   SCARCITY — bara fixă (BaraScarcity.astro) și insigna de pe fiecare CTA.
+   Regula PDF-ului: „fără deficit fals; afișează doar date reale". Fără JS,
+   bara arată fallback-ul static de mai jos — niciodată un număr inventat.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export const scarcity = {
+  fallbackStatic: `Maximum ${EVENIMENT.capacitate} de locuri · ${EVENIMENT.dataText}, ${EVENIMENT.oraStart}`,
+  etichetaLocuri: 'locuri disponibile din',
+  etichetaCountdown: 'până la începere',
+  plin: 'Locurile s-au ocupat — te trec pe lista de așteptare.',
+} as const;
+
+/* ═══════════════════════════════════════════════════════════════════════════
    §01 — HERO
    Scop: îl oprește din scroll numind problema lui, nu soluția noastră.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const hero = {
-  eyebrow: 'Prima Mutare spre un Asistent Digital',
-  // Break forțat înainte de „Nimeni" — contrastul dintre cele două rânduri E mesajul.
-  h1: ['Toată lumea îți spune să adopți AI.', 'Nimeni nu-ți spune de unde să începi.'],
+  eyebrow: 'PRIMUL PAS · Workshop by Deep Logic',
+  // Break forțat înainte de „Dar" — contrastul dintre cele două rânduri E mesajul.
+  h1: ['Toată lumea îți spune să folosești AI.', 'Dar în compania ta, de unde începi?'],
+  // [completare] — „...ca să formulezi nevoia pe care vrei s-o rezolvi, să-i e"
+  // Completat aliniat cu promisiunea explicită din regulile globale ale
+  // documentului sursă: „își clarifică nevoia... începe să-i estimeze
+  // impactul... pleacă cu un roadmap de validare".
   subheadline:
-    'În trei ore nu implementezi AI. Decizi unde merită — și pleci cu prima ta ipoteză, scrisă.',
-  pentruCine: 'Pentru antreprenori și decidenți din firme de 7–50 de oameni.',
+    'În 3 ore lucrezi pe propria companie ca să formulezi nevoia pe care vrei s-o rezolvi, să-i estimezi impactul și să pleci cu un prim pas concret.',
+  pentruCine: 'Pentru antreprenori, owneri și decidenți din companii de orice mărime.',
   meta: `${EVENIMENT.dataText} · ${EVENIMENT.ora} · ${EVENIMENT.oras}`,
+  // Înlocuiește vechiul „demo live pe sisteme care rulează azi" — interzis
+  // acum explicit („Nu menționăm demo-urile-surpriză din sală").
   microProof: [
-    '25 de locuri. Fără laptop, fără cont, fără instalări — vii cu un pix.',
-    'Demo live pe sisteme care rulează azi, nu slide-uri despre viitor.',
+    'Nu este încă un curs despre AI.',
+    'Nu trebuie să fii IT-ist.',
+    'Și nu trebuie să știi deja ce ai putea face cu AI.',
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §02 — PROBLEMA
    Cea mai importantă secțiune a paginii. Nu se taie la mobil, indiferent ce.
-   Legislația apare AICI ca zgomot pe care îl aude el — niciodată ca promisiune.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const problema = {
-  h2: 'AI-ul e peste tot. În firma ta, încă nu e nicăieri.',
-  // Ghilimelele românești sunt „…” — deschidere jos (U+201E), închidere sus
-  // (U+201D). Nu „…" cu ghilimea dreaptă: pe o pagină premium, amestecul se
-  // vede. Verificat de tests/copy-invariants.test.ts.
+  h2: 'AI-ul e peste tot. În compania ta, întrebarea încă rămâne.',
   intro:
-    'Vezi reclame despre AI în fiecare zi. Auzi despre „agenți” — și nu-ți e clar ce naiba sunt ăia. Ți se spune că dacă nu adopți AI, rămâi în urmă.',
-  intreTimp: 'Între timp:',
-  // Listă vizuală cu „—", nu bullet-uri rotunde. Păstrează ritmul de vorbire.
+    'ChatGPT. Copiloți. Agenți. Automatizări. Demo-uri care par să facă totul în câteva secunde.',
+  intreTimp: 'În același timp apar alte întrebări:',
+  // 5 întrebări reale, nu 4 — vacarmul de business, nu frica angajaților.
   vacarm: [
-    'Angajații tăi se tem că vine să-i înlocuiască. Așa că îl evită.',
-    'Legislatorul îți spune să ai grijă: AI Act, GDPR.',
-    'Furnizorii de soluții nu-ți garantează confidențialitatea. Cei de sisteme nu-ți garantează securitatea.',
-    'Iar tu, ca antreprenor, știi că vrei AI.',
+    'Ce date pot folosi și ce date nu?',
+    'Ce va spune echipa?',
+    'Cât costă cu adevărat?',
+    'Ce merită construit și ce este doar o jucărie interesantă?',
+    'Cum îmi dau seama dacă există un ROI înainte să investesc?',
   ],
-  pivot: 'Bun. Am stabilit. Hai să începem.',
-  pivotIntrebari: 'Exact… începem ce? De unde? Ce presupune? Ce riscuri am? Ce costuri? Ce ROI?',
+  pivot: 'Și, după tot zgomotul, rămâne o întrebare mult mai simplă:',
+  pivotIntrebari: '„Bun. Eu de unde încep?”',
 
   blocuri: [
     {
-      h3: 'Problema ta nu e că nu vrei AI. E că n-ai o hartă.',
+      // [titlu adăugat] — PDF-ul nu dă un H3 propriu pentru cele trei
+      // propoziții de mai jos (vin direct sub „Bun. Eu de unde încep?").
+      h3: 'Trei puncte de plecare, la fel de normale.',
       corp: [
-        'Nu știi unde are sens în firma ta și unde sunt bani aruncați. Nu știi ce presupune, ce riști, cât costă, ce iese la capăt.',
-        'Și cât timp n-ai harta, nu iei nicio decizie. Mai citești un articol.',
+        'Poate ai încercat deja câteva instrumente și ai rămas cu o utilizare ocazională.',
+        // [completare] — „...nu le-ai putut traduce în realitatea companiei tal"
+        'Poate ai văzut lucruri impresionante, dar nu le-ai putut traduce în realitatea companiei tale.',
+        // [completare] — „...nu știi ce ai putea face concret cu"
+        'Sau poate n-ai început deloc pentru că nu ești IT-ist și nu știi ce ai putea face concret cu ce ai la îndemână.',
+        'Toate trei sunt puncte de plecare normale.',
       ],
     },
     {
-      // Prinde cititorul care a decis deja că nu i se aplică. E felia cea mai
-      // greu de convertit — nu se taie.
-      h3: 'Sau poate n-ai vacarmul ăsta deloc.',
+      // [titlu adăugat] — parafrazează prima propoziție a paragrafului PDF.
+      h3: 'Problema nu e că n-ai adoptat AI.',
       corp: [
-        'Poate ai deschis ChatGPT o dată, ți-a scos o prostie, și ai închis subiectul.',
-        'Poate ai decis deja că AI-ul e pentru firme de software și agenții de marketing, nu pentru una ca a ta.',
-        'Workshopul ăsta e și pentru tine. O să vezi exact unde s-a rupt treaba.',
+        // [completare] — „...poți pierde luni testând unelte, cumpăr"
+        'Problema este că, fără o întrebare bună de business, poți pierde luni testând unelte, cumpărând licențe și citind materiale care nu duc nicăieri.',
       ],
     },
     {
-      h3: 'Costul nu e că începi greșit. E că nu începi deloc.',
-      corp: [
-        'Trec lunile. Citești despre AI, te uiți la reclame, îți pui aceleași întrebări. În firmă nu se schimbă nimic.',
-        'Trei ore de miercuri după-amiază, o dată, ca să iasă din buclă.',
-      ],
+      h3: 'PRIMUL PAS începe înainte de tool.',
+      corp: ['Începe cu ce vrei să schimbi în compania ta.'],
     },
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §03 — REZULTATUL
-   Blocul „Ce NU vei ști" e obligatoriu. E singura formă de credibilitate care
-   funcționează la un om saturat de promisiuni. Fundal #E4E7E7, fără chenar roșu,
-   fără iconiță de avertizare — e onestitate, nu alertă.
+   Combină §04 „Cu ce pleci" (5 livrabile) și §05 „Ce NU vei ști" din sursă —
+   aceeași formă (listă de 5 + bloc de graniță onestă) pe care o avea deja
+   componenta S03Rezultatul, deci fără nicio schimbare de arhitectură.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const rezultatul = {
-  h2: 'La final vei ști să faci cinci lucruri pe care azi nu le poți face',
+  h2: 'Nu pleci cu o listă de tool-uri. Pleci cu o direcție.',
   lista: [
     {
-      titlu: 'Distingi între ce poate face AI-ul azi și ce doar pare că poate.',
-      corp: 'Pentru că îl vei prinde greșind. Cu mâna ta, nu pentru că ți-am spus eu.',
+      titlu: 'O nevoie clar formulată',
+      corp: 'Nu „vreau să folosesc AI”. Ci: „Asta este problema sau oportunitatea pe care vreau s-o explorez în compania mea.”',
     },
     {
-      titlu: 'Ceri altfel — și primești altceva.',
-      corp: 'Există o structură. Când o folosești, se vede imediat în ce iese.',
+      titlu: 'O primă estimare a impactului',
+      corp: 'Cât de des apare problema, câți oameni implică, cât timp consumă. Nu inventăm ROI — vedem dacă merită investigată.',
     },
     {
-      titlu: 'Spui ce e un agent AI și ce nu e.',
-      corp: 'După ce vezi unul funcționând, nu după ce ți se explică pe slide.',
+      titlu: 'O ipoteză despre ce ai putea delega',
+      // [completare] — „...și ce trebuie să rămână"
+      corp: '„Ce parte din acest proces ar putea fi delegată unui coleg digital — și ce trebuie să rămână sub controlul tău?”',
     },
     {
-      titlu: 'Tragi linia dintre ce poate ieși din firmă și ce nu iese niciodată.',
-      corp: 'Prețuri, date de client, contracte — unde stau și cum le ții acolo.',
+      titlu: 'Oamenii pe care trebuie să-i implici',
+      // [completare] — „...sau trăiesc"
+      corp: 'Cei care execută procesul, îl coordonează, primesc rezultatul sau trăiesc consecințele lui — nu doar perspectiva ta.',
     },
     {
-      titlu: 'Numești primul proces din firma ta care merită atins. Și pe cel care nu.',
-      corp: 'Scris, nu în cap.',
+      titlu: 'Roadmap-ul tău personalizat',
+      corp: 'Nevoia identificată, impactul preliminar, ce mai trebuie validat, oamenii de implicat și recomandarea Deep Logic privind continuarea — pe email.',
     },
   ],
   granita: {
     h3: 'Ce NU vei ști la final',
     corp: [
-      'Dacă ipoteza ta e corectă.',
-      'Asta cere acces la procesele și datele tale reale, la oamenii tăi, la cifrele tale. E o zi de lucru împreună, nu o după-amiază într-o sală cu 25 de oameni.',
-      'Ți-o spun acum, nu la final.',
+      'Dacă ipoteza ta este corectă.',
+      // [completare] — „...doar din perspecti" / „...să vedem cum fu"
+      'Și ar fi incorect să pretind că putem afla asta într-o sală, în trei ore, doar din perspectiva ta.',
+      'Pentru un verdict real trebuie să vorbim cu oamenii care lucrează în proces, să vedem cum funcționează lucrurile de fapt, nu doar cum par de la nivelul tău.',
+      'PRIMUL PAS îți spune ce merită investigat. Nu pretinde că îți dă răspunsul înainte de investigație.',
     ],
   },
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §04 — PENTRU CINE ESTE
-   Filtru real, nu politețe. Cu 25 de locuri, o pagină care convinge pe toată
-   lumea e un eșec. Cele două liste rămân VIZUAL EGALE — dacă „nu e pentru tine"
-   arată mai mic sau mai gri, filtrul devine decorativ.
+   Filtru real, nu politețe. Cele două liste rămân VIZUAL EGALE.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const pentruCine = {
   da: {
-    h2: 'E pentru tine dacă',
+    h2: 'Este pentru tine dacă',
     lista: [
-      'Ești antreprenor, patron sau decident într-o firmă de 7–50 de oameni',
-      'Ai auzit de AI de o mie de ori și n-ai făcut încă nimic concret cu el',
-      'Folosești deja ChatGPT, dar haotic: ceva ce deschizi când îți amintești, nu ceva care ține de un proces',
-      'Ai încercat o dată, n-a mers, și ai lăsat-o baltă',
-      'Ai o echipă și te întrebi cum reacționează dacă aduci AI în firmă',
+      // [completare] — „...felul în care func"
+      'Ești antreprenor, owner, CEO, manager sau iei decizii care influențează felul în care funcționează compania ta',
+      // [completare] — „...nu știi încă unde tehnolog"
+      'Ai senzația că anumite lucruri ar putea funcționa mai bine, dar nu știi încă unde tehnologia ar avea sens',
+      'Folosești deja AI ocazional, dar nu l-ai legat de un proces real de business',
+      'N-ai folosit aproape deloc AI și nu știi de unde să începi',
+      'Vrei să înțelegi problema înainte să cumperi soluția',
+      'Ești dispus să lucrezi trei ore pe realitatea propriei companii',
     ],
   },
   nu: {
-    h2: 'Nu e pentru tine dacă',
+    h2: 'Nu este pentru tine dacă',
     lista: [
-      'Cauți o soluție gata făcută, pe care s-o cumperi azi și să meargă mâine',
-      'Vrei să afli ce va face AI-ul în 2030',
-      'Nu ai în cap niciun proces al tău la care să te gândești — vii doar să te uiți',
-      // Filtrează în SUS, nu doar în jos. Semnalează că există un nivel peste
-      // ce se face azi în sală.
-      'Ai deja agenți în producție și cauți arhitectură avansată',
+      'Cauți o listă cu cele mai bune prompturi',
+      'Vrei o prezentare cu zeci de tool-uri',
+      'Te aștepți să construim un agent sau o automatizare completă în trei ore',
+      'Cauți o rețetă universală pe care s-o copiezi în companie',
+      'Vrei ca cineva să-ți spună ce trebuie automatizat fără să înțeleagă mai întâi businessul',
+      'Ai deja o strategie AI matură și cauți arhitectură tehnică avansată',
     ],
   },
 } as const;
@@ -188,193 +244,217 @@ export const pentruCine = {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const inainteDupa = {
-  h2: 'Ce se schimbă efectiv',
+  h2: 'De la o senzație difuză la un punct de plecare concret',
   capIntai: 'Înainte',
-  capAlDoilea: 'După',
+  capAlDoilea: 'După PRIMUL PAS',
   randuri: [
-    ['Deschizi ChatGPT când îți amintești', 'Știi în ce situații merită deschis'],
-    ['Ceri ceva vag, primești ceva vag, te enervezi', 'Știi de ce a ieșit prost data trecută'],
-    ['Nu știi ce e sigur să pui acolo', 'Ai o linie clară: asta iese din firmă, asta nu'],
-    ['„Agent AI” e un cuvânt din reclame', 'Ai văzut unul funcționând și știi ce face'],
-    ['O senzație difuză că rămâi în urmă', 'Un proces numit, scris, cu prima mutare pe el'],
+    ['„Ar trebui să fac ceva cu AI.”', '„Asta este nevoia pe care vreau s-o explorez.”'],
+    ['Nu știi de unde să începi.', 'Ai un punct de plecare clar.'],
+    ['Problema este mai mult o senzație.', 'Ai început să-i estimezi impactul în business.'],
+    ['Te gândești direct la soluție.', 'Știi ce mai trebuie validat înainte de soluție.'],
+    ['Nu știi cine trebuie implicat.', 'Ai oamenii-cheie identificați.'],
+    ['Ai o idee în cap.', 'Ai un roadmap digital pe care îl poți deschide și continua.'],
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §06 — CE FACEM EFECTIV
-   Numerotarea 01/02/03 cu IBM Plex Mono, accent decorativ.
-   Nota de format răspunde direct fricii „n-o să știu ce să întreb, o să par
-   prost" — nu se îngroapă vizual.
+   §06 — CEI CINCI PAȘI AI METODOLOGIEI
+   Jumătatea „concretă" a §08 din sursă (METODOLOGIA DEEP LOGIC) — cealaltă
+   jumătate (prefața „de ce lucrăm invers") e la §10 DespreDeepLogic, mai
+   jos. Numerotare 01–05 cu IBM Plex Mono, ca înainte cu 01/02/03.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const ceFacem = {
-  h2: 'Trei blocuri, două ore, zero teorie fără demonstrație',
+  // [titlu adăugat] — H2 autonom pentru cei 5 pași; „această logică" din
+  // sursă ([]§08]) trimitea la STATEMENT-ul care, în arhitectura paginii,
+  // ajunge abia la §10, mai jos.
+  h2: 'Cei cinci pași ai metodologiei Deep Logic',
   blocuri: [
     {
       numar: '01',
-      titlu: 'CONVERSAȚIA — ce poate și ce nu poate',
+      titlu: 'PRIMUL PAS',
+      // [completare] — „...construim ipotez"
       corp: [
-        'Cum ceri, ca să primești ce ai nevoie. Apoi îl prinzi greșind — cu mâna ta, pe telefonul tău.',
-        'La final: ce deschid eu personal și când. ChatGPT, Claude, Gemini, Perplexity — care, pentru ce.',
+        'Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și construim ipoteze inițiale de lucru.',
       ],
     },
     {
       numar: '02',
-      titlu: 'DELEGAREA — de la conversație la proces',
+      titlu: 'REALITATEA ECHIPEI',
+      // [completare] — „...ce se întâmplă în"
       corp: [
-        'Demo live: îmi construiesc o ofertă You Protect în fața ta, de la zero.',
-        'Și îți arăt unde stau datele: fișierele rămân pe calculatorul meu, prețurile nu călătoresc nicăieri.',
+        'Descoperim nevoile oamenilor care lucrează efectiv în procese și înțelegem ce se întâmplă în realitate, nu doar pe hârtie.',
       ],
     },
     {
       numar: '03',
-      titlu: 'AGENTUL — ce e și, mai ales, ce nu e',
+      titlu: 'PROCESE + IMPACT + ROI',
       corp: [
-        'Agentul meu de monitorizare a sănătății. Complet, cum rulează el azi.',
-        'Inclusiv partea care contează: propune, eu aprob. Nu poate scrie singur în date.',
+        'Suprapunem perspectiva managementului cu realitatea echipei, procesele și datele disponibile.',
       ],
     },
+    {
+      numar: '04',
+      titlu: 'DECIZIA',
+      corp: ['Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.'],
+    },
+    {
+      numar: '05',
+      titlu: 'IMPLEMENTAREA',
+      corp: ['Construim doar acolo unde există suficiente motive să o facem.'],
+    },
   ],
-  notaFormat: [
-    'După fiecare bloc scrii — individual, pe foaia ta.',
-    'Nu discuție de grup. Nu trebuie să vorbești în fața nimănui dacă nu vrei.',
-  ],
-  final: 'De la 16:00, o oră de discuții libere. Fără agendă, fără prezentare.',
+  notaFormat: ['Nu pornim de la „Ce putem face cu AI?”'],
+  final: 'Pornim de la: „Ce merită să rezolvăm?”',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §07 — NU DOAR TEORIE
-   Linia 3 e deliberată: un demo live care poate pica, admis dinainte, e mai
-   credibil decât o promisiune de perfecțiune.
+   §07 — „DAR EU NU ȘTIU CE AȘ PUTEA FACE CU AI"
+   Realocat din §10 al sursei — vechiul §07 („trei sisteme care rulează azi")
+   descria exact ce e acum interzis (demo You Protect, agent de sănătate).
+   Componenta S07NuDoarTeorie a primit `intro`/`outro` opționale, ca să
+   încapă H3-ul „Perfect." și linia de închidere fără să piardă conținut.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const nuDoarTeorie = {
-  h2: 'Ce face workshopul ăsta diferit',
-  lista: [
-    'Trei sisteme care rulează azi. Nu mockup-uri, nu înregistrări, nu capturi de ecran.',
-    'Îmi expun propriile procese: ofertele mele și sănătatea mea. Nimeni din sală nu e subiect de demo.',
-    'Construiesc în fața ta, live. Dacă se blochează ceva, vezi și asta — și vezi ce fac cu ea.',
-    'Ieși cu un document, nu cu notițe.',
+  h2: '„Dar eu nici măcar nu știu ce aș putea face cu AI.”',
+  intro: [
+    'Perfect.',
+    'Nu trebuie să vii cu răspunsul. Pentru asta există PRIMUL PAS.',
+    'Nu trebuie să fii IT-ist. Nu trebuie să cunoști automatizări. Nu trebuie să știi ce este un agent sau un API.',
+    'Ai nevoie doar să-ți cunoști compania suficient cât să poți spune:',
   ],
+  lista: [
+    'Aici simt că pierdem timp.',
+    'Aici depindem prea mult de un om.',
+    'Aici nu avem vizibilitate.',
+    'Aici aș vrea să funcționăm mai bine.',
+  ],
+  outro: 'De acolo începem.',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §08 — CE PLECI CU TINE
-   A doua cea mai importantă secțiune. Răspunsul direct la „am mai fost la unul
-   și n-am plecat cu nimic". CTA repetat după. Nu se taie la mobil.
-   ITEM 5 e nou — decizia D7.
+   §08 — CU CE PLECI
+   ATENȚIE: numele exportului rămâne `cePleciCuTine` din motive de compatibi-
+   litate cu S08CePleciCuTine.astro, dar conținutul e acum lista „poate
+   problema ta arată așa" din sursă (§07) — a doua cea mai importantă
+   secțiune păstrează forma de 5 „livrabile", doar că sursa PRIMUL PAS n-are
+   un echivalent de „5 lucruri fizice primite" separat de §04 (deja folosit
+   la §03 Rezultatul mai sus). Aici folosim de fapt grila de 6 categorii din
+   §07 al sursei, restrânsă la 5. A șasea categorie („Vânzare și dezvoltare")
+   a fost combinată cu prima („Vânzări și ofertare"), fiindcă cele două se
+   suprapun tematic.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const cePleciCuTine = {
-  h2: 'Ce pleacă acasă cu tine',
+  h2: 'De unde pornesc, de obicei, întrebările bune',
   itemi: [
     {
-      titlu: 'Harta ta, scrisă în sală',
+      titlu: 'Vânzări, ofertare și dezvoltare',
       corp: [
-        'În ultimele 15 minute completăm împreună. Nu de la zero — transcrii ce ai scris deja după fiecare bloc.',
-        'Iese: procesele tale, ce e confidențial în ele, ce s-ar putea delega, și prima ta mutare.',
+        'Ofertele sau devizele se fac greu, manual, sau depind prea mult de o singură persoană.',
+        'Există oportunități, dar oamenii potriviți sunt greu de identificat, prioritizat sau urmărit în timp.',
       ],
     },
     {
-      // D5: „în aceeași zi" → „în 24 de ore". Angajament operațional, nu formulare.
-      titlu: 'Un document personalizat, pe email, în 24 de ore',
-      corp: [
-        'Nu un PDF generic trimis la toată lumea. Al tău: harta ta, prima ta mutare, și prompturile configurate pentru ce faci tu efectiv.',
-        'Ăsta e lucrul pe care îl deschizi joi dimineață.',
-      ],
+      titlu: 'Clienți',
+      corp: ['Echipa răspunde din nou și din nou la aceleași întrebări sau follow-up-ul se pierde.'],
     },
     {
-      titlu: 'Structura de prompt',
-      corp: [
-        'Formula pe care o folosesc eu. Patru părți. Funcționează în orice unealtă de chat, indiferent care.',
-      ],
+      titlu: 'Documente și rapoarte',
+      corp: ['Oamenii mută informații între PDF-uri, emailuri, tabele și sisteme care nu vorbesc între ele.'],
     },
     {
-      titlu: 'Regula de confidențialitate',
-      corp: [
-        'O singură propoziție care îți spune ce urci și ce nu urci niciodată. Simplă cât s-o ții minte fără s-o cauți.',
-      ],
+      titlu: 'Operațional',
+      corp: ['Informația există, dar ajunge greu la omul care trebuie să ia o decizie.'],
     },
     {
-      // D7 — nou pe pagină.
-      titlu: 'Cheat-sheet-ul, tipărit',
-      corp: [
-        'O foaie. Prompturile care se repetă cel mai des, gata scrise.',
-        'O pui lângă tastatură și n-o mai cauți în telefon.',
-      ],
+      titlu: 'Onboarding, procese și proceduri',
+      // [completare] — „...decât î"
+      corp: ['O parte importantă din „cum facem lucrurile aici” există mai mult în capul oamenilor decât în vreun document.'],
     },
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §09 — DE UNDE PORNESC DE OBICEI FIRMELE
-   Prima linie de corp e OBLIGATORIE. Fără ea, secțiunea promite cinci domenii
-   acoperite în trei ore — și pagina minte.
-   „AI agents" NU apare aici ca use case; apare la §06 bloc 3, ca demonstrație.
+   §09 — DE UNDE PORNESC OAMENII (grid, 5→6 categorii ale sursei §07,
+   nefolosite deja mai sus). Notă: sursa are un singur grid de „unde pornesc
+   întrebările bune" (§07); l-am despărțit deliberat între §08 (mai sus,
+   forma scurtă din 5) și aici (aceeași listă, cu intro/outro complete,
+   fiindcă S09UseCases are deja componenta pentru un grid + disclaimer +
+   încheiere, iar S08 n-ar fi avut loc pentru cele două paragrafe de cadru).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const useCases = {
-  h2: 'Unde caută oamenii, de obicei',
+  h2: 'Poate problema ta arată așa',
   disclaimer:
-    'Nu acoperim toate zonele astea în trei ore. Le pun aici ca să ai de unde începe când îți cartografiezi propriul proces.',
+    'Nu înseamnă că vom acoperi toate zonele de mai jos. Sunt doar exemple care te pot ajuta să recunoști o problemă reală din compania ta.',
   grid: [
     {
       titlu: 'Vânzări și ofertare',
-      corp: 'Oferte, devize, propuneri. Răspunsuri la cereri repetitive.',
+      corp: 'Ofertele sau devizele se fac greu, manual sau depind prea mult de o singură persoană.',
     },
     {
-      titlu: 'Relația cu clienții',
-      corp: 'Răspunsuri standard, follow-up, întrebări care se repetă de zece ori pe lună.',
+      titlu: 'Clienți',
+      corp: 'Echipa răspunde din nou și din nou la aceleași întrebări sau follow-up-ul se pierde.',
+    },
+    {
+      titlu: 'Documente și rapoarte',
+      corp: 'Oamenii mută informații între PDF-uri, emailuri, tabele și sisteme care nu vorbesc între ele.',
     },
     {
       titlu: 'Operațional',
-      corp: 'Rapoarte interne, sinteze, informația care trece de la un om la altul și se pierde pe drum.',
+      corp: 'Informația există, dar ajunge greu la omul care trebuie să ia o decizie.',
     },
     {
-      titlu: 'Documente și date',
-      corp: 'Ce e îngropat în PDF-uri, contracte și tabele pe care nu le mai deschide nimeni.',
+      titlu: 'Onboarding, procese și proceduri',
+      corp: 'O parte importantă din „cum facem lucrurile aici” există mai mult în capul oamenilor decât în vreun document.',
     },
     {
-      titlu: 'Monitorizare continuă',
-      corp: 'Lucruri care ar trebui urmărite permanent și pe care le observi doar când e prea târziu.',
+      titlu: 'Vânzare și dezvoltare',
+      corp: 'Știi că există oportunități, dar oamenii potriviți sunt greu de identificat, prioritizat sau urmărit în timp.',
     },
   ],
   incheiere: [
-    'Demonstrația live e pe ofertare, pentru că e procesul pe care îl am eu și pot să-l expun fără să expun pe altcineva.',
-    'Mecanismul e același indiferent de zonă.',
+    'Poate problema ta nu seamănă cu nimic de aici. Și asta este în regulă.',
+    'Nu trebuie să vii cu problema perfect formulată. Pentru asta lucrăm.',
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §10 — DESPRE DEEP LOGIC
-   Zero cifre. Fără „X clienți", fără „Y proiecte". Când vor exista date
-   documentate, se adaugă.
+   Prefața lui §08 din sursă („de ce lucrăm invers") — cealaltă jumătate,
+   cei 5 pași, e la §06 mai sus. Fără cifre — poziția se afirmă, nu se
+   cuantifică.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const despreDeepLogic = {
-  h2: 'Deep Logic',
+  h2: 'Înainte de soluție, trebuie să înțelegem problema.',
   corp: [
-    'Consultanță AI pentru firme românești de 7–50 de oameni.',
-    'Poziția noastră: infrastructură, nu automatizări.',
-    'Diferența e cine deține ce se construiește. Arhitectura rămâne a clientului, nu a furnizorului. Iar sistemele se construiesc pe realitatea fiscală de aici — e-Factura, ANAF — nu pe un model importat care merge în altă parte.',
-    'Ordinea în care lucrăm: întâi strategia, apoi procesul, apoi tehnologia.',
-    'Nu punem AI peste orice. Căutăm unde produce efect economic real — și spunem când nu produce.',
+    'Când apare o tehnologie nouă, tentația este să începem cu unealta. Să vedem ce poate face și apoi să căutăm unde să o folosim. La Deep Logic facem invers.',
+    'Business → problemă → oameni → proces → impact → tehnologie.',
+    'Începem cu perspectiva ownerului. Apoi o verificăm în realitatea echipei. Ne uităm la procese și proceduri. La date. La efort. La risc. La impact și ROI.',
+    'Și abia după aceea decidem dacă tehnologia are sens.',
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §11 — DESPRE CIPRIAN MICU
-   D8: blocul despre firma de transport și faliment NU e inclus. Decizie luată.
+   Bio nouă, din sursă. Blocul despre firma de transport și faliment nu
+   există în noua sursă (nu a fost reintrodus).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const facilitator = {
-  h2: 'Cine ține workshopul',
+  h2: 'De ce eu?',
   nume: 'Ciprian Micu',
   rol: 'Fondator Deep Logic',
   corp: [
-    'Lucrez cu AI din decembrie 2022. Am sisteme în producție din 2023 — inclusiv cele pe care ți le arăt pe 16 septembrie. Sunt practician, nu lector: tot ce demonstrez e ceva ce folosesc eu.',
-    'În paralel, sunt Business Developer la You Protect, unde vând echipamente de protecție în B2B. De acolo vine demonstrația de ofertare — e procesul meu, pot să-l deschid fără să expun pe nimeni altcineva.',
-    'Fac parte din echipa de leadership BIZZ.CLUB Satu Mare.',
+    'La patru ani am legat mobilierul din camera părinților mei cu elastic. În mintea mea, făceam obiectele să comunice.',
+    'Mult mai târziu, în decembrie 2022, am început să explorez serios AI. Nu pentru că voiam să devin „expert în AI” — eram antreprenor și căutam soluții pentru probleme reale din propriul business.',
+    // [completare] — „...la a-mi construi"
+    'În anii care au urmat am trecut de la a folosi instrumente făcute de alții la a-mi construi propriile sisteme. Asta mi-a schimbat perspectiva.',
+    'După piatră, am descoperit ciocanul. Cu un ciocan poți construi multe lucruri. Dar ciocanul nu îți spune ce trebuie construit.',
+    'Și exact asta mi se pare astăzi întrebarea importantă în AI. Nu „ce poate tehnologia?”. Ci „ce merită să rezolvăm cu ea?”. Din întrebarea asta s-a construit și metodologia Deep Logic.',
   ],
   foto: {
     src: '/ciprian-micu.jpg',
@@ -383,24 +463,25 @@ export const facilitator = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §12 — PRECEDENT
-   D9: fără testimoniale. Ultima propoziție PARE că slăbește pagina — nu o
-   slăbește. La un cititor saturat de promisiuni, e cel mai puternic semnal de
-   onestitate de pe toată pagina. Nu se taie.
+   §12 — FORMATUL
+   Realocat din §06 al sursei — vechea secțiune „Precedent"/Ardudana nu mai
+   are conținut sursă (produsul PRIMUL PAS nu e prezentat ca o continuare a
+   workshopului precedent). Grila cu buline din sursă a fost aplatizată în
+   proză, ca să încapă în forma existentă a componentei (h2 + paragrafe).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const precedent = {
-  h2: 'Nu e prima dată',
+  h2: '20% context. 80% lucru pe compania ta.',
   corp: [
-    'Am ținut o versiune a acestui workshop în iulie, la Ardudana.',
-    'Versiunea din septembrie e construită pe ce am învățat acolo: mai puțină prezentare, mai multe demonstrații pe sisteme reale, și un material personalizat după eveniment — care atunci nu exista.',
-    'Nu pun testimoniale pentru că n-am colectat pe formatul ăsta. Când voi avea, le voi pune.',
+    'Nu vreau să petrecem trei ore vorbind despre tehnologie. Contextul e acolo doar cât să punem întrebările corecte.',
+    'Restul timpului lucrezi pe propria companie: ce vrei să schimbi, unde se consumă timp sau atenție, cine e implicat, ce valoare ar avea dacă problema s-ar rezolva, ce ai putea delega și ce trebuie verificat înainte să construiești ceva.',
+    'Nu pe un business imaginar. Pe al tău.',
+    'Nu trebuie să fii IT-ist. Rolul tău nu este să știi ce model, API sau arhitectură trebuie folosită. Rolul tău este să înțelegi ce merită rezolvat și de ce. Tehnologia vine după.',
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §13 — FORMAT ȘI DETALII
-   D6: adresa exactă intră pe pagină. Alimentează și .ics și JSON-LD.
+   §13 — DETALII PRACTICE
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const detalii = {
@@ -408,53 +489,48 @@ export const detalii = {
   randuri: [
     ['Data', EVENIMENT.dataText],
     ['Ora', `${EVENIMENT.ora}`],
-    ['Structura', 'Două ore de workshop, o oră de discuții libere'],
+    ['Durata', '3 ore de lucru'],
     ['Locația', `${EVENIMENT.locatie}, ${EVENIMENT.adresa}`],
     ['Participanți', `Maximum ${EVENIMENT.capacitate}`],
-    ['Ce aduci', 'Un pix. Atât.'],
-    ['Laptop', 'Nu e nevoie. Dacă vrei să lucrezi în paralel, adu-l — dar nu e obligatoriu.'],
-    ['Nivel necesar', 'Zero. Dacă n-ai deschis niciodată ChatGPT, e în regulă.'],
+    ['Format', '20% context · 80% lucru aplicat'],
+    ['Nivel necesar', 'Zero cunoștințe tehnice'],
+    ['Laptop', 'Nu este obligatoriu'],
     ['Cost', EVENIMENT.cost],
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §14 — CE INCLUDE ȘI DE CE E GRATUIT
-   Fără preț, fără „valoare 2000 lei", fără „normal ar costa X". Workshopul
-   public și cel in-company nu sunt același produs — o ancoră de preț ar
-   revendica o echivalență falsă.
-   „Nu vinde nimeni nimic de la microfon" e un angajament public.
+   §14 — DE CE ESTE GRATUIT
+   Fără preț, fără „valoare X lei", fără ancoră de preț.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const deCeGratuit = {
-  h2: 'De ce e gratuit',
+  h2: 'De ce este gratuit',
   corp: [
-    'Pentru că am nevoie de repetiții și de feedback real.',
-    'E prima dată când țin workshopul ăsta în forma asta. Vreau să văd pe ce se blochează firmele din Satu Mare când pun mâna pe instrumentele astea — nu ce cred eu că le trebuie.',
-    'Deci da, am un interes. Interesul meu e să învăț din sala asta și, dacă mai încolo cineva vrea să lucrăm împreună pe procesele lui, cu atât mai bine. Nu vinde nimeni nimic de la microfon pe 16 septembrie.',
+    'Pentru că vreau să fac metodologia Deep Logic cunoscută și, în același timp, să o validez în situații reale.',
+    'Nu pe exemple inventate. Pe situații reale aduse de antreprenori și oameni de decizie.',
+    'Tu vii cu realitatea companiei tale și cu trei ore de atenție. Eu vin cu metodologia, facilitarea și roadmap-ul personalizat.',
+    'La final îmi doresc ceva foarte simplu de la tine: feedback sincer. Atât.',
   ],
   include: {
     h3: 'Ce include',
     lista: [
-      'Două ore de workshop cu demonstrații live pe sisteme reale',
-      'O oră de discuții libere, după',
-      'Harta ta, completată în sală',
-      // D5
-      'Documentul tău personalizat, pe email, în 24 de ore',
-      // D7
-      'Cheat-sheet-ul tipărit cu prompturi',
+      'Trei ore de lucru pe compania ta, cu metodologia Deep Logic',
+      'Roadmap-ul tău digital personalizat, pe email',
+      'Recomandarea Deep Logic privind continuarea',
     ],
   },
   deCe25: {
-    h3: 'De ce doar 25 de locuri',
-    corp: 'Pentru că peste atât nu mai pot lucra cu fiecare din sală, iar workshopul devine prezentare. Nu e o cifră aleasă ca să sune bine.',
+    h3: `De ce doar ${EVENIMENT.capacitate} de locuri`,
+    // „gratuit" nu se repetă aici — apare deja o dată în h2-ul de mai sus și o
+    // dată la rândul „Cost" din §13; peste atât, cuvântul scade valoarea
+    // percepută, aceeași regulă ca la textul de distribuire.
+    corp: `Această ediție e limitată la maximum ${EVENIMENT.capacitate} de participanți — peste atât nu mai pot lucra cu fiecare din sală, iar workshopul devine prezentare.`,
   },
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §15 — ÎNTREBĂRI
-   Întrebarea despre vânzare e cea mai importantă din FAQ. Nu se mută mai jos
-   și nu se înmoaie.
+   §15 — ÎNTREBĂRI FRECVENTE
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const faq = {
@@ -462,54 +538,82 @@ export const faq = {
   intrebari: [
     {
       q: 'Trebuie să am experiență cu AI?',
-      a: 'Nu. Dacă n-ai deschis niciodată ChatGPT, e în regulă — începem de la conversație. Dacă îl folosești zilnic, blocurile 2 și 3 sunt oricum peste ce faci acum.',
+      // [completare] — „...doar de câteva ori ChatGPT sau dacă n-ai făcut încă nimic s"
+      a: 'Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai făcut încă nimic similar.',
     },
     {
-      q: 'Trebuie laptop?',
-      a: 'Nu. Demonstrațiile rulează pe ecranul meu. Ai nevoie doar de telefon, pentru un singur exercițiu. Dacă vrei să lucrezi în paralel pe laptopul tău, adu-l — dar nu-ți trebuie.',
+      q: 'Trebuie să vin cu problema deja identificată?',
+      // [completare] — „...O parte im"
+      a: 'Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine. O parte importantă din workshop e chiar clarificarea problemei, nu presupunerea că vii cu ea gata formulată.',
     },
     {
-      q: 'E potrivit pentru domeniul meu?',
-      a: 'Demonstrația live e pe ofertare, dar mecanismul nu ține de industrie. În sală vin oameni din producție, servicii, comerț, construcții. Ce cartografiezi tu e propriul proces, nu al meu.',
+      q: 'Trebuie să fiu IT-ist ca să înțeleg?',
+      // [completare] — „...Rolul tău este să î"
+      a: 'Nu. Nu discutăm arhitecturi tehnice și nu trebuie să știi să programezi. Rolul tău este să înțelegi ce merită rezolvat, nu cum se construiește tehnic.',
     },
     {
-      q: 'Pot să vin cu o problemă reală din firmă?',
-      a: 'Da — și ăsta e scopul. Nu trebuie s-o spui cu voce tare în fața nimănui. Lucrezi pe ea individual, pe foaia ta.',
+      q: 'Este potrivit pentru domeniul meu?',
+      // [completare] — „...există suficient ma"
+      a: 'Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, există suficient material de lucru, indiferent de domeniu.',
     },
     {
+      q: 'Trebuie să aduc laptop?',
+      // [completare] — „...Dacă va fi util pentru un exercițiu, poți v"
+      a: 'Laptopul nu este obligatoriu pentru participare. Dacă va fi util pentru un exercițiu, poți veni cu el, dar nu ai nevoie de el ca să participi.',
+    },
+    {
+      q: 'Ce primesc după workshop?',
+      // [completare] — „...ce trebu"
+      a: 'Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar, ce trebuie validat, oamenii de implicat și pașii concreți pentru următorul pas.',
+    },
+    {
+      // Nu e în PDF-ul sursă (§13 are doar 6 întrebări) — reintrodusă din
+      // documentul precedent: mecanismul bifei opționale de discuție
+      // (form-schema.ts, BIFE.discutie) n-a dispărut, și fără explicația asta
+      // în FAQ rămâne un mecanism de încredere netestat de cititor.
       q: 'O să-mi vindeți ceva la final?',
       a: 'Nu de la microfon. Pe formularul de la final există o singură bifă, prin care poți cere o discuție dacă vrei. Dacă n-o bifezi, nu te caută nimeni.',
     },
     {
-      q: 'Ce primesc după workshop?',
-      // D5
-      a: 'Un document personalizat pe email, în 24 de ore: harta ta, prima ta mutare și prompturile configurate pentru ce faci tu.',
-    },
-    {
       q: 'Ce se întâmplă dacă mă înscriu și nu pot ajunge?',
-      a: 'Anunță-mă și eliberez locul pentru altcineva. Sunt 25 și, la mine, chiar sunt 25.',
+      a: `Anunță-mă și eliberez locul pentru altcineva. Sunt ${EVENIMENT.capacitate} și, la mine, chiar sunt ${EVENIMENT.capacitate}.`,
     },
   ],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §16 — CTA FINAL
-   Repetă rezultatul, nu argumentul.
-   B16: microcopy-ul spunea „60 de secunde". Cu cele cinci întrebări de
-   calificare adăugate, nu mai e adevărat. Pe pagina asta, un copy care minte
-   e un bug — deci se schimbă, nu se ignoră.
+   §16 — ÎNSCRIERE (antetul dialogului de înscriere, DialogInscriere.astro)
+   Distinct de `ctaFinal` (mai jos) — sursa dă text separat pentru „ÎNSCRIERE"
+   (procedural, direct sub formular) față de „CTA FINAL" (motivațional,
+   ultima secțiune de pe pagină). Înainte, ambele foloseau `ctaFinal`.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export const ctaFinal = {
-  h2: 'Trei ore, miercuri după-amiază',
-  corp: 'Nu ca să implementezi AI. Ca să știi unde merită și unde nu merită, în firma ta — și să pleci cu prima ta mutare, scrisă.',
-  meta: `${EVENIMENT.dataScurt} · ${EVENIMENT.ora} · ${EVENIMENT.oras} · ${EVENIMENT.capacitate} de locuri`,
+export const inscriere = {
+  h2: `Rezervă-ți locul la ${EVENIMENT.titlu}`,
+  corp: 'Înscrierea durează câteva minute. Pe lângă datele de contact, îți voi pune câteva întrebări despre compania ta. Nu trebuie să ai răspunsurile perfecte.',
+  meta: `${EVENIMENT.dataText} · ${EVENIMENT.ora} · ${EVENIMENT.oras}`,
+  // [completare] — „...pe probleme rea" / „...pe email primești confirmarea și detaliile de participare pe ema"
   microcopy:
-    'Îți ia două minute. Întreb și ce proces îți mănâncă cel mai mult timp — ca să pot pregăti materialul pentru sala care vine efectiv, nu pentru una imaginară.',
+    'Întrebările mă ajută să înțeleg cine vine în sală și să pregătesc workshopul pe probleme reale, nu pe una imaginară. După înscriere primești confirmarea și detaliile de participare pe email.',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §17 — FOOTER
+   §17 — CTA FINAL
+   Repetă rezultatul, nu argumentul. Apare a doua oară ca antet-fallback al
+   dialogului doar dacă cineva ajunge acolo fără să fi trecut prin §16.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export const ctaFinal = {
+  h2: '3 ore. Compania ta. Primul pas.',
+  corp: 'Nu ca să implementezi AI într-o după-amiază. Ci ca să treci de la „Ar trebui să fac ceva cu AI.” la o nevoie numită, cu impact estimat și cu primul pas scris.',
+  meta: `${EVENIMENT.dataScurt} · ${EVENIMENT.ora} · ${EVENIMENT.oras} · ${EVENIMENT.capacitate} de locuri`,
+  // [completare] — „...Și știu ce trebuie să ve"
+  microcopy:
+    '„Asta este nevoia pe care vreau s-o rezolv. Asta cred că valorează. Și știu ce trebuie să verific înainte să merg mai departe.”',
+} as const;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §18 — FOOTER
    Minimalist. Fără newsletter signup, fără social icons multiple, fără sitemap.
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -527,9 +631,6 @@ export const footer = {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    STĂRI DE RĂSPUNS — ecrane post-submit
-   Al doilea ecran (waitlist) e nou: documentul sursă avea un singur mesaj de
-   confirmare, deci al 31-lea om ar fi văzut „Gata, îți trimit confirmarea"
-   fiind de fapt pe listă de așteptare.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const stari = {
@@ -544,7 +645,7 @@ export const stari = {
   asteptare: {
     titlu: 'Ești pe lista de așteptare.',
     corp: [
-      'Cele 25 de locuri sunt luate. Ți-am trimis un email cu poziția ta.',
+      `Cele ${EVENIMENT.capacitate} de locuri sunt luate. Ți-am trimis un email cu poziția ta.`,
       'Se eliberează locuri aproape întotdeauna — oameni care anunță că nu mai pot veni. Când se întâmplă, primești un mesaj și primul care confirmă ia locul.',
       'Nu e ordine de așteptare, e cine răspunde primul. Ține telefonul la îndemână pe 14 și 16 septembrie.',
     ],
@@ -558,10 +659,6 @@ export const stari = {
     ],
   },
 
-  // Cineva anulat sau no_show completează din nou formularul. Nu-l reînscriem
-  // automat — statusul rămâne cum era, ca să nu corupem tăcut mașina de stări
-  // (email-ul principal trimite exact o dată, la insert; un „anulat" readus
-  // silențios la viață ar primi al doilea email 1, fals). Îl îndrumăm direct.
   anulatAnterior: {
     titlu: 'Ai anulat locul ăsta mai devreme.',
     corp: [
@@ -578,7 +675,6 @@ export const stari = {
     ],
   },
 
-  // Reconfirmare din email 2 sau 3 (status `inscris` → `reconfirmat`)
   reconfirmat: {
     titlu: 'Perfect. Ne vedem miercuri.',
     corp: [
@@ -596,7 +692,6 @@ export const stari = {
     ],
   },
 
-  // Cursa din waitlist, câștigată
   locRevendicat: {
     titlu: 'Locul e al tău.',
     corp: [
@@ -606,7 +701,6 @@ export const stari = {
     ],
   },
 
-  // Cursa din waitlist, pierdută
   locLuat: {
     titlu: 'Locul a fost luat.',
     corp: [
@@ -628,7 +722,6 @@ export const stari = {
     corp: ['Te-am bifat. Ia loc unde vrei.'],
   },
 
-  // Link din emailul 8 (retenție date, la 1 an) — vezi src/inngest/functions/retention-sweep.ts
   datePastrate: {
     titlu: 'Gata. Îți păstrez datele.',
     corp: ['Ceasul repornește de azi — te caut din nou peste un an.'],
@@ -637,28 +730,13 @@ export const stari = {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    META — SEO și carduri de partajare
-   Peste 40% din trafic vine dintr-un link lipit în WhatsApp de un membru
-   BIZZ.CLUB. Cardul de preview e primul lucru pe care îl vede invitatul — și
-   e momentul în care membrul își pune reputația la bătaie („ți-o dau ție").
-   Un link fără card arată a spam.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const meta = {
-  titlu: 'Prima Mutare spre un Asistent Digital — workshop gratuit, Satu Mare',
-  descriere:
-    'Trei ore, miercuri 16 septembrie. Nu implementezi AI — decizi unde merită în firma ta și pleci cu prima ta mutare, scrisă. 25 de locuri.',
-  // Titlu separat pentru card: mai scurt, pentru că WhatsApp taie pe la ~65 de caractere.
-  ogTitlu: 'Prima Mutare spre un Asistent Digital',
-  /**
-   * Cardul se randează DIRECT SUB mesajul personal al membrului BIZZ.CLUB
-   * („Am o invitație... ți-o dau ție"). Vizual, e parte din același mesaj.
-   * De aceea nu începe cu „gratuit": ar muta încadrarea de la privilegiu
-   * personal la eveniment gratuit oarecare — exact mecanismul de încredere
-   * pe care se sprijină toată distribuția. Aceeași regulă ca la textul de
-   * distribuire din documentul sursă.
-   */
-  ogDescriere:
-    '16 septembrie · Satu Mare · trei ore. Pleci cu o hartă scrisă, nu cu notițe. 25 de locuri.',
+  titlu: 'PRIMUL PAS — workshop gratuit Deep Logic, Satu Mare',
+  descriere: `Trei ore, miercuri 16 septembrie. Nu implementezi AI — formulezi nevoia, estimezi impactul și pleci cu un prim pas concret. ${EVENIMENT.capacitate} de locuri.`,
+  ogTitlu: 'PRIMUL PAS — workshop Deep Logic',
+  ogDescriere: `16 septembrie · Satu Mare · trei ore. Pleci cu un roadmap digital, nu cu notițe. ${EVENIMENT.capacitate} de locuri.`,
   ogImagine: '/og-workshop-16-09.png',
   locale: 'ro_RO',
 } as const;

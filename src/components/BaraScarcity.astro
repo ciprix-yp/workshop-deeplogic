@@ -1,0 +1,171 @@
+---
+import { EVENIMENT, scarcity } from '../content/copy';
+
+/**
+ * Bara fixă de scarcity — decizie explicită a lui Ciprian (2026-08-31),
+ * reversare a interdicției din CLAUDE.md („Nu punem contor live"). Vezi
+ * comentariul din CLAUDE.md §1 pentru istoricul deciziei.
+ *
+ * Regula care rămâne literă de lege, din sursa PRIMUL PAS: „fără deficit
+ * fals; afișează doar date reale". De-asta bara nu are un fallback „fals
+ * plin" — fără JS sau dacă fetch-ul către /api/locuri-disponibile eșuează,
+ * arată STRICT informația statică, verificabilă din altă parte a paginii
+ * (data, ora, capacitatea maximă) — niciodată un număr de locuri ghicit.
+ *
+ * Countdown-ul e calculat integral client-side: pagina e prerandată static
+ * (`export const prerender = true`, index.astro), deci orice cifră „scrisă"
+ * la build ar fi deja greșită la câteva ore de la deploy.
+ */
+---
+
+<div id="bara-scarcity" class="bara-scarcity" role="status" aria-live="off">
+  <p class="continut" data-continut>{scarcity.fallbackStatic}</p>
+</div>
+
+<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maxime: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin }}>
+  (() => {
+    const bara = document.getElementById('bara-scarcity');
+    const continut = bara?.querySelector('[data-continut]');
+    if (!bara || !continut) return;
+
+    const tinta = new Date(dataStart).getTime();
+
+    /**
+     * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin).
+     * Două perechi capăt-la-capăt, fiecare verificată manual ≥4.5:1 pe
+     * FUNDALUL pe care chiar apare textul — nu aceeași pereche peste tot:
+     *   - bara (fundal închis): alb → `--eroare-clar` (#E08585, 5.92:1 pe
+     *     `--bg-inchis`).
+     *   - insigna din dialog (fundal alb): `--secundar` → `--eroare`
+     *     (#9E4B4B, 5.90:1 pe alb — deja verificat de `npm run contrast`).
+     * Reutilizarea perechii de pe bară pe fundal alb ar fi dus la text alb
+     * pe alb la capătul „gol" al gradientului.
+     */
+    function culoareOcupare(ocupare, start, stop) {
+      const t = Math.max(0, Math.min(1, ocupare));
+      const rgb = start.map((c, i) => Math.round(c + t * (stop[i] - c)));
+      return `rgb(${rgb.join(',')})`;
+    }
+    const GRADIENT_PE_INCHIS = [[255, 255, 255], [224, 133, 133]]; // alb → var(--eroare-clar)
+    const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
+
+    function formatCountdown(ms) {
+      if (ms <= 0) return 'a început';
+      const zile = Math.floor(ms / 86400000);
+      const ore = Math.floor((ms % 86400000) / 3600000);
+      const minute = Math.floor((ms % 3600000) / 60000);
+      if (zile > 0) return `${zile}z ${ore}h`;
+      if (ore > 0) return `${ore}h ${minute}m`;
+      const secunde = Math.floor((ms % 60000) / 1000);
+      return `${minute}m ${secunde}s`;
+    }
+
+    let ramase = null;
+
+    /**
+     * Rândul de locuri live din formularul de înscriere (DialogInscriere.astro)
+     * — aceeași sursă de date ca bara, aceeași regulă de onestitate: rămâne
+     * `hidden` până există un răspuns real de la API.
+     */
+    function randeazaLocuriDinFormular() {
+      const tinte = document.querySelectorAll('[data-locuri-live]');
+      if (!tinte.length || ramase === null) return;
+
+      const text =
+        ramase <= 0
+          ? mesajPlin
+          : `Mai sunt ${ramase} ${etichetaLocuri} ${maxime}.`;
+      const culoare = ramase <= 0 ? 'rgb(158,75,75)' : culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_ALB);
+
+      tinte.forEach((el) => {
+        el.textContent = text;
+        el.style.color = culoare;
+        el.hidden = false;
+      });
+    }
+
+    function randeaza() {
+      const acum = Date.now();
+      const ramasCountdown = formatCountdown(tinta - acum);
+      if (ramase === null) return; // încă n-a răspuns niciun fetch
+
+      if (ramase <= 0) {
+        continut.textContent = mesajPlin;
+        bara.style.color = '#E08585';
+      } else {
+        continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown} ${etichetaCountdown}`;
+        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_INCHIS);
+      }
+
+      randeazaLocuriDinFormular();
+    }
+
+    /**
+     * Un singur fetch la încărcare NU e „live" — cineva care ține pagina
+     * deschisă în timp ce se mai înscriu oameni ar vedea un număr înghețat
+     * la valoarea de acum 20 de minute. Reapelat periodic (nu doar o dată)
+     * și la revenirea în tab (`visibilitychange`), ca numărul afișat să nu
+     * rămână niciodată mai vechi decât ce vede vizitatorul pe ecran.
+     */
+    function preiaLocuri() {
+      return fetch('/api/locuri-disponibile', { headers: { Accept: 'application/json' } })
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((date) => {
+          if (typeof date.ramase !== 'number') return;
+          ramase = date.ramase;
+          randeaza();
+
+          // Insigna de pe fiecare CTA — vezi Cta.astro. Ascunsă implicit,
+          // completată/actualizată la fiecare fetch reușit cu date reale.
+          document.querySelectorAll('[data-locuri-cta]').forEach((el) => {
+            el.textContent = ` (${ramase} din ${maxime})`;
+            el.hidden = false;
+          });
+        })
+        .catch(() => {
+          // Fetch eșuat: bara rămâne pe ce știe deja (fallback-ul static, sau
+          // ultima valoare reală primită). Niciun număr ghicit, niciodată.
+        });
+    }
+
+    preiaLocuri();
+    // 20s: suficient de des cât să simtă „live" pe durata unei vizite, sub
+    // pragul de 15s al `Cache-Control` de pe /api/locuri-disponibile — fiecare
+    // apel ajunge efectiv la bază, nu doar la cache-ul browserului.
+    setInterval(preiaLocuri, 20000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') preiaLocuri();
+    });
+
+    setInterval(randeaza, 1000);
+  })();
+</script>
+
+<style>
+  .bara-scarcity {
+    position: fixed;
+    top: 0;
+    inset-inline: 0;
+    z-index: 50;
+    height: var(--h-bara-scarcity);
+    background: var(--bg-inchis);
+    color: var(--text-pe-inchis);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--lat);
+    /* Culoarea de mai sus e setată inline de script, pe raportul de ocupare
+       real — tranziția face schimbarea vizibilă, nu instantanee. */
+    transition: color 400ms ease;
+  }
+
+  .continut {
+    font-family: var(--font-mono);
+    font-size: var(--t-mic);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+</style>

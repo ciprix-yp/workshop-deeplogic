@@ -15,37 +15,29 @@ import Sectiune from './Sectiune.astro';
   </div>
 
   {/*
-    Vacarmul, ca bloc întunecat — scena „vacarm" din docs/design/storyboard.json.
-
-    Nu e ornament: secțiunea vorbește literal despre ce aude cititorul din
-    toate părțile, iar blocul îl pune în el pentru câteva rânduri. Diagnosticul
-    care urmează revine pe alb — asta e trecerea de la ceață la hartă, făcută
-    vizual, nu doar spusă. De asta e un bloc în interiorul secțiunii, nu
-    secțiunea întreagă: 1600px de întuneric pe mobil ar apăsa, nu ar semnifica.
-
-    Cele patru linii converg (stagger pe x, desktop) sau se stivuiesc (pe y,
-    mobil), iar întrebarea-pivot sosește ultimă, singură — vezi MotionEngine.
-    `data-scene` stă AICI, pe bloc, nu pe `<Sectiune>`: elementele scenei
-    trăiesc doar în interiorul lui, nu în tot §02 (cap + cele trei diagnostice
-    de mai jos au propriul `data-reveal`, baseline, neschimbat).
+    Vacarmul, ca bloc întunecat. Nu e ornament: secțiunea vorbește literal
+    despre ce aude cititorul din toate părțile, iar blocul îl pune în el
+    pentru câteva rânduri. Diagnosticul care urmează revine pe alb — asta e
+    trecerea de la ceață la hartă. De asta e un bloc în interiorul secțiunii,
+    nu secțiunea întreagă: 1600px de întuneric pe mobil ar apăsa, nu ar semnifica.
   */}
-  <div class="vacarm-bloc" data-scene="vacarm">
+  <div class="vacarm-bloc">
     <p class="vacarm-eticheta">{problema.intreTimp}</p>
     <ul class="vacarm">
-      {problema.vacarm.map((linie, i) => (
-        <li data-el={['linia-angajati', 'linia-legislator', 'linia-furnizori', 'linia-antreprenor'][i]}>{linie}</li>
+      {problema.vacarm.map((linie) => (
+        <li>{linie}</li>
       ))}
     </ul>
 
     <div class="pivot">
       <p class="pivot-afirmatie">{problema.pivot}</p>
-      <p class="pivot-intrebari" data-el="pivot-intrebari">{problema.pivotIntrebari}</p>
+      <p class="pivot-intrebari">{problema.pivotIntrebari}</p>
     </div>
   </div>
 
   <div class="blocuri">
     {problema.blocuri.map((bloc) => (
-      <div class="bloc" data-reveal>
+      <div class="bloc">
         <h3>{bloc.h3}</h3>
         <div class="corp">
           {bloc.corp.map((p) => (
