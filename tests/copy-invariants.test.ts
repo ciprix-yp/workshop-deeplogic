@@ -268,7 +268,7 @@ describe('consistență internă', () => {
     expect(JSON.stringify(copy.detalii)).toMatch(/Maximum 30/);
     expect(copy.ctaFinal.meta).toMatch(/30 de locuri/);
     expect(copy.faq.intrebari.at(-1)!.a).toMatch(/Sunt 30/);
-    expect(JSON.stringify(copy.deCeGratuit.deCe25)).toMatch(/30 de/);
+    expect(JSON.stringify(copy.deCeGratuit.deCeLimitat)).toMatch(/30 de/);
   });
 
   it('data e miercuri, 16 septembrie 2026 — peste tot', () => {

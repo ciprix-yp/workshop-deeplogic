@@ -48,20 +48,50 @@ import Sectiune from './Sectiune.astro';
   const pasi = sectiune ? Array.from(sectiune.querySelectorAll('[data-pas]')) : [];
 
   if (!reduceMotion && sectiune && pasi.length) {
-    gsap.set(pasi, { opacity: 0, y: 32 });
-
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: sectiune,
-        start: 'top top',
-        // 350px de scroll per pas — suficient cât să simtă fiecare pas
-        // propriul moment, fără să transforme secțiunea într-o derulare
-        // interminabilă pe un telefon.
-        end: `+=${pasi.length * 350}`,
-        scrub: true,
-        pin: true,
-      },
-    }).to(pasi, { opacity: 1, y: 0, stagger: 1, ease: 'none' });
+    /*
+     * Fix (audit impeccable, 2026-09-01): pin-ul ținea `#ce-facem` fixat pe
+     * ecran cât timp se scruba prin el — corect pe desktop, unde grila de 3
+     * coloane încape într-un viewport obișnuit, dar secțiunea stivuită pe
+     * mobil (1 coloană × 5 pași + notă + linie finală) e mai înaltă decât
+     * viewportul (măsurat: 1071px pe un 844px). Rezultatul: pașii 4-5 și
+     * încheierea treceau complet sub fold, invizibile pe tot parcursul
+     * scrub-ului, apărând abia după ce pin-ul se elibera — un scroll rapid
+     * peste conținut pe care nimeni nu apuca să-l citească.
+     *
+     * `matchMedia` la 64rem — același prag la care `.blocuri` devine grilă
+     * de 3 coloane mai jos — separă cele două cazuri: pin + scrub doar unde
+     * încape într-un ecran, dezvăluire simplă la intrare, fără pin, sub el.
+     */
+    // `gsap.matchMedia()`, nu `ScrollTrigger.matchMedia()` (deprecat din GSAP
+    // 3.11+, semnalat de `astro check`).
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 64rem)', () => {
+      gsap.set(pasi, { opacity: 0, y: 32 });
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectiune,
+          start: 'top top',
+          // 350px de scroll per pas — suficient cât să simtă fiecare pas
+          // propriul moment, fără să transforme secțiunea într-o derulare
+          // interminabilă.
+          end: `+=${pasi.length * 350}`,
+          scrub: true,
+          pin: true,
+        },
+      }).to(pasi, { opacity: 1, y: 0, stagger: 1, ease: 'none' });
+    });
+    mm.add('(max-width: 63.99rem)', () => {
+      pasi.forEach((pas) => {
+        gsap.set(pas, { opacity: 0, y: 24 });
+        gsap.to(pas, {
+          opacity: 1,
+          y: 0,
+          ease: 'power1.out',
+          duration: 0.5,
+          scrollTrigger: { trigger: pas, start: 'top 85%' },
+        });
+      });
+    });
   }
   // Cu mișcare redusă: `gsap.set` nu rulează, pașii rămân la starea lor
   // naturală din CSS — vizibili direct, fără pin, fără scrub.

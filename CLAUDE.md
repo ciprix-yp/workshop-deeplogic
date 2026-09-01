@@ -21,8 +21,12 @@ Nu apar pe pagină, **deliberat**. Sunt verificați automat de
   public și cel in-company nu sunt același produs.
 - **Cifre de piață, procente, statistici, ROI.** Niciuna verificată de Ciprian, deci
   niciuna pe pagină.
-- **Promisiuni de conformitate legală.** AI Act, GDPR, NIS2 apar **o singură dată**, în
-  §02, ca zgomot pe care îl aude cititorul. Niciodată ca promisiune că le rezolvă Deep Logic.
+- **Promisiuni de conformitate legală.** Copy-ul PRIMUL PAS (pivot 2026-08-31) nu mai
+  menționează AI Act/GDPR/NIS2 deloc — sursa nouă n-are unghiul legislativ pe care-l avea
+  „Prima Mutare". Regula rămâne o constrângere de LOCAȚIE, nu un mandat de prezență: **dacă**
+  vreuna reapare, are voie doar în §02, ca zgomot pe care îl aude cititorul — niciodată ca
+  promisiune că le rezolvă Deep Logic. [fix — audit impeccable, 2026-09-01: varianta veche
+  spunea „apar o singură dată", ca și cum ar fi încă pe pagină.]
 - **Testimoniale.** Nu există pe formatul ăsta. Nu se inventează.
 - **Logo-uri de clienți, badge-uri de autoritate.**
 - **Telefon, cifră de afaceri, număr de angajați în formular.** Toate trei semnalează

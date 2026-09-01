@@ -24,17 +24,19 @@ data: 2026-09-16
 ora: "14:00–17:00"
 timezone: Europe/Bucharest  # UTC+3 (EEST) pe 16 septembrie
 locatie: "Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare"
-capacitate_reala: 25        # cap dur — protejat cu lock la cursa din waitlist
-prag_waitlist: 30           # cap soft la înscriere — buffer asumat pt. no-show
+capacitate: 30               # cap dur, unificat — protejat cu lock la cursa din waitlist
 reconfirmare_trimisa: 2026-09-14T09:00:00+03:00
 cutoff_reconfirmare: 2026-09-16T11:00:00+03:00
 checkin_trimis: 2026-09-16T14:00:00+03:00
 ```
 
-**De ce două praguri diferite, tratate diferit:** 30 e un buffer *asumat*, nu impus
-tehnic — decizia originală a fost să accepți suprarezervare bazată pe rata de no-show,
-fără blocaj dur. 25 e capacitatea fizică reală a sălii — acolo, la cursa din waitlist,
-blocajul trebuie să fie strict, pentru că alocăm un loc concret, nu o estimare.
+**Capacitate unificată (migrația `0007_capacitate_unificata.sql`, 2026-09-01):** documentul
+descria inițial două praguri — 25 cap dur / 30 buffer soft de no-show. Odată ce pagina a
+căpătat un contor LIVE de locuri (pivot PRIMUL PAS), asimetria devenea vizibil neonestă: un
+contor live ar fi trebuit fie să mintă („30 disponibile" cât timp doar 25 puteau fi onorate
+fizic), fie să expună explicit bufferul ascuns. Cifra afirmată pe pagină (30) e acum și
+cifra hard aplicată în bază, la ambele praguri (`register_participant` și
+`claim_waitlist_seat`) — un singur număr, niciun buffer secret. Vezi `CLAUDE.md` §1.
 
 ---
 
@@ -139,7 +141,7 @@ confirmati := SELECT count(*) FROM event_registrations
               WHERE event_slug='workshop-2026-09-16'
               AND status IN ('reconfirmat','prezent');
 
-IF confirmati < 25 THEN
+IF confirmati < 30 THEN
     UPDATE event_registrations SET status='reconfirmat', reconfirmed_at=now()
     WHERE confirm_token=$1 AND status='asteptare';
     -- pagină: "Felicitări, locul e al tău!" + oră/adresă/.ics + link check-in
@@ -289,7 +291,7 @@ LOCATION: Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare
 | # | Decizie |
 |---|---|
 | 1 | Waitlist: broadcast la toată lista, primul confirmat ia locul — nu FIFO pe ordinea de înscriere |
-| 2 | Cursa de revendicare: advisory lock Postgres, cap dur 25, separat de bufferul soft de 30 la înscriere |
+| 2 | Cursa de revendicare: advisory lock Postgres, cap dur 30, unificat cu pragul de la înscriere (migrația 0007) |
 | 3 | Buton „nu pot veni" pe email 2 ȘI pe email 3 (dimineața evenimentului) |
 | 4 | Consimțământ: o singură bifă obligatorie, strict pt. prelucrarea datelor în scopul workshopului |
 | 5 | Cei rămași pe listă la final primesc anunț despre viitorul workshop, cu prioritate la înscriere |

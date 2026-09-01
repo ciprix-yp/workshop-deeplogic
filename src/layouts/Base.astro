@@ -9,12 +9,23 @@ interface Props {
   descriere?: string;
   /** Paginile de răspuns (confirmare, anulare, check-in) nu se indexează. */
   noindex?: boolean;
+  /**
+   * Bara de scarcity (locuri + countdown) — doar pagina de landing. Găsit la
+   * audit (impeccable, 2026-09-01): montată necondiționat înainte, rula și
+   * pe /checkin, /multumesc, /raspuns etc., unde numărul n-are sens și
+   * pollingul de 20s continuă cât timp tab-ul stă deschis degeaba.
+   */
+  scarcity?: boolean;
+  /** Lenis + GSAP ScrollTrigger — doar unde chiar există ceva de animat (§06, index.astro). */
+  motion?: boolean;
 }
 
 const {
   titlu = meta.titlu,
   descriere = meta.descriere,
   noindex = false,
+  scarcity = false,
+  motion = false,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://workshop.deeplogic.ro';
@@ -110,25 +121,32 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
   </head>
 
-  <body>
+  <body class:list={[scarcity && 'cu-scarcity']}>
     <a class="skip" href="#continut">Sari la conținut</a>
-    <BaraScarcity />
+    {scarcity && <BaraScarcity />}
     <slot />
 
     {/*
-      Lenis + GSAP — global, o singură dată. Pivot de arhitectură deliberat
-      (2026-09-01, Ciprian): motorul de scroll custom (MotionEngine.astro +
-      docs/design/storyboard.json, opt de scene coregrafiate individual) e
-      retras în favoarea Lenis (scroll cu inerție) + GSAP ScrollTrigger,
-      folosit DOAR în §06 CeFacem (cei cinci pași ai metodologiei — vezi
-      scriptul din S06CeFacem.astro). Restul paginii rămâne static, fără
-      fade-up, fără tilt pe carduri — cost acceptat: JS real (Lenis + GSAP),
-      nu mai 0KB, în schimbul scroll-ului cu inerție și al unui pin/scrub
-      matur pe singura secțiune care încă animă la scroll.
+      Lenis + GSAP — doar pe pagina de landing (`motion` prop, vezi
+      index.astro). Pivot de arhitectură deliberat (2026-09-01, Ciprian):
+      motorul de scroll custom (MotionEngine.astro + docs/design/storyboard.json,
+      opt de scene coregrafiate individual) e retras în favoarea Lenis
+      (scroll cu inerție) + GSAP ScrollTrigger, folosit DOAR în §06 CeFacem
+      (cei cinci pași ai metodologiei — vezi scriptul din S06CeFacem.astro).
+      Restul paginii rămâne static, fără fade-up, fără tilt pe carduri —
+      cost acceptat: JS real (Lenis + GSAP), nu mai 0KB, în schimbul
+      scroll-ului cu inerție și al unui pin/scrub matur pe singura secțiune
+      care încă animă la scroll.
+
+      Găsit la audit (impeccable, 2026-09-01): înainte se monta necondiționat
+      în Base.astro, deci `/checkin`, `/multumesc`, `/raspuns` etc. plăteau
+      costul bundle-ului (Lenis+GSAP+ScrollTrigger) și rulau un RAF loop
+      permanent fără niciun pin/scrub de sincronizat — zero beneficiu vizual.
 
       Script de MODUL (nu `is:inline`): are nevoie de `import`-uri npm, pe
       care bundler-ul Vite le rezolvă doar pentru scripturi procesate.
     */}
+    {motion && (
     <script>
       import Lenis from 'lenis';
       import { gsap } from 'gsap';
@@ -138,20 +156,33 @@ const jsonLd = {
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Ancorele (`#inscriere`, `#continut`) trebuie să rămână funcționale —
-      // fără `anchors: true`, Lenis blochează scroll-ul spre `id`-uri, exact
-      // ținta CTA-urilor de pe pagină.
-      const lenis = new Lenis({ anchors: true, autoRaf: false });
-
-      // Lenis nu se oprește singur când utilizatorul cere mișcare redusă —
-      // fără scroll cu inerție, ci nativ, dar tot fluid (Lenis rămâne activ
-      // pentru ancore, doar fără easing-ul de impuls).
-      if (reduceMotion) lenis.options.duration = 0;
+      const lenis = new Lenis({
+        autoRaf: false,
+        // Fix (audit impeccable, 2026-09-01): `anchors: true` făcea Lenis să
+        // intercepteze ȘI clickurile pe CTA-uri (`href="#inscriere"`), peste
+        // interceptarea proprie din DialogInscriere.astro — care cheamă deja
+        // `preventDefault()` + `showModal()`. Lenis nu verifică
+        // `event.defaultPrevented` (verificat direct în sursă), deci ambele
+        // rulau: dialogul se deschidea ȘI pagina săgeta spre `#inscriere`
+        // (acum un `<dialog>` închis, fără poziție reală de scroll) — un
+        // scroll vizibil, nedorit, la fiecare click de CTA. Singura ancoră
+        // reală rămasă e `#continut` (skip-link), pentru care un salt nativ,
+        // instant, e oricum comportamentul corect de accesibilitate — nu
+        // unul animat.
+        // Respectă mișcarea redusă la firul ei, nu doar la salturi
+        // programatice: `respectReducedMotion` (implicit `true` în Lenis)
+        // afectează DOAR `scrollTo()`, nu scroll-ul obișnuit de la rotița
+        // mouse-ului/gest tactil (verificat în sursă) — fără asta, cineva
+        // cu „prefers-reduced-motion" tot primea scroll cu inerție.
+        smoothWheel: !reduceMotion,
+        syncTouch: false,
+      });
 
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
     </script>
+    )}
   </body>
 </html>
 
@@ -175,14 +206,22 @@ const jsonLd = {
     transition: top 0.15s ease;
   }
   .skip:focus {
+    top: var(--sp-md);
+  }
+  /* Doar când bara chiar există (pagina de landing) — vezi `.cu-scarcity`
+     global mai jos. Altfel, `.skip:focus` ar coborî cu înălțimea unei bare
+     care nu se randează pe pagina asta. */
+  :global(body.cu-scarcity) .skip:focus {
     top: calc(var(--h-bara-scarcity) + var(--sp-md));
   }
 </style>
 
 <style is:global>
   /* Bara de scarcity e fixă, deasupra fluxului normal — fără padding pe
-     body, hero-ul (primul element al paginii) ar începe acoperit de ea. */
-  body {
+     body, hero-ul (primul element al paginii) ar începe acoperit de ea.
+     Doar pe pagina cu bară (`scarcity` prop, vezi index.astro) — altfel
+     paginile fără ea (/checkin, /multumesc etc.) ar căpăta un gol gol sus. */
+  body.cu-scarcity {
     padding-top: var(--h-bara-scarcity);
   }
 </style>

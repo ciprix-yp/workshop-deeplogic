@@ -138,12 +138,13 @@ select assert_eq(
 \echo ''
 \echo '── Cursa din waitlist ─────────────────────────────────────────────────'
 
--- Curăț și construiesc o stare cu exact un loc liber sub capacitatea de 25.
+-- Curăț și construiesc o stare cu exact un loc liber sub capacitatea de 30
+-- (unificată cu bufferul de la înscriere — migrația 0007).
 truncate event_registrations, contacts cascade;
 do $$
 declare i int;
 begin
-  for i in 1..24 loop
+  for i in 1..29 loop
     insert into contacts (email, nume) values ('c' || i || '@t.ro', 'C' || i);
     insert into event_registrations (contact_id, status, consimtamant_comunicare)
     select id, 'reconfirmat', true from contacts where email = 'c' || i || '@t.ro';
@@ -156,7 +157,7 @@ end $$;
 select assert_eq(claim_waitlist_seat(t_token('w1@t.ro')), 'revendicat',
   'primul de pe waitlist ia locul liber');
 select assert_eq(claim_waitlist_seat(t_token('w2@t.ro')), 'plin',
-  'al doilea găsește sala plină la 25');
+  'al doilea găsește sala plină la 30');
 select assert_eq(t_status('w2@t.ro'), 'asteptare',
   'cel care a pierdut rămâne pe listă, nu e degradat');
 

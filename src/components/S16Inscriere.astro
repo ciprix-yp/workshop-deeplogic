@@ -7,9 +7,11 @@ import Cta from './Cta.astro';
  * Închiderea paginii — al patrulea CTA (regulă CLAUDE.md: hero, după §05,
  * după §08, aici). Formularul propriu-zis nu mai trăiește în flux — a fost
  * mutat în DialogInscriere.astro (dialog modal, deschis de orice CTA de pe
- * pagină). Copy-ul de-aici (ctaFinal) apare A DOUA OARĂ, ca antet al
- * dialogului — deliberat: cine ajunge la dialog dintr-un CTA de mai sus
- * (hero, §05, §08) fără să fi trecut pe-aici tot vede contextul „de ce".
+ * pagină). [corectat — audit impeccable, 2026-09-01] Copy-ul de-aici
+ * (`ctaFinal`) NU mai e cel din antetul dialogului — de la pivotul PRIMUL
+ * PAS, dialogul are propriul export (`inscriere`, § procedural: „Înscrierea
+ * durează câteva minute...") — vezi DialogInscriere.astro. `ctaFinal` rămâne
+ * doar aici, ca închidere finală a paginii, motivațional, nu procedural.
  */
 ---
 

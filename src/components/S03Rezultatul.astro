@@ -56,9 +56,17 @@ import Sectiune from './Sectiune.astro';
 
   .numar {
     font-family: var(--font-mono);
-    font-size: var(--t-corp);
-    /* Accent decorativ: 4.06:1, permis pentru că e un marcaj de listă, nu text
-       de citit — SC 1.4.11 cere 3:1 pentru componente non-text. */
+    /*
+     * Fix de contrast (audit impeccable, 2026-09-01) — comentariul vechi
+     * invoca SC 1.4.11 („componentă non-text", prag 3:1) ca să justifice
+     * `--accent-decor` la `--t-corp` (17-19px). Discutabil: un numeral
+     * randat ca text literal, citit ca informație („al treilea din cinci"),
+     * e text sub SC 1.4.3, nu o componentă grafică de UI — pragul corect e
+     * 4.5:1 (sau 3:1 doar dacă ≥24px, exact regula scrisă pe token în
+     * tokens.css). Aliniat cu S06/S08, care au primit același fix: mărit
+     * peste 24px, ca să nu mai depindă de o interpretare contestabilă.
+     */
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
     color: var(--accent-decor);
     font-weight: 500;
     padding-top: 0.15em;

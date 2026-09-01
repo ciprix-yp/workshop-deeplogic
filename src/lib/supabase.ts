@@ -261,6 +261,25 @@ export async function listWaitlist(): Promise<IntrareWaitlist[]> {
 }
 
 /**
+ * Câte rânduri din `event_registrations` au unul dintre statusurile date —
+ * singurul query pe care `locuriLibere()` și `locuriDisponibilePublic()`
+ * (mai jos) îl rulează, cu seturi de status diferite. Consolidat la audit
+ * (impeccable, 2026-09-01): cele două funcții duplicau exact aceeași formă
+ * de interogare, cu riscul ca o schimbare viitoare (paginare, alt wrapper de
+ * eroare) să fie aplicată într-un singur loc și nu în celălalt — tăcut.
+ */
+async function numaraOcupate(statusuri: RegisterStatus[]): Promise<number> {
+  const { count, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_slug', EVENT_SLUG)
+    .in('status', statusuri);
+
+  if (error) throw new SupabaseRpcError('count event_registrations', error);
+  return count ?? 0;
+}
+
+/**
  * Câte locuri sunt libere ACUM, sub capacitatea unificată (30) — nu un contor
  * de evenimente. La cutoff, până la 30 de tranziții spre `no_show` pot avea
  * loc simultan; interogarea directă, la momentul rulării funcției debounced,
@@ -271,17 +290,12 @@ export async function listWaitlist(): Promise<IntrareWaitlist[]> {
  * broadcast-ul intern către waitlist (email 6) când se eliberează un loc
  * real. Diferit de `locuriDisponibilePublic()` de mai jos, care numără și
  * `inscris`/`asteptare` — pragul care decide dacă un NOU înscris intră direct
- * sau pe listă.
+ * sau pe listă. (Seturile de status DIFERĂ deliberat — nu unificate, deși
+ * query-ul de sub ele acum e comun.)
  */
 export async function locuriLibere(): Promise<number> {
-  const { count, error } = await supabaseAdmin()
-    .from('event_registrations')
-    .select('*', { count: 'exact', head: true })
-    .eq('event_slug', EVENT_SLUG)
-    .in('status', ['reconfirmat', 'prezent']);
-
-  if (error) throw new SupabaseRpcError('count locuri ocupate', error);
-  return Math.max(0, CAPACITATE - (count ?? 0));
+  const ocupate = await numaraOcupate(['reconfirmat', 'prezent']);
+  return Math.max(0, CAPACITATE - ocupate);
 }
 
 /**
@@ -297,14 +311,8 @@ export async function locuriLibere(): Promise<number> {
  * date reale").
  */
 export async function locuriDisponibilePublic(): Promise<{ ramase: number; maxime: number }> {
-  const { count, error } = await supabaseAdmin()
-    .from('event_registrations')
-    .select('*', { count: 'exact', head: true })
-    .eq('event_slug', EVENT_SLUG)
-    .in('status', ['inscris', 'asteptare', 'reconfirmat', 'prezent']);
-
-  if (error) throw new SupabaseRpcError('count ocupate (public)', error);
-  return { ramase: Math.max(0, CAPACITATE - (count ?? 0)), maxime: CAPACITATE };
+  const ocupate = await numaraOcupate(['inscris', 'asteptare', 'reconfirmat', 'prezent']);
+  return { ramase: Math.max(0, CAPACITATE - ocupate), maxime: CAPACITATE };
 }
 
 /**

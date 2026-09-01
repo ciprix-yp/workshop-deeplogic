@@ -174,7 +174,7 @@ Ciprian Micu - Deep Logic
 ```
 Salut, {{nume}},
 
-Cele 25 de locuri sunt ocupate. Te-am trecut pe lista de așteptare.
+Cele 30 de locuri sunt ocupate. Te-am trecut pe lista de așteptare.
 
 Aproape mereu se eliberează locuri — oameni care anunță că nu mai pot veni.
 Când se întâmplă, primești imediat un mail, împreună cu toți ceilalți de pe

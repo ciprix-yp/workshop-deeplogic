@@ -22,7 +22,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
   <p class="continut" data-continut>{scarcity.fallbackStatic}</p>
 </div>
 
-<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maxime: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin }}>
+<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maximeStatic: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin, textAInceput: scarcity.aInceput }}>
   (() => {
     const bara = document.getElementById('bara-scarcity');
     const continut = bara?.querySelector('[data-continut]');
@@ -49,18 +49,34 @@ import { EVENIMENT, scarcity } from '../content/copy';
     const GRADIENT_PE_INCHIS = [[255, 255, 255], [224, 133, 133]]; // alb → var(--eroare-clar)
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
+    /**
+     * Fix (audit impeccable, 2026-09-01): întorcea doar cifra/eticheta
+     * countdown-ului, iar apelantul lipea necondiționat sufixul static
+     * „până la începere" după ea — după ora de start, cu locuri încă
+     * disponibile (posibil, dacă bufferul soft nu s-a umplut), bara afișa
+     * „a început până la începere". Acum întoarce fraza completă, ca
+     * apelantul să nu mai construiască o propoziție din bucăți.
+     */
     function formatCountdown(ms) {
-      if (ms <= 0) return 'a început';
+      if (ms <= 0) return textAInceput;
       const zile = Math.floor(ms / 86400000);
       const ore = Math.floor((ms % 86400000) / 3600000);
       const minute = Math.floor((ms % 3600000) / 60000);
-      if (zile > 0) return `${zile}z ${ore}h`;
-      if (ore > 0) return `${ore}h ${minute}m`;
+      if (zile > 0) return `${zile}z ${ore}h ${etichetaCountdown}`;
+      if (ore > 0) return `${ore}h ${minute}m ${etichetaCountdown}`;
       const secunde = Math.floor((ms % 60000) / 1000);
-      return `${minute}m ${secunde}s`;
+      return `${minute}m ${secunde}s ${etichetaCountdown}`;
     }
 
     let ramase = null;
+    // Fix (audit impeccable, 2026-09-01): răspunsul de la /api/locuri-disponibile
+    // include `maxime`, dar bara îl ignora și folosea mereu constanta de la
+    // build (`maximeStatic`, din EVENIMENT.capacitate) — dacă cele două ar
+    // ajunge vreodată să difere (capacitatea schimbată în bază, dar uitată
+    // în copy.ts), bara ar minți încrezător cu numărul vechi. Actualizat la
+    // fiecare fetch reușit; `maximeStatic` rămâne doar fallback-ul dinaintea
+    // primului răspuns.
+    let maxime = maximeStatic;
 
     /**
      * Rândul de locuri live din formularul de înscriere (DialogInscriere.astro)
@@ -93,7 +109,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
         continut.textContent = mesajPlin;
         bara.style.color = '#E08585';
       } else {
-        continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown} ${etichetaCountdown}`;
+        continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown}`;
         bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_INCHIS);
       }
 
@@ -113,6 +129,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
         .then((date) => {
           if (typeof date.ramase !== 'number') return;
           ramase = date.ramase;
+          if (typeof date.maxime === 'number' && date.maxime > 0) maxime = date.maxime;
           randeaza();
 
           // Insigna de pe fiecare CTA — vezi Cta.astro. Ascunsă implicit,
@@ -129,9 +146,12 @@ import { EVENIMENT, scarcity } from '../content/copy';
     }
 
     preiaLocuri();
-    // 20s: suficient de des cât să simtă „live" pe durata unei vizite, sub
-    // pragul de 15s al `Cache-Control` de pe /api/locuri-disponibile — fiecare
-    // apel ajunge efectiv la bază, nu doar la cache-ul browserului.
+    // 20s: suficient de des cât să simtă „live" pe durata unei vizite, și
+    // PESTE pragul de 15s al `Cache-Control` de pe /api/locuri-disponibile
+    // (comentariu corectat — audit impeccable, 2026-09-01: varianta veche
+    // spunea „sub", exact invers) — fiecare interval e mai lung decât
+    // durata de viață a cache-ului browserului, deci fiecare apel ajunge
+    // efectiv la bază, nu se servește dintr-un răspuns deja expirat.
     setInterval(preiaLocuri, 20000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') preiaLocuri();

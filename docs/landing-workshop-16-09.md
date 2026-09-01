@@ -175,7 +175,7 @@ PRIMUL PAS începe înainte de tool.
 ```
 
 <!-- NOTĂ: 5 întrebări, nu 4 — vacarmul de business (date/echipă/cost/scop/ROI), nu frica
-     angajaților sau legislația. Scena „vacarm" din storyboard.json are 5 elemente. -->
+     angajaților sau legislația. -->
 
 ---
 

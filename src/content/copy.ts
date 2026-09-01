@@ -83,6 +83,9 @@ export const scarcity = {
   etichetaLocuri: 'locuri disponibile din',
   etichetaCountdown: 'până la începere',
   plin: 'Locurile s-au ocupat — te trec pe lista de așteptare.',
+  // [fix — audit impeccable, 2026-09-01] Era hardcodat direct în scriptul din
+  // BaraScarcity.astro, încălcând regula „tot copy-ul trăiește în copy.ts".
+  aInceput: 'a început',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -520,7 +523,7 @@ export const deCeGratuit = {
       'Recomandarea Deep Logic privind continuarea',
     ],
   },
-  deCe25: {
+  deCeLimitat: {
     h3: `De ce doar ${EVENIMENT.capacitate} de locuri`,
     // „gratuit" nu se repetă aici — apare deja o dată în h2-ul de mai sus și o
     // dată la rândul „Cost" din §13; peste atât, cuvântul scade valoarea

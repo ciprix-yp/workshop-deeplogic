@@ -140,7 +140,13 @@ import Cta from './Cta.astro';
 
   .numar {
     font-family: var(--font-mono);
-    font-size: var(--t-corp);
+    /*
+     * Fix de contrast (audit impeccable, 2026-09-01) — același defect găsit
+     * și reparat în S06CeFacem.astro: `--accent-decor` e 4.06:1, trece AA
+     * doar la ≥24px (regulă documentată pe token, tokens.css). `--t-corp`
+     * (17-19px) cobora sub prag exact la viewporturi înguste.
+     */
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
     font-weight: 500;
     color: var(--accent-decor);
     padding-top: 0.15em;

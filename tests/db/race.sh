@@ -19,7 +19,7 @@ set -euo pipefail
 DB="${DB:-wsdl}"
 RUNDE="${RUNDE:-20}"
 CONCURENTI="${CONCURENTI:-10}"
-CAPACITATE=25
+CAPACITATE=30
 
 q() { psql -d "$DB" -tAc "$1"; }
 
@@ -32,7 +32,7 @@ for runda in $(seq 1 "$RUNDE"); do
   # Stare curată.
   q "truncate event_registrations, contacts cascade;" >/dev/null
 
-  # 24 de locuri ocupate ferm → exact unul liber sub capacitatea de 25.
+  # CAPACITATE-1 locuri ocupate ferm → exact unul liber sub capacitate.
   for i in $(seq 1 $((CAPACITATE - 1))); do
     q "insert into contacts (email, nume) values ('ocupat$i@t.ro','Ocupat $i');
        insert into event_registrations (contact_id, status, consimtamant_comunicare)
