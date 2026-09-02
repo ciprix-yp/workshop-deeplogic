@@ -3,53 +3,43 @@
 
 > Sursă de adevăr pentru copy — vezi CLAUDE.md, secțiunea „Sursele de adevăr". Implementarea
 > completă trăiește în [`src/content/copy.ts`](../src/content/copy.ts); acest fișier descrie
-> INTENȚIA, copy.ts descrie STAREA EXACTĂ (inclusiv completările de propoziții tăiate și
-> titlurile adăugate, marcate acolo).
+> INTENȚIA (structura, mesajul, ordinea), copy.ts descrie STAREA EXACTĂ (fiecare propoziție,
+> tipată). Dacă cele două diverg vreodată, `copy.ts` e cel corect — dar divergența e un bug de
+> documentare, nu o stare acceptabilă; se resincronizează, nu se ignoră.
 
 ---
 
-## PIVOT DE PRODUS (2026-08-31)
+## Resincronizare (2 septembrie 2026) — al doilea pivot al zilei
 
-Landing page-ul „Prima Mutare spre un Asistent Digital" (25 de locuri, poziționare pe
-demonstrații live — ofertare You Protect, agent de monitorizare a sănătății) e înlocuit
-integral de „PRIMUL PAS" (30 de locuri, poziționare pe lucru propriu al participantului pe
-compania lui, fără demo-uri personale ale lui Ciprian).
+Acest document a fost rescris integral odată cu **pivotul de structură**: 16 secțiuni
+(§01–§17) → 10 (Hero → Trust bar → Problemă → Agravare → Soluție → Facilitator → Cui i se
+adresează → Cui nu i se adresează → Ce rezultat promitem → FAQ), plus metodologia cu cei cinci
+pași (pin/scrub GSAP) păstrată separat, explicit, dincolo de cele 10 numărate de Ciprian.
+Motivul declarat: structura veche „prea stufos, diluăm mesajul".
 
-Sursa acestei rescrieri: un PDF de producție trimis de Ciprian („PRIMULPASLandingPageV2"),
-cu propriul format §01–§17. Arhitectura tehnică a paginii (17 componente `Sxx*.astro`,
-motor de scroll custom, dialog modal de înscriere) **nu s-a schimbat** — doar conținutul.
-Fiindcă PDF-ul sursă are alt număr de secțiuni cu altă formă decât arhitectura existentă de
-componente, maparea de mai jos e **pe conținut, nu pe poziție**:
+În aceeași zi, cu câteva ore înainte, avusese loc și un **pivot de narativă** — H1 nou,
+mecanismul owner→echipă→date mutat devreme în pagină. Istoricul complet al ambelor pivoturi,
+decizie cu decizie, e în [`docs/DECIZII.md`](DECIZII.md) (D31–D54). Mapare veche→nouă, pe
+conținut (7 secțiuni retrase ca atare, conținutul absorbit, nu pierdut):
 
-| Componentă (poziție pe pagină) | Conținut sursă (secțiunea PDF) |
+| Secțiune nouă | Absoarbe (structura veche, §01–§17) |
 |---|---|
-| S01 Hero | §01 Hero |
-| S02 Problema | §02 Problema |
-| S03 Rezultatul | §04 Cu ce pleci + §05 Ce nu vei ști |
-| S04 PentruCine | §09 Pentru cine este |
-| S05 InainteDupa | §03 Ce se schimbă (tabel) |
-| S06 CeFacem | §08 Metodologia Deep Logic — jumătatea „cei 5 pași" |
-| S07 NuDoarTeorie | §10 „Dar eu nu știu ce aș putea face cu AI" |
-| S08 CePleciCuTine (scena-semnătură „harta") | §07 Poate problema ta arată așa (5 din 6 categorii) |
-| S09 UseCases | §07 Poate problema ta arată așa (grid complet, 6 categorii) |
-| S10 DespreDeepLogic | §08 Metodologia Deep Logic — jumătatea „de ce lucrăm invers" |
-| S11 Facilitator | §11 Despre Ciprian Micu |
-| S12 Precedent | §06 Formatul (20%/80%) |
-| S13 Detalii | §14 Detalii practice |
-| S14 DeCeGratuit | §12 De ce este gratuit |
-| S15 Faq | §13 Întrebări frecvente |
-| DialogInscriere (antet) | §15 Înscriere |
-| S16 Inscriere (CTA final + antet-fallback dialog) | §16 CTA final |
-| S17 Footer | §17 Footer |
+| Hero | §01 Hero — fișa evenimentului retrasă, acoperită de Trust bar |
+| Trust bar *(nouă)* | Adresa completă (fostă §13 Detalii), formatul 20/80, capacitate |
+| Problemă | §02 Problema, plus spiritul grid-ului de exemple (fostă §09 UseCases) |
+| Agravare *(nouă)* | — |
+| Soluție | §10 DespreDeepLogic — mecanismul, rescris și extins |
+| *(metodologia, păstrată separat)* | §06 CeFacem, neschimbată de acest pivot |
+| Facilitator | §11 Facilitator |
+| Cui i se adresează / nu | §04 PentruCine |
+| Ce rezultat promitem | §03 Rezultatul + §12 Precedent („20/80") + conținut nou |
+| FAQ | §15 Faq |
+| CTA final | §16 Inscriere |
 
-Două componente (S07, S12) nu mai aveau conținut sursă — vechile lor teme („trei sisteme
-care rulează azi", „nu e prima dată / Ardudana") sunt acum interzise explicit de noua listă
-„ce nu apare deliberat" mai jos. Realocate din secțiuni PDF care altfel n-ar fi avut casă în
-arhitectura existentă de componente.
-
-Peste 20 de propoziții erau tăiate la marginea paginii în PDF-ul sursă (blocurile de cod nu
-se înfășoară la randare) — completate în `copy.ts`, marcate `[completare]`, ancorate în
-vocabularul restului documentului. Revizuire de Ciprian înainte de publicare.
+Retrase ca secțiuni proprii, fără echivalent nou: §05 InainteDupa (tabel), §07 NuDoarTeorie
+(obiecția), §14 DeCeGratuit (absorbită în răspunsul FAQ „Este participarea cu adevărat
+gratuită?"). `CtaSticky.astro` (bară fixă doar-mobil) înlocuită de `CtaFloating.astro`
+(buton flotant, toate viewport-urile).
 
 ---
 
@@ -65,6 +55,7 @@ eveniment:
   data: "16 septembrie 2026"
   ora: "14:00–17:00"
   oras: "Satu Mare"
+  locatie: "Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare"
   locuri_maxime: 30
   cost: "Gratuit"
 
@@ -79,571 +70,497 @@ scarcity:
 
 cta_text: "Rezervă-ți locul"
 cta_ancora: "#inscriere"
-cta_repetat_la: [hero, dupa_sectiunea_5, dupa_sectiunea_8, sectiunea_16]
+cta_sub_text: "Disponibil X/30 — numărul real, din locuriDisponibilePublic()"
+cta_repetat_la: [hero, finalul_sectiunii_rezultat, cta_final]
+cta_flotant: "vizibil pe toate viewport-urile după ce iese hero-ul din cadru"
+
+vizual:
+  accent_lime: "#84CC16 — DOAR fundal (CTA-uri, buton calendar), text pe el mereu închis"
+  radius_cta: "14px fix, nu procent"
+  carduri: "sticlă mată (gradient de culoare în propriul fundal + backdrop-filter blur)"
 ```
 
 **Reguli de copy și build:**
 - Un singur CTA pe toată pagina: „Rezervă-ți locul". Mobile-first, scanabil din WhatsApp.
+- Sub CTA, numărul real de locuri disponibile — niciodată inventat.
 - Nu transformăm pagina într-un curs despre AI. Vindem claritatea și primul pas, nu tehnologia.
 - Nu promitem că în 3 ore găsim implementarea corectă. Promitem că participantul își
-  clarifică nevoia, începe să-i estimeze impactul și pleacă cu un roadmap de validare.
+  clarifică nevoia, începe să-i estimeze impactul și pleacă cu un roadmap personalizat de
+  validare.
 - Nu promitem agenți, automatizări, prompturi sau tool-uri. Nu menționăm demo-uri-surpriză.
 - AI apare unde e necesar pentru claritate, nu în fiecare titlu.
-- Ordinea Deep Logic se simte în toată pagina: business → problemă → oameni → proces →
-  impact → tehnologie.
+- Ordinea Deep Logic se simte în toată pagina: business → oameni → procese → impact →
+  tehnologie.
 - **Countdown-ul și numărul de locuri rămase sunt alimentate din date reale** — vezi
   `BaraScarcity.astro` și `src/pages/api/locuri-disponibile.ts`. Regula: „fără deficit fals".
-- Locația exactă rămâne pe pagină (decizie D6, moștenită din documentul precedent).
+- Locația exactă rămâne pe pagină (decizie D6) — acum în Trust bar, nu într-o secțiune
+  „Detalii practice" separată.
 
 ---
----
 
-## §01 — HERO
+## 01 — HERO
 
 ```COPY
 [EYEBROW]
 PRIMUL PAS · Workshop by Deep Logic
 
 [H1]
-Toată lumea îți spune să folosești AI.
-Dar în compania ta, de unde începi?
+Afacerea ta este diferită.
+Care este PRIMUL PAS în noua eră digitală?
 
 [SUBHEADLINE]
-În 3 ore lucrezi pe propria companie ca să formulezi nevoia pe care vrei s-o rezolvi, să-i
-estimezi impactul și să pleci cu un prim pas concret.
+În 3 ore lucrezi pe propria afacere ca să identifici ce merită schimbat, cât ar putea conta
+și ce trebuie să verifici înainte să implementezi ceva.
 
-[MICROCOPY]
-Nu este încă un curs despre AI.
-Nu trebuie să fii IT-ist.
-Și nu trebuie să știi deja ce ai putea face cu AI.
-
-[META]
-Miercuri, 16 septembrie 2026 · 14:00–17:00 · Satu Mare
-20% context · 80% lucru aplicat · Participare gratuită · Maximum 30 de locuri
+[CORP]
+Nu vii la un curs despre tehnologie.
+Vii să lucrezi pe o problemă reală din afacerea ta.
 
 [CTA]
 Rezervă-ți locul
-
-[SCARCITY REALĂ]
-[X locuri disponibile din 30]
-[COUNTDOWN până la 16 septembrie 2026, 14:00]
 ```
 
-<!-- NOTĂ: H1 pe două rânduri, break forțat înainte de „Dar". Contrastul e mesajul. -->
-<!-- NOTĂ: fără imagine de fundal generică cu roboți/creiere/rețele neuronale. -->
+**Notă de implementare:** fișa evenimentului (dată/oră/loc) a fost retrasă de-aici la pivotul
+de structură — Trust bar, chiar dedesubt, o acoperă deja. Hero rămâne strict: titlu,
+promisiune, CTA.
 
 ---
 
-## §02 — PROBLEMA
+## 02 — TRUST BAR *(secțiune nouă)*
 
 ```COPY
-[H2]
-AI-ul e peste tot. În compania ta, întrebarea încă rămâne.
+[META]
+Miercuri, 16 septembrie 2026 · 14:00–17:00 · Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1,
+440010 Satu Mare
 
-[CORP]
-ChatGPT. Copiloți. Agenți. Automatizări. Demo-uri care par să facă totul în câteva secunde.
+[FORMAT]
+20% context · 80% lucru aplicat · Maximum 30 de participanți · Gratuit
 
-În același timp apar alte întrebări:
+[ROADMAP]
+Roadmap digital personalizat, primit pe email la final.
 
-— Ce date pot folosi și ce date nu?
-— Ce va spune echipa?
-— Cât costă cu adevărat?
-— Ce merită construit și ce este doar o jucărie interesantă?
-— Cum îmi dau seama dacă există un ROI înainte să investesc?
+[CTA CALENDAR]
+📅 Adaugă în calendar → /eveniment.ics (precompletat: locație, dată, oră, alertă 24h înainte)
 
-Și, după tot zgomotul, rămâne o întrebare mult mai simplă:
-
-[H3]
-„Bun. Eu de unde încep?"
-
-[CORP]
-Poate ai încercat deja câteva instrumente și ai rămas cu o utilizare ocazională.
-Poate ai văzut lucruri impresionante, dar nu le-ai putut traduce în realitatea companiei tale.
-Sau poate n-ai început deloc pentru că nu ești IT-ist și nu știi ce ai putea face concret.
-
-Toate trei sunt puncte de plecare normale.
-
-Problema nu este că nu ai adoptat suficient AI.
-Problema este că, fără o întrebare bună de business, poți pierde luni testând unelte,
-cumpărând licențe și citind materiale care nu duc nicăieri.
-
-[H3]
-PRIMUL PAS începe înainte de tool.
-
-[CORP]
-Începe cu ce vrei să schimbi în compania ta.
+[INVITAȚIE]
+Workshop restrâns, distribuit în principal prin invitații.
 ```
 
-<!-- NOTĂ: 5 întrebări, nu 4 — vacarmul de business (date/echipă/cost/scop/ROI), nu frica
-     angajaților sau legislația. -->
+**Notă de implementare:** distinct de `BaraScarcity.astro` (bara fixă, mereu vizibilă la
+scroll) — Trust bar e un bloc din flux, o singură dată. Cardul „Adaugă în calendar" e o
+funcție reală (nu doar link static): deschide aplicația de calendar a telefonului
+precompletată, un singur tap.
 
 ---
 
-## §03 — CE SE SCHIMBĂ
+## 03 — PROBLEMA
 
 ```COPY
 [H2]
-De la o senzație difuză la un punct de plecare concret
+Știi că unele lucruri ar putea funcționa mai bine. Dar cu ce începi?
 
-[TABEL]
-ÎNAINTE | DUPĂ PRIMUL PAS
-„Ar trebui să fac ceva cu AI." | „Asta este nevoia pe care vreau s-o explorez."
-Nu știi de unde să începi. | Ai un punct de plecare clar.
-Problema este mai mult o senzație. | Ai început să-i estimezi impactul în business.
-Te gândești direct la soluție. | Știi ce mai trebuie validat înainte de soluție.
-Nu știi cine trebuie implicat. | Ai oamenii-cheie identificați.
-Ai o idee în cap. | Ai un roadmap digital pe care îl poți deschide și continua.
+[EXEMPLE]
+Poate ofertele durează prea mult.
+Poate informația e împrăștiată prin emailuri, tabele și oameni.
+Poate follow-up-ul se pierde.
+Poate colegii repetă aceeași muncă în fiecare săptămână.
+Poate prea multe lucruri depind de un singur om.
 
-[CTA] Rezervă-ți locul
+[SAU POATE]
+Sau poate n-ai încă o problemă clar formulată. Doar simți că afacerea s-ar putea mișca mai
+bine decât o face acum.
+
+[ÎNTRE TIMP]
+În același timp apar tot mai multe instrumente și tot mai multe promisiuni.
+Fiecare pare să rezolve ceva.
+Dar nu ai nevoie, în primul rând, de încă un cont, încă un abonament sau încă o demonstrație.
+
+[ÎNTREBARE]
+Ce problemă merită atenția ta acum?
+Și ce trebuie să afli înainte să investești timp, bani și energie în ea?
 ```
+
+**Notă de implementare:** cea mai importantă secțiune a paginii. Nu se taie la mobil,
+indiferent ce — regulă neschimbată de pivotul de structură. Deschide direct cu exemple
+concrete, nu cu un bloc de „vacarm" separat.
 
 ---
 
-## §04 — CU CE PLECI
+## 04 — AGRAVARE *(secțiune nouă)*
 
 ```COPY
 [H2]
-Nu pleci cu o listă de tool-uri. Pleci cu o direcție.
+Cel mai scump început este cel făcut fără o problemă clară.
 
-[ITEM 01] O nevoie clar formulată
-Nu „vreau să folosesc AI". Ci: „Asta este problema sau oportunitatea pe care vreau s-o
-explorez în compania mea."
+[CORP]
+De obicei nu arată dramatic.
+Alegi o unealtă înainte să alegi problema. Cineva din echipă o testează. Primele zile par
+promițătoare.
+Apoi apar excepțiile, lipsesc datele, procesul real e mai complicat decât părea, iar oamenii
+revin la vechiul mod de lucru.
+Ai consumat timp și bani. Și, uneori, ai întărit ideea că „la noi nu merge".
 
-[ITEM 02] O primă estimare a impactului
-Cât de des apare problema, câți oameni implică, cât timp consumă. Nu inventăm ROI —
-vedem dacă merită investigată.
+[ALTERNATIVA]
+Cealaltă variantă e să amâni.
+Mai citești. Mai vezi o demonstrație. Mai salvezi un articol. Dar în afacere nu se schimbă
+nimic.
 
-[ITEM 03] O ipoteză despre ce ai putea delega
-„Ce parte din acest proces ar putea fi delegată unui coleg digital — și ce trebuie să
-rămână sub controlul tău?"
-
-[ITEM 04] Oamenii pe care trebuie să-i implici
-Cei care execută procesul, îl coordonează, primesc rezultatul sau trăiesc consecințele lui.
-
-[ITEM 05] Roadmap-ul tău personalizat
-Nevoia identificată, impactul preliminar, ce mai trebuie validat, oamenii de implicat și
-recomandarea Deep Logic privind continuarea — pe email.
+[H3 + CORP FINAL — card]
+De aceea merită cele 3 ore.
+Nu pentru că în 3 ore îți rezolvăm afacerea. Nu îți promit asta.
+Merită pentru că nu petrecem timpul pe trenduri, predicții sau liste de instrumente.
+Îl folosim ca să scoatem din ceață un lucru concret: ce vrei să schimbi, de ce contează și
+ce trebuie verificat înainte să mergi mai departe.
 ```
 
 ---
 
-## §05 — CE NU VEI ȘTI DUPĂ CELE 3 ORE
+## 05 — SOLUȚIA
 
 ```COPY
 [H2]
-Ce NU vei ști la final
-
-[H3]
-Dacă ipoteza ta este corectă.
-
-[CORP]
-Și ar fi incorect să pretind că putem afla asta într-o sală, în trei ore, doar din
-perspectiva ta. Pentru un verdict real trebuie să vorbim cu oamenii care lucrează în
-proces, să vedem cum funcționează lucrurile de fapt, nu doar cum par de la nivelul tău.
-
-PRIMUL PAS îți spune ce merită investigat. Nu pretinde că îți dă răspunsul înainte de
-investigație.
-```
-
-<!-- NOTĂ: tratat vizual ca element de credibilitate, nu avertisment. Fundal secundar,
-     fără chenar roșu, fără iconiță de alertă. -->
-
----
-
-## §06 — FORMATUL
-
-```COPY
-[H2]
-20% context. 80% lucru pe compania ta.
-
-[CORP]
-Nu vreau să petrecem trei ore vorbind despre tehnologie. Contextul e acolo doar cât să
-punem întrebările corecte. Restul timpului lucrezi pe propria companie: ce vrei să
-schimbi, unde se consumă timp sau atenție, cine e implicat, ce valoare ar avea dacă
-problema s-ar rezolva, ce ai putea delega și ce trebuie verificat înainte să construiești
-ceva. Nu pe un business imaginar. Pe al tău.
-
-[H3]
-Nu trebuie să fii IT-ist.
-
-[CORP]
-Rolul tău nu este să știi ce model, API sau arhitectură trebuie folosită. Rolul tău este
-să înțelegi ce merită rezolvat și de ce. Tehnologia vine după.
-```
-
----
-
-## §07 — POATE PROBLEMA TA ARATĂ AȘA
-
-```COPY
-[H2]
-De unde pornesc, de obicei, întrebările bune
+PRIMUL PAS este munca de dinaintea implementării.
 
 [INTRO]
-Nu înseamnă că vom acoperi toate zonele de mai jos. Sunt doar exemple care te pot ajuta
-să recunoști o problemă reală din compania ta.
+Pornim de la perspectiva ta, ca antreprenor sau persoană de decizie.
 
-[GRID]
-VÂNZĂRI ȘI OFERTARE
-Ofertele sau devizele se fac greu, manual sau depind prea mult de o singură persoană.
+[ÎNTREBĂRI]
+Ce ai vrea să funcționeze diferit?
+Unde simți că se pierde timp, atenție, bani sau oportunitate?
+De ce contează?
+Cine trăiește problema în fiecare zi?
+Ce ar trebui să vedem înainte să spunem că merită construit ceva?
 
-CLIENȚI
-Echipa răspunde din nou și din nou la aceleași întrebări sau follow-up-ul se pierde.
+[CONCLUZIE INTRO]
+Din răspunsurile tale formulăm o primă ipoteză și construim un roadmap de validare.
+Nu un plan final de implementare. Nu o soluție aleasă dinainte.
+Un punct de plecare suficient de clar încât să poată fi verificat.
 
-DOCUMENTE ȘI RAPOARTE
-Oamenii mută informații între PDF-uri, emailuri, tabele și sisteme care nu vorbesc între ele.
+[H3]
+Afacerea ta nu are o singură realitate.
 
-OPERAȚIONAL
-Informația există, dar ajunge greu la omul care trebuie să ia o decizie.
+[PERSPECTIVA]
+Ownerul vede direcția și rezultatul pe care îl dorește.
+Managerul vede dependențele și blocajele.
+Omul care lucrează în proces vede excepțiile și realitatea de zi cu zi.
+Datele și cifrele arată dacă problema e suficient de importantă.
 
-ONBOARDING, PROCESE ȘI PROCEDURI
-O parte importantă din „cum facem lucrurile aici" există mai mult în capul oamenilor
-decât în vreun document.
+[MECANISM]
+De aceea, la Deep Logic:
+Pornim de la nevoia ownerului.
+O verificăm în realitatea echipei.
+Analizăm procesul, impactul și ROI-ul.
+Implementăm doar dacă există motive reale.
 
-VÂNZARE ȘI DEZVOLTARE
-Știi că există oportunități, dar oamenii potriviți sunt greu de identificat, prioritizat
-sau urmărit în timp.
+[SINTEZA — card]
+Perspectiva ownerului este punctul de plecare. Nu verdictul.
 
-[OUTRO]
-Poate problema ta nu seamănă cu nimic de aici. Și asta este în regulă.
-Nu trebuie să vii cu problema perfect formulată. Pentru asta lucrăm.
+[H3]
+Asta înseamnă pentru mine noua eră digitală.
+
+[CORP]
+Până acum, cumpăram un software și ne adaptam modul de lucru la el.
+Astăzi putem începe să construim instrumente mai apropiate de felul în care funcționează
+afacerea în realitate.
+Tocmai de aceea alegerea primei probleme contează atât de mult.
 ```
 
-<!-- NOTĂ implementare: grila completă (6 categorii) e la S09UseCases. Primele 5 categorii
-     (Vânzări+Dezvoltare combinate) alimentează și scena-semnătură „harta" la S08
-     CePleciCuTine — vezi copy.ts pentru cum s-au despărțit. -->
+**Notă de implementare:** diferențiatorul central al paginii, poziționat devreme (după
+Problemă și Agravare), nu o prefață despre firmă. Fostă `despreDeepLogic`/S10Deeplogic.astro —
+vezi `docs/DECIZII.md` D31–D33 pentru istoricul mecanismului.
 
 ---
 
-## §08 — METODOLOGIA DEEP LOGIC
+## *(metodologia cu cinci pași — păstrată separat, pin/scrub GSAP)*
 
 ```COPY
 [H2]
-Înainte de soluție, trebuie să înțelegem problema.
+Cei cinci pași ai metodologiei Deep Logic
 
-[CORP]
-Când apare o tehnologie nouă, tentația este să începem cu unealta. Să vedem ce poate face
-și apoi să căutăm unde să o folosim. La Deep Logic facem invers.
+[01] PRIMUL PAS — Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și
+construim ipoteze inițiale de lucru.
 
-[STATEMENT]
-Business → problemă → oameni → proces → impact → tehnologie.
+[02] WORKSHOP CU ECHIPA — Descoperim nevoile oamenilor care lucrează efectiv în procese,
+analizăm blocajele și verificăm ipoteza ta în realitatea de zi cu zi.
 
-[CORP]
-Începem cu perspectiva ownerului. Apoi o verificăm în realitatea echipei. Ne uităm la
-procese și proceduri. La date. La efort. La risc. La impact și ROI.
-Și abia după aceea decidem dacă tehnologia are sens.
+[03] PROCESE + IMPACT + ROI — Suprapunem perspectiva managementului cu realitatea echipei,
+procesele și datele disponibile.
 
-[STEP 1] PRIMUL PAS
-Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și construim
-ipoteze inițiale de lucru.
+[04] DECIZIA — Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.
 
-[STEP 2] REALITATEA ECHIPEI
-Descoperim nevoile oamenilor care lucrează efectiv în procese și înțelegem ce se întâmplă
-în realitate, nu doar pe hârtie.
+[05] IMPLEMENTAREA — Construim doar acolo unde există suficiente motive să o facem.
 
-[STEP 3] PROCESE + IMPACT + ROI
-Suprapunem perspectiva managementului cu realitatea echipei, procesele și datele disponibile.
-
-[STEP 4] DECIZIA
-Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.
-
-[STEP 5] IMPLEMENTAREA
-Construim doar acolo unde există suficiente motive să o facem.
-
-[STATEMENT FINAL]
+[NOTĂ FORMAT]
 Nu pornim de la „Ce putem face cu AI?"
-Pornim de la: „Ce merită să rezolvăm?"
 
-[CTA] Rezervă-ți locul
+[FINAL]
+Pornim de la: „Ce merită să rezolvăm?"
 ```
 
-<!-- NOTĂ implementare: secțiunea s-a despărțit în două componente — S06 CeFacem ia
-     STEP 1-5 (numerotare 01-05, IBM Plex Mono), S10 DespreDeepLogic ia prefața +
-     STATEMENT. Motiv: S06 randează blocuri numerotate, S10 doar proză; niciuna singură
-     n-avea forma pentru tot conținutul. Vezi copy.ts. -->
+**Notă de implementare:** nu apare ca secțiune de sine stătătoare în cadrul celor 10 cerute
+explicit de Ciprian — păstrată printr-o decizie separată, confirmată prin `AskUserQuestion`
+(D38): singurul pin/scrub GSAP de pe pagină, cost deja aprobat special pentru el. Poziționată
+după Soluție, înainte de Facilitator.
 
 ---
 
-## §09 — PENTRU CINE ESTE
+## 06 — FACILITATOR
 
 ```COPY
 [H2]
-Este pentru tine dacă...
+Cine ține workshopul?
 
-— ești antreprenor, owner, CEO, manager sau iei decizii care influențează felul în care
-  funcționează compania ta;
-— ai senzația că anumite lucruri ar putea funcționa mai bine, dar nu știi încă unde
-  tehnologia ar avea sens;
-— folosești deja AI ocazional, dar nu l-ai legat de un proces real de business;
-— n-ai folosit aproape deloc AI și nu știi de unde să începi;
-— vrei să înțelegi problema înainte să cumperi soluția;
-— ești dispus să lucrezi trei ore pe realitatea propriei companii.
+[BYLINE]
+Ciprian Micu
+FONDATOR DEEP LOGIC
+[poză rotundă, medie, dreapta]
 
-[H2]
-Nu este pentru tine dacă...
+[CORP]
+Lucrez de peste 15 ani în antreprenoriat, operațiuni și procese.
+În decembrie 2022 am început să lucrez serios cu inteligența artificială dintr-un motiv
+simplu: aveam o afacere și căutam soluții pentru probleme reale.
+N-am pornit din IT. Și nu țin workshopul ca să-ți arăt cât de complicată e tehnologia. Mă
+interesează ce poate schimba ea într-o companie reală, ce merită construit și ce nu merită.
+Astăzi pot să-mi construiesc propriile unelte digitale în jurul problemelor pe care le am.
+De aici vine Deep Logic și ordinea în care lucrăm: business → oameni → procese → impact →
+tehnologie.
+La patru ani legam mobilierul din camera părinților mei cu elastic. În mintea mea, făceam
+obiectele să comunice.
+După piatră, am descoperit ciocanul. Dar ciocanul nu îți spune ce trebuie construit. Pentru
+asta ai nevoie de primul pas.
+```
 
-— cauți o listă cu cele mai bune prompturi;
-— vrei o prezentare cu zeci de tool-uri;
-— te aștepți să construim un agent sau o automatizare completă în trei ore;
-— cauți o rețetă universală pe care s-o copiezi în companie;
-— vrei ca cineva să-ți spună ce trebuie automatizat fără să înțeleagă mai întâi businessul;
-— ai deja o strategie AI matură și cauți arhitectură tehnică avansată.
+**Notă de implementare:** layout byline — poză rotundă (112px), nume+rol în stânga, poză în
+dreapta, bio pe toată lățimea dedesubt. Poza (`public/ciprian-micu.jpg`) — verificată la
+`existsSync` la build (cale stabilă via `process.cwd()`, nu `import.meta.url` — vezi D51);
+fără fișier, secțiunea randează fără poză, fără iconiță ruptă.
+
+---
+
+## 07 — CUI I SE ADRESEAZĂ / CUI NU I SE ADRESEAZĂ
+
+```COPY
+[H2 DA]
+Este pentru tine dacă
+
+— Ai o afacere funcțională sau iei decizii importante într-o companie
+— Știi că unele lucruri ar putea funcționa mai bine, dar nu știi de unde să începi
+— Ai o echipă, procese, informații sau decizii care se repetă
+— Ai testat instrumente noi, dar nu le-ai legat încă de o nevoie clară de business
+— N-ai explorat aproape deloc zona și vrei să înțelegi ce ar putea avea sens pentru tine
+— Vrei să înțelegi problema înainte să cumperi soluția
+— Ești dispus să lucrezi trei ore pe propria afacere, nu doar să asculți
+
+[H2 NU]
+Nu este pentru tine dacă
+
+— Cauți o listă cu cele mai bune tool-uri sau prompturi
+— Vrei o prezentare despre ce va face tehnologia peste cinci ani
+— Te aștepți să construim o soluție completă în trei ore
+— Vrei o rețetă universală pe care s-o copiezi în companie
+— Vrei să ți se spună ce trebuie implementat fără să discutăm mai întâi despre business
+— Vii doar să privești și nu vrei să lucrezi pe cazul tău
+— Ai deja o strategie digitală matură și cauți arhitectură tehnică avansată
 
 [OUTRO]
-PRIMUL PAS nu este despre a face mai mult cu AI.
-Este despre a decide mai bine unde merită să începi.
+PRIMUL PAS nu este despre a introduce cât mai multă tehnologie în companie.
+Este despre a decide mai bine ce merită schimbat și de unde merită să începi.
 ```
+
+**Notă de implementare:** cele două coloane rămân VIZUAL EGALE — aceeași dimensiune de titlu,
+aceeași culoare de text, aceeași greutate. Regulă neschimbată de niciun pivot.
 
 ---
 
-## §10 — „DAR EU NU ȘTIU CE AȘ PUTEA FACE CU AI"
+## 08 — CE REZULTAT PROMITEM
 
 ```COPY
 [H2]
-„Dar eu nici măcar nu știu ce aș putea face cu AI."
+Ce primești pentru cele 3 ore?
 
-[H3]
-Perfect.
+[1] O nevoie clar formulată — Nu „Ar trebui să facem și noi ceva." Ci: „Asta este problema
+sau oportunitatea pe care vreau s-o investighez."
 
-[CORP]
-Nu trebuie să vii cu răspunsul. Pentru asta există PRIMUL PAS.
-Nu trebuie să fii IT-ist. Nu trebuie să cunoști automatizări. Nu trebuie să știi ce este
-un agent sau un API.
+[2] O primă estimare a impactului — Cât de des apare, câți oameni implică, cât timp consumă.
+Nu inventăm ROI — vedem dacă merită investigată.
 
-Ai nevoie doar să-ți cunoști compania suficient cât să poți spune:
+[3] Oamenii care trebuie implicați — Identifici cine execută procesul, cine îl coordonează,
+cine primește rezultatul și cine trăiește blocajele lui zi de zi.
 
-„Aici simt că pierdem timp."
-„Aici depindem prea mult de un om."
-„Aici nu avem vizibilitate."
-„Aici aș vrea să funcționăm mai bine."
+[4] Un roadmap personalizat de validare — Nevoia identificată, de ce contează, impactul
+preliminar, ce trebuie verificat, cine trebuie implicat, acțiunile concrete pentru următorul
+pas și recomandarea Deep Logic privind continuarea — pe email.
 
-De acolo începem.
+[GRANIȚA — „Ce nu îți promit"]
+Nu îți promit că, după trei ore, știm dacă ipoteza e corectă. Ar fi incorect.
+Pentru asta trebuie să vorbim cu oamenii care lucrează în proces, să vedem cum funcționează
+în realitate și să analizăm datele, impactul, efortul și riscurile.
+PRIMUL PAS îți arată ce merită investigat. Nu pretinde că îți dă verdictul înainte de
+investigație.
+
+[SUB — „Cum lucrăm"]
+20% context. 80% lucru aplicat.
+Contextul există doar cât să punem întrebările corecte.
+— Ce ai vrea să funcționeze diferit
+— Unde se consumă timp, bani, energie sau atenție
+— Cine este implicat
+— Ce valoare ar avea schimbarea
+— Ce ar putea fi delegat sau construit diferit
+— Ce trebuie validat înainte să implementezi
+Nu lucrăm pe un business imaginar. Lucrăm pe al tău.
+Nu trebuie să fii IT-ist. Nu trebuie să știi să programezi. Laptopul nu este obligatoriu.
+
+[SUB — „De ce să mai chemi pe cineva?"]
+Pentru că un singur om vede doar o parte din afacere.
+Tu poți vedea obiectivul. Un partener, un manager sau un coleg-cheie poate vedea procesul
+altfel. Un alt antreprenor îți poate pune întrebarea pe care tu nu ți-o mai pui.
+Dacă vii împreună cu cineva în care ai încredere, nu dublezi informația.
+Dublezi perspectiva.
+Și plecați cu un pas pe care îl puteți continua și după workshop, nu doar cu o idee care
+rămâne într-un carnețel. Poate fi cineva din compania ta sau un alt antreprenor cu care ai
+o relație bună.
+
+[CTA]
+Rezervă-ți locul
 ```
 
-<!-- NOTĂ implementare: realocat la S07 NuDoarTeorie (vechiul conținut, „trei sisteme
-     care rulează azi", e interzis de noua listă „ce nu apare deliberat"). -->
+**Notă de implementare:** absoarbe fostul §12 Precedent („20/80", acum subsecțiunea „Cum
+lucrăm") și conținut nou din draftul v4 („De ce să mai chemi pe cineva"). CTA repetat aici —
+singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
 
 ---
 
-## §11 — DESPRE CIPRIAN MICU
+## 09 — FAQ
 
 ```COPY
 [H2]
-De ce eu?
+Întrebări directe
 
-[CORP]
-La patru ani am legat mobilierul din camera părinților mei cu elastic. În mintea mea,
-făceam obiectele să comunice.
+[Q1] De ce să-mi dau 3 ore pentru asta?
+[A1] Pentru că trecerea de la „ceva nu merge bine" la o nevoie clară cere mai mult decât o
+prezentare de 30 de minute. Avem nevoie de timp ca să formulăm problema, să-i estimăm miza,
+să identificăm oamenii implicați și să construim următorii pași. Mai puțin ar însemna să
+vorbesc eu mai mult — scopul e să lucrezi tu.
 
-Mult mai târziu, în decembrie 2022, am început să explorez serios AI. Nu pentru că voiam
-să devin „expert în AI" — eram antreprenor și căutam soluții pentru probleme reale din
-propriul business.
+[Q2] De ce aș invita și pe altcineva?
+[A2] Pentru că discuția continuă mai ușor după workshop când mai există cineva care a trecut
+prin același proces — un co-owner, un manager, un coleg-cheie sau un alt antreprenor. Vă
+puteți provoca ipotezele și vă puteți ține responsabili pentru pasul pe care spuneți că îl
+veți face. Fiecare persoană trebuie să-și rezerve propriul loc.
 
-În anii care au urmat am trecut de la a folosi instrumente făcute de alții la a-mi
-construi propriile sisteme. Asta mi-a schimbat perspectiva.
+[Q3] Trebuie să am experiență cu AI sau cu instrumente digitale noi?
+[A3] Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai explorat serios
+zona. Workshopul pornește de la afacerea ta, nu de la tehnologie.
 
-[H3]
-După piatră, am descoperit ciocanul.
+[Q4] Trebuie să vin cu problema deja identificată?
+[A4] Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine. O parte
+importantă din workshop e chiar formularea nevoii.
 
-[CORP]
-Cu un ciocan poți construi multe lucruri. Dar ciocanul nu îți spune ce trebuie construit.
+[Q5] Este potrivit pentru domeniul meu?
+[A5] Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, ai suficient
+material de lucru. Nu venim cu același caz pentru toate firmele — lucrăm pornind de la
+situația ta.
 
-Și exact asta mi se pare astăzi întrebarea importantă în AI. Nu „ce poate tehnologia?".
-Ci „ce merită să rezolvăm cu ea?". Din întrebarea asta s-a construit și metodologia
-Deep Logic.
+[Q6] Trebuie să aduc laptop?
+[A6] Nu. Laptopul nu este obligatoriu și nu trebuie să te pregătești tehnic înainte.
 
-— Ciprian Micu, Founder, Deep Logic
+[Q7] Ce primesc după workshop?
+[A7] Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar, ce
+trebuie validat, cine trebuie implicat și acțiunile recomandate pentru următorul pas.
+
+[Q8] O să-mi vindeți ceva la final?
+[A8] Nu de la microfon. Pe formularul de la final există o singură bifă, prin care poți cere
+o discuție dacă vrei. Dacă n-o bifezi, nu te caută nimeni.
+
+[Q9] Este participarea cu adevărat gratuită?
+[A9] Da. Vreau să fac metodologia Deep Logic cunoscută și să o validez în sală, pe situații
+reale aduse de antreprenori și oameni de decizie. Tu vii cu realitatea afacerii tale și cu
+trei ore de atenție. Eu vin cu metodologia, facilitarea și roadmap-ul personalizat. La final,
+îți voi cere feedback sincer.
+
+[Q10] Ce se întâmplă dacă mă înscriu și nu pot ajunge?
+[A10] Anunță-mă și eliberez locul pentru altcineva. Sunt 30 și, la mine, chiar sunt 30.
 ```
 
-<!-- ASSET NECESAR: fotografie reală cu Ciprian la lucru / workshop / conversație cu
-     antreprenori. Fără stock, fără estetică „guru tech". Vezi S11Facilitator.astro —
-     secțiunea se autoascunde de imagine dacă fișierul lipsește din public/. -->
+**Notă de implementare:** accordion (`<details>`/`<summary>`, CSS-only, fără JS) — reversare
+deliberată a regulii anterioare „fără accordion" (D54). Q8 și Q10 nu erau în draftul v4 —
+păstrate din structura veche: Q8 explică mecanismul bifei opționale din formular, Q10 e
+singurul loc de pe pagină care spune explicit că cifra de capacitate nu e umflată.
 
 ---
 
-## §12 — DE CE ESTE GRATUIT
+## CTA FINAL
 
 ```COPY
 [H2]
-De ce este gratuit?
+Afacerea ta este diferită.
+Primul pas ar trebui să fie al ei.
+
+[META]
+Miercuri, 16 septembrie 2026 · 14:00–17:00 · Satu Mare · Participare gratuită · Maximum 30
+de locuri
 
 [CORP]
-Pentru că vreau să fac metodologia Deep Logic cunoscută și, în același timp, să o
-validez în situații reale. Nu pe exemple inventate. Pe situații reale aduse de
-antreprenori și oameni de decizie.
+Noua eră digitală vine cu mai multe posibilități.
+Dar posibilitățile nu sunt un plan.
+Dacă încă nu știi care este primul pas care merită făcut în afacerea ta, este în regulă.
 
-Tu vii cu realitatea companiei tale și cu trei ore de atenție. Eu vin cu metodologia,
-facilitarea și roadmap-ul personalizat.
+[ACCENT]
+Pentru asta există PRIMUL PAS.
 
-La final îmi doresc ceva foarte simplu de la tine:
-
-[H3]
-feedback sincer.
-
-[CORP]
-Atât.
-
-De aceea această ediție este gratuită și limitată la maximum 30 de participanți.
+[CTA]
+Rezervă-ți locul
 ```
 
 ---
 
-## §13 — ÎNTREBĂRI FRECVENTE
-
-```COPY
-[Q] Trebuie să am experiență cu AI?
-[A] Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai făcut încă
-    nimic similar.
-
-[Q] Trebuie să vin cu problema deja identificată?
-[A] Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine.
-    O parte importantă din workshop e chiar clarificarea problemei.
-
-[Q] Trebuie să fiu IT-ist ca să înțeleg?
-[A] Nu. Nu discutăm arhitecturi tehnice și nu trebuie să știi să programezi. Rolul tău
-    este să înțelegi ce merită rezolvat, nu cum se construiește tehnic.
-
-[Q] Este potrivit pentru domeniul meu?
-[A] Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, există
-    suficient material de lucru, indiferent de domeniu.
-
-[Q] Trebuie să aduc laptop?
-[A] Laptopul nu este obligatoriu pentru participare. Dacă va fi util pentru un exercițiu,
-    poți veni cu el, dar nu ai nevoie de el ca să participi.
-
-[Q] Ce primesc după workshop?
-[A] Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar,
-    ce trebuie validat, oamenii de implicat și pașii concreți pentru următorul pas.
-
-[Q] Ce se întâmplă dacă mă înscriu și nu pot ajunge?
-[A] Anunță-mă și eliberez locul pentru altcineva. Sunt 30 și, la mine, chiar sunt 30.
-```
-
----
-
-## §14 — DETALII PRACTICE
-
-```COPY
-[TABEL]
-Data | Miercuri, 16 septembrie 2026
-Ora | 14:00–17:00
-Durata | 3 ore de lucru
-Locația | Satu Mare — adresa exactă pe pagină (decizie D6)
-Participanți | Maximum 30
-Format | 20% context · 80% lucru aplicat
-Nivel necesar | Zero cunoștințe tehnice
-Laptop | Nu este obligatoriu
-Cost | Gratuit
-
-[SCARCITY]
-[X locuri disponibile din 30]
-[COUNTDOWN REAL până la 16 septembrie 2026, 14:00]
-
-[CTA] Rezervă-ți locul
-```
-
----
-
-## §15 — ÎNSCRIERE
-
-```COPY
-[H2]
-Rezervă-ți locul la PRIMUL PAS
-
-[CORP]
-Înscrierea durează câteva minute. Pe lângă datele de contact, îți voi pune câteva
-întrebări despre compania ta. Nu trebuie să ai răspunsurile perfecte.
-
-Întrebările mă ajută să înțeleg cine vine în sală și să pregătesc workshopul pe probleme
-reale, nu pe una imaginară.
-
-[CTA / SUBMIT] Rezervă-ți locul
-
-[MICROCOPY]
-Maximum 30 de locuri. După înscriere primești confirmarea și detaliile de participare pe
-email.
-```
-
-**Formular:** se folosește formularul final deja aprobat (Q1–Q5 de calificare,
-`src/content/form-schema.ts`). Doar numele workshopului s-a schimbat la PRIMUL PAS —
-conținutul întrebărilor rămâne neschimbat.
-
----
-
-## §16 — CTA FINAL
-
-```COPY
-[H2]
-3 ore. Compania ta. Primul pas.
-
-[CORP]
-Nu ca să implementezi AI într-o după-amiază. Ci ca să treci de la „Ar trebui să fac ceva
-cu AI." la o nevoie numită, cu impact estimat și cu primul pas scris.
-
-Miercuri, 16 septembrie · 14:00–17:00 · Satu Mare · 30 de locuri
-
-[SCARCITY]
-[X locuri disponibile din 30]
-[COUNTDOWN REAL]
-
-[CTA] Rezervă-ți locul
-
-[CLOSING]
-Peste tot se vorbește despre ce poate face AI.
-Pentru compania ta, întrebarea mai importantă este: „Ce merită să rezolv?"
-Dacă încă nu ai un răspuns clar, e în regulă. Acesta este PRIMUL PAS.
-```
-
----
-
-## §17 — FOOTER
+## FOOTER
 
 ```COPY
 Deep Logic
 Satu Mare, România
 
-[Contact — email] · [LinkedIn] · [Website]
+[Website] · [LinkedIn] · [Email]
 
 Termeni · Politica de confidențialitate
 ```
 
 ---
----
 
-# NOTE DE IMPLEMENTARE
+# NOTE DE IMPLEMENTARE — sistem vizual (2 septembrie 2026)
 
-**CTA-uri.** Repetă „Rezervă-ți locul" în: 1. Hero, 2. După §03 (tabel), 3. După §08
-(metodologie), 4. §14 (detalii), 5. Formular (submit), 6. §16 (CTA final). Fără CTA
-secundar de tip „Află mai multe". Insigna de locuri live e un element separat, ascuns
-implicit — nu schimbă textul butonului.
+Cerut explicit, în continuarea pivotului de structură: CTA-uri lime puternic, sticlă mată pe
+carduri, rotunjime pe butoane, buton CTA flotant. Detalii complete și motivele fiecărei
+corecții: `docs/DECIZII.md` D42–D54.
 
-**Countdown și locuri.** Countdown real până la 16.09.2026, 14:00, Europe/Bucharest.
-„X locuri disponibile din 30" alimentat din `locuriDisponibilePublic()` — exact același
-prag pe care `register_participant` îl folosește ca să decidă inscris-vs-așteptare. La 0
-locuri, CTA-ul nu se dezactivează — mecanismul de listă de așteptare există deja
-(`/lista-asteptare`). Fără notificări false de tip „cineva tocmai s-a înscris".
+- **Accent lime** (`#84CC16`) — DOAR ca fundal (CTA-uri, buton calendar, buton flotant), text
+  pe el mereu `--pe-lime` (= `--bg-inchis`, 8.01:1) — niciodată alb (~1.6:1, verificat, respins).
+- **Rotunjime CTA** — px fix (14px), nu procent (15% dădea un oval alungit pe butoane late).
+- **Sticlă mată** — gradient de culoare (lime + accent) direct în fundalul cardului, nu doar
+  `backdrop-filter` peste un fundal extern plat (prima variantă era invizibilă practic).
+- **Buton CTA flotant** (`CtaFloating.astro`) — înlocuiește bara sticky doar-mobil, vizibil pe
+  toate viewport-urile, se ascunde lângă orice `.cta` din flux (nu doar CTA-ul final).
+- **Reveal la scroll** — per paragraf/listă/card (`data-reveal`), nu la nivel de secțiune
+  întreagă; cascadă mică (60ms/pas) pentru frați care intră în cadru simultan.
+- **Delimitare de secțiune** — bară subțire, globală (`Sectiune.astro`).
 
-**Distribuție/invitație.** Formulare recomandată: „30 de locuri, distribuite în principal
-prin invitații în comunitate."
+## Ce nu apare deliberat
 
----
+- demo-ul You Protect;
+- agentul personal de sănătate;
+- promisiuni că participantul își construiește un agent sau o automatizare;
+- liste de tool-uri;
+- cheat-sheet-uri de prompturi;
+- cifre de ROI fără date;
+- social proof inventat;
+- valoare artificială de tip „997 € / azi 0 €";
+- povestea despre falimentul businessului anterior;
+- promisiunea că perspectiva ownerului este automat și nevoia reală a companiei;
+- prețul sau ancora de preț (workshopul public și cel in-company nu sunt același produs);
+- AI Act/GDPR/NIS2 (dacă apar vreodată, doar în Problemă, ca zgomot, niciodată ca promisiune).
 
-# CE NU APARE PE PAGINĂ — DELIBERAT
+## Ideea centrală care trebuie protejată în orice rescriere
 
-- **Preț sau ancoră de preț.** Workshopul public și cel in-company nu sunt același produs.
-- **Cifre de piață, procente, statistici.** Niciuna verificată, deci niciuna pe pagină.
-- **Cifre de ROI fără date.** Zero, până la primul pilot documentat.
-- **Promisiuni de conformitate legală.** AI Act, GDPR, NIS2 apar o singură dată, în §02.
-- **Testimoniale.** Nu există pe formatul ăsta. Nu se inventează.
-- **Logo-uri de clienți sau badge-uri de autoritate.**
-- **Demo-ul You Protect, agentul personal de sănătate.** Poziționarea veche („trei sisteme
-  care rulează azi") nu mai există — PRIMUL PAS nu promite demo-uri personale ale lui Ciprian.
-- **Liste de tool-uri, cheat-sheet de prompturi.** Nu mai sunt livrabile ale acestei ediții.
-- **Notificări false de tip „cineva tocmai s-a înscris".**
-- **Valoare artificială de tip „997 € / azi 0 €".** Fără ancoră de preț, nici indirectă.
-- **Promisiunea că ipoteza ownerului este automat și nevoia reală a companiei.** PRIMUL PAS
-  spune explicit ce NU vei ști la final (§05) — validarea reală cere acces la echipă și date.
-
-**Ideea centrală care trebuie protejată în orice rescriere viitoare:** PRIMUL PAS nu
-încearcă să dovedească faptul că ai nevoie de AI. Te ajută să formulezi ce vrei să rezolvi
-și să afli ce trebuie verificat înainte să decizi dacă AI merită folosit.
+> **Afacerea ta este diferită. PRIMUL PAS te ajută să identifici ce merită schimbat, ce
+> impact ar putea avea și ce trebuie verificat înainte să implementezi — pornind de la
+> perspectiva ta, verificată în realitatea echipei, evaluată prin procese, date și ROI.**

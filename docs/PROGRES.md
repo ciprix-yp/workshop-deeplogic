@@ -119,6 +119,44 @@ tilt 3D universal e la fel de comun ca glassmorphism-ul), propusă o variantă c
       mobil-360 + desktop), 135/135 teste unitare, `npm run contrast` (18/18), build de
       producție complet, screenshot-uri mobil 390px + desktop 1280px.
 
+### F3 — actualizare (2 septembrie 2026): pivot de narativă + pivot de structură
+
+Entry-urile F3 de mai sus rămân valabile ca istoric — ce era adevărat pe 28 august. De atunci,
+pagina a trecut prin două rescrieri majore, aceeași zi, ambele cerute explicit de Ciprian.
+Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZII.md`
+(D31–D54) și în antetul `src/content/copy.ts` — nu duplicate aici.
+
+- [x] **Pivot de narativă** — H1 nou („Afacerea ta este diferită...", nu „Toată lumea îți spune
+      să folosești AI..."), mecanismul owner→echipă→date mutat devreme în pagină și rescris
+      explicit. `docs/DECIZII.md` D31–D36.
+- [x] **Pivot de structură** — 16 secțiuni (§01–§17) → 10, cadru Hero → Trust bar → Problemă →
+      Agravare → Soluție → Facilitator → Cui i se adresează/nu → Ce rezultat promitem → FAQ,
+      plus metodologia cu pin GSAP păstrată separat (confirmată explicit, nu presupusă — vezi
+      D38). 7 componente retrase ca secțiuni proprii, conținutul absorbit, nu pierdut.
+      `docs/DECIZII.md` D37–D41.
+- [x] **Sistem vizual: accent lime, sticlă mată, buton CTA flotant** — CTA-uri lime cu text
+      închis (8.01:1, nu alb), rotunjime px fix (nu procent — corectată după feedback),
+      carduri cu sticlă mată reală (gradient de culoare în propriul fundal, nu doar
+      `backdrop-filter` peste un fundal plat), buton CTA flotant pe toate viewport-urile
+      (înlocuiește bara sticky doar-mobil), funcție nouă „Adaugă în calendar" (1 tap,
+      precompletat, alertă 24h — `VALARM` nou în `src/lib/ics.ts`). `docs/DECIZII.md` D42–D54.
+- [x] **Trei bug-uri reale, găsite la verificare pe live, nu doar local:**
+      1. Reveal-ul nu anima conținutul deasupra fold-ului — `IntersectionObserver` raporta
+         elementele deja vizibile înainte ca browserul să picteze starea ascunsă măcar o dată.
+         Fix: dublu `requestAnimationFrame`.
+      2. Butonul flotant rămânea vizibil suprapus peste CTA-ul din mijlocul paginii — logica
+         veche observa doar hero-ul și CTA-ul final. Fix: observă orice `.cta`, cu un `Set`.
+      3. Poza lui Ciprian nu apărea pe live (deși fișierul era încărcat corect) — `existsSync`
+         verifica o cale corectă în `astro dev`, greșită la build de producție (Vite mută
+         componenta în alt loc în bundle). Fix: `process.cwd()`, stabil în ambele cazuri.
+         Verificat direct în `dist/client/index.html` după fix, nu doar „build-ul trece".
+- [x] Verificat, la fiecare din cele trei runde: `npm run verify` complet (vitest, contrast,
+      DB + 20/20 curse, `astro check`, build), 64/64 e2e (Playwright), plus tur vizual complet
+      pe live prin Chrome/Playwright (nu doar localhost) după fiecare deploy.
+- [x] `docs/landing-workshop-16-09.md` resincronizat cu structura și copy-ul curent (era
+      marcat explicit „nesincronizat" după pivotul de narativă — rezolvat odată cu acest pas
+      de documentare).
+
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
 - [x] `src/lib/supabase.ts` — client + înveliș tipat peste toate funcțiile RPC

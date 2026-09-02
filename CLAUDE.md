@@ -85,14 +85,31 @@ JS total pe pagină** (Lenis + GSAP core + ScrollTrigger + scripturile proprii).
 rămân, neschimbate de pivot:
 
 - **GSAP ScrollTrigger trăiește STRICT în `S06CeFacem.astro`** (pin + scrub pe cei cinci pași
-  ai metodologiei) — nicio altă secțiune. Restul paginii e static prin construcție, nu doar
-  „fără JS": nu există niciun alt mecanism de reveal-la-scroll sau hover de dezactivat.
-- **Lenis global, o singură dată, în `Base.astro`**, cu `anchors: true` — CTA-urile ancorează
-  spre `#inscriere`/`#continut`; fără opțiunea asta, Lenis blochează exact acel scroll.
+  ai metodologiei) — nicio altă secțiune. Rămâne singurul pin/scrub de pe pagină, chiar și
+  după pivotul de mai jos.
+- **Lenis global, o singură dată, în `Base.astro`** (fără `anchors: true` — Lenis interceptează
+  și clickurile pe CTA-uri fără să verifice `event.defaultPrevented`, dublând scroll-ul peste
+  interceptarea proprie din `DialogInscriere.astro`; vezi commit-ul care a scos opțiunea).
 - **Guard obligatoriu `prefers-reduced-motion` pe pin/scrub-ul din §06** (GSAP nu îl respectă
   singur, spre deosebire de Lenis). Cu mișcare redusă, cei cinci pași rămân direct vizibili.
 - **Fără parallax pe fundal, cursor custom, particule, WebGL, React/Vue.** Astro rulează
   Lenis/GSAP nativ, ca `<script>` de modul — n-a fost nevoie de framework UI ca să le pornească.
+
+**Reveal la scroll + tilt 3D — pivot ulterior (2026-09-02), reversează parțial regula de mai
+sus:** restul paginii NU mai e static prin construcție. Fiecare paragraf/listă/card care poartă
+`data-reveal` (pus explicit, per componentă — vezi `tokens.css` `[data-reveal]`) fade+ridică la
+intrarea în viewport; cardurile cu profunzime (`.card-depth`/`.card-3d`, `data-tilt`) înclină la
+cursor pe pointer fin. Vanilla, fără GSAP (`Base.astro`, prop `depth`) — mecanismul e simplu
+(IntersectionObserver + tranziție CSS), n-are nevoie de motorul de scroll. Reguli:
+
+- **`data-reveal` la nivel de element, nu de secțiune întreagă.** Un fade pe tot blocul unei
+  secțiuni bogate (Soluție, Rezultatul) își pierde relevanța — secțiunea e deja pe jumătate
+  vizibilă când pornește tranziția.
+- **Dublu `requestAnimationFrame` înainte de a porni `IntersectionObserver`-ul** (`Base.astro`).
+  Fără el, elementele deja pe ecran la încărcare (hero, Trust bar) trec direct la starea
+  finală înainte ca browserul să picteze starea ascunsă măcar o dată — par neanimate.
+- **Fără JS, `[data-reveal]` e mereu vizibil** — clasa `html.js` (adăugată sincron, înainte de
+  primul paint) e condiția, nu prezența atributului.
 
 ---
 
@@ -117,6 +134,27 @@ Rulează `npm run contrast` după orice schimbare de culoare.
 **Valori respinse, cu motivul** — scriptul le listează la fiecare rulare ca să nu revină:
 `#468984` (4.06, CTA original) · `#B85C5C` (4.45, eroare originală) · `#6B7F7F`
 (4.23, ≈ opacitate 70%) · `#3A716D` (4.49 pe fundal secundar — trecea pe alb, pica în §03).
+
+**Accent lime + sticlă mată (pivot 2026-09-02) — CTA-urile nu mai folosesc `--accent`:**
+
+| Rol | Valoare | Contrast | Unde |
+|---|---|---|---|
+| **lime** | `#84CC16` | — (fundal, nu text) | CTA-uri, buton flotant, buton calendar |
+| **text pe lime** ⚠ | `--pe-lime` = `--bg-inchis` (`#1B2426`) | **8.01:1** pe lime | text pe orice fundal lime — **niciodată alb** (~1.6:1, verificat, respins) |
+| lime hover | `#6BA812` | — | `:hover`/`:focus-visible` pe CTA-uri |
+| `--radius-cta` | `14px` fix, **nu procent** | — | toate butoanele CTA — vezi nota de mai jos |
+| `--sticla-fundal` | `rgba(228,231,231,0.6)` | — | `.card-depth` — presupune `backdrop-filter: blur()` alături |
+
+**De ce `--radius-cta` e px fix, nu procent:** cerut inițial ca 15%, dar `border-radius`
+procentual se calculează SEPARAT pe orizontală/verticală — pe un buton lat și scurt dă un
+oval alungit, nu un dreptunghi rotunjit curat. Corectat după feedback direct („forma e nasol").
+
+**De ce sticla mată e vopsită în cardul însuși, nu doar `backdrop-filter`:** `backdrop-filter`
+blurează ce e ÎN SPATE — peste un fundal plat (alb sau gri uniform), o culoare uniformă rămâne
+aceeași culoare, blurată sau nu. Prima variantă (blur peste un strat decorativ fix, extern) era
+tehnic corectă dar vizual invizibilă ori de câte ori cardul nu cădea peste o pată de culoare.
+`.card-depth` are acum un gradient lime+accent direct în propriul fundal — sticla arată
+colorată indiferent unde ajunge cardul pe parcursul scroll-ului.
 
 **Fonturi:** Inter (titluri), Source Sans 3 (corp), IBM Plex Mono (date/numerotare).
 Self-hostate din `public/fonts/`, subset **`latin` + `latin-ext`**.

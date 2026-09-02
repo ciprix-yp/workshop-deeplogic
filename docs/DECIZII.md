@@ -537,3 +537,55 @@ mică de a doar aplica ideile pe structura existentă): rescriere de narativă, 
 fără să adauge risc pe secțiunea cea mai protejată a paginii. `docs/landing-workshop-16-09.md`
 (sursa PDF originală) **nu a fost rescrisă** să reflecte acest pivot — antetul din `copy.ts` și
 această intrare rămân sursa de adevăr pentru narativa curentă până la o resincronizare completă.
+
+---
+
+## Pivot de structură: 16 secțiuni → 10 (2 septembrie 2026, aceeași zi)
+
+Al doilea draft de copy primit de la Ciprian, în aceeași zi ca pivotul de narativă de mai sus
+(„PRIMUL-PAS-landing-page-v4.md"), plus un cadru anunțat separat, înainte de draft, prin
+`AskUserQuestion`: structura veche „prea stufos, diluăm mesajul". Cadrul cerut explicit: Hero →
+Trust bar → Problemă → Agravare → Soluție → Facilitator → Cui i se adresează → Cui nu i se
+adresează → Ce rezultat promitem → FAQ.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D37** | 7 componente retrase ca secțiuni proprii: Înainte→După, obiecția „nu știu ce aș putea face", grid-ul de exemple, „De ce e gratuit", Detalii practice, „20/80" (Precedent), CtaSticky | Fiecare are conținutul absorbit în altă parte, nu pierdut — vezi antetul `copy.ts` pentru harta exactă (ex. grid-ul de exemple → intro-ul din Problemă; „20/80" → subsecțiune în Rezultatul; adresa completă → Trust bar). Regula D6 (adresa pe pagină) verificată să rămână trează după absorbție — `tests/copy-invariants.test.ts` actualizat să caute adresa în `trustBar`, nu în fosta `detalii`. | `index.astro`, `copy.ts`, 7 fișiere `.astro` șterse |
+| **D38** | Metodologia cu 5 pași (pin/scrub GSAP, fostă §06) **păstrată explicit**, deși draftul v4 n-o mai are ca secțiune separată — doar 4 bullet-uri scurte în Soluție | Confirmat prin `AskUserQuestion`, nu presupus: costul Lenis+GSAP (~49KB gzip) fusese deja aprobat special pentru acest pin/scrub (pivotul Motion, 1 septembrie) — retragerea secțiunii ar fi lăsat dependența fără justificare rămasă. E acum al 11-lea moment, în afara celor 10 numărate explicit de Ciprian, poziționat după Soluție (mecanismul conceptual), înainte de Facilitator. | `S06CeFacem.astro` neschimbat, doar repoziționat |
+| **D39** | Trust bar (secțiune nouă) — strip compact sub hero, DISTINCT de `BaraScarcity.astro` (bara fixă) | Cele două nu concurează: bara fixă e mereu vizibilă la scroll, Trust bar e un bloc din flux, o singură dată, cu mai mult context (adresă completă — D6 — + format 20/80 + capacitate + roadmap). | `TrustBar.astro` (nou) |
+| **D40** | Rezultatul (fostă §03) absoarbe „cum lucrăm" (fost Precedent) și „de ce să mai chemi pe cineva" (conținut nou din v4) ca subsecțiuni, nu ca secțiuni separate | Cadrul lui Ciprian numără 10 secțiuni de top nivel — subsecțiunile țin conținutul viu fără să mai adauge o secțiune. CTA repetat o singură dată în mijlocul paginii, la finalul acestui bloc (cel mai „cald" moment), față de patru repetiții pe structura veche. | `S03Rezultatul.astro` |
+| **D41** | Fișierele de componente NU au fost renumerotate să se potrivească poziției reale | Precedent din pivotul de narativă (D32): numărul din nume e istoric, ordinea reală e cea din `index.astro`. Renumerotarea tuturor fișierelor la fiecare schimbare de ordine ar fi zgomot pur, fără beneficiu funcțional — Astro nu leagă nimic de numele fișierului. | — |
+
+---
+
+## Sistem vizual: accent lime, sticlă mată, butoane, buton flotant (2 septembrie 2026)
+
+Cerut explicit, în continuarea pivotului de structură: CTA-uri lime puternic, gradient
+gri→lime, carduri 3D păstrate, rotunjime pe butoane, buton CTA flotant, numărul real de
+locuri sub CTA. Trei runde de corecție ulterioare, toate pe live, cu feedback direct.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D42** | CTA-uri (buton, buton flotant, buton calendar) — fundal lime solid, text `--pe-lime` (= `--bg-inchis`, 8.01:1) | Alb pe lime dă ~1.6:1 — verificat înainte de implementare, nu descoperit după. `--accent` (teal) rămâne folosit în altă parte a paletei (linkuri, accente decorative). | `Cta.astro`, `CtaFloating.astro`, `tokens.css` |
+| **D43** | Rotunjime CTA — `--radius-cta`, cerut inițial ca procent (15%) | Corectat la px fix (14px) după feedback („forma e nasol") — `border-radius` procentual se calculează separat pe orizontală/verticală; pe un buton lat și scurt dă un oval alungit, nu un dreptunghi rotunjit. | `tokens.css` |
+| **D44** | Buton CTA flotant — înlocuiește bara sticky doar-mobil, vizibil pe toate viewport-urile | Cerut explicit. Formă corectată în runda 2 (pastilă → dreptunghi rotunjit, aceeași `--radius-cta`) și tratată cu sticlă mată (backdrop-filter + lime translucid la opacitate ținută sus, 88%, ca marja de contrast să rămână aproape neschimbată). | `CtaFloating.astro` (nou), `CtaSticky.astro` șters |
+| **D45** | Card „Miercuri, 16 septembrie" + „Adaugă în calendar" — funcție nouă, nu doar copy | Un tap deschide aplicația de calendar a telefonului precompletată (locație, dată, oră, alertă 24h înainte). Reutilizează generatorul `.ics` existent (deja folosit pe `/rezultat`) — doar `VALARM` a fost adăugat, nou. | `TrustBar.astro`, `src/lib/ics.ts` |
+| **D46** | Toate cardurile (`.card-depth`) — sticlă mată gri, nu alb opac | Cerut explicit. Corectat de două ori: prima variantă (gri translucid + blur peste un fundal FIX, extern, cu pete de culoare) era tehnic corectă dar vizual invizibilă ori de câte ori cardul nu cădea peste o pată — a doua variantă pune gradientul de culoare (lime + accent) direct în propriul fundal al cardului, vizibil indiferent de poziția de scroll. | `tokens.css` (`.card-depth`) |
+| **D47** | Delimitare clară între secțiuni — bară subțire, la nivel de `Sectiune.astro`, global | Cerut explicit („fiecare secțiune să aibă delimitare clară"). O singură regulă, nu per-componentă — se aplică automat oricărei secțiuni viitoare. | `Sectiune.astro` |
+| **D48** | Reveal la scroll mutat de la nivel de secțiune la nivel de paragraf/listă/card | Feedback: pe secțiunile mari (Soluție, Rezultatul), un fade pe tot blocul își pierde relevanța — secțiunea e deja pe jumătate vizibilă când pornește tranziția. Fiecare componentă pune acum `data-reveal` explicit, per element, cu o cascadă mică (`nth-child`, 60ms/pas) pentru frați care intră în cadru simultan. | Toate componentele de conținut, `tokens.css` |
+| **D49** | Bug real, găsit la verificare: reveal-ul nu anima deloc conținutul deasupra fold-ului (hero, Trust bar) | `IntersectionObserver` raportează `isIntersecting: true` la primul callback pentru orice e deja pe ecran — dacă acela ajunge înainte ca browserul să fi pictat MĂCAR O DATĂ starea ascunsă, tranziția CSS n-are de la ce stare să pornească și sare direct la finală. Fix: dublu `requestAnimationFrame` înainte de a porni observarea, ca să garanteze un ciclu complet de picture cu starea ascunsă. | `Base.astro` |
+| **D50** | Bug real, găsit la verificare: butonul flotant rămânea vizibil suprapus peste CTA-ul din mijlocul secțiunii Rezultatul | Logica veche observa doar hero-ul și CTA-ul final. Acum observă orice `.cta` din pagină, generic, cu un `Set` (nu un contor incrementat/decrementat — un contor simplu a rămas blocat, verificat empiric). | `CtaFloating.astro` |
+| **D51** | Bug real, găsit la verificare: poza lui Ciprian nu apărea pe live, deși fișierul era încărcat corect | `existsSync` verifica o cale relativă la `import.meta.url` — corectă în `astro dev` (rulează din sursă), greșită la build de producție (Vite mută componenta în bundle-ul de server, unde calea relativă nu mai duce spre `public/`). Înlocuit cu `process.cwd()`, stabil în ambele cazuri. Verificat direct în `dist/`, nu doar „build-ul trece". | `S11Facilitator.astro` |
+| **D52** | Header (`BaraScarcity.astro`) — experiment cu fundal lime, REVERSAT la negru, dar cu sticlă mată | Testat lime (aliniat vizual cu CTA-urile), respins explicit („lasă header-ul negru, doar textul roșu"). Fundalul revine la `--bg-inchis`, dar translucid + blur (nu opac plat) — păstrează efectul „floating" cerut alături de revenirea la negru. Gradientul de text revine la alb→roșu (varianta pentru fundal închis, dinainte de experimentul lime). | `BaraScarcity.astro` |
+| **D53** | Facilitator — layout nou: poză rotundă, medie, în dreapta; nume + rol în stânga; bio pe toată lățimea dedesubt | Cerut explicit, înlocuiește coloana veche (poză mare dreptunghiulară stânga, text lung dreapta). | `S11Facilitator.astro` |
+| **D54** | FAQ → accordion (`<details>`/`<summary>`) — reversare deliberată a regulii anterioare „fără accordion" | Regula veche („un click în plus pe obiecția decisivă e un click pe care mulți nu-l fac") a fost scrisă pentru o listă de 7 întrebări, toate vizibile deodată. Cerută explicit acum, la 10 întrebări. Animație CSS-only (`grid-template-rows`), fără JS, funcțională și fără JavaScript. | `S15Faq.astro` |
+
+**Notă despre poza lui Ciprian:** varianta anterioară din repo (înlocuită la cererea explicită
+a lui Ciprian, care a trimis un fișier nou) era deja o fotografie reală, la un eveniment —
+exact regula din documentul sursă („nu portret corporate pe fundal alb"). Cea nouă e un
+headshot de studio pe fundal gri. Semnalat explicit lui Ciprian în momentul schimbării;
+decizia rămâne a lui.
+
+**Ce n-a fost atins:** `docs/landing-workshop-16-09.md` a fost resincronizat odată cu acest
+pivot (vezi antetul documentului) — nu mai există o divergență cunoscută între el și
+`copy.ts` la data acestei intrări.
