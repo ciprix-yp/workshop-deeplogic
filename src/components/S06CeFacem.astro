@@ -10,12 +10,12 @@ import Sectiune from './Sectiune.astro';
   de mai jos). Guard obligatoriu de `prefers-reduced-motion`: dacă e activ,
   pașii rămân direct vizibili, fără pin.
 */}
-<Sectiune id="ce-facem">
+<Sectiune id="ce-facem" reveal={false}>
   <h2>{ceFacem.h2}</h2>
 
   <div class="blocuri">
     {ceFacem.blocuri.map((bloc) => (
-      <article class="bloc" data-pas>
+      <article class="bloc card-depth" data-pas>
         <p class="numar" aria-hidden="true">{bloc.numar}</p>
         <div class="corp">
           <h3>{bloc.titlu}</h3>
@@ -121,15 +121,17 @@ import Sectiune from './Sectiune.astro';
     }
   }
 
+  /* Aspect (umbră + muchie degrade accent→lime) din `.card-depth`, global —
+     vezi tokens.css. Fără `.card-3d`/tilt aici: GSAP deține deja `transform`
+     pe elementul ăsta (pin/scrub, mai jos) — un `element.style.transform`
+     scris de GSAP câștigă mereu în fața clasei CSS, deci tilt-ul ar muri
+     tăcut, nu doar redundant. */
   .bloc {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--sp-sm);
     align-items: start;
     padding: var(--sp-sm);
-    border: 1px solid rgba(47, 79, 79, 0.15);
-    border-radius: var(--radius-lg);
-    background: var(--bg);
   }
 
   .numar {

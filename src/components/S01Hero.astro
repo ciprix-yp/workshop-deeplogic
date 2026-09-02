@@ -33,7 +33,7 @@ import Cta from './Cta.astro';
         <Cta marime="mare" spatiuSus />
       </div>
 
-      <aside class="fisa">
+      <aside class="fisa card-depth card-3d" data-tilt>
         <dl>
           <div><dt>Data</dt><dd>{EVENIMENT.dataText}</dd></div>
           <div><dt>Ora</dt><dd>{EVENIMENT.ora}</dd></div>
@@ -122,10 +122,9 @@ import Cta from './Cta.astro';
 
   /* ── Fișa evenimentului ─────────────────────────────────────────────── */
 
+  /* Cutie + tilt din `.card-depth card-3d`, global — vezi tokens.css. */
   .fisa {
-    border: 1px solid rgba(47, 79, 79, 0.2);
-    border-radius: var(--radius-lg);
-    padding: var(--sp-sm) var(--sp-lg) var(--sp-md);
+    padding: var(--sp-md) var(--sp-lg) var(--sp-md);
   }
 
   .fisa dl {

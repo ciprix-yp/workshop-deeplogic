@@ -14,7 +14,7 @@ import Sectiune from './Sectiune.astro';
 
   <div class="grila">
     {useCases.grid.map((z) => (
-      <article class="zona">
+      <article class="zona card-depth card-3d" data-tilt>
         <h3>{z.titlu}</h3>
         <p>{z.corp}</p>
       </article>
@@ -55,11 +55,9 @@ import Sectiune from './Sectiune.astro';
     }
   }
 
+  /* Cutie + tilt din `.card-depth card-3d`, global — vezi tokens.css. */
   .zona {
-    padding: var(--sp-sm);
-    border: 1px solid rgba(47, 79, 79, 0.15);
-    border-radius: var(--radius-lg);
-    background: var(--bg);
+    padding: var(--sp-md) var(--sp-sm) var(--sp-sm);
     display: grid;
     gap: var(--sp-2xs);
     align-content: start;

@@ -18,6 +18,12 @@ interface Props {
   scarcity?: boolean;
   /** Lenis + GSAP ScrollTrigger — doar unde chiar există ceva de animat (§06, index.astro). */
   motion?: boolean;
+  /**
+   * Reveal la scroll (`[data-reveal]`, vezi Sectiune.astro) + înclinare la
+   * cursor pe carduri (`[data-tilt]`) — pivot 2026-09-02, linia vizuală
+   * "Roxana Tascu". Doar pagina de landing (index.astro), la fel ca `motion`.
+   */
+  depth?: boolean;
 }
 
 const {
@@ -26,6 +32,7 @@ const {
   noindex = false,
   scarcity = false,
   motion = false,
+  depth = false,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://workshop.deeplogic.ro';
@@ -85,6 +92,14 @@ const jsonLd = {
     <title>{titlu}</title>
     <meta name="description" content={descriere} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    {/*
+      Marchează prezența JS-ului ÎNAINTE de primul paint — `[data-reveal]`
+      din tokens.css se ascunde DOAR sub `html.js`, exact tehnica `.cu-js`
+      din DialogInscriere.astro. Fără ea, un vizitator fără JS ar vedea
+      conținut ascuns permanent (nimic nu ar mai adăuga `.e-vizibil`).
+    */}
+    {depth && <script is:inline>document.documentElement.classList.add('js');</script>}
 
     {/*
       Peste 40% din trafic vine dintr-un link lipit în WhatsApp de un membru
@@ -181,6 +196,58 @@ const jsonLd = {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
+    </script>
+    )}
+
+    {/*
+      Reveal la scroll + tilt pe carduri (`depth` prop) — vanilla, fără GSAP:
+      efectul e un simplu fade+ridicare la intrarea în viewport și o
+      înclinare 3D la cursor, niciunul n-are nevoie de motorul de scroll —
+      adăugarea lui GSAP peste asta ar fi cost fără beneficiu (regula rămâne
+      neschimbată: GSAP trăiește STRICT în §06CeFacem).
+    */}
+    {depth && (
+    <script>
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Reveal la scroll: fiecare element, o singură dată ────────────────
+      const revealuri = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+      if (!reduceMotion && revealuri.length && 'IntersectionObserver' in window) {
+        const observator = new IntersectionObserver(
+          (intrari) => {
+            for (const intrare of intrari) {
+              if (!intrare.isIntersecting) continue;
+              intrare.target.classList.add('e-vizibil');
+              observator.unobserve(intrare.target);
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+        );
+        revealuri.forEach((el) => observator.observe(el));
+      } else {
+        // Mișcare redusă sau fără IntersectionObserver: totul vizibil direct.
+        revealuri.forEach((el) => el.classList.add('e-vizibil'));
+      }
+
+      // ── Tilt 3D la cursor — doar pointer fin, cu hover real ──────────────
+      const inclinabile = Array.from(document.querySelectorAll<HTMLElement>('[data-tilt]'));
+      const arePointerFin = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      if (!reduceMotion && arePointerFin && inclinabile.length) {
+        const GRADE_MAX = 8;
+        inclinabile.forEach((card) => {
+          card.addEventListener('mousemove', (ev) => {
+            const r = card.getBoundingClientRect();
+            const x = (ev.clientX - r.left) / r.width - 0.5;
+            const y = (ev.clientY - r.top) / r.height - 0.5;
+            card.style.setProperty('--ry', `${x * GRADE_MAX * 2}deg`);
+            card.style.setProperty('--rx', `${y * -GRADE_MAX * 2}deg`);
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.setProperty('--rx', '0deg');
+            card.style.setProperty('--ry', '0deg');
+          });
+        });
+      }
     </script>
     )}
   </body>

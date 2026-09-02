@@ -118,6 +118,25 @@
      redefinit de fiecare dată. Numite o singură dată, refolosite peste tot. */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /*
+   * ── Accent lime (pivot 2026-09-02, Ciprian) ─────────────────────────────
+   * Linia vizuală de referință: proiectul Roxana Tascu ("Paradoxul ADHD").
+   * Regula lor scrisă e literală — "verdele nu e text" — CTA-ul principal
+   * rămâne navy, verdele apare doar ca bordură/glow/muchie de card/fundal de
+   * pastilă cu text închis deasupra. Motivul e matematic, nu de stil: pe alb,
+   * niciun lime nu trece 4.5:1 (verificat: #13EA50 Roxana = 1.63:1,
+   * #A6FF00 = 1.24:1). Aceeași regulă se aplică aici — `--accent` (CTA)
+   * rămâne #376A66, `--lime` NU înlocuiește text sau fundal-cu-text-alb.
+   */
+  --lime: #84cc16;
+  --lime-wash: rgba(132, 204, 22, 0.12);
+  --lime-edge: rgba(132, 204, 22, 0.5);
+
+  /* Adâncime pentru cardurile cu profunzime (`.card-depth`/`.card-3d` mai jos). */
+  --shadow-card: 0 1px 2px rgba(42, 52, 57, 0.06), 0 18px 40px -18px rgba(42, 52, 57, 0.22);
+  --shadow-card-hover: 0 1px 2px rgba(42, 52, 57, 0.08), 0 26px 54px -20px rgba(42, 52, 57, 0.3);
+  --radius-card: 16px;
 }
 
 /* ── Reset minimal ──────────────────────────────────────────────────────── */
@@ -238,4 +257,80 @@ img {
 
 .proza {
   max-width: var(--max-proza);
+}
+
+/*
+ * ── Carduri cu profunzime (pivot 2026-09-02) ────────────────────────────
+ * `.card-depth`: aspectul (umbră stratificată + muchie degrade accent→lime)
+ * — folosit și pe `.bloc` din S06CeFacem.astro, unde GSAP deține deja
+ * `transform` (pin/scrub); `.card-3d` adaugă COMPORTAMENTUL (înclinare la
+ * cursor) peste `.card-depth`, doar unde nimic altceva nu se atinge de
+ * `transform` pe același element. Separate ca să nu se calce pe cablurile
+ * GSAP-ului din §06 — un `element.style.transform` scris de GSAP câștigă
+ * mereu în fața clasei CSS, deci tilt-ul ar muri tăcut acolo.
+ */
+.card-depth {
+  position: relative;
+  background: linear-gradient(180deg, var(--bg), #fbfdfd);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.card-depth::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--lime));
+}
+
+/* Înclinare la cursor — scriptul din Base.astro (prop `depth`) scrie
+   `--rx`/`--ry` pe elementele `[data-tilt]`. Fără JS, fără mișcare redusă
+   sau pe touch (fără hover real): rămân la 0deg, cardul e plat. */
+.card-3d {
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-3d:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-3d {
+    transform: none;
+  }
+}
+
+/*
+ * ── Reveal la scroll (pivot 2026-09-02) ─────────────────────────────────
+ * Opt-in prin `data-reveal` — pus de `Sectiune.astro` (prop `reveal`,
+ * implicit `true`). Scriptul din Base.astro (`depth`) adaugă `.js` pe
+ * `<html>` SINCRON, înainte de primul paint (același truc ca `.cu-js` din
+ * DialogInscriere.astro), apoi `.e-vizibil` pe fiecare element la intrarea
+ * în viewport. Fără clasa `html.js`, elementul rămâne la starea finală —
+ * un vizitator fără JS nu vede NICIODATĂ conținut ascuns, doar unul cu JS
+ * primește tranziția. Mișcarea redusă e prinsă deja de regula globală de
+ * mai sus (`transition-duration: 0.01ms`), fără cod suplimentar aici.
+ */
+[data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+html.js [data-reveal].e-vizibil {
+  opacity: 1;
+  transform: none;
 }

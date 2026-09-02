@@ -12,12 +12,21 @@ interface Props {
   /** Lățimea conținutului: `proza` pentru text lung, `larg` pentru tabele/grid. */
   latime?: 'proza' | 'larg';
   clasa?: string;
+  /**
+   * Fade + ridicare la intrarea în viewport (pivot 2026-09-02, `depth` prop
+   * din Base.astro — vezi `[data-reveal]` din tokens.css). Implicit `true`:
+   * aproape toată pagina îl vrea acum. Excepția e S06CeFacem.astro, care
+   * dezactivează asta explicit — GSAP-ul lui deja animă individual cei cinci
+   * pași; un fade+ridicare pe TOT conținutul pinat peste aia ar fi redundant
+   * și ar putea intra în conflict vizual cu pin-ul.
+   */
+  reveal?: boolean;
 }
-const { id, fundal = 'primar', latime = 'proza', clasa = '' } = Astro.props;
+const { id, fundal = 'primar', latime = 'proza', clasa = '', reveal = true } = Astro.props;
 ---
 
 <section id={id} class:list={['sectiune', fundal]}>
-  <div class:list={['continut', latime, clasa]}><slot /></div>
+  <div class:list={['continut', latime, clasa]} data-reveal={reveal || null}><slot /></div>
 </section>
 
 <style>

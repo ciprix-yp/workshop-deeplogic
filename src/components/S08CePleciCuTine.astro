@@ -91,6 +91,13 @@ import Cta from './Cta.astro';
     border-top: 1px solid rgba(47, 79, 79, 0.18);
   }
 
+  /*
+   * Touch de accent lime (pivot 2026-09-02) — DOAR pe glow-ul deja existent,
+   * nu o cutie nouă: comentariul de mai sus, „Linii de câmp, nu carduri",
+   * rămâne regula secțiunii-semnătură a paginii. Verdele intră aici ca decor
+   * ambient, exact rolul lui pe restul paginii — niciodată text, niciodată
+   * fundal cu text alb deasupra.
+   */
   .profunzime {
     position: absolute;
     top: 10%;
@@ -98,7 +105,7 @@ import Cta from './Cta.astro';
     margin-inline: auto;
     width: min(34rem, 90%);
     height: 60%;
-    background: radial-gradient(closest-side, var(--accent-decor), transparent 72%);
+    background: radial-gradient(closest-side, var(--accent-decor), var(--lime-edge) 55%, transparent 72%);
     opacity: 0.08;
     filter: blur(48px);
     z-index: -1;

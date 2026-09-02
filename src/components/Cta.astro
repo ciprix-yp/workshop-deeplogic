@@ -80,11 +80,30 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     padding: var(--sp-md) var(--sp-xl);
     /* Pe mobil ocupă toată lățimea — degetul nu trebuie să caute ținta. */
     width: 100%;
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s var(--ease-out),
+      box-shadow 0.2s var(--ease-out);
   }
 
   @media (min-width: 40rem) {
     .cta.mare {
       width: auto;
+    }
+  }
+
+  /*
+   * Accent lime (pivot 2026-09-02) — DOAR pe hover, nu un puls continuu.
+   * Un glow care respiră tot timpul cât CTA-ul e pe ecran s-ar citi ca
+   * presiune constantă, exact ce pagina evită deliberat („fără deficit
+   * fals" din CLAUDE.md §1) — un inel care apare la interacțiune reală
+   * confirmă atingerea (aceeași logică ca `emil-design-eng`: feedback, nu
+   * decor văzut întruna). Butonul rămâne pe fundalul lui obișnuit — verdele
+   * intră doar ca inel exterior, niciodată ca fundal sau text.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .cta.mare:hover {
+      box-shadow: 0 6px 16px -6px rgba(55, 106, 102, 0.45), 0 0 0 4px var(--lime-wash), 0 0 0 5px var(--lime-edge);
     }
   }
 

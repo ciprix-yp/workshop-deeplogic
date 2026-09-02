@@ -25,7 +25,7 @@ import Sectiune from './Sectiune.astro';
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
   */}
-  <aside class="granita">
+  <aside class="granita card-depth card-3d" data-tilt>
     <h3>{rezultatul.granita.h3}</h3>
     {rezultatul.granita.corp.map((p) => (
       <p>{p}</p>
@@ -87,13 +87,16 @@ import Sectiune from './Sectiune.astro';
     color: var(--text-muted);
   }
 
+  /* Cutie + tilt din `.card-depth card-3d`, global (tokens.css) — dar
+     `background`-ul secundar rămâne aici, deliberat: onestitatea „ce NU vei
+     ști" trebuie să citească distinct de restul cardurilor de pe pagină,
+     nu ca încă un card premium. */
   .granita {
     margin-top: var(--sp-lg);
     background: var(--bg-secundar);
     /* Fix de contrast — vezi tokens.css `--text-muted-pe-secundar`. */
     --text-muted: var(--text-muted-pe-secundar);
     padding: var(--sp-md);
-    border-radius: var(--radius-lg);
     display: grid;
     gap: var(--sp-sm);
   }
