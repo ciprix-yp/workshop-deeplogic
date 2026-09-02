@@ -31,23 +31,18 @@ import { EVENIMENT, scarcity } from '../content/copy';
     const tinta = new Date(dataStart).getTime();
 
     /**
-     * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin).
-     * Roșu de la capăt la capăt (2026-09-02, a patra rundă — „textul din
-     * bara de sus să fie roșu"), nu doar semnal de „aproape plin": ambele
-     * capete sunt roșii, doar intensitatea crește cu ocuparea — de la
-     * `#F0B3B3` (8.90:1 pe `--bg-inchis`, roșu deschis) la `--eroare-clar`
-     * (#E08585, 5.92:1, deja verificat de `npm run contrast`). Un roșu prea
-     * închis (ex. #C75C5C) ar cădea sub 4.5:1 pe fundalul ăsta foarte
-     * închis — verificat și respins, vezi `scripts/check-contrast.mjs`.
-     *   - insigna din dialog (fundal alb): `--secundar` → `--eroare`
-     *     (#9E4B4B, 5.90:1 pe alb — deja verificat de `npm run contrast`).
+     * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin) —
+     * folosită DOAR pentru insigna de locuri din formular (fundal alb, vezi
+     * `randeazaLocuriDinFormular`). Bara de sus însăși nu mai variază culoarea
+     * cu ocuparea (a cincea rundă, 2026-09-02 — gradientul „roșu deschis →
+     * roșu" de la runda anterioară se citea ca roz la capătul deschis; acum e
+     * un roșu fix, `--eroare-bara`, vezi CSS-ul de mai jos).
      */
     function culoareOcupare(ocupare, start, stop) {
       const t = Math.max(0, Math.min(1, ocupare));
       const rgb = start.map((c, i) => Math.round(c + t * (stop[i] - c)));
       return `rgb(${rgb.join(',')})`;
     }
-    const GRADIENT_PE_INCHIS = [[240, 179, 179], [224, 133, 133]]; // roșu deschis → var(--eroare-clar)
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
     /**
@@ -108,10 +103,8 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
       if (ramase <= 0) {
         continut.textContent = mesajPlin;
-        bara.style.color = '#E08585';
       } else {
         continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown}`;
-        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_INCHIS);
       }
 
       randeazaLocuriDinFormular();
@@ -173,28 +166,26 @@ import { EVENIMENT, scarcity } from '../content/copy';
     /*
      * Revenit la negru (2026-09-02, a treia rundă — „lasă header-ul negru,
      * doar textul roșu"), dar cu sticlă mată, nu opac plat: fundal
-     * translucid + blur, ca butonul flotant. Text implicit roșu (a patra
-     * rundă, 2026-09-02) — `--eroare-clar` (#E08585, 5.92:1 pe `--bg-inchis`
-     * opac, deja verificat), și fallback-ul fără JS (`scarcity.fallbackStatic`)
-     * folosește aceeași culoare, nu doar starea calculată de script.
+     * translucid + blur, ca butonul flotant. Text roșu fix, `--eroare-bara`
+     * (a cincea rundă, 2026-09-02 — `--eroare-clar` de la runda anterioară
+     * se citea ca roz pe fundalul ăsta foarte închis; vezi tokens.css).
+     * Culoarea nu mai variază cu ocuparea — la fel pentru fallback-ul fără JS.
      */
     background: rgba(27, 36, 38, 0.82);
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--eroare-clar);
+    color: var(--eroare-bara);
     display: flex;
     align-items: center;
     justify-content: center;
     padding-inline: var(--lat);
-    /* Culoarea de mai sus e setată inline de script, pe raportul de ocupare
-       real — tranziția face schimbarea vizibilă, nu instantanee. */
-    transition: color 400ms ease;
   }
 
   .continut {
     font-family: var(--font-mono);
-    font-size: var(--t-mic);
+    /* +20% față de --t-mic — cerut explicit (a cincea rundă, 2026-09-02). */
+    font-size: calc(var(--t-mic) * 1.2);
     text-align: center;
     white-space: nowrap;
     overflow: hidden;

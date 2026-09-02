@@ -97,7 +97,9 @@ export const scarcity = {
 
 export const hero = {
   eyebrow: 'PRIMUL PAS · Workshop by Deep Logic',
-  h1: ['Afacerea ta este diferită.', 'Cum faci PRIMUL PAS în noua eră digitală?'],
+  // 3 rânduri forțate, nu 2 — cerut explicit (a cincea rundă, 2026-09-02),
+  // ca „Cum faci PRIMUL PAS" să nu depindă de unde încape textul la wrap.
+  h1: ['Afacerea ta este diferită.', 'Cum faci PRIMUL PAS', 'în noua eră digitală?'],
   // Tagline rescris (2026-09-02, la cererea lui Ciprian) — text brut primit,
   // strâns fără să piardă mecanismul: invitația, ce faci timp de 3 ore, ce
   // pleci cu tine (roadmap-ul), de ce contează (știi exact care e PRIMUL PAS).

@@ -14,12 +14,14 @@ import Cta from './Cta.astro';
       <p class="eyebrow">{hero.eyebrow}</p>
 
       {/*
-        H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
-        propoziții E mesajul — pe un singur rând se pierde.
+        H1 pe trei rânduri, cu break forțat pe fiecare (a cincea rundă,
+        2026-09-02 — nu doar 2, ca linia a doua să nu depindă de unde încape
+        la wrap pe lățimi diferite). Contrastul dintre prima propoziție
+        (afirmație) și restul (întrebarea, pe 2 rânduri) E mesajul.
       */}
       <h1>
         {hero.h1.map((rand, i) => (
-          <span class:list={['rand', i === 1 && 'accentuat']}>
+          <span class:list={['rand', i > 0 && 'accentuat']}>
             {rand}
           </span>
         ))}

@@ -56,14 +56,29 @@ CTA cu numărul de locuri rămase. **Regula care rămâne literă de lege, nesch
   element separat, ascuns implicit, completat doar după un fetch reușit (vezi `Cta.astro`,
   `data-locuri-cta`). Nu schimbă regula de mai jos, „un singur CTA, text fix".
 
-**A patra rundă de polish (2026-09-02, Ciprian):** textul barei fixe e roșu de la capăt la
-capăt, nu doar aproape de capacitate plină — gradientul din `BaraScarcity.astro` pornește
-acum de la `#F0B3B3` (roșu deschis, 8.90:1 pe `--bg-inchis`) în loc de alb, spre
-`--eroare-clar` (#E08585, 5.92:1). Un roșu mai adânc (`#C75C5C`, testat) pică sub 4.5:1 pe
-fundalul foarte închis al barei — `scripts/check-contrast.mjs` îl listează ca respins, ca să
-nu revină din greșeală. Insigna „Disponibil X/30" s-a mutat **ÎN** interiorul butonului CTA
-(nu mai stă dedesubt) — regula de mai sus, „element separat, ascuns implicit", rămâne
-neschimbată, doar poziția.
+**A patra rundă de polish (2026-09-02, Ciprian):** textul barei fixe e roșu, nu doar aproape
+de capacitate plină. Insigna „Disponibil X/30" s-a mutat **ÎN** interiorul butonului CTA (nu
+mai stă dedesubt) — regula de mai sus, „element separat, ascuns implicit", rămâne neschimbată,
+doar poziția.
+
+**A cincea rundă (2026-09-02, Ciprian — „nu e roșu, e roz"):** gradientul roșu al rundei a
+patra (`#F0B3B3` → `--eroare-clar`) era prea desaturat pe fundalul foarte închis al barei și
+se citea ca roz. Înlocuit cu un roșu fix, `--eroare-bara` (`#FA6262`, 5.27:1 pe `--bg-inchis`
+— cel mai saturat roșu găsit care încă trece 4.5:1; roșu pur, `#FF0000`, pică la 3.96:1) —
+bara nu mai variază culoarea cu ocuparea. Textul barei e și **20% mai mare**
+(`calc(var(--t-mic) * 1.2)`).
+
+Aceeași rundă, două fix-uri fără legătură cu bara:
+- **H1 din hero, pe 3 rânduri forțate, nu 2** (`copy.ts` → `hero.h1`, array de 3, nu 2) — linia
+  „Cum faci PRIMUL PAS în noua eră digitală?" depindea de unde încăpea la wrap; acum fiecare
+  propoziție/frază e propriul `span.rand`, ca la rândul 1.
+- **Butonul flotant (`CtaFloating.astro`) se suprapunea cu CTA-ul din flux.** Cauza: un
+  `rootMargin` NEGATIV (`-25%`) ÎNGUSTEAZĂ zona în care un `.cta` contează ca „vizibil" —
+  un CTA era detectat abia după ce intra adânc în ecran, mult după ce ajunsese deja la poziția
+  fixă a butonului flotant. Fix: `rootMargin: '0px 0px 200px 0px'` (POZITIV) — un `.cta` e
+  detectat cu până la 200px înainte să apară fizic, timp suficient pentru tranziția de 250ms a
+  butonului flotant. Verificat programatic (scroll simulat prin toată pagina, la fiecare CTA):
+  zero suprapuneri.
 
 ---
 

@@ -51,9 +51,22 @@ import { CTA } from '../content/copy';
         }
         actualizeaza();
       },
-      // Prag generos: butonul trebuie să dispară înainte ca un CTA din flux
-      // să fie pe jumătate pe ecran, nu fix când îl atinge.
-      { threshold: 0, rootMargin: '0px 0px -25% 0px' },
+      /*
+       * Fix (a cincea rundă, 2026-09-02 — „butonul flotant se suprapune cu
+       * CTA-ul"): un rootMargin NEGATIV (`-25%`, varianta veche) ÎNGUSTEAZĂ
+       * regiunea în care un element contează ca „vizibil" — un `.cta` era
+       * declarat „vizibil" abia după ce intra ADÂNC în ecran, mult după ce
+       * ajunsese deja (la baza fixă a paginii, `bottom: 20px`) exact peste
+       * poziția fixă a butonului flotant. Rezultat: suprapunere reală, nu
+       * doar o clipă la încărcare. Nevoia e inversă — să dispară DEVREME,
+       * cât timp CTA-ul din flux e încă sub fold, nu abia când ajunge sus.
+       * Un rootMargin POZITIV lărgește regiunea de detecție DINCOLO de
+       * marginea de jos a ecranului: un `.cta` e „vizibil" (deci flotantul
+       * se ascunde) cu până la 200px înainte să apară fizic — timp suficient
+       * pentru tranziția de 250ms (`.floating`) să se termine cu mult înainte
+       * ca cele două să ajungă vreodată să se atingă pe ecran.
+       */
+      { threshold: 0, rootMargin: '0px 0px 200px 0px' },
     );
     cteuri.forEach((el) => observator.observe(el));
 

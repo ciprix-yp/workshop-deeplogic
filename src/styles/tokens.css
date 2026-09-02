@@ -51,7 +51,15 @@
   --text-pe-inchis: #ffffff;
   --text-pe-inchis-muted: #b9c4c4;
   --accent-clar: #7fd1c4;       /* 8.91:1 pe fundal închis — accent și CTA pe întuneric */
-  --eroare-clar: #e08585;       /* 5.92:1 pe fundal închis — capătul „roșu" al gradientului din BaraScarcity */
+  /*
+   * Roșu al textului din BaraScarcity.astro (a cincea rundă, 2026-09-02 —
+   * „nu e roșu, e roz"). Runda anterioară folosea `--eroare-clar` (#E08585,
+   * 5.92:1) — prea desaturat pe fundalul foarte închis al barei, se citea ca
+   * roz, nu roșu. Roșu pur (#FF0000) pică sub prag pe fundalul ăsta
+   * (3.96:1) — acesta e cel mai saturat roșu găsit care trece 4.5:1
+   * (5.27:1). Fix culoare, nu gradient: bara nu mai variază cu ocuparea.
+   */
+  --eroare-bara: #fa6262;       /* 5.27:1 pe fundal închis */
 
   /* Bara fixă de scarcity (BaraScarcity.astro) — înălțime declarată o
      singură dată, folosită și pentru padding-top pe body (Base.astro), ca
