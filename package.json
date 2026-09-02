@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "wrangler dev",
     "check": "astro check",
-    "deploy": "astro build && wrangler deploy",
+    "deploy": "node scripts/deploy.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:db": "bash tests/db/run.sh",

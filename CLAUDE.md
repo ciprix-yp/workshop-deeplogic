@@ -239,6 +239,23 @@ Mașina de stări e partea care poate aloca fizic același scaun de două ori. R
   toată aplicația, nu doar funcția care încă nu-l folosește (vezi `ALERT_EMAIL`, F4).
   `optional: true` până când funcția reală ajunge în cod.
 
+**Bug real, găsit 2026-09-02 („widget-ul Turnstile arată roșu, «numai pentru testare»"):**
+`DialogInscriere.astro` citea cheia publică prin `import.meta.env.PUBLIC_TURNSTILE_SITE_KEY`
+(cu fallback la cheia de TEST Cloudflare) — proiectul NU expune variabilele așa, ci prin
+`astro:env/client` (fix acum, la fel ca restul fișierelor). Dar fix-ul de cod singur NU e
+suficient — verificat empiric (`grep data-sitekey` pe HTML-ul din `dist/`, cu fiecare sursă
+rând pe rând): pentru câmpurile `context: 'client'`, `@cloudflare/vite-plugin` rezolvă
+`astro:env` din `.dev.vars` → `.env` → abia apoi `wrangler.jsonc` → `vars`. `.dev.vars`/`.env`
+au (corect, pentru `astro dev`) cheia de TEST — dar `npm run deploy` rulează `astro build` PE
+ACEEAȘI MAȘINĂ (fără CI, fără remote git), deci build-ul de producție citea tot cheia de test,
+niciodată cheia reală din `wrangler.jsonc`. Fix la rădăcină: `scripts/deploy.mjs` (înlocuiește
+`astro build && wrangler deploy` din `npm run deploy`) ascunde `.dev.vars`/`.env` STRICT pe
+durata lui `astro build`, apoi le restaurează necondiționat (try/finally + SIGINT/SIGTERM) —
+build-ul de deploy cade prin la `wrangler.jsonc` (cheia reală), `astro dev` local rămâne
+neatins. **Orice altă variabilă `context: 'client'` viitoare are aceeași capcană** — dacă
+`.dev.vars`/`.env` îi dau o valoare de dev, un `wrangler deploy` local o va clona în producție
+dacă nu trece prin `scripts/deploy.mjs`.
+
 ---
 
 ## 5. „Gata" = verificat, nu = scris
@@ -253,6 +270,10 @@ npm run test:visual     # screenshots 360 / 390 / 768 / 1280 / 1920
 
 Plus, pentru orice atinge emailuri sau stare: emailul trimis **real** și deschis pe Gmail
 mobil + Outlook; fluxul parcurs end-to-end, nu doar testat unitar.
+
+**După orice `npm run deploy`:** `curl -s https://workshop.deeplogic.ro/ | grep data-sitekey` —
+trebuie să arate `0x4AAAAAAEd91eLSLyQCvsIL` (cheia reală), niciodată `1x00000000000000000000AA`
+(cheia de test Cloudflare — vezi bug-ul din §4, „widget-ul Turnstile arată roșu").
 
 **Cross-check de copy, la fiecare rundă:** fiecare afirmație din pagină verificată împotriva
 a ce face sistemul efectiv. „30 și, la mine, chiar sunt 30" — sistemul respectă?

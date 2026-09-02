@@ -1,8 +1,23 @@
 ---
 import { inscriere, CTA, stari } from '../content/copy';
 import { BLOCURI, BIFE, SURSA_CONDITIONAL } from '../content/form-schema';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
 
-const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
+/*
+ * Bug real, găsit 2026-09-02 („de ce arată widget-ul roșu, cu «numai pentru
+ * testare»?"): varianta veche citea `import.meta.env.PUBLIC_TURNSTILE_SITE_KEY`
+ * — proiectul NU expune variabilele așa, ci prin `astro:env/client`
+ * (`PUBLIC_SITE_URL` în `src/inngest/*` e exact același tipar). Acea citire
+ * era mereu `undefined`, deci fallback-ul local (`?? '1x00...AA'`, cheia de
+ * TEST publică a Cloudflare) se activa NECONDIȚIONAT — inclusiv în producție,
+ * unde `wrangler.jsonc` are cheia reală. Cheia de test afișează avertismentul
+ * roșu ȘI nu se potrivește cu `TURNSTILE_SECRET_KEY` real de pe server, deci
+ * `verificaTurnstile()` (src/lib/turnstile.ts) pica probabil la fiecare
+ * submit real. Fix: import direct din `astro:env/client` — fără fallback
+ * local, schema din `astro.config.mjs` cere câmpul obligatoriu, deci un
+ * build fără el pică zgomotos la build, nu tăcut la runtime.
+ */
+const siteKey = PUBLIC_TURNSTILE_SITE_KEY;
 
 /** Sursele care deschid un câmp suplimentar, serializate pentru scriptul de pe client. */
 const conditionale = JSON.stringify(SURSA_CONDITIONAL);
