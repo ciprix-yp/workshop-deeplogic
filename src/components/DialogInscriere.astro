@@ -214,6 +214,18 @@ const stariClient = JSON.stringify({
     // Fără asta, dialogul (randat `open` pentru clientul fără JS) ar apărea
     // o clipă ca bloc inline, apoi ar „sări" la închis — exact fereastra de
     // FOUC pe care restul scripturilor din proiect o evită prin poziționare.
+    //
+    // `.cu-js` marchează prezența JS-ului ÎNAINTE de primul paint, în același
+    // script sincron — CSS-ul de intrare/ieșire (`@starting-style`, vezi
+    // stilurile de mai jos) e scopat la ea. Fără asta, `@starting-style`
+    // pornește și pe randarea statică (fără JS): elementul e deja `[open]`
+    // la primul paint, deci browserul tot tratează ăla ca „prima stilizare"
+    // și rulează o tranziție de 220ms nesolicitată — verificat empiric,
+    // instabilă (dialogul e `position: absolute` din stilul implicit al
+    // `<dialog>`, centrat cu margini automate pe toată înălțimea
+    // documentului; `scale`-ul în mișcare îi schimbă cutia, deci și offsetul
+    // de centrare, cadru cu cadru).
+    dialog.classList.add('cu-js');
     dialog.close();
 
     function deschide() {
@@ -361,12 +373,68 @@ const stariClient = JSON.stringify({
     box-shadow: 0 24px 64px -16px rgba(27, 36, 38, 0.35);
   }
 
+  /*
+   * Intrare/ieșire (audit emil-design-eng, 2026-09-01) — înainte, `showModal()`
+   * și `.close()` săreau instant, fără nicio tranziție; dialogul cel mai
+   * important de pe pagină se comporta ca și cum ar fi rupt. `[open]` +
+   * `@starting-style` + `allow-discrete` animă AMBELE sensuri fără nicio
+   * schimbare în JS: cele trei căi de închidere (X, backdrop, ESC nativ) tot
+   * apelează `.close()` direct — CSS-ul ține elementul randat pe durata
+   * tranziției înainte să-l scoată efectiv din top layer.
+   *
+   * `transform-origin: center`, nu ancorat la un trigger — modalele rămân
+   * centrate (excepția explicită din regula „popover-urile pornesc de la
+   * trigger").
+   *
+   * Scopat la `.cu-js` (adăugată sincron, înainte de primul paint — vezi
+   * scriptul de mai jos): fără JS, dialogul e randat `open` static din prima
+   * — `@starting-style` ar trata ȘI ăla ca „prima stilizare" și ar anima o
+   * intrare nesolicitată pe încărcarea paginii, pentru un vizitator care
+   * n-a apăsat nimic.
+   */
+  .dialog-inscriere.cu-js {
+    opacity: 0;
+    scale: 0.95;
+    transition: opacity 220ms var(--ease-out), scale 220ms var(--ease-out),
+      display 220ms allow-discrete, overlay 220ms allow-discrete;
+  }
+
+  .dialog-inscriere.cu-js[open] {
+    opacity: 1;
+    scale: 1;
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+
   /* Fără JS: `open` static, fără `showModal()` — dialogul e un bloc normal,
-     în flux, nu o fereastră plutitoare. Lățimea/înălțimea de mai sus rămân
-     nefolosite (nu contează în flux), dar `::backdrop` nu există niciodată
-     în cazul ăsta — nimic de dezactivat separat. */
+     în flux, nu o fereastră plutitoare. Regulile de mai sus nu se activează
+     niciodată în cazul ăsta (nimic nu tranziționează `[open]`, e deja acolo
+     de la randare), iar `::backdrop` nu există niciodată în flux — nimic de
+     dezactivat separat. */
   .dialog-inscriere::backdrop {
+    background: rgba(27, 36, 38, 0);
+    transition: background-color 220ms var(--ease-out), display 220ms allow-discrete, overlay 220ms allow-discrete;
+  }
+
+  .dialog-inscriere[open]::backdrop {
     background: rgba(27, 36, 38, 0.55);
+
+    @starting-style {
+      background: rgba(27, 36, 38, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Rămâne opacitatea (ajută la comprehensiune — ce apare/dispare), dispare
+       mișcarea (scale). */
+    .dialog-inscriere.cu-js,
+    .dialog-inscriere.cu-js[open] {
+      scale: 1;
+      transition-duration: 160ms;
+    }
   }
 
   .continut {
@@ -404,6 +472,14 @@ const stariClient = JSON.stringify({
     background: rgba(47, 79, 79, 0.2);
   }
 
+  .inchide {
+    transition: transform 160ms var(--ease-out), background-color 0.15s ease;
+  }
+
+  .inchide:active {
+    transform: scale(0.9);
+  }
+
   h2 {
     font-size: var(--t-h2);
     margin-bottom: var(--sp-md);
@@ -434,6 +510,16 @@ const stariClient = JSON.stringify({
        să seteze `style.color` încă. */
     color: var(--secundar);
     margin-bottom: var(--sp-xl);
+    /* Fix (audit emil-design-eng, 2026-09-01) — vezi Cta.astro/.locuri-cta,
+       același defect: apărea instant la `hidden = false`. */
+    opacity: 1;
+    scale: 1;
+    transition: opacity 200ms var(--ease-out), scale 200ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.95;
+    }
   }
 
   form {
@@ -474,6 +560,24 @@ const stariClient = JSON.stringify({
   .camp {
     display: grid;
     gap: var(--sp-2xs);
+  }
+
+  /*
+   * Fix (audit emil-design-eng, 2026-09-01) — doar la apariție: câmpul
+   * condiționat „De la cine?" sărea instant la `hidden = false`. La
+   * dispariție rămâne instant, deliberat — `[hidden]` are `!important` în
+   * tokens.css dintr-un motiv real de accesibilitate (o secțiune anterioară
+   * a proiectului a găsit un câmp ascuns care rămânea vizual vizibil din
+   * cauza unui `display` mai specific din componentă); a anima ieșirea ar
+   * cere să lupți cu acel `!important`, risc mai mare decât beneficiul aici.
+   */
+  #camp-sursa-detaliu {
+    opacity: 1;
+    transition: opacity 200ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .eticheta {
@@ -592,6 +696,18 @@ const stariClient = JSON.stringify({
     font-size: var(--t-eyebrow);
     line-height: var(--lh-normal);
     min-height: 0;
+    /*
+     * Fix (audit emil-design-eng, 2026-09-01): textul apărea instant, din
+     * `:empty` direct la mesaj complet — un formular care „sare" la tine cu
+     * eroarea se simte ca o ceartă, nu ca un răspuns. `@starting-style`
+     * animă exact tranziția `display:none → display:block` de mai jos.
+     */
+    opacity: 1;
+    transition: opacity 160ms var(--ease-out), display 160ms allow-discrete;
+
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .eroare:empty {
@@ -615,7 +731,16 @@ const stariClient = JSON.stringify({
     min-height: var(--touch);
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.15s ease, transform 0.15s var(--ease-out);
+  }
+
+  /*
+   * Fix (audit emil-design-eng, 2026-09-01): singurul buton fără feedback
+   * de apăsare de pe toată pagina — exact cel care contează cel mai mult
+   * (înscrierea efectivă). Aliniat cu `.cta` din Cta.astro.
+   */
+  .cta-submit:active:not(:disabled) {
+    transform: scale(0.97);
   }
 
   @media (min-width: 40rem) {

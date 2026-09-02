@@ -62,7 +62,7 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     padding: var(--sp-sm) var(--sp-lg);
     transition:
       background-color 0.15s ease,
-      transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.15s var(--ease-out),
       box-shadow 0.15s ease;
   }
 
@@ -116,7 +116,21 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     font-family: var(--font-mono);
     font-size: 0.8em;
     font-weight: 400;
+    /*
+     * Fix (audit emil-design-eng, 2026-09-01): `el.hidden = false` (vezi
+     * scriptul din BaraScarcity.astro) arăta numărul instant, fără nicio
+     * tranziție — un element care „apare din nimic" se citește ca stricat,
+     * mai ales pentru o cifră menită să construiască încredere. `@starting-style`
+     * animă exact momentul în care `hidden` e scos.
+     */
     opacity: 0.85;
+    scale: 1;
+    transition: opacity 200ms var(--ease-out), scale 200ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.9;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {

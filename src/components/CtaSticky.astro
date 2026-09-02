@@ -130,6 +130,13 @@ import { CTA, EVENIMENT } from '../content/copy';
     font-weight: 600;
     font-size: var(--t-corp);
     text-decoration: none;
+    /* Fix (audit emil-design-eng, 2026-09-01): singurul CTA de pe pagină
+       fără feedback de apăsare. */
+    transition: transform 160ms var(--ease-out);
+  }
+
+  .buton:active {
+    transform: scale(0.97);
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -111,6 +111,13 @@
   /* Ținta de atingere minimă. 44px e pragul WCAG 2.2 (SC 2.5.8) și, practic,
      lățimea unui deget pe un telefon ținut cu o mână în timp ce mergi. */
   --touch: 44px;
+
+  /* ── Easing — curbe proprii, nu cele slabe din CSS implicit ──────────────
+     Consolidate la audit (emil-design-eng, 2026-09-01): `Cta.astro` și
+     `CtaSticky.astro` foloseau deja `cubic-bezier(0.22, 1, 0.36, 1)` ad-hoc,
+     redefinit de fiecare dată. Numite o singură dată, refolosite peste tot. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* ── Reset minimal ──────────────────────────────────────────────────────── */
