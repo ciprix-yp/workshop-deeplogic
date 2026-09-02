@@ -14,22 +14,22 @@ import Sectiune from './Sectiune.astro';
 <Sectiune id="pentru-cine" latime="larg">
   <div class="grila">
     <div class="coloana">
-      <h2>{pentruCine.da.h2}</h2>
+      <h2 data-reveal>{pentruCine.da.h2}</h2>
       <ul class="lista da">
-        {pentruCine.da.lista.map((l) => <li>{l}</li>)}
+        {pentruCine.da.lista.map((l) => <li data-reveal>{l}</li>)}
       </ul>
     </div>
 
     <div class="coloana">
-      <h2>{pentruCine.nu.h2}</h2>
+      <h2 data-reveal>{pentruCine.nu.h2}</h2>
       <ul class="lista nu">
-        {pentruCine.nu.lista.map((l) => <li>{l}</li>)}
+        {pentruCine.nu.lista.map((l) => <li data-reveal>{l}</li>)}
       </ul>
     </div>
   </div>
 
   <div class="outro">
-    {pentruCine.outro.map((p) => <p>{p}</p>)}
+    {pentruCine.outro.map((p) => <p data-reveal>{p}</p>)}
   </div>
 </Sectiune>
 

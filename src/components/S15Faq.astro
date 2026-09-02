@@ -12,11 +12,11 @@ import Sectiune from './Sectiune.astro';
   nativ: funcționează fără JS, navigabil cu tastatura fără cod suplimentar.
 */}
 <Sectiune id="intrebari">
-  <h2>{faq.h2}</h2>
+  <h2 data-reveal>{faq.h2}</h2>
 
   <div class="lista">
     {faq.intrebari.map((item) => (
-      <details class="qa">
+      <details class="qa" data-reveal>
         <summary>
           <span class="q">{item.q}</span>
           <svg class="chevron" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">

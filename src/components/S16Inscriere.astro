@@ -21,14 +21,14 @@ import Cta from './Cta.astro';
 
 <Sectiune id="inscriere-cta">
   <div class="antet">
-    <h2>
+    <h2 data-reveal>
       {ctaFinal.h2.map((rand) => <span class="rand">{rand}</span>)}
     </h2>
-    <p class="meta">{ctaFinal.meta}</p>
+    <p class="meta" data-reveal>{ctaFinal.meta}</p>
     <div class="corp">
-      {ctaFinal.corp.map((p) => <p>{p}</p>)}
+      {ctaFinal.corp.map((p) => <p data-reveal>{p}</p>)}
     </div>
-    <p class="accent">{ctaFinal.accent}</p>
+    <p class="accent" data-reveal>{ctaFinal.accent}</p>
     <Cta marime="mare" spatiuSus />
   </div>
 </Sectiune>

@@ -10,23 +10,23 @@ import Sectiune from './Sectiune.astro';
   absoarbe spiritul fostului grid de exemple (retras ca secțiune proprie).
 */}
 <Sectiune id="problema" latime="larg">
-  <h2>{problema.h2}</h2>
+  <h2 data-reveal>{problema.h2}</h2>
 
   <ul class="exemple">
     {problema.exemple.map((linie) => (
-      <li>{linie}</li>
+      <li data-reveal>{linie}</li>
     ))}
   </ul>
 
-  <p class="sau-poate">{problema.sauPoate}</p>
+  <p class="sau-poate" data-reveal>{problema.sauPoate}</p>
 
   <div class="intre-timp">
     {problema.intreTimp.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 
-  <div class="intrebare-bloc">
+  <div class="intrebare-bloc" data-reveal>
     <p class="intrebare">{problema.intrebare}</p>
     <p class="intrebare-sub">{problema.intrebareSub}</p>
   </div>

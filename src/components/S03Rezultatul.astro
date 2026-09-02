@@ -11,11 +11,11 @@ import Cta from './Cta.astro';
   final: singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
 */}
 <Sectiune id="rezultatul" latime="larg">
-  <h2>{rezultatul.h2}</h2>
+  <h2 data-reveal>{rezultatul.h2}</h2>
 
   <ol class="lista">
     {rezultatul.lista.map((item, i) => (
-      <li>
+      <li data-reveal>
         <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
         <span class="text">
           <strong>{item.titlu}</strong>
@@ -32,7 +32,7 @@ import Cta from './Cta.astro';
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
   */}
-  <aside class="granita card-depth card-3d" data-tilt>
+  <aside class="granita card-depth card-3d" data-tilt data-reveal>
     <h3>{rezultatul.granita.h3}</h3>
     {rezultatul.granita.corp.map((p) => (
       <p>{p}</p>
@@ -40,29 +40,29 @@ import Cta from './Cta.astro';
   </aside>
 
   <div class="sub-bloc">
-    <h3>{rezultatul.cumLucram.h3}</h3>
-    <p class="format">{rezultatul.cumLucram.intro}</p>
+    <h3 data-reveal>{rezultatul.cumLucram.h3}</h3>
+    <p class="format" data-reveal>{rezultatul.cumLucram.intro}</p>
     {rezultatul.cumLucram.corp.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
     <ul class="lista-simpla">
       {rezultatul.cumLucram.lista.map((l) => (
-        <li>{l}</li>
+        <li data-reveal>{l}</li>
       ))}
     </ul>
     {rezultatul.cumLucram.outro.map((p) => (
-      <p class="outro">{p}</p>
+      <p class="outro" data-reveal>{p}</p>
     ))}
   </div>
 
   <div class="sub-bloc">
-    <h3>{rezultatul.chemaCineva.h3}</h3>
+    <h3 data-reveal>{rezultatul.chemaCineva.h3}</h3>
     {rezultatul.chemaCineva.corp.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
-    <p class="accent">{rezultatul.chemaCineva.accent}</p>
+    <p class="accent" data-reveal>{rezultatul.chemaCineva.accent}</p>
     {rezultatul.chemaCineva.corpFinal.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 

@@ -6,21 +6,21 @@ import Sectiune from './Sectiune.astro';
 {/* Secțiune nouă (pivot de structură 2026-09-02) — costul tăcut al unui
     început fără o problemă clară. */}
 <Sectiune id="agravare">
-  <h2>{agravare.h2}</h2>
+  <h2 data-reveal>{agravare.h2}</h2>
 
   <div class="corp">
     {agravare.corp.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 
   <div class="alternativa">
     {agravare.alternativa.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 
-  <div class="merita card-depth">
+  <div class="merita card-depth" data-reveal>
     <h3>{agravare.h3}</h3>
     {agravare.corpFinal.map((p) => (
       <p>{p}</p>

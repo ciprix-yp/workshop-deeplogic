@@ -14,45 +14,45 @@ import Sectiune from './Sectiune.astro';
   despre firmă.
 */}
 <Sectiune id="solutie" latime="larg">
-  <h2>{solutie.h2}</h2>
+  <h2 data-reveal>{solutie.h2}</h2>
   <div class="intro">
     {solutie.intro.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 
   <ul class="intrebari">
     {solutie.intrebari.map((q) => (
-      <li>{q}</li>
+      <li data-reveal>{q}</li>
     ))}
   </ul>
 
   <div class="concluzie-intro">
     {solutie.concluzieIntro.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 
-  <h3>{solutie.h3}</h3>
+  <h3 data-reveal>{solutie.h3}</h3>
   <ul class="perspectiva">
     {solutie.perspectiva.map((p) => (
-      <li><strong>{p.cine}</strong> {p.ce}</li>
+      <li data-reveal><strong>{p.cine}</strong> {p.ce}</li>
     ))}
   </ul>
 
-  <p class="mecanism-intro">{solutie.mecanismIntro}</p>
+  <p class="mecanism-intro" data-reveal>{solutie.mecanismIntro}</p>
   <ol class="mecanism">
     {solutie.mecanism.map((linie) => (
-      <li>{linie}</li>
+      <li data-reveal>{linie}</li>
     ))}
   </ol>
 
-  <p class="sinteza card-depth">{solutie.sinteza}</p>
+  <p class="sinteza card-depth" data-reveal>{solutie.sinteza}</p>
 
-  <h3>{solutie.h3Era}</h3>
+  <h3 data-reveal>{solutie.h3Era}</h3>
   <div class="era">
     {solutie.eraCorp.map((p) => (
-      <p>{p}</p>
+      <p data-reveal>{p}</p>
     ))}
   </div>
 </Sectiune>

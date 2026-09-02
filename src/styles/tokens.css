@@ -340,15 +340,21 @@ img {
 }
 
 /*
- * ── Reveal la scroll (pivot 2026-09-02) ─────────────────────────────────
- * Opt-in prin `data-reveal` — pus de `Sectiune.astro` (prop `reveal`,
- * implicit `true`). Scriptul din Base.astro (`depth`) adaugă `.js` pe
- * `<html>` SINCRON, înainte de primul paint (același truc ca `.cu-js` din
- * DialogInscriere.astro), apoi `.e-vizibil` pe fiecare element la intrarea
- * în viewport. Fără clasa `html.js`, elementul rămâne la starea finală —
- * un vizitator fără JS nu vede NICIODATĂ conținut ascuns, doar unul cu JS
- * primește tranziția. Mișcarea redusă e prinsă deja de regula globală de
- * mai sus (`transition-duration: 0.01ms`), fără cod suplimentar aici.
+ * ── Reveal la scroll (pivot 2026-09-02, granularizat a doua rundă) ───────
+ * Opt-in prin `data-reveal`, pus explicit per element (paragraf, item de
+ * listă, card) în fiecare componentă — NU la nivel de secțiune întreagă.
+ * Motivul schimbării: un fade+ridicare pe tot blocul unei secțiuni bogate
+ * (Soluție, Rezultatul) își pierde relevanța — secțiunea e deja pe jumătate
+ * vizibilă când tranziția pornește. Revelat pe bucăți mici, fiecare element
+ * intră separat, exact când ajunge în cadru.
+ *
+ * Scriptul din Base.astro (`depth`) adaugă `.js` pe `<html>` SINCRON,
+ * înainte de primul paint (același truc ca `.cu-js` din DialogInscriere.astro),
+ * apoi `.e-vizibil` pe fiecare element la intrarea în viewport. Fără clasa
+ * `html.js`, elementul rămâne la starea finală — un vizitator fără JS nu
+ * vede NICIODATĂ conținut ascuns, doar unul cu JS primește tranziția.
+ * Mișcarea redusă e prinsă deja de regula globală de mai sus
+ * (`transition-duration: 0.01ms`), fără cod suplimentar aici.
  */
 [data-reveal] {
   opacity: 1;
@@ -365,3 +371,18 @@ html.js [data-reveal].e-vizibil {
   opacity: 1;
   transform: none;
 }
+
+/*
+ * Cascadă discretă — dacă mai mulți frați `[data-reveal]` intră în cadru în
+ * același cadru de scroll (viewport scurt, scroll rapid), tot ies pe rând,
+ * nu deodată. `:nth-child` numără orice frate, nu doar `[data-reveal]`, dar
+ * containerele reale (liste, grupuri de paragrafe) au aproape exclusiv
+ * frați `[data-reveal]`, deci indexarea iese curată practic peste tot.
+ */
+html.js [data-reveal]:nth-child(2) { transition-delay: 60ms; }
+html.js [data-reveal]:nth-child(3) { transition-delay: 120ms; }
+html.js [data-reveal]:nth-child(4) { transition-delay: 180ms; }
+html.js [data-reveal]:nth-child(5) { transition-delay: 240ms; }
+html.js [data-reveal]:nth-child(6) { transition-delay: 300ms; }
+html.js [data-reveal]:nth-child(7) { transition-delay: 360ms; }
+html.js [data-reveal]:nth-child(n + 8) { transition-delay: 420ms; }
