@@ -48,6 +48,40 @@
  *   D6 — adresa exactă intră pe pagină (§13 → acum §14 „Detalii practice")
  *   D9 — fără testimoniale (rămâne valabil — nicio secțiune din PRIMUL PAS
  *        nu introduce testimoniale)
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PIVOT DE NARATIVĂ (2026-09-02, Ciprian): diferențiatorul Deep Logic era
+ * prezent, dar nu dominant — mecanismul „business → nevoie → oameni → proces
+ * → impact → tehnologie" apărea abia la §10, după ce cititorul putea percepe
+ * pagina drept „încă un workshop despre AI", nu o metodologie distinctă.
+ * Bazat pe un draft alternativ („PRIMUL-PAS-landing-page-v3.md") + un audit
+ * scris al lui, ambele primite de la Ciprian. Decizii:
+ *
+ *   — H1 nou: „Afacerea ta este diferită. Care este PRIMUL PAS în noua eră
+ *     digitală?" — înlocuiește framing-ul „toată lumea îți spune să
+ *     folosești AI", care centra anxietatea de adoptare, nu decizia de
+ *     business.
+ *   — §10 DespreDeepLogic (fostă prefață de proză) mutată devreme în pagină
+ *     (imediat după §02 Problema, înainte de §03 Rezultatul — vezi
+ *     index.astro) și rescrisă ca mecanism explicit: perspectiva ownerului,
+ *     realitatea echipei, procesele/datele — cu sinteza „Deep Logic caută
+ *     punctul în care nevoia ta, realitatea echipei și valoarea pentru
+ *     companie se întâlnesc." Numele exportului (`despreDeepLogic`) și al
+ *     fișierului (`S10Deeplogic.astro`) rămân neschimbate — numărul din nume
+ *     e acum istoric, nu poziția reală; același precedent ca despărțirea
+ *     §06/§10 documentată mai sus.
+ *   — Pasul 2 al metodologiei (§06 CeFacem) redenumit „REALITATEA ECHIPEI" →
+ *     „WORKSHOP CU ECHIPA" — spune explicit CUM se verifică ipoteza
+ *     ownerului, nu doar CE se descoperă. Ecou deliberat cu „workshopul cu
+ *     echipa" din mecanismul de mai sus.
+ *   — „Roadmap" → „roadmap personalizat de validare" la promisiunile
+ *     principale (§03, §14, FAQ) — cuvântul simplu, singur, se putea citi
+ *     ca plan de implementare; „de validare" protejează limita onestă din
+ *     §03 „Ce NU vei ști".
+ *   — §11 Facilitator capătă o propoziție de autoritate practică: metodologia
+ *     nu e învățată pentru acest workshop, vine din rezolvarea unor probleme
+ *     reale de business proprii.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export const EVENIMENT = {
@@ -95,14 +129,12 @@ export const scarcity = {
 
 export const hero = {
   eyebrow: 'PRIMUL PAS · Workshop by Deep Logic',
-  // Break forțat înainte de „Dar" — contrastul dintre cele două rânduri E mesajul.
-  h1: ['Toată lumea îți spune să folosești AI.', 'Dar în compania ta, de unde începi?'],
-  // [completare] — „...ca să formulezi nevoia pe care vrei s-o rezolvi, să-i e"
-  // Completat aliniat cu promisiunea explicită din regulile globale ale
-  // documentului sursă: „își clarifică nevoia... începe să-i estimeze
-  // impactul... pleacă cu un roadmap de validare".
+  // Pivot de narativă (2026-09-02): „afacerea ta e diferită" înlocuiește
+  // anxietatea de adoptare cu o decizie de business — vezi antetul fișierului.
+  // Break forțat înainte de a doua propoziție — contrastul dintre ele E mesajul.
+  h1: ['Afacerea ta este diferită.', 'Care este PRIMUL PAS în noua eră digitală?'],
   subheadline:
-    'În 3 ore lucrezi pe propria companie ca să formulezi nevoia pe care vrei s-o rezolvi, să-i estimezi impactul și să pleci cu un prim pas concret.',
+    'În 3 ore lucrezi pe propria companie ca să formulezi nevoia pe care vrei s-o rezolvi, să-i estimezi impactul și să pleci cu un roadmap personalizat de validare.',
   pentruCine: 'Pentru antreprenori, owneri și decidenți din companii de orice mărime.',
   meta: `${EVENIMENT.dataText} · ${EVENIMENT.ora} · ${EVENIMENT.oras}`,
   // Înlocuiește vechiul „demo live pe sisteme care rulează azi" — interzis
@@ -193,7 +225,7 @@ export const rezultatul = {
       corp: 'Cei care execută procesul, îl coordonează, primesc rezultatul sau trăiesc consecințele lui — nu doar perspectiva ta.',
     },
     {
-      titlu: 'Roadmap-ul tău personalizat',
+      titlu: 'Roadmap-ul tău personalizat de validare',
       corp: 'Nevoia identificată, impactul preliminar, ce mai trebuie validat, oamenii de implicat și recomandarea Deep Logic privind continuarea — pe email.',
     },
   ],
@@ -283,10 +315,12 @@ export const ceFacem = {
     },
     {
       numar: '02',
-      titlu: 'REALITATEA ECHIPEI',
-      // [completare] — „...ce se întâmplă în"
+      // Redenumit (pivot 2026-09-02): spune explicit CUM se verifică ipoteza
+      // ownerului, nu doar CE se descoperă — ecou deliberat cu „workshopul
+      // cu echipa" din §10 DespreDeepLogic, mutată devreme în pagină.
+      titlu: 'WORKSHOP CU ECHIPA',
       corp: [
-        'Descoperim nevoile oamenilor care lucrează efectiv în procese și înțelegem ce se întâmplă în realitate, nu doar pe hârtie.',
+        'Descoperim nevoile oamenilor care lucrează efectiv în procese, analizăm blocajele și verificăm ipoteza ta în realitatea de zi cu zi.',
       ],
     },
     {
@@ -425,20 +459,32 @@ export const useCases = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §10 — DESPRE DEEP LOGIC
-   Prefața lui §08 din sursă („de ce lucrăm invers") — cealaltă jumătate,
-   cei 5 pași, e la §06 mai sus. Fără cifre — poziția se afirmă, nu se
-   cuantifică.
+   §10 — DESPRE DEEP LOGIC (mecanismul)
+   Mutată devreme în pagină (index.astro: imediat după §02 Problema) — pivot
+   de narativă 2026-09-02, vezi antetul fișierului. Diferențiatorul central:
+   perspectiva ownerului e punctul de plecare, nu verdictul. Fără cifre —
+   poziția se afirmă, nu se cuantifică.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const despreDeepLogic = {
-  h2: 'Înainte de soluție, trebuie să înțelegem problema.',
-  corp: [
-    'Când apare o tehnologie nouă, tentația este să începem cu unealta. Să vedem ce poate face și apoi să căutăm unde să o folosim. La Deep Logic facem invers.',
-    'Business → problemă → oameni → proces → impact → tehnologie.',
-    'Începem cu perspectiva ownerului. Apoi o verificăm în realitatea echipei. Ne uităm la procese și proceduri. La date. La efort. La risc. La impact și ROI.',
-    'Și abia după aceea decidem dacă tehnologia are sens.',
+  h2: 'Afacerea ta nu are o singură realitate.',
+  intro: [
+    'Până acum, majoritatea companiilor cumpărau instrumente digitale și își adaptau procesele la ele.',
+    'Astăzi poți începe să construiești instrumentele în jurul felului în care funcționează compania ta.',
+    'Tocmai de aceea nu există un prim pas universal — și tocmai de aceea perspectiva ta, singură, nu e suficientă.',
   ],
+  perspectiva: [
+    { cine: 'Tu', ce: 'vezi direcția și rezultatul pe care îl vrei.' },
+    { cine: 'Echipa', ce: 'vede blocajele, excepțiile și munca de zi cu zi.' },
+    { cine: 'Procesele și datele', ce: 'arată ce merită cu adevărat schimbat.' },
+  ],
+  mecanism: [
+    'PRIMUL PAS începe cu perspectiva ta.',
+    'Workshopul cu echipa o confirmă, o corectează sau o contrazice.',
+    'Impactul și ROI-ul decid ce merită implementat.',
+  ],
+  sinteza:
+    'Deep Logic caută punctul în care nevoia ta, realitatea echipei și valoarea pentru companie se întâlnesc.',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -458,6 +504,10 @@ export const facilitator = {
     'În anii care au urmat am trecut de la a folosi instrumente făcute de alții la a-mi construi propriile sisteme. Asta mi-a schimbat perspectiva.',
     'După piatră, am descoperit ciocanul. Cu un ciocan poți construi multe lucruri. Dar ciocanul nu îți spune ce trebuie construit.',
     'Și exact asta mi se pare astăzi întrebarea importantă în AI. Nu „ce poate tehnologia?”. Ci „ce merită să rezolvăm cu ea?”. Din întrebarea asta s-a construit și metodologia Deep Logic.',
+    // Adăugat (pivot 2026-09-02): închide obiecția „încă un trainer care
+    // vorbește despre tehnologie" — metodologia vine din practică, nu din
+    // pregătirea acestui workshop.
+    'Nu predau o metodă învățată pentru acest workshop. Am ajuns la ea încercând să rezolv probleme reale din propriul business și construind instrumentele pe care le folosesc și azi.',
   ],
   foto: {
     src: '/ciprian-micu.jpg',
@@ -519,7 +569,7 @@ export const deCeGratuit = {
     h3: 'Ce include',
     lista: [
       'Trei ore de lucru pe compania ta, cu metodologia Deep Logic',
-      'Roadmap-ul tău digital personalizat, pe email',
+      'Roadmap-ul tău personalizat de validare, pe email',
       'Recomandarea Deep Logic privind continuarea',
     ],
   },
@@ -567,7 +617,7 @@ export const faq = {
     {
       q: 'Ce primesc după workshop?',
       // [completare] — „...ce trebu"
-      a: 'Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar, ce trebuie validat, oamenii de implicat și pașii concreți pentru următorul pas.',
+      a: 'Un roadmap personalizat de validare, pe email: nevoia identificată, impactul preliminar, ce trebuie validat, oamenii de implicat și pașii concreți pentru următorul pas.',
     },
     {
       // Nu e în PDF-ul sursă (§13 are doar 6 întrebări) — reintrodusă din

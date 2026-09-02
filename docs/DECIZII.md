@@ -511,3 +511,29 @@ Notion peste `contacts` · trimiterea automată a materialelor post-workshop (r�
 segmentul `prezent`) · formularul de închidere din sală · blocul despre faliment (D8) · testimonialele
 (D9) · textul de distribuire pentru membrii BIZZ.CLUB (**există deja scris** în `landing-*.md`,
 secțiunea finală — e livrabil separat, nu intră pe pagină) · `/checkin-loc` walk-in prin QR (D21).
+
+---
+
+## Pivot de narativă (2 septembrie 2026)
+
+Ciprian a trimis un draft alternativ de copy (`PRIMUL-PAS-landing-page-v3.md` — H1 și structură
+diferite de ce era live) plus un audit scris al lui: diferențiatorul Deep Logic (mecanismul
+owner → echipă → proces/date → decizie) era prezent în pagină, dar abia la §10, după ce
+cititorul putea percepe deja pagina drept „încă un workshop despre AI". Decizia, confirmată
+explicit prin `AskUserQuestion` (opțiunea „rescriu pagina după v3 + critică", nu varianta mai
+mică de a doar aplica ideile pe structura existentă): rescriere de narativă, nu doar de propoziții.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D31** | H1 nou — „Afacerea ta este diferită. Care este PRIMUL PAS în noua eră digitală?" | Vechiul H1 („Toată lumea îți spune să folosești AI...") centra anxietatea de adoptare. Noul H1 centrează decizia de business — coerent cu mecanismul care urmează imediat după. | `copy.ts` (`hero.h1`), `S01Hero.astro` neschimbat |
+| **D32** | §10 DespreDeepLogic mutată devreme — imediat după §02 Problema, înainte de §03 Rezultatul | Draftul v3 + audit cereau explicit ca mecanismul „business → nevoie → oameni → proces → impact → tehnologie" să fie în prima treime a paginii, nu îngropat la poziția 9 din 15. Numele exportului (`despreDeepLogic`) și al fișierului (`S10Deeplogic.astro`) rămân neschimbate — numărul din nume e acum istoric, nu poziția reală, același precedent ca despărțirea §06/§10 din pivotul PRIMUL PAS (31 august). | `index.astro`, `S10Deeplogic.astro` |
+| **D33** | Mecanismul, rescris explicit: perspectiva ta / realitatea echipei / procesele și datele → cele trei afirmații paralele → sinteza „Deep Logic caută punctul în care nevoia ta, realitatea echipei și valoarea pentru companie se întâlnesc." | Componentele existau deja ca proză continuă („Business → problemă → oameni → proces → impact → tehnologie"), dar nu erau articulate ca mecanism memorabil — ideea centrală citea ca una dintre mai multe, nu ca teza paginii. | `copy.ts` (`despreDeepLogic`), `S10Deeplogic.astro` |
+| **D34** | Pasul 2 al metodologiei (§06): „REALITATEA ECHIPEI" → „WORKSHOP CU ECHIPA" | Spune explicit CUM se verifică ipoteza ownerului (printr-un workshop cu echipa), nu doar CE se descoperă. Ecou deliberat cu limbajul mecanismului de la D33. | `copy.ts` (`ceFacem.blocuri[1]`) |
+| **D35** | „Roadmap" → „roadmap personalizat de validare" la promisiunile principale (§03 item 5, §14 „ce include", ultimul FAQ despre livrabil) | Cuvântul simplu, singur, se putea citi ca plan de implementare gata de execuție. „De validare" protejează limita onestă din §03 „Ce NU vei ști" — nu se schimbă în restul paginii (ex. tabelul §05), unde forma scurtă păstrează ritmul frazei. | `copy.ts` (`rezultatul`, `deCeGratuit`, `faq`) |
+| **D36** | §11 Facilitator capătă o propoziție de autoritate practică: „Nu predau o metodă învățată pentru acest workshop..." | Închide obiecția „încă un trainer care vorbește despre tehnologie" fără să dezvăluie exemplele interzise explicit (You Protect, agentul de sănătate — D8/lista „ce nu apare deliberat"). | `copy.ts` (`facilitator.corp`) |
+
+**Ce n-a fost atins, deliberat:** §02 Problema rămâne exact cum era — e secțiunea cu regula
+„nu se taie la mobil, indiferent ce", și mecanismul nou (D32/D33) acoperă deja ideea de paradigmă
+fără să adauge risc pe secțiunea cea mai protejată a paginii. `docs/landing-workshop-16-09.md`
+(sursa PDF originală) **nu a fost rescrisă** să reflecte acest pivot — antetul din `copy.ts` și
+această intrare rămân sursa de adevăr pentru narativa curentă până la o resincronizare completă.

@@ -6,30 +6,98 @@ import Sectiune from './Sectiune.astro';
 {/*
   Zero cifre aici. Fără „X clienți", fără „Y proiecte". Când vor exista date
   documentate, se adaugă — până atunci, poziția se afirmă, nu se cuantifică.
+
+  Mutată devreme în pagină (pivot 2026-09-02) — index.astro randează secțiunea
+  asta imediat după §02 Problema, nu la poziția ei istorică. E diferențiatorul
+  central: mecanismul owner → echipă → date, explicit, nu implicit.
 */}
-<Sectiune id="deep-logic">
+<Sectiune id="deep-logic" latime="larg">
   <h2>{despreDeepLogic.h2}</h2>
-  <div class="corp">
-    {despreDeepLogic.corp.map((p) => <p>{p}</p>)}
+  <div class="intro">
+    {despreDeepLogic.intro.map((p) => <p>{p}</p>)}
   </div>
+
+  <ul class="perspectiva">
+    {despreDeepLogic.perspectiva.map((p) => (
+      <li><strong>{p.cine}</strong> {p.ce}</li>
+    ))}
+  </ul>
+
+  <ol class="mecanism">
+    {despreDeepLogic.mecanism.map((linie) => <li>{linie}</li>)}
+  </ol>
+
+  <p class="sinteza card-depth">{despreDeepLogic.sinteza}</p>
 </Sectiune>
 
 <style>
   h2 {
     font-size: var(--t-h2);
     margin-bottom: var(--sp-md);
+    max-width: 20ch;
   }
 
-  .corp {
+  .intro {
     display: grid;
     gap: var(--sp-sm);
+    max-width: var(--max-proza);
   }
 
-  /* Cele două afirmații de poziționare („infrastructură, nu automatizări" și
-     „întâi strategia") sunt tezele secțiunii — restul le explică. */
-  .corp p:nth-child(2),
-  .corp p:nth-child(4) {
+  /* A doua propoziție („Astăzi poți începe...") e teza secțiunii. */
+  .intro p:nth-child(2) {
     font-weight: 600;
     color: var(--secundar);
+  }
+
+  .perspectiva {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-lg) 0 0;
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+  }
+
+  .perspectiva strong {
+    color: var(--accent);
+  }
+
+  .mecanism {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-lg) 0 0;
+    display: grid;
+    gap: var(--sp-sm);
+    counter-reset: mecanism;
+  }
+
+  .mecanism li {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    gap: var(--sp-sm);
+    align-items: baseline;
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
+    max-width: 44ch;
+  }
+
+  .mecanism li::before {
+    counter-increment: mecanism;
+    content: counter(mecanism);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--accent-decor);
+    font-size: var(--t-corp);
+  }
+
+  .sinteza {
+    margin-top: var(--sp-xl);
+    padding: var(--sp-md) var(--sp-lg);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: var(--secundar);
+    max-width: 44ch;
   }
 </style>

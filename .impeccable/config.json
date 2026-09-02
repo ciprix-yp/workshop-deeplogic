@@ -8,6 +8,15 @@
         "value": "inter",
         "createdAt": "2026-08-27T15:08:21.725Z",
         "reason": "Token de brand din documentul sursă al clientului: landing-workshop-16-09.md, META, fonturi.titluri = 'Inter, Work Sans, sans-serif'. Nu e alegerea mea; schimbarea tipografiei de brand e decizia lui Ciprian, i-am semnalat-o separat."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/tokens.css"
+        ],
+        "createdAt": "2026-09-02T08:33:48.752Z",
+        "reason": "user confirmed: explicitly asked to match Roxana Tascu reference project's card design line (2026-09-02); this is a direct, deliberate recreation of that project's own .q-card::before/.r-map::before top-edge gradient bar pattern, used narrowly on 4 card elements, verified visually via screenshots"
       }
     ]
   }
