@@ -67,17 +67,18 @@ describe('fără preț sau ancoră de preț', () => {
     expect(TEXT).not.toMatch(tipar);
   });
 
-  it('„gratuit" apare în corpul paginii de exact două ori', () => {
-    // Cele două locuri legitime: rândul „Cost" din §13 și titlul §14 („De ce e
-    // gratuit"), secțiunea care dezamorsează întrebarea. Repetat peste atât,
-    // cuvântul scade valoarea percepută — aceeași regulă ca la textul de
-    // distribuire. Se numără DOAR corpul paginii; meta-tagurile se testează
-    // separat, iar EVENIMENT.cost e o constantă, nu text randat.
-    const corpPagina = [copy.detalii, copy.deCeGratuit, copy.hero, copy.faq, copy.ctaFinal]
+  it('„gratuit" apare în corpul paginii de exact trei ori', () => {
+    // Recalculat la pivotul de structură (2026-09-02, 16→10 secțiuni):
+    // Trust bar (formatul evenimentului), întrebarea din FAQ „Este
+    // participarea cu adevărat gratuită?" și rândul din CTA final. Fosta
+    // secțiune dedicată „De ce este gratuit" a fost retrasă — conținutul ei
+    // a migrat în răspunsul din FAQ. Repetat peste atât, cuvântul scade
+    // valoarea percepută — aceeași regulă ca la textul de distribuire.
+    const corpPagina = [copy.trustBar, copy.faq, copy.ctaFinal]
       .map((s) => JSON.stringify(s))
       .join(' ')
       .toLowerCase();
-    expect((corpPagina.match(/gratuit/g) ?? []).length).toBe(2);
+    expect((corpPagina.match(/gratuit/g) ?? []).length).toBe(3);
   });
 
   it('cardul de partajare nu începe cu „gratuit"', () => {
@@ -126,10 +127,9 @@ describe('legislația, dacă apare, apare o singură dată, ca zgomot — niciod
     // mandat de prezență: dacă cineva reintroduce o mențiune legislativă
     // oriunde altundeva decât §02, testul pică.
     const restul = [
-      copy.hero, copy.rezultatul, copy.pentruCine, copy.inainteDupa,
-      copy.ceFacem, copy.nuDoarTeorie, copy.cePleciCuTine, copy.useCases,
-      copy.despreDeepLogic, copy.facilitator, copy.precedent, copy.detalii,
-      copy.deCeGratuit, copy.faq, copy.ctaFinal, copy.stari, copy.meta,
+      copy.hero, copy.trustBar, copy.agravare, copy.rezultatul, copy.pentruCine,
+      copy.ceFacem, copy.solutie, copy.facilitator, copy.detalii,
+      copy.faq, copy.ctaFinal, copy.stari, copy.meta,
     ];
     for (const sectiune of restul) {
       expect(JSON.stringify(sectiune)).not.toMatch(/AI Act|NIS2|GDPR/i);
@@ -223,18 +223,21 @@ describe('formularul nu cere ce semnalează un apel de vânzare', () => {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 describe('D6 — adresa exactă e pe pagină', () => {
-  it('§13 conține adresa, nu trimiterea la email', () => {
+  it('`detalii` (consumat de TrustBar) conține adresa, nu trimiterea la email', () => {
+    // Pivot de structură (2026-09-02): „Detalii practice" nu mai e secțiune
+    // proprie — adresa completă trăiește în `detalii`, randată de TrustBar.
     const detalii = JSON.stringify(copy.detalii);
     expect(detalii).toMatch(/Casa Dăinuirii/);
     expect(detalii).toMatch(/Strada 1 Decembrie 1918/);
     expect(detalii).not.toMatch(/adresa exactă, în emailul de confirmare/);
   });
 
-  it('adresa e consistentă între §13, .ics și ecranele de confirmare', () => {
+  it('adresa e consistentă între TrustBar, .ics și ecranele de confirmare', () => {
     // Trei locuri care trebuie să spună același lucru. Divergența aici trimite
     // oameni la altă adresă în ziua evenimentului.
     const adresa = copy.EVENIMENT.adresa;
     expect(JSON.stringify(copy.detalii)).toContain(adresa);
+    expect(JSON.stringify(copy.trustBar)).toContain(adresa);
     expect(JSON.stringify(copy.stari.reconfirmat)).toContain(adresa);
     expect(JSON.stringify(copy.stari.locRevendicat)).toContain(adresa);
   });
@@ -265,17 +268,16 @@ describe('PRIMUL PAS (pivot 2026-08-31) — „ce nu apare deliberat", lista nou
 describe('consistență internă', () => {
   it('capacitatea e aceeași peste tot — 30, unificată cu pragul din bază (migrația 0007)', () => {
     expect(copy.EVENIMENT.capacitate).toBe(30);
-    expect(JSON.stringify(copy.detalii)).toMatch(/Maximum 30/);
+    expect(copy.trustBar.format).toMatch(/Maximum 30/);
     expect(copy.ctaFinal.meta).toMatch(/30 de locuri/);
     expect(copy.faq.intrebari.at(-1)!.a).toMatch(/Sunt 30/);
-    expect(JSON.stringify(copy.deCeGratuit.deCeLimitat)).toMatch(/30 de/);
   });
 
   it('data e miercuri, 16 septembrie 2026 — peste tot', () => {
     const zi = new Date(copy.EVENIMENT.data + 'T00:00:00Z').getUTCDay();
     expect(zi).toBe(3); // 0 = duminică, 3 = miercuri
     expect(copy.EVENIMENT.dataText).toMatch(/^Miercuri, 16 septembrie 2026$/);
-    expect(copy.hero.meta).toContain('16 septembrie 2026');
+    expect(copy.trustBar.meta).toContain('16 septembrie 2026');
   });
 
   it('CTA-ul are un singur text pe toată pagina', () => {
@@ -338,10 +340,9 @@ describe('ghilimele românești', () => {
     // Se verifică doar textul randat; comentariile din cod n-au importanță
     // tipografică, dar au aceleași caractere, deci filtrăm pe copy-ul de pagină.
     const paginaText = [
-      copy.hero, copy.problema, copy.rezultatul, copy.pentruCine,
-      copy.inainteDupa, copy.ceFacem, copy.nuDoarTeorie, copy.cePleciCuTine,
-      copy.useCases, copy.despreDeepLogic, copy.facilitator, copy.precedent,
-      copy.detalii, copy.deCeGratuit, copy.faq, copy.ctaFinal, copy.stari,
+      copy.hero, copy.trustBar, copy.problema, copy.agravare, copy.solutie,
+      copy.ceFacem, copy.facilitator, copy.pentruCine, copy.rezultatul,
+      copy.detalii, copy.faq, copy.ctaFinal, copy.stari,
     ]
       .map((s) => JSON.stringify(s))
       .join(' ');

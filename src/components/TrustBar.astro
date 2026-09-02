@@ -1,0 +1,56 @@
+---
+import { trustBar } from '../content/copy';
+---
+
+{/*
+  Strip compact, imediat sub hero (secțiune nouă, pivot de structură
+  2026-09-02) — tot ce trebuie știut dintr-o privire, inclusiv adresa
+  completă (D6, obligatorie pe pagină — vezi tests/copy-invariants.test.ts).
+
+  Distinct de BaraScarcity.astro (bara fixă, mereu vizibilă la scroll): asta
+  e un bloc din flux, o singură dată, cu mai mult context și fără poziție
+  fixă — nu concurează cu bara pentru atenție.
+*/}
+<div class="trust">
+  <div class="continut">
+    <p class="linie meta">{trustBar.meta}</p>
+    <p class="linie format">{trustBar.format}</p>
+    <p class="linie roadmap">{trustBar.roadmap}</p>
+    <p class="invitatie">{trustBar.invitatie}</p>
+  </div>
+</div>
+
+<style>
+  .trust {
+    background: var(--bg-secundar);
+    padding-block: var(--sp-md);
+    padding-inline: var(--lat);
+  }
+
+  .continut {
+    max-width: var(--max-continut);
+    margin-inline: auto;
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .linie {
+    font-family: var(--font-mono);
+    font-size: var(--t-mic);
+    line-height: var(--lh-normal);
+    color: var(--secundar);
+  }
+
+  .meta {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .invitatie {
+    margin-top: var(--sp-2xs);
+    font-family: var(--font-corp);
+    font-size: var(--t-mic);
+    font-style: italic;
+    color: var(--text-muted);
+  }
+</style>

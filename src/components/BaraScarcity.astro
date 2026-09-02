@@ -22,7 +22,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
   <p class="continut" data-continut>{scarcity.fallbackStatic}</p>
 </div>
 
-<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maximeStatic: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin, textAInceput: scarcity.aInceput }}>
+<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maximeStatic: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin, textAInceput: scarcity.aInceput, etichetaDisponibil: scarcity.etichetaDisponibil }}>
   (() => {
     const bara = document.getElementById('bara-scarcity');
     const continut = bara?.querySelector('[data-continut]');
@@ -132,10 +132,11 @@ import { EVENIMENT, scarcity } from '../content/copy';
           if (typeof date.maxime === 'number' && date.maxime > 0) maxime = date.maxime;
           randeaza();
 
-          // Insigna de pe fiecare CTA — vezi Cta.astro. Ascunsă implicit,
-          // completată/actualizată la fiecare fetch reușit cu date reale.
+          // Rândul de sub fiecare CTA — vezi Cta.astro/CtaFloating.astro.
+          // Ascuns implicit, completat/actualizat la fiecare fetch reușit cu
+          // date reale. Format „Disponibil 25/30" — cerut explicit (2026-09-02).
           document.querySelectorAll('[data-locuri-cta]').forEach((el) => {
-            el.textContent = ` (${ramase} din ${maxime})`;
+            el.textContent = `${etichetaDisponibil} ${ramase}/${maxime}`;
             el.hidden = false;
           });
         })

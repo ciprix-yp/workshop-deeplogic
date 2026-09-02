@@ -63,9 +63,15 @@ CTA cu numărul de locuri rămase. **Regula care rămâne literă de lege, nesch
 - **Mobile-first, fără excepție.** ≥40% din trafic vine dintr-un link trimis pe WhatsApp de
   un membru BIZZ.CLUB. Breakpoint-ul de referință e **360px**, nu 375px.
 - **Un singur CTA pe toată pagina.** Text: „Rezervă-ți locul". Ancoră: `#inscriere`.
-  Repetat la: hero, după §05, după §08, în §16. Fără CTA secundar, fără „află mai multe".
-- **§02 și §08 nu se taie la mobil.** Sunt cele mai importante două secțiuni. Dacă tai ceva,
-  nu de acolo.
+  Sub el, numărul real de locuri („Disponibil X/30", niciodată inventat — vezi §1).
+  Repetat la: hero, la finalul secțiunii „Ce rezultat promitem", în CTA final — plus
+  un buton flotant (`CtaFloating.astro`, cerut explicit 2026-09-02) mereu vizibil după
+  ce iese hero-ul din cadru, pe toate viewport-urile. Fără CTA secundar, fără „află mai multe".
+- **Problema și „Ce rezultat promitem" nu se taie la mobil.** Sunt cele mai importante
+  două secțiuni ale structurii lean din 2026-09-02 (10 secțiuni: Hero → Trust bar →
+  Problemă → Agravare → Soluție → Facilitator → Cui i se adresează/nu →
+  Ce rezultat promitem → FAQ, plus metodologia cu pin GSAP, păstrată separat).
+  Dacă tai ceva, nu de-acolo.
 - **Fundal curat.** Fără imagini generice cu roboți, creiere sau rețele neuronale.
 - **Tot copy-ul trăiește în [`src/content/copy.ts`](src/content/copy.ts).** Un singur loc,
   tipat. Nicio secțiune nu-și scrie textul inline.

@@ -27,6 +27,10 @@ import Sectiune from './Sectiune.astro';
       </ul>
     </div>
   </div>
+
+  <div class="outro">
+    {pentruCine.outro.map((p) => <p>{p}</p>)}
+  </div>
 </Sectiune>
 
 <style>
@@ -78,5 +82,15 @@ import Sectiune from './Sectiune.astro';
   .nu li::before {
     content: '—';
     color: var(--text-muted);
+  }
+
+  .outro {
+    margin-top: var(--sp-xl);
+    padding-top: var(--sp-lg);
+    border-top: 1px solid rgba(47, 79, 79, 0.18);
+    display: grid;
+    gap: var(--sp-2xs);
+    max-width: var(--max-proza);
+    color: var(--secundar);
   }
 </style>

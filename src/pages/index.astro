@@ -1,57 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
 import S01Hero from '../components/S01Hero.astro';
+import TrustBar from '../components/TrustBar.astro';
 import S02Problema from '../components/S02Problema.astro';
-import S03Rezultatul from '../components/S03Rezultatul.astro';
-import S04PentruCine from '../components/S04PentruCine.astro';
-import S05InainteDupa from '../components/S05InainteDupa.astro';
+import Agravare from '../components/Agravare.astro';
+import Solutie from '../components/Solutie.astro';
 import S06CeFacem from '../components/S06CeFacem.astro';
-import S07NuDoarTeorie from '../components/S07NuDoarTeorie.astro';
-import S08CePleciCuTine from '../components/S08CePleciCuTine.astro';
-import S09UseCases from '../components/S09UseCases.astro';
-import S10Deeplogic from '../components/S10Deeplogic.astro';
 import S11Facilitator from '../components/S11Facilitator.astro';
-import S12Precedent from '../components/S12Precedent.astro';
-import S13Detalii from '../components/S13Detalii.astro';
-import S14DeCeGratuit from '../components/S14DeCeGratuit.astro';
+import S04PentruCine from '../components/S04PentruCine.astro';
+import S03Rezultatul from '../components/S03Rezultatul.astro';
 import S15Faq from '../components/S15Faq.astro';
 import S16Inscriere from '../components/S16Inscriere.astro';
 import S17Footer from '../components/S17Footer.astro';
-import CtaSticky from '../components/CtaSticky.astro';
+import CtaFloating from '../components/CtaFloating.astro';
 import DialogInscriere from '../components/DialogInscriere.astro';
 
 /**
- * Prerandată integral. Nimic din §01–§17 nu e dinamic — formularul face POST
+ * Prerandată integral. Nimic din pagină nu e dinamic — formularul face POST
  * către o rută separată, randată la cerere. Pagina se servește de pe CDN-ul
  * Cloudflare, ceea ce contează pe 4G, în browserul in-app din WhatsApp.
+ *
+ * Ordinea (pivot de structură, 2026-09-02): Hero → Trust bar → Problemă →
+ * Agravare → Soluție → [metodologia, păstrată — vezi comentariul din
+ * copy.ts] → Facilitator → Cui i se adresează/nu → Ce rezultat promitem →
+ * FAQ → CTA final. Numele fișierelor de componente (`S0X...`) sunt
+ * parțial istorice — ordinea reală e cea din markup-ul de mai jos, nu
+ * numărul din nume (același precedent ca la pivotul de narativă, aceeași zi).
  */
 export const prerender = true;
 ---
 
 <Base scarcity motion depth>
   <S01Hero />
+  <TrustBar />
 
   <main id="continut">
     <S02Problema />
-    {/* Mutată devreme (pivot 2026-09-02) — vezi comentariul din
-        S10Deeplogic.astro. Poziția din nume e istorică, nu reală. */}
-    <S10Deeplogic />
-    <S03Rezultatul />
-    <S04PentruCine />
-    <S05InainteDupa />
+    <Agravare />
+    <Solutie />
     <S06CeFacem />
-    <S07NuDoarTeorie />
-    <S08CePleciCuTine />
-    <S09UseCases />
     <S11Facilitator />
-    <S12Precedent />
-    <S13Detalii />
-    <S14DeCeGratuit />
+    <S04PentruCine />
+    <S03Rezultatul />
     <S15Faq />
     <S16Inscriere />
   </main>
 
   <S17Footer />
-  <CtaSticky />
+  <CtaFloating />
   <DialogInscriere />
 </Base>

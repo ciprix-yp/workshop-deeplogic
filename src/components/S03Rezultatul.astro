@@ -1,9 +1,16 @@
 ---
 import { rezultatul } from '../content/copy';
 import Sectiune from './Sectiune.astro';
+import Cta from './Cta.astro';
 ---
 
-<Sectiune id="rezultatul">
+{/*
+  Extinsă la pivotul de structură (2026-09-02) — absoarbe fostul §12
+  „Precedent" (20% context / 80% lucru, acum `cumLucram`) și conținut nou
+  din v4 („de ce să mai chemi pe cineva", `chemaCineva`). CTA repetat la
+  final: singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
+*/}
+<Sectiune id="rezultatul" latime="larg">
   <h2>{rezultatul.h2}</h2>
 
   <ol class="lista">
@@ -19,8 +26,8 @@ import Sectiune from './Sectiune.astro';
   </ol>
 
   {/*
-    Blocul „Ce NU vei ști" e obligatoriu. E singura formă de credibilitate care
-    funcționează la un om saturat de promisiuni.
+    Blocul „Ce nu îți promit" e obligatoriu. E singura formă de credibilitate
+    care funcționează la un om saturat de promisiuni.
     Stilizare deliberată: fundal secundar, FĂRĂ chenar roșu și FĂRĂ iconiță de
     avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
     un disclaimer legal și își pierde efectul.
@@ -31,6 +38,35 @@ import Sectiune from './Sectiune.astro';
       <p>{p}</p>
     ))}
   </aside>
+
+  <div class="sub-bloc">
+    <h3>{rezultatul.cumLucram.h3}</h3>
+    <p class="format">{rezultatul.cumLucram.intro}</p>
+    {rezultatul.cumLucram.corp.map((p) => (
+      <p>{p}</p>
+    ))}
+    <ul class="lista-simpla">
+      {rezultatul.cumLucram.lista.map((l) => (
+        <li>{l}</li>
+      ))}
+    </ul>
+    {rezultatul.cumLucram.outro.map((p) => (
+      <p class="outro">{p}</p>
+    ))}
+  </div>
+
+  <div class="sub-bloc">
+    <h3>{rezultatul.chemaCineva.h3}</h3>
+    {rezultatul.chemaCineva.corp.map((p) => (
+      <p>{p}</p>
+    ))}
+    <p class="accent">{rezultatul.chemaCineva.accent}</p>
+    {rezultatul.chemaCineva.corpFinal.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <Cta spatiuSus />
 </Sectiune>
 
 <style>
@@ -39,12 +75,18 @@ import Sectiune from './Sectiune.astro';
     margin-bottom: var(--sp-md);
   }
 
+  h3 {
+    font-size: var(--t-h3);
+    margin-bottom: var(--sp-sm);
+  }
+
   .lista {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: var(--sp-md);
+    max-width: var(--max-proza);
   }
 
   .lista li {
@@ -57,14 +99,9 @@ import Sectiune from './Sectiune.astro';
   .numar {
     font-family: var(--font-mono);
     /*
-     * Fix de contrast (audit impeccable, 2026-09-01) — comentariul vechi
-     * invoca SC 1.4.11 („componentă non-text", prag 3:1) ca să justifice
-     * `--accent-decor` la `--t-corp` (17-19px). Discutabil: un numeral
-     * randat ca text literal, citit ca informație („al treilea din cinci"),
-     * e text sub SC 1.4.3, nu o componentă grafică de UI — pragul corect e
-     * 4.5:1 (sau 3:1 doar dacă ≥24px, exact regula scrisă pe token în
-     * tokens.css). Aliniat cu S06/S08, care au primit același fix: mărit
-     * peste 24px, ca să nu mai depindă de o interpretare contestabilă.
+     * Fix de contrast (audit impeccable, 2026-09-01): `--accent-decor` e
+     * 4.06:1, trece AA doar la ≥24px (regulă documentată pe token,
+     * tokens.css) — clamp propriu, cu podea la 24px indiferent de viewport.
      */
     font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
     color: var(--accent-decor);
@@ -88,8 +125,8 @@ import Sectiune from './Sectiune.astro';
   }
 
   /* Cutie + tilt din `.card-depth card-3d`, global (tokens.css) — dar
-     `background`-ul secundar rămâne aici, deliberat: onestitatea „ce NU vei
-     ști" trebuie să citească distinct de restul cardurilor de pe pagină,
+     `background`-ul secundar rămâne aici, deliberat: onestitatea „ce nu
+     promit" trebuie să citească distinct de restul cardurilor de pe pagină,
      nu ca încă un card premium. */
   .granita {
     margin-top: var(--sp-lg);
@@ -99,9 +136,49 @@ import Sectiune from './Sectiune.astro';
     padding: var(--sp-md);
     display: grid;
     gap: var(--sp-sm);
+    max-width: var(--max-proza);
   }
 
-  .granita h3 {
-    font-size: var(--t-h3);
+  .sub-bloc {
+    margin-top: var(--sp-xl);
+    padding-top: var(--sp-lg);
+    border-top: 1px solid rgba(47, 79, 79, 0.18);
+    display: grid;
+    gap: var(--sp-xs);
+    max-width: var(--max-proza);
+  }
+
+  .format {
+    font-weight: 600;
+  }
+
+  .lista-simpla {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-xs) 0;
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  .lista-simpla li {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    align-items: baseline;
+    color: var(--text-muted);
+  }
+
+  .lista-simpla li::before {
+    content: '—';
+    color: var(--accent-decor);
+  }
+
+  .outro {
+    margin-top: var(--sp-xs);
+  }
+
+  .accent {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: var(--t-corp-lg);
   }
 </style>

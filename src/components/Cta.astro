@@ -2,7 +2,7 @@
 import { CTA } from '../content/copy';
 
 interface Props {
-  /** `mare` doar în hero și în §16. Restul repetărilor sunt inline, mai discrete. */
+  /** `mare` doar în hero și în CTA final. Restul repetărilor sunt inline, mai discrete. */
   marime?: 'mare' | 'normal';
   /**
    * Spațiul de deasupra se declară AICI, nu printr-o clasă dată de părinte.
@@ -14,23 +14,19 @@ interface Props {
    * întâlnesc. Fără eroare, fără avertisment: se vede doar în captură.
    */
   spatiuSus?: boolean;
-  /** Pe fundal închis, butonul se inversează: accent clar cu text închis. */
-  pe?: 'deschis' | 'inchis';
 }
-const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
+const { marime = 'normal', spatiuSus = false } = Astro.props;
 ---
 
 <div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
-  <a href={CTA.ancora} class:list={['cta', marime, pe === 'inchis' && 'pe-inchis']}>
-    {CTA.text}
-    {/*
-      Insignă de locuri live — completată de BaraScarcity.astro după ce
-      răspunde /api/locuri-disponibile. Fără JS sau dacă fetch-ul eșuează,
-      rămâne goală și `hidden`: butonul citește exact „Rezervă-ți locul",
-      niciodată un număr inventat.
-    */}
-    <span class="locuri-cta" data-locuri-cta hidden></span>
-  </a>
+  <a href={CTA.ancora} class:list={['cta', marime]}>{CTA.text}</a>
+  {/*
+    Numărul real de locuri, SUB buton — cerut explicit (2026-09-02), nu mai
+    inline în text. Completat de BaraScarcity.astro după ce răspunde
+    /api/locuri-disponibile. Fără JS sau dacă fetch-ul eșuează, rămâne gol
+    și `hidden`: pagina nu arată niciodată un număr inventat.
+  */}
+  <p class="locuri-cta" data-locuri-cta hidden></p>
   <slot />
 </div>
 
@@ -38,7 +34,7 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
   .invelis {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-sm);
+    gap: var(--sp-xs);
     align-items: flex-start;
   }
 
@@ -46,16 +42,21 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     margin-top: var(--sp-xl);
   }
 
+  /*
+   * Fundal lime (cerut explicit, 2026-09-02) — text pe `--pe-lime`
+   * (= --bg-inchis, 8.01:1), nu alb: alb pe acest lime ar da ~1.6:1,
+   * ilizibil. Vezi comentariul din tokens.css.
+   */
   .cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent);
-    color: #fff;                     /* 6.15:1 — verificat de npm run contrast */
+    background: var(--lime);
+    color: var(--pe-lime);
     font-family: var(--font-titlu);
     font-weight: 600;
     text-decoration: none;
-    border-radius: var(--radius);
+    border-radius: var(--radius-cta);
     /* Ținta de atingere: 44px e pragul WCAG 2.2 și, practic, lățimea unui deget
        pe un telefon ținut cu o mână. */
     min-height: var(--touch);
@@ -71,7 +72,7 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
   @media (hover: hover) and (pointer: fine) {
     .cta:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px -6px rgba(55, 106, 102, 0.45);
+      box-shadow: 0 8px 20px -6px rgba(132, 204, 22, 0.55);
     }
   }
 
@@ -80,10 +81,6 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     padding: var(--sp-md) var(--sp-xl);
     /* Pe mobil ocupă toată lățimea — degetul nu trebuie să caute ținta. */
     width: 100%;
-    transition:
-      background-color 0.15s ease,
-      transform 0.15s var(--ease-out),
-      box-shadow 0.2s var(--ease-out);
   }
 
   @media (min-width: 40rem) {
@@ -92,69 +89,31 @@ const { marime = 'normal', spatiuSus = false, pe = 'deschis' } = Astro.props;
     }
   }
 
-  /*
-   * Accent lime (pivot 2026-09-02) — DOAR pe hover, nu un puls continuu.
-   * Un glow care respiră tot timpul cât CTA-ul e pe ecran s-ar citi ca
-   * presiune constantă, exact ce pagina evită deliberat („fără deficit
-   * fals" din CLAUDE.md §1) — un inel care apare la interacțiune reală
-   * confirmă atingerea (aceeași logică ca `emil-design-eng`: feedback, nu
-   * decor văzut întruna). Butonul rămâne pe fundalul lui obișnuit — verdele
-   * intră doar ca inel exterior, niciodată ca fundal sau text.
-   */
-  @media (hover: hover) and (pointer: fine) {
-    .cta.mare:hover {
-      box-shadow: 0 6px 16px -6px rgba(55, 106, 102, 0.45), 0 0 0 4px var(--lime-wash), 0 0 0 5px var(--lime-edge);
-    }
-  }
-
   .cta:hover,
   .cta:focus-visible {
-    background: var(--accent-hover);
+    background: var(--lime-hover);
   }
 
   .cta:active {
-    transform: translateY(1px) scale(0.985);
+    transform: translateY(1px) scale(0.97);
     box-shadow: none;
     transition-duration: 0.08s;
   }
 
-  /* Pe întuneric butonul se inversează. Accentul închis (#376A66) pe fundal
-     #1B2426 ar da 2.6:1 — invizibil. Verificat în npm run contrast. */
-  .cta.pe-inchis {
-    background: var(--accent-clar);
-    color: var(--bg-inchis);
-  }
-
-  .cta.pe-inchis:hover,
-  .cta.pe-inchis:focus-visible {
-    background: #a3e2d8;
-  }
-
   .locuri-cta {
-    margin-left: 0.4em;
+    margin: 0;
     font-family: var(--font-mono);
-    font-size: 0.8em;
-    font-weight: 400;
-    /*
-     * Fix (audit emil-design-eng, 2026-09-01): `el.hidden = false` (vezi
-     * scriptul din BaraScarcity.astro) arăta numărul instant, fără nicio
-     * tranziție — un element care „apare din nimic" se citește ca stricat,
-     * mai ales pentru o cifră menită să construiască încredere. `@starting-style`
-     * animă exact momentul în care `hidden` e scos.
-     */
-    opacity: 0.85;
-    scale: 1;
-    transition: opacity 200ms var(--ease-out), scale 200ms var(--ease-out);
+    font-size: var(--t-mic);
+    font-weight: 500;
+    color: var(--secundar);
+    /* Fix (audit emil-design-eng, 2026-09-01): `el.hidden = false` arăta
+       numărul instant, fără nicio tranziție. `@starting-style` animă exact
+       momentul în care `hidden` e scos. */
+    opacity: 1;
+    transition: opacity 200ms var(--ease-out);
 
     @starting-style {
       opacity: 0;
-      scale: 0.9;
-    }
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .cta.pe-inchis:hover {
-      box-shadow: 0 6px 16px -6px rgba(127, 209, 196, 0.5);
     }
   }
 </style>

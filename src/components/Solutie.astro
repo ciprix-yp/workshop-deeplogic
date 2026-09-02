@@ -1,0 +1,171 @@
+---
+import { solutie } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/*
+  Zero cifre aici. Fără „X clienți", fără „Y proiecte". Când vor exista date
+  documentate, se adaugă — până atunci, poziția se afirmă, nu se cuantifică.
+
+  Redenumită din S10Deeplogic.astro/`despreDeepLogic` la pivotul de structură
+  (2026-09-02) — conținutul crește (întrebările de deschidere, paragraful
+  despre „noua eră digitală"), rolul se clarifică: e diferențiatorul central
+  al paginii, poziționat devreme (după Problemă și Agravare), nu o prefață
+  despre firmă.
+*/}
+<Sectiune id="solutie" latime="larg">
+  <h2>{solutie.h2}</h2>
+  <div class="intro">
+    {solutie.intro.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <ul class="intrebari">
+    {solutie.intrebari.map((q) => (
+      <li>{q}</li>
+    ))}
+  </ul>
+
+  <div class="concluzie-intro">
+    {solutie.concluzieIntro.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <h3>{solutie.h3}</h3>
+  <ul class="perspectiva">
+    {solutie.perspectiva.map((p) => (
+      <li><strong>{p.cine}</strong> {p.ce}</li>
+    ))}
+  </ul>
+
+  <p class="mecanism-intro">{solutie.mecanismIntro}</p>
+  <ol class="mecanism">
+    {solutie.mecanism.map((linie) => (
+      <li>{linie}</li>
+    ))}
+  </ol>
+
+  <p class="sinteza card-depth">{solutie.sinteza}</p>
+
+  <h3>{solutie.h3Era}</h3>
+  <div class="era">
+    {solutie.eraCorp.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+    max-width: 24ch;
+  }
+
+  h3 {
+    font-size: var(--t-h3);
+    margin-top: var(--sp-xl);
+    margin-bottom: var(--sp-sm);
+    max-width: 24ch;
+  }
+
+  .intro,
+  .concluzie-intro,
+  .era {
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+  }
+
+  /* A doua propoziție a introducerii e teza secțiunii. */
+  .intro p:nth-child(2) {
+    font-weight: 600;
+    color: var(--secundar);
+  }
+
+  .intrebari {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-md) 0 0;
+    display: grid;
+    gap: var(--sp-xs);
+    max-width: var(--max-proza);
+  }
+
+  .intrebari li {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    align-items: baseline;
+    line-height: var(--lh-normal);
+  }
+
+  .intrebari li::before {
+    content: '—';
+    color: var(--accent-decor);
+    font-weight: 600;
+  }
+
+  .concluzie-intro {
+    margin-top: var(--sp-md);
+    color: var(--text-muted);
+  }
+
+  .perspectiva {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+  }
+
+  .perspectiva strong {
+    color: var(--accent);
+  }
+
+  .mecanism-intro {
+    margin-top: var(--sp-lg);
+    font-weight: 600;
+  }
+
+  .mecanism {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-sm) 0 0;
+    display: grid;
+    gap: var(--sp-sm);
+    counter-reset: mecanism;
+  }
+
+  .mecanism li {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    gap: var(--sp-sm);
+    align-items: baseline;
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
+    max-width: 44ch;
+  }
+
+  .mecanism li::before {
+    counter-increment: mecanism;
+    content: counter(mecanism);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--accent-decor);
+    font-size: var(--t-corp);
+  }
+
+  .sinteza {
+    margin-top: var(--sp-xl);
+    padding: var(--sp-md) var(--sp-lg);
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    color: var(--secundar);
+    max-width: 44ch;
+  }
+</style>

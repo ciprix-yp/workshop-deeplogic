@@ -4,191 +4,95 @@ import Sectiune from './Sectiune.astro';
 ---
 
 {/*
-  Cea mai importantă secțiune a paginii. Nu se taie la mobil, indiferent ce.
-  Vacarmul de-aici (5 întrebări de business — date, echipă, cost, scop, ROI)
-  nu mai include unghiul legislativ (AI Act/GDPR) al fostului „Prima Mutare" —
-  sursa PRIMUL PAS nu-l are. Dacă legislația reapare vreodată pe pagină, AICI
-  e singurul loc permis (CLAUDE.md §1).
+  Cea mai importantă secțiune a paginii. Nu se taie la mobil, indiferent ce —
+  regulă neschimbată de pivotul de structură (2026-09-02). Rescrisă complet:
+  deschide direct cu exemple concrete, nu cu un bloc de „vacarm" separat —
+  absoarbe spiritul fostului grid de exemple (retras ca secțiune proprie).
 */}
 <Sectiune id="problema" latime="larg">
-  <div class="cap">
-    <h2>{problema.h2}</h2>
-    <p class="intro">{problema.intro}</p>
-  </div>
+  <h2>{problema.h2}</h2>
 
-  {/*
-    Vacarmul, ca bloc întunecat. Nu e ornament: secțiunea vorbește literal
-    despre ce aude cititorul din toate părțile, iar blocul îl pune în el
-    pentru câteva rânduri. Diagnosticul care urmează revine pe alb — asta e
-    trecerea de la ceață la hartă. De asta e un bloc în interiorul secțiunii,
-    nu secțiunea întreagă: 1600px de întuneric pe mobil ar apăsa, nu ar semnifica.
-  */}
-  <div class="vacarm-bloc">
-    <p class="vacarm-eticheta">{problema.intreTimp}</p>
-    <ul class="vacarm">
-      {problema.vacarm.map((linie) => (
-        <li>{linie}</li>
-      ))}
-    </ul>
-
-    <div class="pivot">
-      <p class="pivot-afirmatie">{problema.pivot}</p>
-      <p class="pivot-intrebari">{problema.pivotIntrebari}</p>
-    </div>
-  </div>
-
-  <div class="blocuri">
-    {problema.blocuri.map((bloc) => (
-      <div class="bloc">
-        <h3>{bloc.h3}</h3>
-        <div class="corp">
-          {bloc.corp.map((p) => (
-            <p>{p}</p>
-          ))}
-        </div>
-      </div>
+  <ul class="exemple">
+    {problema.exemple.map((linie) => (
+      <li>{linie}</li>
     ))}
+  </ul>
+
+  <p class="sau-poate">{problema.sauPoate}</p>
+
+  <div class="intre-timp">
+    {problema.intreTimp.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <div class="intrebare-bloc">
+    <p class="intrebare">{problema.intrebare}</p>
+    <p class="intrebare-sub">{problema.intrebareSub}</p>
   </div>
 </Sectiune>
 
 <style>
-  .cap {
-    max-width: var(--max-proza);
-  }
-
   h2 {
-    /* Teza secțiunii — cel mai mare lucru de aici. Înainte era mai mică decât
-       h3-urile de dedesubt, ceea ce inversa ierarhia și se citea a greșeală. */
     font-size: var(--t-statement);
-    max-width: 16ch;
-    margin-bottom: var(--sp-md);
+    max-width: 20ch;
+    margin-bottom: var(--sp-lg);
   }
 
-  .intro {
-    font-size: var(--t-corp-lg);
-    line-height: var(--lh-normal);
-  }
-
-  /* ── Blocul de vacarm ───────────────────────────────────────────────── */
-
-  .vacarm-bloc {
-    /* Retunat (iterația 2, QA #2 — reducere de overflow pe cardul cel mai
-       lung): sp-lg în loc de sp-xl. Vezi mai jos, `.blocuri`, pentru
-       explicația generală a strategiei. */
-    margin-top: var(--sp-lg);
-    background: var(--bg-inchis);
-    color: var(--text-pe-inchis-muted);
-    border-radius: var(--radius-lg);
-    padding: var(--sp-md);
-  }
-
-  @media (min-width: 40rem) {
-    .vacarm-bloc {
-      padding: var(--sp-lg);
-    }
-  }
-
-  .vacarm-eticheta {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent-clar);
-    margin-bottom: var(--sp-sm);
-  }
-
-  .vacarm {
+  .exemple {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: var(--sp-sm);
+    max-width: var(--max-proza);
   }
 
-  @media (min-width: 52rem) {
-    .vacarm {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--sp-sm) var(--sp-xl);
-    }
-  }
-
-  .vacarm li {
+  .exemple li {
     display: grid;
-    grid-template-columns: 1.25rem 1fr;
+    grid-template-columns: 1.5rem 1fr;
     align-items: baseline;
-    line-height: var(--lh-normal);
-    /* Vacarmul e mărunt, prin design. Contrastul cu declarațiile mari care
-       urmează e structura argumentului, nu o preferință de mărime. */
-    font-size: var(--t-mic);
-  }
-
-  .vacarm li::before {
-    content: '—';
-    color: var(--accent-clar);
-    opacity: 0.7;
-  }
-
-  .pivot {
-    margin-top: var(--sp-md);
-    padding-top: var(--sp-sm);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .pivot-afirmatie {
-    color: var(--text-pe-inchis);
-    font-weight: 600;
     font-size: var(--t-corp-lg);
-  }
-
-  .pivot-intrebari {
-    margin-top: var(--sp-xs);
-    /* Ritmul rapid al întrebărilor e efectul. Italic le leagă într-o singură
-       respirație, în loc să le lase ca patru propoziții separate. */
-    font-style: italic;
     line-height: var(--lh-normal);
   }
 
-  /* ── Diagnosticele, pe alb ──────────────────────────────────────────── */
+  .exemple li::before {
+    content: '—';
+    color: var(--accent-decor);
+    font-weight: 600;
+  }
 
-  /*
-   * Retunat (iterația 2, QA #2): `margin-top`/`gap` reduse de la `--sp-2xl`
-   * (fluid, până la 6rem) la `--sp-xl` fix — pe un card plafonat la 100dvh,
-   * fiecare rem economisit contează, iar cele trei diagnostice n-au nevoie
-   * de aceeași respirație generoasă ca separarea dintre secțiuni normale.
-   *
-   * `max-width: var(--max-proza)` eliminat: pe viewport-uri largi (≥64rem),
-   * cele trei blocuri trec pe 3 coloane — exact pattern-ul deja folosit în
-   * S09UseCases (grid responsive) pentru „multe elemente scurte", în loc de
-   * stivuire verticală nelimitată. Sub 64rem, `.blocuri` rămâne o singură
-   * coloană, fără schimbare de comportament vizual — doar lățimea nu mai e
-   * plafonată artificial la `--max-proza` (nu contează, fiindcă `.continut`
-   * părinte oricum limitează lățimea la `--max-continut`, 62rem). Verificat
-   * live: la 1920×1080, elimină overflow-ul rezidual (singurul card care mai
-   * depășea `100dvh` din cele patru semnalate de QA).
-   */
-  .blocuri {
+  .sau-poate {
+    margin-top: var(--sp-md);
+    max-width: var(--max-proza);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+
+  .intre-timp {
     margin-top: var(--sp-xl);
     display: grid;
-    gap: var(--sp-xl);
+    gap: var(--sp-xs);
+    max-width: var(--max-proza);
   }
 
-  @media (min-width: 64rem) {
-    .blocuri {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  .intrebare-bloc {
+    margin-top: var(--sp-xl);
+    padding-top: var(--sp-lg);
+    border-top: 1px solid rgba(47, 79, 79, 0.18);
   }
 
-  .bloc h3 {
-    /* Sub teza secțiunii, dar mult peste vacarmul de deasupra: ~2.25rem față
-       de 0.875rem. Diferența de scală ESTE argumentul — copy-ul alternează
-       între zgomot și claritate, iar tipografia trebuie să facă la fel. */
+  .intrebare {
+    font-family: var(--font-titlu);
+    font-weight: 700;
     font-size: var(--t-h2);
     max-width: 20ch;
-    margin-bottom: var(--sp-sm);
   }
 
-  .corp {
-    display: grid;
-    gap: var(--sp-sm);
+  .intrebare-sub {
+    margin-top: var(--sp-xs);
+    max-width: var(--max-proza);
+    color: var(--secundar);
+    line-height: var(--lh-normal);
   }
 </style>

@@ -1,0 +1,72 @@
+---
+import { agravare } from '../content/copy';
+import Sectiune from './Sectiune.astro';
+---
+
+{/* Secțiune nouă (pivot de structură 2026-09-02) — costul tăcut al unui
+    început fără o problemă clară. */}
+<Sectiune id="agravare">
+  <h2>{agravare.h2}</h2>
+
+  <div class="corp">
+    {agravare.corp.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <div class="alternativa">
+    {agravare.alternativa.map((p) => (
+      <p>{p}</p>
+    ))}
+  </div>
+
+  <div class="merita card-depth">
+    <h3>{agravare.h3}</h3>
+    {agravare.corpFinal.map((p) => (
+      <p>{p}</p>
+    ))}
+    <p class="concluzie">{agravare.concluzie}</p>
+  </div>
+</Sectiune>
+
+<style>
+  h2 {
+    font-size: var(--t-h2);
+    max-width: 20ch;
+    margin-bottom: var(--sp-md);
+  }
+
+  .corp,
+  .alternativa {
+    display: grid;
+    gap: var(--sp-xs);
+    max-width: var(--max-proza);
+  }
+
+  .alternativa {
+    margin-top: var(--sp-md);
+    color: var(--text-muted);
+  }
+
+  .merita {
+    margin-top: var(--sp-xl);
+    padding: var(--sp-lg);
+    display: grid;
+    gap: var(--sp-sm);
+  }
+
+  .merita h3 {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-h3);
+  }
+
+  .merita p {
+    line-height: var(--lh-normal);
+  }
+
+  .concluzie {
+    font-weight: 600;
+    color: var(--secundar);
+  }
+</style>

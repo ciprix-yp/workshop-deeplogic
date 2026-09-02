@@ -66,7 +66,8 @@ test('insigna de pe CTA se completează cu numărul real, doar după răspunsul 
   // în testul „fără JS"/„fetch eșuat" de mai jos. Aici verificăm STAREA
   // FINALĂ: vizibilă, cu numărul real din mock, nu unul inventat.
   const insigna = page.locator('.hero [data-locuri-cta]');
-  await expect(insigna).toContainText('7 din 30', { timeout: 3000 });
+  // Format „Disponibil X/Y" — pivot 2026-09-02 (cerut explicit sub CTA).
+  await expect(insigna).toContainText('Disponibil 7/30', { timeout: 3000 });
   await expect(insigna).toBeVisible();
 });
 

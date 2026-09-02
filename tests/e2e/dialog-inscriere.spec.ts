@@ -46,9 +46,11 @@ test('click pe backdrop închide dialogul', async ({ page }) => {
   await expect(dialog).toBeHidden();
 });
 
-test('al doilea CTA (după §05) deschide același dialog', async ({ page }) => {
+test('al doilea CTA (finalul Rezultatul) deschide același dialog', async ({ page }) => {
+  // Pivot de structură (2026-09-02): §05 InainteDupa a fost retras. Al
+  // doilea repetaj de CTA e acum la finalul secțiunii Rezultatul.
   await page.goto('/');
-  await page.locator('#inainte-dupa .cta').click();
+  await page.locator('#rezultatul .cta').click();
   await expect(page.locator('#inscriere')).toBeVisible();
 });
 

@@ -1,0 +1,127 @@
+---
+import { CTA } from '../content/copy';
+---
+
+{/*
+  Buton CTA flotant — cerut explicit (2026-09-02), înlocuiește fosta bară
+  fixă doar-pe-mobil (CtaSticky.astro). Vizibil pe toate viewport-urile,
+  nu doar mobil: apare după ce iese hero-ul din cadru, dispare când CTA-ul
+  final e vizibil (nu-l dublează exact acolo unde stă deja pe ecran).
+
+  E un `<a href="#inscriere">` normal — interceptat de ascultătorul global
+  din DialogInscriere.astro (`a[href="#inscriere"]`), la fel ca orice alt
+  CTA de pe pagină. Niciun cod separat de deschidere aici.
+*/}
+<a href={CTA.ancora} id="cta-floating" class="floating" hidden aria-label={CTA.text}>
+  <span class="text">{CTA.text}</span>
+  <span class="locuri" data-locuri-cta hidden></span>
+</a>
+
+<script>
+  (() => {
+    const buton = document.getElementById('cta-floating');
+    const hero = document.querySelector('.hero .cta');
+    const form = document.getElementById('inscriere-cta');
+    if (!buton || !hero || !form || !('IntersectionObserver' in window)) return;
+
+    let heroVizibil = true;
+    let formVizibil = false;
+
+    const actualizeaza = () => {
+      const arata = !heroVizibil && !formVizibil;
+      buton.hidden = !arata;
+      buton.classList.toggle('vizibil', arata);
+    };
+
+    new IntersectionObserver(
+      (intrari) => {
+        heroVizibil = intrari[0]!.isIntersecting;
+        actualizeaza();
+      },
+      { threshold: 0 },
+    ).observe(hero);
+
+    new IntersectionObserver(
+      (intrari) => {
+        formVizibil = intrari[0]!.isIntersecting;
+        actualizeaza();
+      },
+      // Prag generos: butonul trebuie să dispară înainte ca CTA-ul final să
+      // fie pe jumătate pe ecran, nu fix când îl atinge.
+      { threshold: 0, rootMargin: '0px 0px -25% 0px' },
+    ).observe(form);
+  })();
+</script>
+
+<style>
+  .floating {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 45;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 13px 24px;
+    border-radius: var(--radius-cta);
+    background: var(--lime);
+    color: var(--pe-lime);
+    text-decoration: none;
+    font-family: var(--font-titlu);
+    box-shadow: 0 10px 26px -6px rgba(132, 204, 22, 0.55), 0 2px 6px rgba(42, 52, 57, 0.16);
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+    transition:
+      opacity 0.25s var(--ease-out),
+      transform 0.25s var(--ease-out),
+      background-color 0.15s ease;
+  }
+
+  .floating.vizibil {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .floating:hover {
+      background: var(--lime-hover);
+      transform: translateY(-2px);
+    }
+  }
+
+  .floating:focus-visible {
+    background: var(--lime-hover);
+  }
+
+  .floating:active {
+    transform: scale(0.97);
+  }
+
+  .text {
+    font-weight: 600;
+    font-size: var(--t-corp);
+  }
+
+  .locuri {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  /* Safe-area pe iPhone — butonul nu trebuie să cadă peste bara de gesturi. */
+  @media (max-width: 26rem) {
+    .floating {
+      right: 14px;
+      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      padding: 12px 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floating {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

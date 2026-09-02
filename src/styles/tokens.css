@@ -121,17 +121,29 @@
 
   /*
    * ── Accent lime (pivot 2026-09-02, Ciprian) ─────────────────────────────
-   * Linia vizuală de referință: proiectul Roxana Tascu ("Paradoxul ADHD").
-   * Regula lor scrisă e literală — "verdele nu e text" — CTA-ul principal
-   * rămâne navy, verdele apare doar ca bordură/glow/muchie de card/fundal de
-   * pastilă cu text închis deasupra. Motivul e matematic, nu de stil: pe alb,
-   * niciun lime nu trece 4.5:1 (verificat: #13EA50 Roxana = 1.63:1,
-   * #A6FF00 = 1.24:1). Aceeași regulă se aplică aici — `--accent` (CTA)
-   * rămâne #376A66, `--lime` NU înlocuiește text sau fundal-cu-text-alb.
+   * Linia vizuală de referință inițială: proiectul Roxana Tascu ("Paradoxul
+   * ADHD"), a cărui regulă scrisă e "verdele nu e text" — CTA-ul lor rămâne
+   * navy. Ciprian a cerut explicit, într-o rundă ulterioară aceleiași zile,
+   * ca butoanele CTA să fie ȘI ELE lime puternic — regula de mai sus se
+   * respectă totuși prin CE se schimbă: fundalul devine lime, dar textul de
+   * pe el trece de la alb la `--bg-inchis` (8.01:1 pe lime, verificat) —
+   * alb pe lime ar fi dat ~1.6:1, ilizibil. Verde ca fundal SOLID cu text
+   * închis deasupra respectă în continuare litera regulii ("verdele nu
+   * poartă text alb"); doar decorul rămas accent-only (glow, muchie de
+   * card) mai există separat.
    */
   --lime: #84cc16;
+  --lime-hover: #6ba812;
   --lime-wash: rgba(132, 204, 22, 0.12);
   --lime-edge: rgba(132, 204, 22, 0.5);
+  /* Text pe fundal lime — nu alb (contrast catastrofal), nu --text (6.45:1,
+     suficient dar mai palid) — --bg-inchis dă marja cea mai mare. */
+  --pe-lime: var(--bg-inchis);
+
+  /* Rotunjime pentru butoanele CTA — cerută explicit ca procent din cutia
+     proprie, nu px fix: pastilă pe butoanele late, mai discretă pe cele
+     mici (badge-ul de sub buton, butonul flotant). */
+  --radius-cta: 15%;
 
   /* Adâncime pentru cardurile cu profunzime (`.card-depth`/`.card-3d` mai jos). */
   --shadow-card: 0 1px 2px rgba(42, 52, 57, 0.06), 0 18px 40px -18px rgba(42, 52, 57, 0.22);
@@ -282,7 +294,8 @@ img {
   position: absolute;
   inset: 0 0 auto 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--accent), var(--lime));
+  /* Gri → lime, cerut explicit (2026-09-02) — înlocuiește teal→lime. */
+  background: linear-gradient(90deg, var(--text-muted), var(--lime));
 }
 
 /* Înclinare la cursor — scriptul din Base.astro (prop `depth`) scrie

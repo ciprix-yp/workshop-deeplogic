@@ -4,22 +4,31 @@ import Sectiune from './Sectiune.astro';
 import Cta from './Cta.astro';
 
 /**
- * Închiderea paginii — al patrulea CTA (regulă CLAUDE.md: hero, după §05,
- * după §08, aici). Formularul propriu-zis nu mai trăiește în flux — a fost
- * mutat în DialogInscriere.astro (dialog modal, deschis de orice CTA de pe
- * pagină). [corectat — audit impeccable, 2026-09-01] Copy-ul de-aici
- * (`ctaFinal`) NU mai e cel din antetul dialogului — de la pivotul PRIMUL
- * PAS, dialogul are propriul export (`inscriere`, § procedural: „Înscrierea
- * durează câteva minute...") — vezi DialogInscriere.astro. `ctaFinal` rămâne
- * doar aici, ca închidere finală a paginii, motivațional, nu procedural.
+ * Închiderea paginii — al treilea și ultimul repetaj de CTA (după hero și
+ * finalul lui Rezultatul — pivot de structură 2026-09-02, doar trei repetaje
+ * pe o pagină de zece secțiuni, în loc de patru pe șaisprezece). Formularul
+ * propriu-zis nu mai trăiește în flux — a fost mutat în DialogInscriere.astro
+ * (dialog modal, deschis de orice CTA de pe pagină). Copy-ul de-aici
+ * (`ctaFinal`) NU mai e cel din antetul dialogului — dialogul are propriul
+ * export (`inscriere`, § procedural: „Înscrierea durează câteva minute...")
+ * — vezi DialogInscriere.astro. `ctaFinal` rămâne doar aici, ca închidere
+ * finală a paginii, motivațională, nu procedurală.
+ *
+ * `id="inscriere-cta"` — CtaFloating.astro observă exact acest id ca să
+ * ascundă butonul flotant când secțiunea asta intră în ecran.
  */
 ---
 
 <Sectiune id="inscriere-cta">
   <div class="antet">
-    <h2>{ctaFinal.h2}</h2>
-    <p class="corp">{ctaFinal.corp}</p>
+    <h2>
+      {ctaFinal.h2.map((rand) => <span class="rand">{rand}</span>)}
+    </h2>
     <p class="meta">{ctaFinal.meta}</p>
+    <div class="corp">
+      {ctaFinal.corp.map((p) => <p>{p}</p>)}
+    </div>
+    <p class="accent">{ctaFinal.accent}</p>
     <Cta marime="mare" spatiuSus />
   </div>
 </Sectiune>
@@ -34,13 +43,29 @@ import Cta from './Cta.astro';
     margin-bottom: var(--sp-md);
   }
 
-  .corp {
-    font-size: var(--t-corp-lg);
+  .rand {
+    display: block;
   }
 
   .meta {
     font-family: var(--font-mono);
+    font-size: var(--t-mic);
     color: var(--secundar);
-    margin-top: var(--sp-md);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-2xs);
+    font-size: var(--t-corp-lg);
+    color: var(--text-muted);
+  }
+
+  .accent {
+    margin-top: var(--sp-sm);
+    margin-bottom: var(--sp-lg);
+    font-weight: 700;
+    font-size: var(--t-corp-lg);
+    color: var(--accent);
   }
 </style>

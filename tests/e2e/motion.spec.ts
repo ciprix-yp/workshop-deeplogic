@@ -6,11 +6,14 @@ import { test, expect } from '@playwright/test';
  * Pivot de arhitectură (2026-09-01, Ciprian): motorul de scroll custom
  * (MotionEngine.astro + storyboard.json, opt de scene) a fost retras în
  * favoarea Lenis + GSAP ScrollTrigger — folosit STRICT în §06 CeFacem (cei
- * cinci pași ai metodologiei). Restul paginii e static prin construcție,
- * nu doar „fără JS" — nu mai există niciun mecanism de reveal-la-scroll sau
- * tilt de dezactivat. Testele vechi pentru ele au fost șterse, nu adaptate:
- * ar fi testat un comportament care nu mai există, indiferent cât de bine
- * ar fi scrise.
+ * cinci pași ai metodologiei), singurul pin/scrub de pe pagină.
+ *
+ * Pivot ulterior (2026-09-02, „carduri 3D" + accente): restul paginii NU mai
+ * e static prin construcție — există un reveal la scroll (fade + ridicare,
+ * vanilla, fără GSAP) pe fiecare `<Sectiune>` cu `reveal` implicit `true`,
+ * plus tilt 3D la cursor pe cardurile cu profunzime. Ambele opt-in prin
+ * `depth` (Base.astro), niciodată vizibile fără JS — vezi tokens.css
+ * `[data-reveal]`/`.card-3d`.
  *
  * Cel mai important test rămâne cel fără JS: o pagină care se bazează pe un
  * script ca să-și arate textul e o pagină care uneori nu-l arată deloc.
@@ -21,7 +24,7 @@ test('fără JavaScript, tot conținutul rămâne vizibil', async ({ browser }) 
   const page = await ctx.newPage();
   await page.goto('/');
 
-  for (const sel of ['#problema .vacarm-bloc', '#ce-pleci-cu-tine article', '#rezultatul li', '#ce-facem .bloc']) {
+  for (const sel of ['#problema .exemple li', '#agravare p', '#rezultatul li', '#ce-facem .bloc']) {
     const el = page.locator(sel).first();
     await expect(el).toBeVisible();
     await expect(el).toHaveCSS('opacity', '1');
@@ -100,7 +103,7 @@ test('cu prefers-reduced-motion, pașii metodologiei sunt vizibili direct, făr�
   await ctx.close();
 });
 
-test('bara sticky apare după hero și dispare la formular', async ({ browser }) => {
+test('butonul CTA flotant apare după hero și dispare la formular — pe mobil', async ({ browser }) => {
   const ctx = await browser.newContext({
     viewport: { width: 360, height: 800 },
     isMobile: true,
@@ -109,25 +112,32 @@ test('bara sticky apare după hero și dispare la formular', async ({ browser })
   const page = await ctx.newPage();
   await page.goto('/');
 
-  const bara = page.locator('#cta-sticky');
-  // În hero, CTA-ul e deja pe ecran — o bară fixă ar dubla același buton.
-  await expect(bara).toBeHidden();
+  const buton = page.locator('#cta-floating');
+  // În hero, CTA-ul e deja pe ecran — un buton flotant ar dubla același buton.
+  await expect(buton).toBeHidden();
 
   await page.locator('#ce-facem').scrollIntoViewIfNeeded();
-  await expect(bara).toBeVisible({ timeout: 3000 });
+  await expect(buton).toBeVisible({ timeout: 3000 });
 
   // La chemarea finală dispare: ar dubla exact CTA-ul de-acolo.
   await page.locator('#inscriere-cta').scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
-  await expect(bara).toBeHidden();
+  await expect(buton).toBeHidden();
 
   await ctx.close();
 });
 
-test('bara sticky nu apare pe desktop', async ({ page }) => {
+test('butonul CTA flotant apare și pe desktop (pivot 2026-09-02 — nu mai e doar-mobil)', async ({ page }) => {
   await page.goto('/');
   await page.setViewportSize({ width: 1280, height: 900 });
+
+  const buton = page.locator('#cta-floating');
+  await expect(buton).toBeHidden();
+
   await page.locator('#ce-facem').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(300);
-  await expect(page.locator('#cta-sticky')).toBeHidden();
+  await expect(buton).toBeVisible({ timeout: 3000 });
+
+  await page.locator('#inscriere-cta').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(400);
+  await expect(buton).toBeHidden();
 });
