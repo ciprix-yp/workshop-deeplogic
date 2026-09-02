@@ -23,28 +23,36 @@ const caleFoto = join(process.cwd(), 'public', facilitator.foto.src);
 const areFoto = existsSync(caleFoto);
 ---
 
+{/*
+  Layout schimbat (2026-09-02, a treia rundă): fostul aranjament „poză mare
+  în stânga, text în dreapta" înlocuit cu un byline compact — nume + rol în
+  stânga, poză rotundă, medie, în dreapta — urmat de bio pe toată lățimea
+  dedesubt. Cerut explicit.
+*/}
 <Sectiune id="facilitator" latime="larg">
   <h2 data-reveal>{facilitator.h2}</h2>
 
-  <div class:list={['aranjament', areFoto && 'cu-foto']}>
+  <div class="byline" data-reveal>
+    <div class="identitate">
+      <p class="nume">{facilitator.nume}</p>
+      <p class="rol">{facilitator.rol}</p>
+    </div>
+
     {areFoto && (
       <img
         class="foto"
-        data-reveal
         src={facilitator.foto.src}
         alt={facilitator.foto.alt}
-        width="440"
-        height="550"
+        width="112"
+        height="112"
         loading="lazy"
         decoding="async"
       />
     )}
+  </div>
 
-    <div class="text">
-      <p class="nume" data-reveal>{facilitator.nume}</p>
-      <p class="rol" data-reveal>{facilitator.rol}</p>
-      {facilitator.corp.map((p) => <p data-reveal>{p}</p>)}
-    </div>
+  <div class="corp">
+    {facilitator.corp.map((p) => <p data-reveal>{p}</p>)}
   </div>
 </Sectiune>
 
@@ -54,33 +62,19 @@ const areFoto = existsSync(caleFoto);
     margin-bottom: var(--sp-md);
   }
 
-  .aranjament {
+  .byline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-lg);
+    padding-bottom: var(--sp-lg);
+    margin-bottom: var(--sp-lg);
+    border-bottom: 1px solid rgba(47, 79, 79, 0.15);
+  }
+
+  .identitate {
     display: grid;
-    gap: var(--sp-md);
-  }
-
-  @media (min-width: 52rem) {
-    .aranjament.cu-foto {
-      grid-template-columns: minmax(0, 18rem) 1fr;
-      gap: var(--sp-xl);
-      align-items: start;
-    }
-  }
-
-  .foto {
-    width: 100%;
-    max-width: 18rem;
-    border-radius: var(--radius-lg);
-    /* Fotografie reală, la lucru sau la un eveniment — nu portret corporate pe
-       fundal alb, nu stock. Regula e în documentul sursă. */
-    object-fit: cover;
-    aspect-ratio: 4 / 5;
-  }
-
-  .text {
-    display: grid;
-    gap: var(--sp-sm);
-    max-width: var(--max-proza);
+    gap: var(--sp-2xs);
   }
 
   .nume {
@@ -96,6 +90,35 @@ const areFoto = existsSync(caleFoto);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--accent);
-    margin-top: calc(-1 * var(--sp-xs));
+  }
+
+  /* Cadru rotund, mărime medie — cerut explicit (2026-09-02), nu portretul
+     mare din colonarea veche. */
+  .foto {
+    flex: none;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    object-fit: cover;
+    /* Fotografie reală, la lucru sau la un eveniment — nu portret corporate pe
+       fundal alb, nu stock. Regula e în documentul sursă. */
+    box-shadow: var(--shadow-card);
+    border: 3px solid var(--bg);
+  }
+
+  .corp {
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+  }
+
+  @media (max-width: 30rem) {
+    .byline {
+      gap: var(--sp-md);
+    }
+    .foto {
+      width: 5.5rem;
+      height: 5.5rem;
+    }
   }
 </style>

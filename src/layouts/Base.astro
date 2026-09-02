@@ -223,7 +223,25 @@ const jsonLd = {
           },
           { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
         );
-        revealuri.forEach((el) => observator.observe(el));
+        /*
+         * Fix (2026-09-02, feedback „tot ce e deasupra Facilitator nu
+         * animă"): pentru elementele deja în cadru la încărcare (hero,
+         * Trust bar, începutul lui Problema), `IntersectionObserver`
+         * raportează `isIntersecting: true` la primul callback — dacă acela
+         * ajunge înainte ca browserul să fi pictat MĂCAR O DATĂ starea
+         * inițială (`opacity: 0`), CSS-ul nu are de la ce stare să
+         * tranziționeze și sare direct la finală: elementul „apare", nu
+         * se animă. Dublu `requestAnimationFrame` garantează cel puțin un
+         * ciclu de picture complet cu starea ascunsă înainte să pornească
+         * observarea. Elementele de sub fold, revelate la scroll real
+         * (mult mai târziu), nu erau afectate — de-asta bug-ul se vedea
+         * doar „deasupra", nu peste tot.
+         */
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            revealuri.forEach((el) => observator.observe(el));
+          });
+        });
       } else {
         // Mișcare redusă sau fără IntersectionObserver: totul vizibil direct.
         revealuri.forEach((el) => el.classList.add('e-vizibil'));

@@ -187,6 +187,28 @@ body {
   /* Împiedică scroll orizontal accidental în browserul in-app din WhatsApp,
      unde viewport-ul e mai îngust decât raportează. */
   overflow-x: hidden;
+  position: relative;
+}
+
+/*
+ * Fix (2026-09-02, feedback „nu avem efectul de sticlă mată"): `.card-depth`
+ * are `backdrop-filter: blur()`, dar peste un fundal plat (alb sau gri
+ * uniform) blurul n-are ce înmuia — o culoare uniformă rămâne aceeași
+ * culoare, blurată sau nu, deci sticla arăta ca gri opac oarecare. Un strat
+ * decorativ FIX (nu se mișcă la scroll — rămâne relativ la viewport, nu la
+ * pagină), cu pete de culoare difuze, dă blurului ceva real de tradus în
+ * profunzime, indiferent unde ajunge un card pe parcursul scroll-ului.
+ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(640px circle at 12% 18%, rgba(132, 204, 22, 0.1), transparent 62%),
+    radial-gradient(560px circle at 88% 55%, rgba(55, 106, 102, 0.08), transparent 62%),
+    radial-gradient(700px circle at 25% 92%, rgba(132, 204, 22, 0.07), transparent 62%);
+  pointer-events: none;
 }
 
 h1, h2, h3 {
@@ -294,11 +316,24 @@ img {
  */
 .card-depth {
   position: relative;
-  /* Sticlă mată — cerută explicit (2026-09-02): gri translucid + blur, nu
-     alb opac. Fundal solid ca fallback dedesubt, pentru browsere fără
-     `backdrop-filter` (Firefox < 103, unele WebView Android vechi). */
+  /*
+   * Sticlă mată — cerută explicit (2026-09-02): gri translucid + blur, nu
+   * alb opac. Fix (a treia rundă, „efectul de frosted glass nu îl avem"):
+   * `backdrop-filter` blurează ce e ÎN SPATE — peste un fundal plat (alb
+   * sau gri uniform), o culoare uniformă rămâne aceeași culoare blurată
+   * sau nu, deci efectul era invizibil ori de câte ori cardul nu pica exact
+   * peste petele decorative fixe de pe fundalul paginii. Acum culoarea e
+   * PARTE din propriul fundal al cardului (gradient lime + accent, sub
+   * gri-ul translucid) — sticla arată colorată indiferent unde ajunge
+   * cardul pe parcursul scroll-ului, nu doar quand se suprapune cu ceva.
+   * Fundal solid ca fallback dedesubt, pentru browsere fără
+   * `backdrop-filter` (Firefox < 103, unele WebView Android vechi).
+   */
   background: var(--bg-secundar);
-  background: var(--sticla-fundal);
+  background:
+    radial-gradient(120% 140% at 15% -10%, rgba(132, 204, 22, 0.22), transparent 55%),
+    radial-gradient(100% 120% at 100% 110%, rgba(55, 106, 102, 0.16), transparent 55%),
+    var(--sticla-fundal);
   backdrop-filter: blur(16px) saturate(1.3);
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
   border: 1px solid var(--sticla-bordura);

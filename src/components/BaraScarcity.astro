@@ -32,11 +32,10 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
     /**
      * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin).
-     * Trei perechi capăt-la-capăt, fiecare verificată manual ≥4.5:1 pe
-     * FUNDALUL pe care chiar apare textul — nu aceeași pereche peste tot:
-     *   - bara (fundal lime, din 2026-09-02): `--bg-inchis` → #6B2626
-     *     (8.01:1 / 5.51:1 pe lime #84CC16 — calculat, nu ales; #9E4B4B,
-     *     folosit pe alb, cade la 2.98:1 pe lime).
+     * Fundalul barei a revenit la negru (2026-09-02, a treia rundă —
+     * „lasă header-ul negru, doar textul roșu") — gradientul revine la
+     * varianta pentru fundal închis: alb → `--eroare-clar` (#E08585,
+     * 5.92:1 pe `--bg-inchis`, deja verificat).
      *   - insigna din dialog (fundal alb): `--secundar` → `--eroare`
      *     (#9E4B4B, 5.90:1 pe alb — deja verificat de `npm run contrast`).
      */
@@ -45,7 +44,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
       const rgb = start.map((c, i) => Math.round(c + t * (stop[i] - c)));
       return `rgb(${rgb.join(',')})`;
     }
-    const GRADIENT_PE_LIME = [[27, 36, 38], [107, 38, 38]]; // --bg-inchis → #6B2626
+    const GRADIENT_PE_INCHIS = [[255, 255, 255], [224, 133, 133]]; // alb → var(--eroare-clar)
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
     /**
@@ -106,10 +105,10 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
       if (ramase <= 0) {
         continut.textContent = mesajPlin;
-        bara.style.color = '#6B2626';
+        bara.style.color = '#E08585';
       } else {
         continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown}`;
-        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_LIME);
+        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_INCHIS);
       }
 
       randeazaLocuriDinFormular();
@@ -168,12 +167,20 @@ import { EVENIMENT, scarcity } from '../content/copy';
     inset-inline: 0;
     z-index: 50;
     height: var(--h-bara-scarcity);
-    /* Fundal lime — aliniat cu CTA-urile (2026-09-02). Text implicit
-       --pe-lime (= --bg-inchis, 8.01:1): capătul „gol" al gradientului
-       calculat de script coincide cu asta, deci nu există cadru intermediar
-       cu contrast greșit înainte de primul fetch reușit. */
-    background: var(--lime);
-    color: var(--pe-lime);
+    /*
+     * Revenit la negru (2026-09-02, a treia rundă — „lasă header-ul negru,
+     * doar textul roșu"), dar cu sticlă mată, nu opac plat: fundal
+     * translucid + blur, ca butonul flotant. Text implicit alb (capătul
+     * „gol" al gradientului calculat de script), deja 15.83:1 pe
+     * `--bg-inchis` opac — pe versiunea translucidă marja scade puțin, dar
+     * rămâne masiv peste prag (fundalul e tot închis dedesubt, pagina
+     * pornește pe alb).
+     */
+    background: rgba(27, 36, 38, 0.82);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-pe-inchis);
     display: flex;
     align-items: center;
     justify-content: center;
