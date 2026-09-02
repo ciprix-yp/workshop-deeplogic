@@ -119,10 +119,15 @@ const textButon = r === 'da' ? 'Da, confirm că vin' : 'Da, anulează locul';
     padding: var(--sp-md) var(--sp-xl);
     min-height: var(--touch);
     cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s var(--ease-out);
   }
   .cta-raspuns:hover:not(:disabled),
   .cta-raspuns:focus-visible:not(:disabled) {
     background: var(--accent-hover);
+  }
+  /* Fix (audit emil-design-eng, 2026-09-02) — vezi checkin.astro. */
+  .cta-raspuns:active:not(:disabled) {
+    transform: scale(0.97);
   }
   .cta-raspuns:disabled {
     opacity: 0.6;

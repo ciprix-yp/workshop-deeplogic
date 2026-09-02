@@ -99,10 +99,17 @@ const token = Astro.url.searchParams.get('token');
     padding: var(--sp-md) var(--sp-xl);
     min-height: var(--touch);
     cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s var(--ease-out);
   }
   .cta-checkin:hover:not(:disabled),
   .cta-checkin:focus-visible:not(:disabled) {
     background: var(--accent-hover);
+  }
+  /* Fix (audit emil-design-eng, 2026-09-02): singurul buton de submit al
+     fluxului fără feedback de apăsare — verificat la reluarea auditului pe
+     paginile din afara landing-ului, unde runda inițială nu ajunsese. */
+  .cta-checkin:active:not(:disabled) {
+    transform: scale(0.97);
   }
   .cta-checkin:disabled {
     opacity: 0.6;

@@ -79,9 +79,13 @@ import { CTA, EVENIMENT } from '../content/copy';
 
     opacity: 0;
     transform: translateY(100%);
+    /* Fix (reluarea auditului emil-design-eng, 2026-09-02): curbă ad-hoc,
+       ușor mai slabă decât `--ease-out` — scăpată din consolidarea din
+       tokens.css (acolo se atinsese doar `.buton:active`, nu și intrarea
+       barei). */
     transition:
-      opacity 220ms ease,
-      transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      opacity 220ms var(--ease-out),
+      transform 220ms var(--ease-out);
   }
 
   .sticky.vizibil {

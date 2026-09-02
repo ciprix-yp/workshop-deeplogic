@@ -44,5 +44,19 @@ const areLinkCalendar = stare === 'reconfirmat' || stare === 'locRevendicat';
     font-weight: 600;
     color: var(--accent);
     text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s var(--ease-out);
+  }
+
+  /* Fix (audit emil-design-eng, 2026-09-02): arată ca un buton (bordură,
+     padding, țintă de 44px) dar nu se simțea apăsabil — nici hover, nici
+     press feedback. */
+  .link-calendar:hover,
+  .link-calendar:focus-visible {
+    border-color: var(--accent);
+    background: rgba(55, 106, 102, 0.06);
+  }
+
+  .link-calendar:active {
+    transform: scale(0.97);
   }
 </style>

@@ -106,10 +106,15 @@ const token = Astro.url.searchParams.get('token');
     padding: var(--sp-md) var(--sp-xl);
     min-height: var(--touch);
     cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s var(--ease-out);
   }
   .cta-retentie:hover:not(:disabled),
   .cta-retentie:focus-visible:not(:disabled) {
     background: var(--accent-hover);
+  }
+  /* Fix (audit emil-design-eng, 2026-09-02) — vezi checkin.astro. */
+  .cta-retentie:active:not(:disabled) {
+    transform: scale(0.97);
   }
   .cta-retentie:disabled {
     opacity: 0.6;
