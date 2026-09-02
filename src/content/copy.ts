@@ -77,14 +77,21 @@ export const CTA = {
 
 export const scarcity = {
   fallbackStatic: `Maximum ${EVENIMENT.capacitate} de locuri · ${EVENIMENT.dataText}, ${EVENIMENT.oraStart}`,
+  // Folosită DOAR de rândul de locuri live din formular (propoziție completă,
+  // spațiu suficient) — nu și de bara fixă, prea îngustă pentru ea (vezi
+  // `etichetaBara` mai jos, a șasea rundă, 2026-09-02).
   etichetaLocuri: 'locuri disponibile din',
-  etichetaCountdown: 'până la începere',
   plin: 'Locurile s-au ocupat — te trec pe lista de așteptare.',
   aInceput: 'a început',
   // Sub CTA (Cta.astro, CtaFloating.astro) — format „Disponibil 25/30",
   // cerut explicit (pivot 2026-09-02). Șablon, nu propoziție: scriptul din
   // BaraScarcity.astro completează cifrele.
   etichetaDisponibil: 'Disponibil',
+  // Bara fixă (a șasea rundă, 2026-09-02 — „nu încape countdown-ul"): format
+  // compact „Locuri 30/30 · 13z 23:45:03", nu mai propoziția lungă de mai
+  // sus — la textul +20% din runda anterioară, aceea trecea de lățimea barei
+  // și se tăia cu „…" înainte să apuce să arate ora din countdown.
+  etichetaBara: 'Locuri',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

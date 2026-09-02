@@ -22,7 +22,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
   <p class="continut" data-continut>{scarcity.fallbackStatic}</p>
 </div>
 
-<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maximeStatic: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaCountdown: scarcity.etichetaCountdown, mesajPlin: scarcity.plin, textAInceput: scarcity.aInceput, etichetaDisponibil: scarcity.etichetaDisponibil }}>
+<script is:inline define:vars={{ dataStart: '2026-09-16T14:00:00+03:00', maximeStatic: EVENIMENT.capacitate, etichetaLocuri: scarcity.etichetaLocuri, etichetaBara: scarcity.etichetaBara, mesajPlin: scarcity.plin, textAInceput: scarcity.aInceput, etichetaDisponibil: scarcity.etichetaDisponibil }}>
   (() => {
     const bara = document.getElementById('bara-scarcity');
     const continut = bara?.querySelector('[data-continut]');
@@ -46,22 +46,23 @@ import { EVENIMENT, scarcity } from '../content/copy';
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
     /**
-     * Fix (audit impeccable, 2026-09-01): întorcea doar cifra/eticheta
-     * countdown-ului, iar apelantul lipea necondiționat sufixul static
-     * „până la începere" după ea — după ora de start, cu locuri încă
-     * disponibile (posibil, dacă bufferul soft nu s-a umplut), bara afișa
-     * „a început până la începere". Acum întoarce fraza completă, ca
-     * apelantul să nu mai construiască o propoziție din bucăți.
+     * Format „13z 23:45:03" (a șasea rundă, 2026-09-02 — „nu încape
+     * countdown-ul"). Fostul format ("13z 20h până la începere") era mai
+     * lung ȘI mai puțin precis (rotunjea la oră/minut, nu ținea ceasul la
+     * secundă) — ceas complet, zero-padded, mereu HH:MM:SS, cu „Nz " în
+     * față doar cât mai e cel puțin o zi întreagă.
      */
+    function zeroPad(n) {
+      return String(n).padStart(2, '0');
+    }
     function formatCountdown(ms) {
       if (ms <= 0) return textAInceput;
       const zile = Math.floor(ms / 86400000);
       const ore = Math.floor((ms % 86400000) / 3600000);
       const minute = Math.floor((ms % 3600000) / 60000);
-      if (zile > 0) return `${zile}z ${ore}h ${etichetaCountdown}`;
-      if (ore > 0) return `${ore}h ${minute}m ${etichetaCountdown}`;
       const secunde = Math.floor((ms % 60000) / 1000);
-      return `${minute}m ${secunde}s ${etichetaCountdown}`;
+      const ceas = `${zeroPad(ore)}:${zeroPad(minute)}:${zeroPad(secunde)}`;
+      return zile > 0 ? `${zile}z ${ceas}` : ceas;
     }
 
     let ramase = null;
@@ -104,7 +105,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
       if (ramase <= 0) {
         continut.textContent = mesajPlin;
       } else {
-        continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown}`;
+        continut.textContent = `${etichetaBara} ${ramase}/${maxime} · ${ramasCountdown}`;
       }
 
       randeazaLocuriDinFormular();

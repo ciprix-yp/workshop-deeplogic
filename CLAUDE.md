@@ -80,6 +80,15 @@ Aceeași rundă, două fix-uri fără legătură cu bara:
   butonului flotant. Verificat programatic (scroll simulat prin toată pagina, la fiecare CTA):
   zero suprapuneri.
 
+**A șasea rundă (2026-09-02, Ciprian — „nu încape countdown-ul"):** textul barei, la +20% din
+runda a cincea, trecea de lățimea barei pe 360px și se tăia cu „…" înainte de countdown.
+Format nou, mult mai compact: `Locuri 30/30 · 13z 23:45:03` — șablon separat,
+`scarcity.etichetaBara` (rândul de locuri LIVE din formular, propoziția completă „Mai sunt N
+locuri disponibile din M.", rămâne pe `etichetaLocuri`, spațiu suficient acolo). Countdown-ul
+însuși e acum ceas complet, zero-padded (`HH:MM:SS`, cu „Nz " în față doar cât mai e cel puțin
+o zi întreagă) — mai precis ȘI mai scurt decât fostul „13z 20h până la începere"
+(`etichetaCountdown` a fost eliminat din `copy.ts`, nu mai are utilizare).
+
 ---
 
 ## 2. Reguli de build

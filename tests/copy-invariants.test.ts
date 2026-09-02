@@ -172,7 +172,7 @@ describe('fără presiune fabricată — dar scarcity-ul REAL e permis (reversar
 
   it('eticheta de scarcity e un șablon generic, fără cifră scrisă de mână', () => {
     expect(copy.scarcity.etichetaLocuri).not.toMatch(/\d/);
-    expect(copy.scarcity.etichetaCountdown).not.toMatch(/\d/);
+    expect(copy.scarcity.etichetaBara).not.toMatch(/\d/);
   });
 });
 
