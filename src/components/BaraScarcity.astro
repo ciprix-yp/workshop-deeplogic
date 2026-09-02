@@ -32,21 +32,20 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
     /**
      * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin).
-     * Două perechi capăt-la-capăt, fiecare verificată manual ≥4.5:1 pe
+     * Trei perechi capăt-la-capăt, fiecare verificată manual ≥4.5:1 pe
      * FUNDALUL pe care chiar apare textul — nu aceeași pereche peste tot:
-     *   - bara (fundal închis): alb → `--eroare-clar` (#E08585, 5.92:1 pe
-     *     `--bg-inchis`).
+     *   - bara (fundal lime, din 2026-09-02): `--bg-inchis` → #6B2626
+     *     (8.01:1 / 5.51:1 pe lime #84CC16 — calculat, nu ales; #9E4B4B,
+     *     folosit pe alb, cade la 2.98:1 pe lime).
      *   - insigna din dialog (fundal alb): `--secundar` → `--eroare`
      *     (#9E4B4B, 5.90:1 pe alb — deja verificat de `npm run contrast`).
-     * Reutilizarea perechii de pe bară pe fundal alb ar fi dus la text alb
-     * pe alb la capătul „gol" al gradientului.
      */
     function culoareOcupare(ocupare, start, stop) {
       const t = Math.max(0, Math.min(1, ocupare));
       const rgb = start.map((c, i) => Math.round(c + t * (stop[i] - c)));
       return `rgb(${rgb.join(',')})`;
     }
-    const GRADIENT_PE_INCHIS = [[255, 255, 255], [224, 133, 133]]; // alb → var(--eroare-clar)
+    const GRADIENT_PE_LIME = [[27, 36, 38], [107, 38, 38]]; // --bg-inchis → #6B2626
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
     /**
@@ -107,10 +106,10 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
       if (ramase <= 0) {
         continut.textContent = mesajPlin;
-        bara.style.color = '#E08585';
+        bara.style.color = '#6B2626';
       } else {
         continut.textContent = `${ramase} ${etichetaLocuri} ${maxime} · ${ramasCountdown}`;
-        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_INCHIS);
+        bara.style.color = culoareOcupare(1 - ramase / maxime, ...GRADIENT_PE_LIME);
       }
 
       randeazaLocuriDinFormular();
@@ -169,8 +168,12 @@ import { EVENIMENT, scarcity } from '../content/copy';
     inset-inline: 0;
     z-index: 50;
     height: var(--h-bara-scarcity);
-    background: var(--bg-inchis);
-    color: var(--text-pe-inchis);
+    /* Fundal lime — aliniat cu CTA-urile (2026-09-02). Text implicit
+       --pe-lime (= --bg-inchis, 8.01:1): capătul „gol" al gradientului
+       calculat de script coincide cu asta, deci nu există cadru intermediar
+       cu contrast greșit înainte de primul fetch reușit. */
+    background: var(--lime);
+    color: var(--pe-lime);
     display: flex;
     align-items: center;
     justify-content: center;

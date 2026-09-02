@@ -33,6 +33,16 @@ const { id, fundal = 'primar', latime = 'proza', clasa = '', reveal = true } = A
   .sectiune {
     padding-block: var(--sp-2xl);
     padding-inline: var(--lat);
+    /* Delimitare clară între secțiuni — cerută explicit (2026-09-02): o
+       bară subțire, nu doar spațiere, ca granița să se vadă indiferent de
+       cât de aproape sunt fundalurile a două secțiuni consecutive. */
+    border-top: 1px solid rgba(47, 79, 79, 0.12);
+  }
+
+  /* Prima secțiune din flux — TrustBar (fundal secundar) e deasupra, deci
+     bara ar dubla granița deja vizibilă dintre alb și gri. */
+  .sectiune:first-child {
+    border-top: none;
   }
 
   .sectiune.secundar {

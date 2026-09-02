@@ -5,8 +5,14 @@ import { CTA } from '../content/copy';
 {/*
   Buton CTA flotant — cerut explicit (2026-09-02), înlocuiește fosta bară
   fixă doar-pe-mobil (CtaSticky.astro). Vizibil pe toate viewport-urile,
-  nu doar mobil: apare după ce iese hero-ul din cadru, dispare când CTA-ul
-  final e vizibil (nu-l dublează exact acolo unde stă deja pe ecran).
+  nu doar mobil.
+
+  Se ascunde ori de câte ori ORICE alt CTA de pe pagină (hero, finalul lui
+  Rezultatul, CTA final) e deja pe ecran — nu doar la CTA-ul final. Fix
+  (2026-09-02, feedback „două butoane unul lângă altul"): varianta veche
+  observa STRICT hero-ul + `#inscriere-cta`, deci rămânea vizibil suprapus
+  peste CTA-ul din mijlocul secțiunii Rezultatul. Acum observă fiecare
+  `.cta` din pagină, generic — se ascunde cât timp oricare e vizibil.
 
   E un `<a href="#inscriere">` normal — interceptat de ascultătorul global
   din DialogInscriere.astro (`a[href="#inscriere"]`), la fel ca orice alt
@@ -20,36 +26,41 @@ import { CTA } from '../content/copy';
 <script>
   (() => {
     const buton = document.getElementById('cta-floating');
-    const hero = document.querySelector('.hero .cta');
-    const form = document.getElementById('inscriere-cta');
-    if (!buton || !hero || !form || !('IntersectionObserver' in window)) return;
+    // Toate CTA-urile din flux — hero, finalul lui Rezultatul, CTA final.
+    // Butonul flotant lui însuși nu e `.cta`, deci nu se auto-observă.
+    const cteuri = Array.from(document.querySelectorAll<HTMLElement>('a.cta'));
+    if (!buton || !cteuri.length || !('IntersectionObserver' in window)) return;
 
-    let heroVizibil = true;
-    let formVizibil = false;
+    // Set, nu contor incrementat/decrementat: idempotent indiferent de câte
+    // ori se raportează același element — un contor simplu a dublat/pierdut
+    // tranziții (verificat: butonul rămânea ascuns permanent după primul
+    // CTA din flux ieșit din cadru).
+    const vizibile = new Set<Element>();
 
     const actualizeaza = () => {
-      const arata = !heroVizibil && !formVizibil;
+      const arata = vizibile.size === 0;
       buton.hidden = !arata;
       buton.classList.toggle('vizibil', arata);
     };
 
-    new IntersectionObserver(
+    const observator = new IntersectionObserver(
       (intrari) => {
-        heroVizibil = intrari[0]!.isIntersecting;
+        for (const intrare of intrari) {
+          if (intrare.isIntersecting) vizibile.add(intrare.target);
+          else vizibile.delete(intrare.target);
+        }
         actualizeaza();
       },
-      { threshold: 0 },
-    ).observe(hero);
-
-    new IntersectionObserver(
-      (intrari) => {
-        formVizibil = intrari[0]!.isIntersecting;
-        actualizeaza();
-      },
-      // Prag generos: butonul trebuie să dispară înainte ca CTA-ul final să
-      // fie pe jumătate pe ecran, nu fix când îl atinge.
+      // Prag generos: butonul trebuie să dispară înainte ca un CTA din flux
+      // să fie pe jumătate pe ecran, nu fix când îl atinge.
       { threshold: 0, rootMargin: '0px 0px -25% 0px' },
-    ).observe(form);
+    );
+    cteuri.forEach((el) => observator.observe(el));
+
+    // La încărcare, primul callback async al observer-ului încă n-a rulat —
+    // fără asta, butonul ar apărea o clipă (Set gol) înainte ca hero-ul
+    // să fie raportat ca vizibil.
+    actualizeaza();
   })();
 </script>
 
@@ -65,11 +76,23 @@ import { CTA } from '../content/copy';
     gap: 2px;
     padding: 13px 24px;
     border-radius: var(--radius-cta);
-    background: var(--lime);
+    /*
+     * Sticlă mată — cerută explicit (2026-09-02): lime translucid + blur,
+     * nu opac plat. Opacitate ținută sus (0.88) deliberat: contrastul de
+     * 8.01:1 verificat pentru --pe-lime pe lime OPAC nu se garantează
+     * automat pe un fundal translucid — la opacitate mare, orice s-ar vedea
+     * prin spate rămâne un ecart mic față de lime pur, deci marja se
+     * păstrează practic neschimbată; blur-ul dă senzația de sticlă fără
+     * să sacrifice lizibilitatea.
+     */
+    background: rgba(132, 204, 22, 0.88);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: var(--pe-lime);
     text-decoration: none;
     font-family: var(--font-titlu);
-    box-shadow: 0 10px 26px -6px rgba(132, 204, 22, 0.55), 0 2px 6px rgba(42, 52, 57, 0.16);
+    box-shadow: 0 10px 26px -6px rgba(132, 204, 22, 0.5), 0 2px 6px rgba(42, 52, 57, 0.16);
     opacity: 0;
     transform: translateY(16px) scale(0.96);
     transition:
@@ -85,13 +108,13 @@ import { CTA } from '../content/copy';
 
   @media (hover: hover) and (pointer: fine) {
     .floating:hover {
-      background: var(--lime-hover);
+      background: rgba(107, 168, 18, 0.9);
       transform: translateY(-2px);
     }
   }
 
   .floating:focus-visible {
-    background: var(--lime-hover);
+    background: rgba(107, 168, 18, 0.9);
   }
 
   .floating:active {
@@ -116,6 +139,14 @@ import { CTA } from '../content/copy';
       right: 14px;
       bottom: calc(14px + env(safe-area-inset-bottom, 0px));
       padding: 12px 20px;
+    }
+  }
+
+  /* Fallback fără backdrop-filter (Firefox < 103, WebView Android vechi) —
+     opacitate mai mare, ca sticla să nu devină ilizibilă fără blur. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .floating {
+      background: rgb(132, 204, 22);
     }
   }
 

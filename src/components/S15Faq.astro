@@ -6,22 +6,29 @@ import Sectiune from './Sectiune.astro';
 {/*
   Ultimele obiecții, chiar înainte de CTA-ul final.
 
-  Deliberat FĂRĂ accordion. Un `<details>` închis ascunde exact răspunsurile
-  care conving — inclusiv „O să-mi vindeți ceva la final?", una dintre cele
-  mai importante din listă. Un click în plus pe obiecția decisivă e un click
-  pe care mulți nu-l fac. Zece întrebări scurte; se citesc.
+  Accordion (pivot 2026-09-02) — reversare deliberată a regulii anterioare
+  („fără accordion, un click în plus pe obiecția decisivă e un click pe
+  care mulți nu-l fac"). Cerut explicit de Ciprian. `<details>`/`<summary>`
+  nativ: funcționează fără JS, navigabil cu tastatura fără cod suplimentar.
 */}
 <Sectiune id="intrebari">
   <h2>{faq.h2}</h2>
 
-  <dl>
+  <div class="lista">
     {faq.intrebari.map((item) => (
-      <div class="qa">
-        <dt>{item.q}</dt>
-        <dd>{item.a}</dd>
-      </div>
+      <details class="qa">
+        <summary>
+          <span class="q">{item.q}</span>
+          <svg class="chevron" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </summary>
+        <div class="a-wrap">
+          <p class="a">{item.a}</p>
+        </div>
+      </details>
     ))}
-  </dl>
+  </div>
 </Sectiune>
 
 <style>
@@ -30,21 +37,46 @@ import Sectiune from './Sectiune.astro';
     margin-bottom: var(--sp-md);
   }
 
-  /* Retunat (iterația 2, QA #2; strâns din nou pentru „un ecran" pe mobil):
-     sp-lg (32px) → sp-md (20px) → sp-sm (12px) — 7 întrebări scurte, nu 7
-     secțiuni; era cel mai mare contribuitor singular la lungimea cardului. */
-  dl {
-    margin: 0;
+  .lista {
     display: grid;
-    gap: var(--sp-sm);
   }
 
   .qa {
-    display: grid;
-    gap: var(--sp-2xs);
+    border-bottom: 1px solid rgba(47, 79, 79, 0.15);
   }
 
-  dt {
+  .qa:first-child {
+    border-top: 1px solid rgba(47, 79, 79, 0.15);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-md);
+    padding-block: var(--sp-sm);
+    cursor: pointer;
+    list-style: none;
+    /* Țintă de atingere reală — întrebarea întreagă e clicabilă, nu doar
+       chevron-ul. */
+    min-height: var(--touch);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::marker {
+    content: '';
+  }
+
+  summary:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius);
+  }
+
+  .q {
     font-family: var(--font-titlu);
     font-weight: 600;
     font-size: var(--t-corp-lg);
@@ -52,13 +84,39 @@ import Sectiune from './Sectiune.astro';
     letter-spacing: -0.01em;
   }
 
-  dd {
+  .chevron {
+    flex: none;
+    color: var(--accent);
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .qa[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  /*
+   * Animație CSS-only, fără JS — `display: grid` explicit învinge regula
+   * implicită a browserului (`details:not([open]) > *:not(summary) {
+   * display: none }`), deci conținutul rămâne mereu în grid, doar rândul
+   * lui trece de la 0fr la 1fr. `overflow: hidden` pe copil, nu pe wrapper,
+   * ca `padding-bottom`-ul răspunsului să nu se taie la tranziția finală.
+   */
+  .a-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s var(--ease-out);
+  }
+
+  .qa[open] .a-wrap {
+    grid-template-rows: 1fr;
+  }
+
+  .a {
+    overflow: hidden;
+    min-height: 0;
     margin: 0;
+    padding-bottom: var(--sp-md);
     color: var(--secundar);
-    /* lh-normal, nu lh-lejer (implicit de pe body): răspunsurile sunt proză
-       scurtă (2-3 propoziții), nu text lung de citit în bloc — același
-       raționament ca `.subheadline`/`.pentru-cine` din S01Hero.astro.
-       Recuperă spațiu vertical real pe răspunsurile de 3-4 rânduri. */
     line-height: var(--lh-normal);
   }
 </style>

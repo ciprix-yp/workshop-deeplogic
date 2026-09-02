@@ -124,14 +124,13 @@ import Cta from './Cta.astro';
     color: var(--text-muted);
   }
 
-  /* Cutie + tilt din `.card-depth card-3d`, global (tokens.css) — dar
-     `background`-ul secundar rămâne aici, deliberat: onestitatea „ce nu
-     promit" trebuie să citească distinct de restul cardurilor de pe pagină,
-     nu ca încă un card premium. */
+  /* Cutie + tilt din `.card-depth card-3d`, global (tokens.css) — sticlă
+     mată gri pe toate cardurile acum (2026-09-02), deci nu mai trebuie
+     forțat un fundal secundar aici doar ca să iasă din tonul alb-premium
+     de dinainte. `--text-muted-pe-secundar` rămâne ca plasă de siguranță
+     de contrast — fundalul translucid variază ușor cu ce e în spate. */
   .granita {
     margin-top: var(--sp-lg);
-    background: var(--bg-secundar);
-    /* Fix de contrast — vezi tokens.css `--text-muted-pe-secundar`. */
     --text-muted: var(--text-muted-pe-secundar);
     padding: var(--sp-md);
     display: grid;

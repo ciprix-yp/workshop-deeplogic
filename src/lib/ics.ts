@@ -99,6 +99,15 @@ export function genereazaIcs(dataGenerare: Date): string {
     `SUMMARY:${scapaText(EVENIMENT.titlu + ' — ' + EVENIMENT.organizator)}`,
     `LOCATION:${scapaText(adresa)}`,
     `DESCRIPTION:${scapaText('Miercuri, 16 septembrie 2026, 14:00–17:00. ' + adresa)}`,
+    // Alertă cu 24h înainte — cerută explicit (2026-09-02), „setată dintr-un
+    // click" odată cu restul evenimentului. `TRIGGER:-P1D` = relativ la
+    // DTSTART, nu la un timestamp fix — corect indiferent de fusul orar al
+    // calendarului în care ajunge.
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${scapaText(EVENIMENT.titlu + ' — mâine, ' + EVENIMENT.ora)}`,
+    'TRIGGER:-P1D',
+    'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',
   ];
