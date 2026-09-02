@@ -32,6 +32,10 @@ const TOKENS = {
   // Capătul „roșu" al gradientului din BaraScarcity.astro — interpolat în JS
   // între alb (--text-pe-inchis) și acesta, pe raportul de ocupare a locurilor.
   eroareClar: '#E08585',
+  // Capătul deschis al gradientului roșu din BaraScarcity.astro (2026-09-02,
+  // a patra rundă — „textul din bara de sus să fie roșu" de la capăt la capăt,
+  // nu doar la capacitate plină).
+  eroareDeschis: '#F0B3B3',
 };
 
 /** @param {string} hex */
@@ -83,6 +87,7 @@ const PERECHI = [
   { nume: 'CTA pe întuneric — text închis pe accent clar', fg: TOKENS.bgInchis, bg: TOKENS.accentClar, min: 4.5 },
   { nume: 'fundal secundar ca text pe închis', fg: TOKENS.bgSecundar, bg: TOKENS.bgInchis, min: 4.5 },
   { nume: 'BaraScarcity — capăt roșu (0 locuri) pe fundal închis', fg: TOKENS.eroareClar, bg: TOKENS.bgInchis, min: 4.5 },
+  { nume: 'BaraScarcity — capăt roșu deschis (locuri pline) pe fundal închis', fg: TOKENS.eroareDeschis, bg: TOKENS.bgInchis, min: 4.5 },
 ];
 
 let picat = 0;
@@ -106,6 +111,7 @@ const RESPINSE = [
   { val: '#3A716D', ratio: contrast('#3A716D', '#E4E7E7'), motiv: 'prima corectie a CTA — trecea pe alb, pica pe fundalul secundar din §03 si footer' },
   { val: '#637474', ratio: contrast('#637474', '#E4E7E7'), motiv: '`--text-muted` PE SECUNDAR — defectul gasit initial; foloseste --text-muted-pe-secundar (#576565)' },
   { val: '#637474', ratio: contrast('#637474', '#C9E3D0'), motiv: '`--text-muted` pe `--succes-bg` — nefolosit azi (.format §06 fixeaza `color: var(--text)`); nu-l introduce' },
+  { val: '#C75C5C', ratio: contrast('#C75C5C', '#1B2426'), motiv: 'capăt "adânc" pentru gradientul roșu din BaraScarcity — pe fundalul foarte închis pica sub 4.5:1' },
 ];
 console.log('\nValori scoase din paletă (pentru referință, ca să nu revină):\n');
 for (const { val, ratio, motiv } of RESPINSE) {

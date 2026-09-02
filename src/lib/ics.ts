@@ -98,7 +98,11 @@ export function genereazaIcs(dataGenerare: Date): string {
     'DTEND;TZID=Europe/Bucharest:20260916T170000',
     `SUMMARY:${scapaText(EVENIMENT.titlu + ' — ' + EVENIMENT.organizator)}`,
     `LOCATION:${scapaText(adresa)}`,
-    `DESCRIPTION:${scapaText('Miercuri, 16 septembrie 2026, 14:00–17:00. ' + adresa)}`,
+    // Link Google Maps — cerut explicit (2026-09-02), în DESCRIPTION (text
+    // simplu, vizibil în orice client) ȘI ca URL (proprietate dedicată,
+    // recunoscută de Google Calendar/Apple ca link „deschide harta").
+    `DESCRIPTION:${scapaText('Miercuri, 16 septembrie 2026, 14:00–17:00. ' + adresa + ' — hartă: ' + EVENIMENT.mapsUrl)}`,
+    `URL:${EVENIMENT.mapsUrl}`,
     // Alertă cu 24h înainte — cerută explicit (2026-09-02), „setată dintr-un
     // click" odată cu restul evenimentului. `TRIGGER:-P1D` = relativ la
     // DTSTART, nu la un timestamp fix — corect indiferent de fusul orar al

@@ -9,28 +9,30 @@ import Cta from './Cta.astro';
   Hero rămâne strict: titlu, promisiune, CTA.
 */}
 <header class="hero">
-  <div class="continut">
-    <p class="eyebrow">{hero.eyebrow}</p>
+  <div class="hero-glass">
+    <div class="continut">
+      <p class="eyebrow">{hero.eyebrow}</p>
 
-    {/*
-      H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
-      propoziții E mesajul — pe un singur rând se pierde.
-    */}
-    <h1>
-      {hero.h1.map((rand, i) => (
-        <span class:list={['rand', i === 1 && 'accentuat']}>
-          {rand}
-        </span>
-      ))}
-    </h1>
+      {/*
+        H1 pe două rânduri, cu break forțat. Contrastul dintre cele două
+        propoziții E mesajul — pe un singur rând se pierde.
+      */}
+      <h1>
+        {hero.h1.map((rand, i) => (
+          <span class:list={['rand', i === 1 && 'accentuat']}>
+            {rand}
+          </span>
+        ))}
+      </h1>
 
-    <p class="subheadline">{hero.subheadline}</p>
+      <p class="subheadline">{hero.subheadline}</p>
 
-    <div class="corp">
-      {hero.corp.map((p) => <p>{p}</p>)}
+      <div class="corp">
+        {hero.corp.map((p) => <p>{p}</p>)}
+      </div>
+
+      <Cta marime="mare" spatiuSus />
     </div>
-
-    <Cta marime="mare" spatiuSus />
   </div>
 </header>
 
@@ -43,6 +45,37 @@ import Cta from './Cta.astro';
     padding-inline: var(--lat);
   }
 
+  /*
+   * Cadru „frozen glass" pe toată zona hero — cerut explicit (2026-09-02).
+   * Aceeași rețetă ca `.card-depth` (tokens.css: gradient lime+accent PROPRIU
+   * fundalului, sub `backdrop-filter`, altfel blurul n-are ce înmuia peste un
+   * fundal alb plat), dar la 70% transparență (alpha 0.3, nu 0.6 ca
+   * `--sticla-fundal`) — cerut explicit, ca să se citească efectul de gheață
+   * blurată, nu un card gri aproape opac.
+   */
+  .hero-glass {
+    max-width: var(--max-continut);
+    margin-inline: auto;
+    padding: var(--sp-xl) var(--lat);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--sticla-bordura);
+    box-shadow: var(--shadow-card);
+    background:
+      radial-gradient(120% 140% at 15% -10%, rgba(132, 204, 22, 0.22), transparent 55%),
+      radial-gradient(100% 120% at 100% 110%, rgba(55, 106, 102, 0.16), transparent 55%),
+      rgba(228, 231, 231, 0.3);
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  }
+
+  /* Fallback fără backdrop-filter (Firefox < 103, WebView Android vechi) —
+     opacitate mai mare, ca sticla să nu devină ilizibilă fără blur. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .hero-glass {
+      background: var(--bg-secundar);
+    }
+  }
+
   .continut {
     max-width: var(--max-proza);
     margin-inline: auto;
@@ -52,9 +85,11 @@ import Cta from './Cta.astro';
   .eyebrow {
     font-family: var(--font-mono);
     font-size: var(--t-eyebrow);
-    /* Literă mică deliberat: e numele produsului, dar nu trebuie să concureze
-       cu H1-ul. Greutatea vizuală o dă spațierea, nu dimensiunea. */
-    text-transform: lowercase;
+    /* Majuscule, cerut explicit (2026-09-02) — greutatea vizuală rămâne mică
+       prin dimensiune și spațiere, nu prin literă mică. `--accent` (nu
+       `--lime`): la mărimea asta e text normal, deci pragul e 4.5:1 —
+       lime pe alb dă ~2:1 (verificat), --accent dă 6.15:1. */
+    text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--accent);
     margin-bottom: var(--sp-md);

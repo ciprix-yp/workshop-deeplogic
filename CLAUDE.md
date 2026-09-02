@@ -56,6 +56,15 @@ CTA cu numărul de locuri rămase. **Regula care rămâne literă de lege, nesch
   element separat, ascuns implicit, completat doar după un fetch reușit (vezi `Cta.astro`,
   `data-locuri-cta`). Nu schimbă regula de mai jos, „un singur CTA, text fix".
 
+**A patra rundă de polish (2026-09-02, Ciprian):** textul barei fixe e roșu de la capăt la
+capăt, nu doar aproape de capacitate plină — gradientul din `BaraScarcity.astro` pornește
+acum de la `#F0B3B3` (roșu deschis, 8.90:1 pe `--bg-inchis`) în loc de alb, spre
+`--eroare-clar` (#E08585, 5.92:1). Un roșu mai adânc (`#C75C5C`, testat) pică sub 4.5:1 pe
+fundalul foarte închis al barei — `scripts/check-contrast.mjs` îl listează ca respins, ca să
+nu revină din greșeală. Insigna „Disponibil X/30" s-a mutat **ÎN** interiorul butonului CTA
+(nu mai stă dedesubt) — regula de mai sus, „element separat, ascuns implicit", rămâne
+neschimbată, doar poziția.
+
 ---
 
 ## 2. Reguli de build
@@ -63,7 +72,8 @@ CTA cu numărul de locuri rămase. **Regula care rămâne literă de lege, nesch
 - **Mobile-first, fără excepție.** ≥40% din trafic vine dintr-un link trimis pe WhatsApp de
   un membru BIZZ.CLUB. Breakpoint-ul de referință e **360px**, nu 375px.
 - **Un singur CTA pe toată pagina.** Text: „Rezervă-ți locul". Ancoră: `#inscriere`.
-  Sub el, numărul real de locuri („Disponibil X/30", niciodată inventat — vezi §1).
+  În interiorul butonului, numărul real de locuri („Disponibil X/30", niciodată inventat —
+  vezi §1; mutat ÎN buton la a patra rundă de polish, 2026-09-02 — înainte stătea dedesubt).
   Repetat la: hero, la finalul secțiunii „Ce rezultat promitem", în CTA final — plus
   un buton flotant (`CtaFloating.astro`, cerut explicit 2026-09-02) mereu vizibil după
   ce iese hero-ul din cadru, pe toate viewport-urile. Fără CTA secundar, fără „află mai multe".
@@ -111,6 +121,12 @@ cursor pe pointer fin. Vanilla, fără GSAP (`Base.astro`, prop `depth`) — mec
 - **Fără JS, `[data-reveal]` e mereu vizibil** — clasa `html.js` (adăugată sincron, înainte de
   primul paint) e condiția, nu prezența atributului.
 
+**Cadru „frozen glass" pe hero — a patra rundă (2026-09-02):** toată zona hero e încadrată de
+`.hero-glass` (`S01Hero.astro`) — aceeași rețetă ca `.card-depth` (gradient lime+accent
+PROPRIU fundalului, sub `backdrop-filter: blur()`, altfel blurul n-are ce înmuia peste un
+fundal alb plat), dar la **70% transparență** (alpha `0.3`, nu `0.6` ca `--sticla-fundal`) —
+cerut explicit, ca efectul de gheață blurată să se citească, nu un card gri aproape opac.
+
 ---
 
 ## 3. Tokens — cu contrastele calculate
@@ -155,6 +171,11 @@ aceeași culoare, blurată sau nu. Prima variantă (blur peste un strat decorati
 tehnic corectă dar vizual invizibilă ori de câte ori cardul nu cădea peste o pată de culoare.
 `.card-depth` are acum un gradient lime+accent direct în propriul fundal — sticla arată
 colorată indiferent unde ajunge cardul pe parcursul scroll-ului.
+
+**Variantă mai transparentă pe hero (a patra rundă, 2026-09-02):** `.hero-glass`
+(`S01Hero.astro`) refolosește aceeași rețetă, dar la alpha `0.3` (70% transparență) în loc de
+`0.6` — cerut explicit, ca zona hero să citească clar efectul de sticlă înghețată/blurată, nu
+un panou aproape opac.
 
 **Fonturi:** Inter (titluri), Source Sans 3 (corp), IBM Plex Mono (date/numerotare).
 Self-hostate din `public/fonts/`, subset **`latin` + `latin-ext`**.
@@ -225,5 +246,6 @@ Vezi [`docs/PROGRES.md`](docs/PROGRES.md) pentru starea curentă. Niciunul negoc
 `LEGAL` (Termeni + Confidențialitate linkate din bifă) · `EMAIL` (SPF/DKIM/DMARC verzi,
 aterizare în inbox) · `OG` (card randat pe un telefon real, prin WhatsApp) · `CONCURENȚĂ`
 (20 de rulări, un singur câștigător) · `B1` (cutoff cu 8 nereconfirmați → un singur email)
-· `B2` (prefetch nu schimbă starea) · `CONTRAST` · `DIACRITICE` · `.ics` (14:00 EEST în
-Google + Apple + Outlook) · `COPY` (invarianții trec automat)
+· `B2` (prefetch nu schimbă starea) · `CONTRAST` · `DIACRITICE` · `.ics` (14:00 EEST + link
+Google Maps în `URL`/`DESCRIPTION`, verificat în Google + Apple + Outlook) · `COPY`
+(invarianții trec automat)

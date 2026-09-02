@@ -19,14 +19,18 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
 ---
 
 <div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
-  <a href={CTA.ancora} class:list={['cta', marime]}>{CTA.text}</a>
-  {/*
-    Numărul real de locuri, SUB buton — cerut explicit (2026-09-02), nu mai
-    inline în text. Completat de BaraScarcity.astro după ce răspunde
-    /api/locuri-disponibile. Fără JS sau dacă fetch-ul eșuează, rămâne gol
-    și `hidden`: pagina nu arată niciodată un număr inventat.
-  */}
-  <p class="locuri-cta" data-locuri-cta hidden></p>
+  <a href={CTA.ancora} class:list={['cta', marime]}>
+    <span class="cta-text">{CTA.text}</span>
+    {/*
+      Numărul real de locuri, ÎN interiorul butonului (2026-09-02, a patra
+      rundă — cerut explicit; înainte era sub buton, ca separat linie). Textul
+      CTA rămâne fix („Rezervă-ți locul") — insigna e doar poziționată altfel,
+      tot un element separat, tot ascuns implicit până răspunde
+      /api/locuri-disponibile (vezi BaraScarcity.astro). Aceeași structură ca
+      butonul flotant (CtaFloating.astro), acum unificată.
+    */}
+    <span class="locuri-cta" data-locuri-cta hidden></span>
+  </a>
   <slot />
 </div>
 
@@ -49,8 +53,10 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
    */
   .cta {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     background: var(--lime);
     color: var(--pe-lime);
     font-family: var(--font-titlu);
@@ -65,6 +71,10 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
       background-color 0.15s ease,
       transform 0.15s var(--ease-out),
       box-shadow 0.15s ease;
+  }
+
+  .cta-text {
+    line-height: 1.2;
   }
 
   /* Doar pe pointer fin (mouse real) — pe touch, „hover" rămâne lipit după
@@ -101,11 +111,16 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
   }
 
   .locuri-cta {
-    margin: 0;
+    display: block;
     font-family: var(--font-mono);
     font-size: var(--t-mic);
     font-weight: 500;
-    color: var(--secundar);
+    /* Acum trăiește ÎN buton, pe fundal lime — nu `--secundar` (gândit pentru
+       fundal alb, sub buton). `--pe-lime`, ca textul principal: aceeași
+       marjă de contrast verificată (8.01:1), diferențiat de restul textului
+       doar prin mărime/font, nu prin opacitate (pattern respins explicit în
+       proiect — vezi §3 din CLAUDE.md, „NU opacitate 70%"). */
+    color: var(--pe-lime);
     /* Fix (audit emil-design-eng, 2026-09-01): `el.hidden = false` arăta
        numărul instant, fără nicio tranziție. `@starting-style` animă exact
        momentul în care `hidden` e scos. */

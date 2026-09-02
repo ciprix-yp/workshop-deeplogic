@@ -1,5 +1,5 @@
 ---
-import { trustBar } from '../content/copy';
+import { trustBar, EVENIMENT } from '../content/copy';
 ---
 
 {/*
@@ -21,7 +21,21 @@ import { trustBar } from '../content/copy';
 */}
 <div class="trust" data-reveal>
   <div class="card card-depth card-3d" data-tilt>
-    <p class="linie meta">{trustBar.meta}</p>
+    {/*
+      Ordonat (2026-09-02, a patra rundă — „să se vadă clar datele"): data,
+      ora și locația erau înainte o singură propoziție înghesuită
+      (`trustBar.meta`) — acum trei rânduri separate, scanabile. `trustBar.meta`
+      rămâne sursa de adevăr pentru D6 (adresa pe pagină, verificat de
+      tests/copy-invariants.test.ts) și pentru un rezumat SR-only: cititorii de
+      ecran primesc o singură propoziție coerentă, nu trei fragmente citite pe
+      rând fără context.
+    */}
+    <p class="vizual-ascuns">{trustBar.meta}</p>
+    <div class="cand-unde" aria-hidden="true">
+      <p class="data">{EVENIMENT.dataText}</p>
+      <p class="ora">{EVENIMENT.ora}</p>
+      <p class="locatie">{EVENIMENT.locatie}, {EVENIMENT.adresa}</p>
+    </div>
     <p class="linie format">{trustBar.format}</p>
     <p class="linie roadmap">{trustBar.roadmap}</p>
 
@@ -59,10 +73,32 @@ import { trustBar } from '../content/copy';
     color: var(--secundar);
   }
 
-  .meta {
-    font-weight: 600;
+  .cand-unde {
+    display: grid;
+    gap: 0.15rem;
+    margin-bottom: var(--sp-xs);
+  }
+
+  .data {
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-corp-lg);
     color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .ora {
+    font-family: var(--font-mono);
+    font-weight: 600;
     font-size: var(--t-corp);
+    color: var(--secundar);
+  }
+
+  .locatie {
+    font-family: var(--font-mono);
+    font-size: var(--t-mic);
+    line-height: var(--lh-normal);
+    color: var(--secundar);
   }
 
   .calendar-cta {

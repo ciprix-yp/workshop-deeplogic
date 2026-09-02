@@ -32,10 +32,13 @@ import { EVENIMENT, scarcity } from '../content/copy';
 
     /**
      * Interpolare RGB liniară, pe raportul de ocupare (0 = gol, 1 = plin).
-     * Fundalul barei a revenit la negru (2026-09-02, a treia rundă —
-     * „lasă header-ul negru, doar textul roșu") — gradientul revine la
-     * varianta pentru fundal închis: alb → `--eroare-clar` (#E08585,
-     * 5.92:1 pe `--bg-inchis`, deja verificat).
+     * Roșu de la capăt la capăt (2026-09-02, a patra rundă — „textul din
+     * bara de sus să fie roșu"), nu doar semnal de „aproape plin": ambele
+     * capete sunt roșii, doar intensitatea crește cu ocuparea — de la
+     * `#F0B3B3` (8.90:1 pe `--bg-inchis`, roșu deschis) la `--eroare-clar`
+     * (#E08585, 5.92:1, deja verificat de `npm run contrast`). Un roșu prea
+     * închis (ex. #C75C5C) ar cădea sub 4.5:1 pe fundalul ăsta foarte
+     * închis — verificat și respins, vezi `scripts/check-contrast.mjs`.
      *   - insigna din dialog (fundal alb): `--secundar` → `--eroare`
      *     (#9E4B4B, 5.90:1 pe alb — deja verificat de `npm run contrast`).
      */
@@ -44,7 +47,7 @@ import { EVENIMENT, scarcity } from '../content/copy';
       const rgb = start.map((c, i) => Math.round(c + t * (stop[i] - c)));
       return `rgb(${rgb.join(',')})`;
     }
-    const GRADIENT_PE_INCHIS = [[255, 255, 255], [224, 133, 133]]; // alb → var(--eroare-clar)
+    const GRADIENT_PE_INCHIS = [[240, 179, 179], [224, 133, 133]]; // roșu deschis → var(--eroare-clar)
     const GRADIENT_PE_ALB = [[47, 79, 79], [158, 75, 75]]; // var(--secundar) → var(--eroare)
 
     /**
@@ -170,17 +173,16 @@ import { EVENIMENT, scarcity } from '../content/copy';
     /*
      * Revenit la negru (2026-09-02, a treia rundă — „lasă header-ul negru,
      * doar textul roșu"), dar cu sticlă mată, nu opac plat: fundal
-     * translucid + blur, ca butonul flotant. Text implicit alb (capătul
-     * „gol" al gradientului calculat de script), deja 15.83:1 pe
-     * `--bg-inchis` opac — pe versiunea translucidă marja scade puțin, dar
-     * rămâne masiv peste prag (fundalul e tot închis dedesubt, pagina
-     * pornește pe alb).
+     * translucid + blur, ca butonul flotant. Text implicit roșu (a patra
+     * rundă, 2026-09-02) — `--eroare-clar` (#E08585, 5.92:1 pe `--bg-inchis`
+     * opac, deja verificat), și fallback-ul fără JS (`scarcity.fallbackStatic`)
+     * folosește aceeași culoare, nu doar starea calculată de script.
      */
     background: rgba(27, 36, 38, 0.82);
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--text-pe-inchis);
+    color: var(--eroare-clar);
     display: flex;
     align-items: center;
     justify-content: center;

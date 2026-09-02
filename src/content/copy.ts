@@ -55,6 +55,10 @@ export const EVENIMENT = {
   oras: 'Satu Mare',
   locatie: 'Casa Dăinuirii',
   adresa: 'Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare',
+  // Link scurt Google Maps către locație — cerut explicit (2026-09-02), inserat
+  // în `.ics` (src/lib/ics.ts) ca proprietate URL + în DESCRIPTION, ca „Adaugă
+  // în calendar" să deschidă și harta, nu doar textul adresei.
+  mapsUrl: 'https://maps.app.goo.gl/QZP2Cs7owkZktZMh6',
   capacitate: 30,
   cost: 'Gratuit',
 } as const;
@@ -93,9 +97,12 @@ export const scarcity = {
 
 export const hero = {
   eyebrow: 'PRIMUL PAS · Workshop by Deep Logic',
-  h1: ['Afacerea ta este diferită.', 'Care este PRIMUL PAS în noua eră digitală?'],
+  h1: ['Afacerea ta este diferită.', 'Cum faci PRIMUL PAS în noua eră digitală?'],
+  // Tagline rescris (2026-09-02, la cererea lui Ciprian) — text brut primit,
+  // strâns fără să piardă mecanismul: invitația, ce faci timp de 3 ore, ce
+  // pleci cu tine (roadmap-ul), de ce contează (știi exact care e PRIMUL PAS).
   subheadline:
-    'În 3 ore lucrezi pe propria afacere ca să identifici ce merită schimbat, cât ar putea conta și ce trebuie să verifici înainte să implementezi ceva.',
+    'Vino să descoperi, alături de ceilalți din sală, primii pași care chiar merită făcuți ca să aduci AI în compania ta. Lucrezi 3 ore pe propria afacere și pleci cu un roadmap de implementare — ca să știi exact ce ai de făcut și care e, pe bune, PRIMUL PAS.',
   corp: ['Nu vii la un curs despre tehnologie.', 'Vii să lucrezi pe o problemă reală din afacerea ta.'],
 } as const;
 

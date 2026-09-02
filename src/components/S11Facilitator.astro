@@ -43,8 +43,8 @@ const areFoto = existsSync(caleFoto);
         class="foto"
         src={facilitator.foto.src}
         alt={facilitator.foto.alt}
-        width="112"
-        height="112"
+        width="168"
+        height="168"
         loading="lazy"
         decoding="async"
       />
@@ -92,12 +92,12 @@ const areFoto = existsSync(caleFoto);
     color: var(--accent);
   }
 
-  /* Cadru rotund, mărime medie — cerut explicit (2026-09-02), nu portretul
-     mare din colonarea veche. */
+  /* Cadru rotund — 10.5rem, cu 50% mai mare decât 7rem (cerut explicit,
+     2026-09-02, a patra rundă). */
   .foto {
     flex: none;
-    width: 7rem;
-    height: 7rem;
+    width: 10.5rem;
+    height: 10.5rem;
     border-radius: 50%;
     object-fit: cover;
     /* Fotografie reală, la lucru sau la un eveniment — nu portret corporate pe
@@ -117,8 +117,9 @@ const areFoto = existsSync(caleFoto);
       gap: var(--sp-md);
     }
     .foto {
-      width: 5.5rem;
-      height: 5.5rem;
+      /* Aceeași proporție +50% ca varianta desktop (5.5rem → 8.25rem). */
+      width: 8.25rem;
+      height: 8.25rem;
     }
   }
 </style>
