@@ -84,23 +84,43 @@ const stariClient = JSON.stringify({
 
             {bloc.campuri.map((camp) => (
               <div class:list={['camp', `tip-${camp.tip}`]} data-camp={camp.id}>
-                {camp.tip === 'radio' ? (
-                  <fieldset class="grup-radio">
+                {camp.tip === 'radio' || camp.tip === 'checkbox' ? (
+                  <fieldset class="grup-optiuni">
                     <legend class="eticheta">{camp.label}</legend>
-                    <div class="optiuni">
+                    {camp.microcopy && (
+                      <p class="microcopy" id={`${camp.id}-ajutor`}>{camp.microcopy}</p>
+                    )}
+                    <div
+                      class="optiuni"
+                      data-max={camp.maxSelectii}
+                      data-mesaj-limita={camp.mesajLimita}
+                    >
                       {camp.optiuni?.map((op) => (
                         <label class="optiune">
                           <input
-                            type="radio"
+                            type={camp.tip as 'radio' | 'checkbox'}
                             name={camp.id}
                             value={op}
-                            required={camp.obligatoriu}
+                            required={camp.tip === 'radio' ? camp.obligatoriu : undefined}
                             aria-describedby={`${camp.id}-eroare`}
+                            data-optiune-text={camp.optiuneText?.valoare === op ? camp.optiuneText.idCamp : undefined}
                           />
                           <span>{op}</span>
                         </label>
                       ))}
                     </div>
+                    {camp.optiuneText && (
+                      <div class="camp tip-text camp-text-companion" id={`camp-${camp.optiuneText.idCamp}`} hidden>
+                        <label class="eticheta" for={camp.optiuneText.idCamp}>{camp.optiuneText.label}</label>
+                        <input
+                          type="text"
+                          id={camp.optiuneText.idCamp}
+                          name={camp.optiuneText.idCamp}
+                          aria-describedby={`${camp.optiuneText.idCamp}-eroare`}
+                        />
+                        <p class="eroare" id={`${camp.optiuneText.idCamp}-eroare`} role="alert" aria-live="polite"></p>
+                      </div>
+                    )}
                     <p class="eroare" id={`${camp.id}-eroare`} role="alert" aria-live="polite"></p>
                   </fieldset>
                 ) : (
@@ -288,6 +308,39 @@ const stariClient = JSON.stringify({
     }
     sursa?.addEventListener('change', actualizeazaDetaliu);
     actualizeazaDetaliu();
+
+    // ── Grupuri de checkbox cu limită de selecție (asteptari, provocare_business) ──
+    // Blochează a (max+1)-a bifă și arată mesajul din `formular-calificare-
+    // workshop.md`, în loc s-o lase bifată și s-o respingă abia la submit.
+    form.querySelectorAll('.optiuni[data-max]').forEach((grup) => {
+      const max = Number(grup.dataset.max);
+      const mesaj = grup.dataset.mesajLimita ?? '';
+      const eroare = grup.closest('fieldset')?.querySelector(':scope > .eroare');
+      grup.addEventListener('change', (ev) => {
+        const bifate = grup.querySelectorAll('input:checked');
+        if (bifate.length > max) {
+          ev.target.checked = false;
+          ev.target.dispatchEvent(new Event('change', { bubbles: false }));
+          if (eroare) eroare.textContent = mesaj;
+        } else if (eroare) {
+          eroare.textContent = '';
+        }
+      });
+    });
+
+    // ── Câmpul text companion („Altceva:" la provocare_business) ───────────
+    // Aceeași idee ca „De la cine?"/sursă, dar declanșată de o bifă, nu de un
+    // <select> — un singur `data-optiune-text` pe input-ul relevant leagă
+    // bifa de fieldset-ul `#camp-${id}` randat imediat după grup.
+    form.querySelectorAll('[data-optiune-text]').forEach((input) => {
+      const wrap = document.getElementById(`camp-${input.dataset.optiuneText}`);
+      const campText = document.getElementById(input.dataset.optiuneText);
+      if (!wrap || !campText) return;
+      input.addEventListener('change', () => {
+        wrap.hidden = !input.checked;
+        if (!input.checked) campText.value = '';
+      });
+    });
 
     function stergeErori() {
       form.querySelectorAll('.eroare').forEach((e) => (e.textContent = ''));
@@ -638,12 +691,19 @@ const stariClient = JSON.stringify({
     border-color: var(--eroare);
   }
 
-  .grup-radio {
+  .grup-optiuni {
     border: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: var(--sp-xs);
+  }
+
+  /* Câmpul text companion (ex. „Altceva:" la provocare_business) — spațiat
+     ca un rând suplimentar în interiorul grupului, nu ca un `.camp` de sine
+     stătător între blocuri. */
+  .camp-text-companion {
+    margin-top: calc(-1 * var(--sp-2xs));
   }
 
   .optiuni {

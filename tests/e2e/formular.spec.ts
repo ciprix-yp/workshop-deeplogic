@@ -79,14 +79,44 @@ test('formularul are exact o bifă obligatorie', async ({ page }) => {
 });
 
 test('toate întrebările de calificare au răspunsuri predefinite', async ({ page }) => {
-  // Decizia D4: radio, nu text liber. Un câmp de text în plus pe mobil, într-un
-  // formular deja lung, costă înscrieri.
-  for (const nume of ['nivel_ai', 'q1_unealta', 'q2_blocaj', 'q3_domeniu', 'q4_pregatire', 'q5_anvergura']) {
+  // formular-calificare-workshop.md: radio pentru cele cu un singur răspuns,
+  // checkbox pentru cele cu selecție multiplă — niciuna nu e text liber.
+  for (const nume of ['nivel_ai', 'frica_principala', 'interes_incompany']) {
     const optiuni = page.locator(`input[type="radio"][name="${nume}"]`);
     expect(await optiuni.count(), `${nume} trebuie să aibă opțiuni radio`).toBeGreaterThan(1);
   }
-  // Un singur textarea pe tot formularul: „ce proces îți mănâncă timpul".
+  for (const nume of ['asteptari', 'provocare_business', 'blocaj_istoric']) {
+    const optiuni = page.locator(`input[type="checkbox"][name="${nume}"]`);
+    expect(await optiuni.count(), `${nume} trebuie să aibă opțiuni checkbox`).toBeGreaterThan(1);
+  }
+  // Textarea „ce proces îți mănâncă timpul" + text-ul companion „Altceva:"
+  // (Q3) — ambele apar doar când sunt relevante, „Altceva:" ascuns implicit.
   await expect(page.locator('#form-inscriere textarea')).toHaveCount(1);
+  await expect(page.locator('#camp-provocare_business_altceva')).toBeHidden();
+});
+
+test('Q1/Q3 (checkbox) blochează a 3-a bifă cu mesajul dedicat', async ({ page }) => {
+  const optiuni = page.locator('input[type="checkbox"][name="asteptari"]');
+  await optiuni.nth(0).check();
+  await optiuni.nth(1).check();
+  await optiuni.nth(2).check();
+
+  await expect(optiuni.nth(2)).not.toBeChecked();
+  await expect(page.locator('#asteptari-eroare')).toHaveText('Alege doar 2 — cele mai importante pentru tine');
+});
+
+test('Q3 „Altceva:" dezvăluie câmpul text companion', async ({ page }) => {
+  const wrap = page.locator('#camp-provocare_business_altceva');
+  const input = page.locator('#provocare_business_altceva');
+
+  await expect(wrap).toBeHidden();
+  await page.locator('input[type="checkbox"][name="provocare_business"][value="Altceva:"]').check();
+  await expect(wrap).toBeVisible();
+
+  await input.fill('Programarea la cabinet');
+  await page.locator('input[type="checkbox"][name="provocare_business"][value="Altceva:"]').uncheck();
+  await expect(wrap).toBeHidden();
+  await expect(input).toHaveValue('');
 });
 
 test('nu cere telefon, cifră de afaceri sau număr de angajați', async ({ page }) => {

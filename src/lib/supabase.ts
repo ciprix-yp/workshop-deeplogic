@@ -14,7 +14,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from 'astro:env/server';
-import type { Q1Unealta, Q2Blocaj, Q3Domeniu, Q4Pregatire, Q5Anvergura } from '../content/form-schema';
+import type { Asteptare, Frica, ProvocareBusiness, BlocajIstoric, IntereseIncompany } from '../content/form-schema';
 
 export function supabaseAdmin() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -27,11 +27,12 @@ export const EVENT_SLUG = 'workshop-2026-09-16' as const;
 /* ── register_participant ────────────────────────────────────────────────── */
 
 export interface QualificationAnswers {
-  q1_unealta: Q1Unealta;
-  q2_blocaj: Q2Blocaj;
-  q3_domeniu: Q3Domeniu;
-  q4_pregatire: Q4Pregatire;
-  q5_anvergura: Q5Anvergura;
+  asteptari: Asteptare[];
+  frica_principala: Frica;
+  provocare_business: ProvocareBusiness[];
+  provocare_business_altceva: string | null;
+  blocaj_istoric: BlocajIstoric[];
+  interes_incompany: IntereseIncompany;
 }
 
 export interface RegisterParticipantInput {

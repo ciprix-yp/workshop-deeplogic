@@ -7,9 +7,10 @@
  * un bug care se vede abia în producție, pe un om care voia să se înscrie.
  *
  * Câmpurile de bază vin din §16 al documentului sursă.
- * Q1–Q5 sunt setul de calificare (decizia D4), toate cu răspuns predefinit:
- * un textarea obligatoriu e deja cel mai mare punct de abandon pe mobil, iar
- * încă cinci câmpuri de text liber l-ar dubla.
+ * Cele 5 întrebări de calificare vin din `formular-calificare-workshop.md`
+ * (2026-09-03, înlocuiește decizia D4 din docs/DECIZII.md — vezi D55 acolo).
+ * Toate cu răspuns predefinit, niciuna text liber: un textarea obligatoriu e
+ * deja cel mai mare punct de abandon pe mobil.
  */
 
 import { z } from 'zod';
@@ -36,36 +37,56 @@ export const NIVEL_AI = [
   'Niciodată',
 ] as const;
 
-export const Q1_UNEALTA = ['ChatGPT', 'Claude', 'Gemini', 'Copilot', 'Alta', 'Niciuna'] as const;
-
-export const Q2_BLOCAJ = [
-  'Nu știu de unde să încep',
-  'Am încercat și n-a ieșit',
-  'Nu știu ce e sigur să pun acolo',
-  'Echipa mea nu e pregătită',
-  'N-am avut timp',
+/**
+ * Set de calificare (2026-09-03, înlocuiește D4 — vezi docs/DECIZII.md): 5
+ * întrebări conform `formular-calificare-workshop.md`, sursa de adevăr
+ * pentru acest bloc. 3 din 5 sunt checkbox (nu radio) — decizia D4 veche
+ * ("Set B... toate radio") nu mai e literă de lege, era o alegere anterioară
+ * respinsă acum explicit de Ciprian în favoarea acestui set ("Set A").
+ */
+export const ASTEPTARI = [
+  'Să înțeleg în sfârșit ce poate și ce nu poate AI-ul, concret',
+  'Să știu de unde încep în firma mea',
+  'Să văd cu ochii mei un sistem care chiar funcționează, nu promisiuni',
+  'Să pot da direcție echipei mele pentru implementare',
+  'Să știu ce riscuri îmi asum dacă încep',
 ] as const;
 
-export const Q3_DOMENIU = [
-  'Producție',
-  'Servicii',
-  'Comerț',
-  'Construcții',
-  'IT / software',
-  'Altul',
+export const FRICA = [
+  'Că investesc timp și bani și nu iese nimic',
+  'Că nu am pe cineva care să-mi spună obiectiv ce merită și ce nu, în cazul meu',
+  'Că oamenii mei se vor simți amenințați',
+  'Că datele firmei ajung unde nu trebuie',
+  'Că nu știu dacă e momentul potrivit',
+  'Nu mă oprește nimic, doar n-am prioritizat asta',
 ] as const;
 
-export const Q4_PREGATIRE = [
-  'Da, știu exact care',
-  'Da, dar vag',
-  'Nu încă — vin să văd',
+/** Opțiune specială în `PROVOCARE_BUSINESS` — bifarea ei dezvăluie un câmp text companion. */
+export const PROVOCARE_ALTCEVA = 'Altceva:';
+
+export const PROVOCARE_BUSINESS = [
+  'Ofertele și devizele — durează prea mult, se fac manual',
+  'Răspunsurile către clienți — aceleași întrebări, iar și iar',
+  'Procesare documente și rapoarte — pierdem prea mult timp cu asta',
+  'Vânzarea — nu ajung la destui oameni potriviți',
+  'Inducția oamenilor noi, precum și dezvoltarea proceselor și procedurilor',
+  PROVOCARE_ALTCEVA,
 ] as const;
 
-export const Q5_ANVERGURA = [
-  'Doar eu',
-  'Eu și încă cineva',
-  'O echipă întreagă',
-  'Nu știu încă',
+export const BLOCAJ_ISTORIC = [
+  'N-am știut de unde să încep',
+  'N-am avut cu cine să vorbesc — pe cineva care înțelege și afacerea, nu doar tehnologia',
+  'Am crezut că e pentru firme mai mari decât a mea',
+  'Am încercat și n-am fost impresionat',
+  'N-am avut timp să mă uit serios',
+  'Nu m-a ținut nimic pe loc, abia acum devine relevant',
+] as const;
+
+export const INTERES_INCOMPANY = [
+  'Da — oamenii mei ar avea nevoie de asta mai mult decât mine',
+  'Poate — vreau întâi să văd formatul pe 16',
+  'Nu — ajunge să înțeleg eu',
+  'Nu e cazul, lucrez singur sau cu foarte puțini oameni',
 ] as const;
 
 /**
@@ -75,11 +96,11 @@ export const Q5_ANVERGURA = [
  */
 export type Sursa = (typeof SURSA)[number];
 export type NivelAi = (typeof NIVEL_AI)[number];
-export type Q1Unealta = (typeof Q1_UNEALTA)[number];
-export type Q2Blocaj = (typeof Q2_BLOCAJ)[number];
-export type Q3Domeniu = (typeof Q3_DOMENIU)[number];
-export type Q4Pregatire = (typeof Q4_PREGATIRE)[number];
-export type Q5Anvergura = (typeof Q5_ANVERGURA)[number];
+export type Asteptare = (typeof ASTEPTARI)[number];
+export type Frica = (typeof FRICA)[number];
+export type ProvocareBusiness = (typeof PROVOCARE_BUSINESS)[number];
+export type BlocajIstoric = (typeof BLOCAJ_ISTORIC)[number];
+export type IntereseIncompany = (typeof INTERES_INCOMPANY)[number];
 
 /* ── Lungimi ─────────────────────────────────────────────────────────────── */
 
@@ -114,6 +135,11 @@ const M = {
   procesScurt:
     'Prea scurt ca să însemne ceva. Un exemplu: „fac ofertele de mână, fiecare îmi ia 40 de minute".',
   alege: 'Alege una.',
+  alegeCelPutinUna: 'Alege cel puțin una.',
+  // Text exact din formular-calificare-workshop.md — folosit ȘI ca mesaj de
+  // blocaj UI (client, la a 3-a bifă), ȘI ca eroare de validare (server).
+  alegeDoarDoua: 'Alege doar 2 — cele mai importante pentru tine',
+  altcevaDetaliu: 'Spune pe scurt ce anume.',
   consimtamant: 'Fără bifa asta nu pot să-ți prelucrez datele. E singura obligatorie.',
   turnstile: 'Verificarea anti-spam n-a trecut. Reîncarcă pagina și încearcă din nou.',
 } as const;
@@ -157,12 +183,18 @@ export const inscriereSchema = z
 
     nivel_ai: z.enum(NIVEL_AI, { error: M.alege }),
 
-    // Setul de calificare (D4).
-    q1_unealta: z.enum(Q1_UNEALTA, { error: M.alege }),
-    q2_blocaj: z.enum(Q2_BLOCAJ, { error: M.alege }),
-    q3_domeniu: z.enum(Q3_DOMENIU, { error: M.alege }),
-    q4_pregatire: z.enum(Q4_PREGATIRE, { error: M.alege }),
-    q5_anvergura: z.enum(Q5_ANVERGURA, { error: M.alege }),
+    // Setul de calificare — formular-calificare-workshop.md (2026-09-03).
+    asteptari: z.array(z.enum(ASTEPTARI)).min(1, M.alegeCelPutinUna).max(2, M.alegeDoarDoua),
+    frica_principala: z.enum(FRICA, { error: M.alege }),
+    provocare_business: z.array(z.enum(PROVOCARE_BUSINESS)).min(1, M.alegeCelPutinUna).max(2, M.alegeDoarDoua),
+    provocare_business_altceva: z
+      .string()
+      .trim()
+      .max(LIMITE.sursaDetaliuMax, 'Prea lung.')
+      .optional()
+      .or(z.literal('')),
+    blocaj_istoric: z.array(z.enum(BLOCAJ_ISTORIC)).min(1, M.alegeCelPutinUna),
+    interes_incompany: z.enum(INTERES_INCOMPANY, { error: M.alege }),
 
     /**
      * Singura bifă obligatorie. Strict pentru prelucrarea datelor în scopul
@@ -185,6 +217,16 @@ export const inscriereSchema = z
    * Ținută aici, nu în componentă — altfel cineva cu JS blocat trece de ea.
    */
   .superRefine((val, ctx) => {
+    // Aceeași regulă ca la `sursa_detaliu`, aplicată la Q3: dacă „Altceva:" e
+    // printre opțiunile bifate, detaliul devine obligatoriu.
+    if (val.provocare_business.includes(PROVOCARE_ALTCEVA) && !val.provocare_business_altceva?.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['provocare_business_altceva'],
+        message: M.altcevaDetaliu,
+      });
+    }
+
     const cerut = SURSA_CONDITIONAL[val.sursa];
     if (cerut && !val.sursa_detaliu?.trim()) {
       ctx.addIssue({
@@ -213,9 +255,27 @@ export type Inscriere = z.output<typeof inscriereSchema>;
  * content-type în ruta API.
  */
 export function formDataInSchema(fd: FormData): Record<string, unknown> {
+  /*
+   * Câmpurile `tip: 'checkbox'` (asteptari, provocare_business, blocaj_istoric)
+   * trimit MAI MULTE valori sub același `name` — `fd.entries()` le-ar
+   * suprascrie pe rând, păstrând doar ultima bifă. Colectate separat, cu
+   * `fd.getAll()`, ca array — chiar și o singură bifă (sau nicio bifă)
+   * trebuie să ajungă tot ca array la Zod (`.min(1)`/`.max(2)` operează pe
+   * lungime, nu pe un string).
+   */
+  const campuriCheckbox = new Set(
+    BLOCURI.flatMap((b) => b.campuri)
+      .filter((c) => c.tip === 'checkbox')
+      .map((c) => c.id),
+  );
+
   const obiect: Record<string, unknown> = {};
   for (const [cheie, valoare] of fd.entries()) {
-    if (typeof valoare === 'string') obiect[cheie] = valoare;
+    if (typeof valoare !== 'string' || campuriCheckbox.has(cheie)) continue;
+    obiect[cheie] = valoare;
+  }
+  for (const cheie of campuriCheckbox) {
+    obiect[cheie] = fd.getAll(cheie).filter((v): v is string => typeof v === 'string');
   }
   obiect.consimtamant_comunicare = fd.get(BIFE.consimtamant.id) === 'true';
   obiect.vrea_discutie = fd.get(BIFE.discutie.id) === 'true';
@@ -230,7 +290,7 @@ export function formDataInSchema(fd: FormData): Record<string, unknown> {
  * pun întrebările din al doilea.
  */
 
-export type CampTip = 'text' | 'email' | 'textarea' | 'radio' | 'select';
+export type CampTip = 'text' | 'email' | 'textarea' | 'radio' | 'select' | 'checkbox';
 
 export interface Camp {
   id: string;
@@ -241,6 +301,13 @@ export interface Camp {
   microcopy?: string;
   placeholder?: string;
   autocomplete?: string;
+  /** Doar `tip: 'checkbox'`. `maxSelectii` absent = fără limită (vezi Q4/blocaj_istoric). */
+  minSelectii?: number;
+  maxSelectii?: number;
+  /** Doar checkbox cu `maxSelectii`: mesaj afișat când se încearcă o bifă peste limită. */
+  mesajLimita?: string;
+  /** Doar checkbox: valoarea a cărei bifare dezvăluie un câmp text companion. */
+  optiuneText?: { valoare: string; idCamp: string; label: string };
 }
 
 export interface Bloc {
@@ -308,39 +375,50 @@ export const BLOCURI: Bloc[] = [
         optiuni: NIVEL_AI,
       },
       {
-        id: 'q1_unealta',
-        label: 'Ce unealtă ai deschis ultima dată?',
-        tip: 'radio',
+        id: 'asteptari',
+        label: 'Cu ce ai vrea să pleci din sală pe 16 septembrie?',
+        tip: 'checkbox',
         obligatoriu: true,
-        optiuni: Q1_UNEALTA,
+        optiuni: ASTEPTARI,
+        minSelectii: 1,
+        maxSelectii: 2,
+        mesajLimita: M.alegeDoarDoua,
       },
       {
-        id: 'q2_blocaj',
-        label: 'Ce te-a oprit până acum?',
+        id: 'frica_principala',
+        label: 'Când te gândești să introduci AI în firma ta, ce te oprește cel mai mult?',
         tip: 'radio',
         obligatoriu: true,
-        optiuni: Q2_BLOCAJ,
+        optiuni: FRICA,
       },
       {
-        id: 'q3_domeniu',
-        label: 'Domeniul firmei',
-        tip: 'radio',
+        id: 'provocare_business',
+        label: 'Dacă AI-ul ar rezolva o singură problemă în firma ta anul ăsta, care ar fi?',
+        tip: 'checkbox',
         obligatoriu: true,
-        optiuni: Q3_DOMENIU,
+        optiuni: PROVOCARE_BUSINESS,
+        minSelectii: 1,
+        maxSelectii: 2,
+        mesajLimita: M.alegeDoarDoua,
+        optiuneText: { valoare: PROVOCARE_ALTCEVA, idCamp: 'provocare_business_altceva', label: 'Altceva:' },
       },
       {
-        id: 'q4_pregatire',
-        label: 'Ai deja în cap un proces la care vrei să lucrezi în sală?',
-        tip: 'radio',
+        id: 'blocaj_istoric',
+        label: 'Ce te-a ținut pe loc până acum?',
+        microcopy: 'Bifează tot ce se aplică',
+        tip: 'checkbox',
         obligatoriu: true,
-        optiuni: Q4_PREGATIRE,
+        optiuni: BLOCAJ_ISTORIC,
+        minSelectii: 1,
+        // Fără maxSelectii — deliberat (formular-calificare-workshop.md): aici
+        // vrei tot ce se aplică, nu o prioritizare la 2.
       },
       {
-        id: 'q5_anvergura',
-        label: 'Cine mai atinge procesul ăsta, în afară de tine?',
+        id: 'interes_incompany',
+        label: 'Consideri că ar fi oportun un workshop în compania ta pentru colegii din echipa ta?',
         tip: 'radio',
         obligatoriu: true,
-        optiuni: Q5_ANVERGURA,
+        optiuni: INTERES_INCOMPANY,
       },
     ],
   },

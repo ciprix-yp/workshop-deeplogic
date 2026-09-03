@@ -17,11 +17,11 @@ function formCompletValid(): FormData {
   fd.set('sursa', 'Sunt membru DRW');
   fd.set('proces', 'Fac ofertele de mână, fiecare îmi ia 40 de minute.');
   fd.set('nivel_ai', 'Din când în când');
-  fd.set('q1_unealta', 'ChatGPT');
-  fd.set('q2_blocaj', 'Nu știu de unde să încep');
-  fd.set('q3_domeniu', 'Servicii');
-  fd.set('q4_pregatire', 'Da, dar vag');
-  fd.set('q5_anvergura', 'Doar eu');
+  fd.append('asteptari', 'Să știu de unde încep în firma mea');
+  fd.set('frica_principala', 'Că nu știu dacă e momentul potrivit');
+  fd.append('provocare_business', 'Vânzarea — nu ajung la destui oameni potriviți');
+  fd.append('blocaj_istoric', 'N-am știut de unde să încep');
+  fd.set('interes_incompany', 'Poate — vreau întâi să văd formatul pe 16');
   fd.set('consimtamant_comunicare', 'true');
   fd.set('cf-turnstile-response', 'token-fals-pentru-test');
   return fd;
@@ -131,21 +131,95 @@ describe('email invalid', () => {
   });
 });
 
-describe('câmpuri de calificare (Set B) — doar valorile din listă', () => {
-  it('o valoare care nu există în Q1_UNEALTA e respinsă', () => {
+describe('câmpuri de calificare — formular-calificare-workshop.md', () => {
+  it('o valoare care nu există în ASTEPTARI e respinsă', () => {
     const fd = formCompletValid();
-    fd.set('q1_unealta', 'Un LLM inventat de mine');
+    fd.delete('asteptari');
+    fd.append('asteptari', 'O opțiune inventată de mine');
     const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
     expect(rezultat.success).toBe(false);
   });
 
   it('toate cele 5 întrebări sunt obligatorii', () => {
-    for (const camp of ['q1_unealta', 'q2_blocaj', 'q3_domeniu', 'q4_pregatire', 'q5_anvergura']) {
+    for (const camp of ['asteptari', 'frica_principala', 'provocare_business', 'blocaj_istoric', 'interes_incompany']) {
       const fd = formCompletValid();
       fd.delete(camp);
       const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
       expect(rezultat.success, `${camp} lipsă ar trebui să respingă`).toBe(false);
     }
+  });
+
+  describe('Q1 (asteptari) și Q3 (provocare_business) — checkbox, max 2', () => {
+    it('respinge 3 bife pe asteptari', () => {
+      const fd = formCompletValid();
+      fd.delete('asteptari');
+      fd.append('asteptari', 'Să știu de unde încep în firma mea');
+      fd.append('asteptari', 'Să știu ce riscuri îmi asum dacă încep');
+      fd.append('asteptari', 'Să pot da direcție echipei mele pentru implementare');
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(false);
+      if (!rezultat.success) {
+        const eroare = rezultat.error.issues.find((i) => i.path[0] === 'asteptari');
+        expect(eroare?.message).toMatch(/Alege doar 2/);
+      }
+    });
+
+    it('acceptă exact 2 bife pe provocare_business', () => {
+      const fd = formCompletValid();
+      fd.delete('provocare_business');
+      fd.append('provocare_business', 'Ofertele și devizele — durează prea mult, se fac manual');
+      fd.append('provocare_business', 'Vânzarea — nu ajung la destui oameni potriviți');
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(true);
+    });
+  });
+
+  describe('Q3 — „Altceva:" condiționează un detaliu, ca „sursa"', () => {
+    it('„Altceva:" bifat fără detaliu → respins', () => {
+      const fd = formCompletValid();
+      fd.delete('provocare_business');
+      fd.append('provocare_business', 'Altceva:');
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(false);
+      if (!rezultat.success) {
+        expect(rezultat.error.issues.some((i) => i.path[0] === 'provocare_business_altceva')).toBe(true);
+      }
+    });
+
+    it('„Altceva:" bifat cu detaliu → trece', () => {
+      const fd = formCompletValid();
+      fd.delete('provocare_business');
+      fd.append('provocare_business', 'Altceva:');
+      fd.set('provocare_business_altceva', 'Programarea la cabinet');
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(true);
+    });
+  });
+
+  describe('Q4 (blocaj_istoric) — checkbox, fără limită maximă', () => {
+    it('acceptă toate cele 6 opțiuni bifate deodată', () => {
+      const fd = formCompletValid();
+      fd.delete('blocaj_istoric');
+      for (const op of [
+        'N-am știut de unde să încep',
+        'N-am avut cu cine să vorbesc — pe cineva care înțelege și afacerea, nu doar tehnologia',
+        'Am crezut că e pentru firme mai mari decât a mea',
+        'Am încercat și n-am fost impresionat',
+        'N-am avut timp să mă uit serios',
+        'Nu m-a ținut nimic pe loc, abia acum devine relevant',
+      ]) {
+        fd.append('blocaj_istoric', op);
+      }
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(true);
+    });
+
+    it('nicio bifă → respins', () => {
+      const fd = formCompletValid();
+      fd.delete('blocaj_istoric');
+      const rezultat = inscriereSchema.safeParse(formDataInSchema(fd));
+      expect(rezultat.success).toBe(false);
+    });
   });
 });
 
