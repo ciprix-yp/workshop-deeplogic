@@ -14,20 +14,29 @@ import Cta from './Cta.astro';
       <p class="eyebrow">{hero.eyebrow}</p>
 
       {/*
-        H1 pe trei rânduri, cu break forțat pe fiecare (a cincea rundă,
-        2026-09-02 — nu doar 2, ca linia a doua să nu depindă de unde încape
-        la wrap pe lățimi diferite). Contrastul dintre prima propoziție
-        (afirmație) și restul (întrebarea, pe 2 rânduri) E mesajul.
-      */}
-      <h1>
-        {hero.h1.map((rand, i) => (
-          <span class:list={['rand', i > 0 && 'accentuat']}>
-            {rand}
-          </span>
-        ))}
-      </h1>
+        H1 pe trei rânduri REALE (a șaptea rundă, 2026-09-07). Runda a cincea
+        forța trei `span`-uri de mărime egală, dar pe 360px fiecare se rupea
+        singur în două — cinci rânduri vizuale în loc de trei, exact ce
+        trebuia evitat.
 
-      <p class="subheadline">{hero.subheadline}</p>
+        Acum rândul e o unitate garantată: `white-space: nowrap` + o mărime
+        de font calculată din lățimea reală a containerului (`cqi`), nu din
+        lățimea ferestrei. Vezi nota din <style> pentru de ce cqi și de unde
+        vin factorii.
+      */}
+      <div class="h1-fit">
+        <h1>
+          <span class="rand rand--setup">{hero.h1.rand1}</span>
+          <span class="rand rand--intrebare"
+            >{hero.h1.rand2.inainte}<span class="accent">{hero.h1.rand2.accent}</span></span
+          >
+          <span class="rand rand--intrebare">{hero.h1.rand3}</span>
+        </h1>
+      </div>
+
+      <div class="subheadline">
+        {hero.subheadline.map((p) => <p>{p}</p>)}
+      </div>
 
       <div class="corp">
         {hero.corp.map((p) => <p>{p}</p>)}
@@ -70,6 +79,23 @@ import Cta from './Cta.astro';
     -webkit-backdrop-filter: blur(20px) saturate(1.3);
   }
 
+  /*
+   * Sub 480px, ramele duble (padding-ul secțiunii + padding-ul cadrului de
+   * sticlă) mâncau 42px din fiecare margine — 275px utilizabili dintr-un
+   * ecran de 360. Cum H1-ul își ia mărimea din lățimea containerului, fiecare
+   * pixel de ramă e direct mărime de titlu pierdută: strâns la 12+16px,
+   * containerul urcă la ~304px, adică ~10% titlu mai mare. Cadrul rămâne
+   * vizibil, aerul vertical rămâne neschimbat.
+   */
+  @media (max-width: 30rem) {
+    .hero {
+      padding-inline: 0.75rem;
+    }
+    .hero-glass {
+      padding-inline: 1rem;
+    }
+  }
+
   /* Fallback fără backdrop-filter (Firefox < 103, WebView Android vechi) —
      opacitate mai mare, ca sticla să nu devină ilizibilă fără blur. */
   @supports not (backdrop-filter: blur(1px)) {
@@ -97,19 +123,80 @@ import Cta from './Cta.astro';
     margin-bottom: var(--sp-md);
   }
 
+  /*
+   * ── De ce H1-ul are propriul container ──────────────────────────────────
+   *
+   * Cerința (2026-09-07): fiecare dintre cele trei rânduri ocupă EXACT un
+   * rând, pe orice ecran. `clamp()` pe viewport nu poate garanta asta —
+   * lățimea în care încape textul nu e lățimea ferestrei, ci fereastra minus
+   * două rame de padding fluide, iar pe desktop e plafonată de `--max-proza`.
+   * Un `vw` nu „vede" niciuna dintre cele trei.
+   *
+   * `container-type: inline-size` pe wrapper face ca `100cqi` să însemne
+   * exact lățimea disponibilă textului, oricare ar fi cauza ei. Mărimea de
+   * font devine atunci lățime ÷ lățimea textului măsurată în em.
+   *
+   * Factorii de mai jos sunt MĂSURAȚI în browser, cu Inter încărcat, la
+   * greutatea și letter-spacing-ul folosite aici (Playwright, font-size
+   * 100px → lățime/100):
+   *   „Cum faci PRIMUL PAS"        700 / -0.02em → 10.19em  (rândul cel mai lat
+   *                                                          dintre cele două
+   *                                                          rânduri mari)
+   *   „în noua eră digitală?"      700 / -0.02em →  9.37em
+   *   „Afacerea ta este diferită." 600 / -0.02em → 11.39em
+   * Folosim 10.35 (marjă ~1.5%) pentru rândurile mari și 11.75 ca plafon de
+   * siguranță pentru rândul mic. `tests/e2e/hero.spec.ts` verifică empiric,
+   * la 5 lățimi, că niciun rând nu depășește containerul — dacă schimbi
+   * copy-ul H1-ului fără să reglezi factorii, testul pică acolo.
+   *
+   * Prima declarație `font-size` din fiecare regulă e fallback-ul pentru
+   * browserele fără unități de container (Safari < 16, Firefox < 110):
+   * `min()` cu `cqi` e invalid la parsare acolo, deci rămâne `clamp()`-ul de
+   * deasupra, calibrat să încapă oricum.
+   */
+  .h1-fit {
+    container-type: inline-size;
+  }
+
   h1 {
-    font-size: var(--t-h1);
-    max-width: 20ch;
+    /* Fără `max-width` în `ch`: rândurile nu se mai rup, deci nu mai are ce
+       plafona — iar un `ch` calculat pe font-size-ul H1-ului ar fi tăiat
+       exact rândurile pe care le dimensionăm aici. */
+    line-height: 1.1;
   }
 
   .rand {
     display: block;
+    /* Contractul întregii construcții: un rând de copy = un rând vizual. */
+    white-space: nowrap;
   }
-  .rand.accentuat {
+
+  .rand--setup {
+    font-size: clamp(1.125rem, 4.875vw, 2.625rem);
+    font-size: min(2.625rem, calc(100cqi / 13.8), calc(100cqi / 11.75));
+    font-weight: 600;
     color: var(--secundar);
+    /* Separă afirmația de întrebare fără să rupă blocul în două — em, deci
+       distanța scade odată cu titlul pe ecrane mici. */
+    margin-bottom: 0.45em;
+  }
+
+  .rand--intrebare {
+    font-size: clamp(1.5rem, 6.5vw, 3.5rem);
+    font-size: min(3.5rem, calc(100cqi / 10.35));
+    color: var(--text);
+  }
+
+  /* Singura bucată colorată din H1. `--accent` (6.15:1 pe alb), nu `--lime`:
+     lime pe fundal deschis dă ~2:1 și e culoare de FUNDAL pentru CTA, nu de
+     text (vezi tabelul din CLAUDE.md §3). */
+  .accent {
+    color: var(--accent);
   }
 
   .subheadline {
+    display: grid;
+    gap: var(--sp-sm);
     font-size: var(--t-corp-lg);
     max-width: 44ch;
     margin-top: var(--sp-md);

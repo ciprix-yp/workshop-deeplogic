@@ -104,15 +104,44 @@ export const scarcity = {
 
 export const hero = {
   eyebrow: 'PRIMUL PAS · Workshop by Deep Logic',
-  // 3 rânduri forțate, nu 2 — cerut explicit (a cincea rundă, 2026-09-02),
-  // ca „Cum faci PRIMUL PAS" să nu depindă de unde încape textul la wrap.
-  h1: ['Afacerea ta este diferită.', 'Cum faci PRIMUL PAS', 'în noua eră digitală?'],
-  // Tagline rescris (2026-09-02, la cererea lui Ciprian) — text brut primit,
-  // strâns fără să piardă mecanismul: invitația, ce faci timp de 3 ore, ce
-  // pleci cu tine (roadmap-ul), de ce contează (știi exact care e PRIMUL PAS).
-  subheadline:
-    'Vino să descoperi, alături de ceilalți din sală, primii pași care chiar merită făcuți ca să aduci AI în compania ta. Lucrezi 3 ore pe propria afacere și pleci cu un roadmap de implementare — ca să știi exact ce ai de făcut și care e, pe bune, PRIMUL PAS.',
-  corp: ['Nu vii la un curs despre tehnologie.', 'Vii să lucrezi pe o problemă reală din afacerea ta.'],
+  /*
+   * H1 pe trei rânduri, cu roluri diferite — a șaptea rundă (2026-09-07).
+   * Runda a cincea forțase trei `span` de mărime egală; pe 360px fiecare se
+   * rupea în două, deci H1-ul ocupa cinci rânduri vizuale, nu trei. Acum
+   * rândul e o unitate: `rand1` e afirmația de deschidere (corp mai mic),
+   * `rand2` + `rand3` sunt întrebarea (corp mare, identic între ele).
+   * Fragmentul `accent` din `rand2` e singura bucată colorată din H1.
+   *
+   * Regula care ține construcția: fiecare rând se randează cu `nowrap` și
+   * primește o mărime calculată din lățimea reală a containerului (vezi
+   * S01Hero.astro), deci textul de aici nu poate depăși un rând — dar poate
+   * să scadă sub pragul lizibil dacă se lungește mult. Dacă schimbi copy-ul,
+   * rulează `npm run test:e2e -- tests/e2e/hero.spec.ts`.
+   */
+  h1: {
+    rand1: 'Afacerea ta este diferită.',
+    rand2: { inainte: 'Cum faci ', accent: 'PRIMUL PAS' },
+    rand3: 'în noua eră digitală?',
+  },
+  /*
+   * Subheadline pe două paragrafe (a șaptea rundă, 2026-09-07) — text primit
+   * de la Ciprian. Schimbarea importantă nu e lungimea, ci cuvântul:
+   * „roadmap de IMPLEMENTARE" (varianta veche) a devenit „roadmap
+   * personalizat de VALIDARE" — exact ce spun deja §Rezultatul
+   * („Un roadmap personalizat de validare") și `meta.descriere`. Hero-ul era
+   * singurul loc din pagină care promitea implementare într-un workshop de
+   * trei ore; pe pagina asta, un copy care promite altceva decât livrează e
+   * un bug (CLAUDE.md §5).
+   */
+  subheadline: [
+    'Vino să descoperi, alături de alți antreprenori ca tine, ce merită făcut mai întâi pentru a aduce automatizările și AI-ul în compania ta.',
+    'Lucrăm timp de 3 ore, fiecare pe propria afacere. La final, pleci cu un roadmap personalizat de validare — ca să știi ce merită investigat, ce procese sau sarcini ar putea fi automatizate ori delegate AI-ului și care este, pe bune, PRIMUL PAS.',
+  ],
+  // Linia de închidere a hero-ului: contrastul care spune ce NU e workshopul.
+  // Înainte erau două propoziții („Nu vii la un curs despre tehnologie." /
+  // „Vii să lucrezi pe o problemă reală din afacerea ta."); strânse la una
+  // singură, cu aceeași treabă.
+  corp: ['Nu discutăm tehnic, discutăm soluții la probleme reale.'],
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

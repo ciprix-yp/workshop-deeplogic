@@ -69,9 +69,11 @@ bara nu mai variază culoarea cu ocuparea. Textul barei e și **20% mai mare**
 (`calc(var(--t-mic) * 1.2)`).
 
 Aceeași rundă, două fix-uri fără legătură cu bara:
-- **H1 din hero, pe 3 rânduri forțate, nu 2** (`copy.ts` → `hero.h1`, array de 3, nu 2) — linia
+- **H1 din hero, pe 3 rânduri forțate, nu 2** (`copy.ts` → `hero.h1`) — linia
   „Cum faci PRIMUL PAS în noua eră digitală?" depindea de unde încăpea la wrap; acum fiecare
-  propoziție/frază e propriul `span.rand`, ca la rândul 1.
+  propoziție/frază e propriul `span.rand`, ca la rândul 1. [Forma structurii a fost înlocuită
+  la runda a șaptea, mai jos — pe atunci era un array de 3 șiruri de mărime egală, ceea ce
+  rezolva unde CADE ruptura, nu și faptul că fiecare rând se rupea în două pe 360px.]
 - **Butonul flotant (`CtaFloating.astro`) se suprapunea cu CTA-ul din flux.** Cauza: un
   `rootMargin` NEGATIV (`-25%`) ÎNGUSTEAZĂ zona în care un `.cta` contează ca „vizibil" —
   un CTA era detectat abia după ce intra adânc în ecran, mult după ce ajunsese deja la poziția
@@ -88,6 +90,35 @@ locuri disponibile din M.", rămâne pe `etichetaLocuri`, spațiu suficient acol
 însuși e acum ceas complet, zero-padded (`HH:MM:SS`, cu „Nz " în față doar cât mai e cel puțin
 o zi întreagă) — mai precis ȘI mai scurt decât fostul „13z 20h până la începere"
 (`etichetaCountdown` a fost eliminat din `copy.ts`, nu mai are utilizare).
+
+**A șaptea rundă (2026-09-07, Ciprian — hero, „să încapă pe primul rând pe orice ecran"):**
+cele trei rânduri ale H1-ului aveau aceeași mărime și se rupeau singure la wrap — pe 360px
+H1-ul ocupa **cinci** rânduri vizuale, nu trei. Acum rândul e o unitate garantată, cu roluri
+diferite (`hero.h1` e obiect, nu array: `rand1` / `rand2{inainte,accent}` / `rand3`):
+
+- **Rândul 1 („Afacerea ta este diferită.") e afirmația de deschidere**, la 0,75 din mărimea
+  întrebării. **Rândurile 2 și 3 sunt întrebarea, la mărime identică între ele**, cu „PRIMUL
+  PAS" în `--accent` — singura bucată colorată din H1 (nu `--lime`: pe fundal deschis dă ~2:1
+  și e culoare de FUNDAL pentru CTA, vezi §3).
+- **Mărimea vine din lățimea CONTAINERULUI (`cqi`), nu din `vw`.** Lățimea în care încape
+  textul e fereastra minus două rame de padding fluide, plafonată pe desktop de `--max-proza`
+  — un `vw` nu vede niciuna dintre cele trei. `white-space: nowrap` + `min(plafon, 100cqi /
+  factor)`, unde factorii sunt lățimile textului MĂSURATE în browser cu Inter încărcat.
+  Prima declarație `font-size` din fiecare regulă rămâne un `clamp()` — fallback pentru
+  browserele fără unități de container, unde `min()` cu `cqi` e invalid la parsare.
+- **Sub 480px, ramele hero-ului s-au strâns** (12px secțiune + 16px cadru de sticlă, de la
+  ~21+21): pe 360px containerul urcă de la 275 la 302px, adică ~10% mărime de titlu. Când
+  titlul își ia mărimea din container, fiecare pixel de ramă e mărime de titlu pierdută.
+- **`tests/e2e/hero.spec.ts` e alarma:** verifică la 9 lățimi că niciun rând nu depășește
+  containerul și că nu coboară sub 18px. Factorii măsurați sunt singura piesă care poate
+  rămâne în urmă — un copy nou de H1 fără remăsurare iese din container tăcut, sub
+  `overflow-x: hidden` de pe body.
+
+Aceeași rundă, copy nou în hero (text primit de la Ciprian): `subheadline` e acum două
+paragrafe, `corp` o singură propoziție („Nu discutăm tehnic, discutăm soluții la probleme
+reale."). Schimbarea care contează: **„roadmap de IMPLEMENTARE" → „roadmap personalizat de
+VALIDARE"** — hero-ul era singurul loc din pagină care promitea implementare într-un workshop
+de trei ore, restul paginii (§Rezultatul, `meta.descriere`) spunea deja „validare".
 
 ---
 
