@@ -203,32 +203,43 @@ precompletată, un singur tap.
 
 ```COPY
 [H2]
-Știi că unele lucruri ar putea funcționa mai bine. Dar cu ce începi?
+Simți că unele aspecte ale afacerii tale ar putea funcționa mai bine:
 
-[EXEMPLE]
-Poate ofertele durează prea mult.
-Poate informația e împrăștiată prin emailuri, tabele și oameni.
-Poate follow-up-ul se pierde.
-Poate colegii repetă aceeași muncă în fiecare săptămână.
-Poate prea multe lucruri depind de un singur om.
+[EXEMPLE — listă]
+Gestionarea și procesarea informațiilor din documente
+Viteza de răspuns la solicitările de ofertă venite din partea prospecților sau clienților
+Raportările către management sau direct către tine, pe baza cărora poți lua decizii informate
 
-[SAU POATE]
-Sau poate n-ai încă o problemă clar formulată. Doar simți că afacerea s-ar putea mișca mai
-bine decât o face acum.
+[ÎNTREBĂRI INTRO]
+Iar întrebările care nu-ți dau pace sunt:
 
-[ÎNTRE TIMP]
-În același timp apar tot mai multe instrumente și tot mai multe promisiuni.
-Fiecare pare să rezolve ceva.
-Dar nu ai nevoie, în primul rând, de încă un cont, încă un abonament sau încă o demonstrație.
+[ÎNTREBĂRI — listă]
+De unde să încep?
+Ce arde mai tare?
+Cine urlă mai tare?
 
-[ÎNTREBARE]
-Ce problemă merită atenția ta acum?
-Și ce trebuie să afli înainte să investești timp, bani și energie în ea?
+[CONCLUZIE]
+Rezultatul acestor incertitudini? Te blochezi. Apar anxietatea și frica de a pierde
+oportunități — FOMO.
+Unde mai pui că tehnologia avansează rapid și, sincer, devine copleșitoare chiar și pentru
+experții din domeniu.
+În tot zgomotul acesta, presiunea de a face ceva crește înainte să fie clar ce merită făcut.
 ```
 
 **Notă de implementare:** cea mai importantă secțiune a paginii. Nu se taie la mobil,
 indiferent ce — regulă neschimbată de pivotul de structură. Deschide direct cu exemple
 concrete, nu cu un bloc de „vacarm" separat.
+
+**Resincronizat 7 septembrie 2026 (a treia rundă a aceleiași zile) — copy nou, primit de la
+Ciprian.** Înlocuiește integral varianta de mai sus: `[SAU POATE]` și `[ÎNTRE TIMP]` au
+dispărut, niciuna din cele două nu mai apare în textul nou. Structura devine două liste
+scurte (simptome, apoi întrebările care blochează) urmate de o concluzie de trei propoziții
+care NU se mai închide cu o întrebare mare, ci cu o afirmație — legată narativ de h2-ul din
+§04 Agravare, chiar dedesubt („Cel mai scump început..."). Ierarhia de titluri a fost
+verificată înainte de implementare (cerut explicit): `h1` STRICT în hero, fiecare altă
+secțiune de top pe `h2` — niciun salt găsit, §03 rămâne `h2`. Liniuțele din textul brut trimis
+au devenit o listă `<ul><li>` reală, cu marcajul deja stabilit pe pagină (em-dash „—",
+`--accent-decor`), nu un glif de bulă nou — vezi `docs/DECIZII.md` D66–D70.
 
 ---
 

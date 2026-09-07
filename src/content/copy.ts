@@ -226,23 +226,29 @@ export const trustBar = {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const problema = {
-  h2: 'Știi că unele lucruri ar putea funcționa mai bine. Dar cu ce începi?',
+  // Text nou, primit de la Ciprian (2026-09-07, a treia rundă) — înlocuiește
+  // integral varianta de mai sus (`sauPoate`/`intreTimp`/`intrebare` au
+  // dispărut, niciuna nu mai apare în textul nou). Structură: două liste
+  // scurte (simptome → întrebări care blochează), apoi o concluzie de trei
+  // propoziții care numește costul emoțional — nu se mai închide cu o
+  // întrebare mare, ci cu o afirmație („presiunea... crește"), care se leagă
+  // direct de h2-ul din Agravare, chiar dedesubt („Cel mai scump început...").
+  h2: 'Simți că unele aspecte ale afacerii tale ar putea funcționa mai bine:',
   exemple: [
-    'Poate ofertele durează prea mult.',
-    'Poate informația e împrăștiată prin emailuri, tabele și oameni.',
-    'Poate follow-up-ul se pierde.',
-    'Poate colegii repetă aceeași muncă în fiecare săptămână.',
-    'Poate prea multe lucruri depind de un singur om.',
+    'Gestionarea și procesarea informațiilor din documente',
+    'Viteza de răspuns la solicitările de ofertă venite din partea prospecților sau clienților',
+    'Raportările către management sau direct către tine, pe baza cărora poți lua decizii informate',
   ],
-  sauPoate:
-    'Sau poate n-ai încă o problemă clar formulată. Doar simți că afacerea s-ar putea mișca mai bine decât o face acum.',
-  intreTimp: [
-    'În același timp apar tot mai multe instrumente și tot mai multe promisiuni.',
-    'Fiecare pare să rezolve ceva.',
-    'Dar nu ai nevoie, în primul rând, de încă un cont, încă un abonament sau încă o demonstrație.',
+  intrebariIntro: 'Iar întrebările care nu-ți dau pace sunt:',
+  intrebari: ['De unde să încep?', 'Ce arde mai tare?', 'Cine urlă mai tare?'],
+  // Ultima propoziție e declarația de claritate a secțiunii (`--t-h2`,
+  // aceeași treabă tipografică pe care o făcea fostul `intrebare`) — restul
+  // rămân corp obișnuit. Nu tăia „FOMO": e cuvântul cerut explicit.
+  concluzie: [
+    'Rezultatul acestor incertitudini? Te blochezi. Apar anxietatea și frica de a pierde oportunități — FOMO.',
+    'Unde mai pui că tehnologia avansează rapid și, sincer, devine copleșitoare chiar și pentru experții din domeniu.',
+    'În tot zgomotul acesta, presiunea de a face ceva crește înainte să fie clar ce merită făcut.',
   ],
-  intrebare: 'Ce problemă merită atenția ta acum?',
-  intrebareSub: 'Și ce trebuie să afli înainte să investești timp, bani și energie în ea?',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

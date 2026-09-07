@@ -182,6 +182,19 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          așteaptă formatul vechi de text, dinainte de runda 6), `formular.spec.ts` Q1/Q3, `§06`
          GSAP pin (flaky independent, 2/5 pe run izolat). Niciunul cauzat de această sesiune —
          semnalate, nu reparate, fiind în afara scopului cerut.
+- [x] **A treia rundă a aceleiași zile (7 septembrie 2026)** — copy nou pentru §02 Problema.
+      `docs/DECIZII.md` D66–D70.
+      1. **Ierarhia de titluri auditată înainte de implementare** (cerut explicit): `h1` STRICT
+         în hero, fiecare altă secțiune de top pe `h2`, sub-titlurile interne pe `h3` — niciun
+         salt găsit. §02 rămâne `h2`, fără nicio schimbare de tag.
+      2. **Copy nou integral**: două liste (simptome → întrebările care blochează), apoi o
+         concluzie de trei propoziții care se închide cu o afirmație, nu o întrebare — legată
+         narativ de h2-ul din Agravare, chiar dedesubt. Liniuțele din textul brut au devenit o
+         listă `<ul><li>` reală, cu marcajul deja stabilit pe pagină (em-dash, nu un glif nou).
+      3. **Design + tranziția în secțiune, verificate — neschimbate**: delimitarea (bară +
+         contrast alb/gri față de bilet) și reveal-ul granular erau deja mecanismul corect.
+      4. **Regresie prinsă la testare, nu la revizuire**: redenumirea `.exemple` → `.lista` a
+         rupt tăcut un selector din `motion.spec.ts` — reparat în aceeași rundă.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

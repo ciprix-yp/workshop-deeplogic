@@ -24,7 +24,9 @@ test('fără JavaScript, tot conținutul rămâne vizibil', async ({ browser }) 
   const page = await ctx.newPage();
   await page.goto('/');
 
-  for (const sel of ['#problema .exemple li', '#agravare p', '#rezultatul li', '#ce-facem .bloc']) {
+  // `.exemple` → `.lista` (2026-09-07, a treia rundă — copy nou §02, aceeași
+  // clasă refolosită pentru ambele liste ale secțiunii, vezi S02Problema.astro).
+  for (const sel of ['#problema .lista li', '#agravare p', '#rezultatul li', '#ce-facem .bloc']) {
     const el = page.locator(sel).first();
     await expect(el).toBeVisible();
     await expect(el).toHaveCSS('opacity', '1');

@@ -627,3 +627,23 @@ rămâne 4,74:1 la mărimea nouă), build, `tests/e2e/motion.spec.ts` (36/36 sta
 proiecte, 6 repetări), screenshot 360/768/1280 după centrare. Trei eșecuri preexistente,
 neatinse de rundă (confirmate pe `HEAD` curat, prin `git stash`): `scarcity.spec.ts` (bara
 așteaptă formatul vechi de text), `formular.spec.ts` Q1/Q3, `§06` GSAP pin (flaky independent).
+
+## A treia rundă a aceleiași zile (7 septembrie 2026) — copy nou §02 Problema
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D66** | Ierarhia de titluri verificată ÎNAINTE de implementare, nu presupusă | Cerut explicit („vreau totuși înainte să implementezi... să verifici ierarhia h1, h2, h3"). Audit: `h1` STRICT în hero (`S01Hero.astro`), fiecare altă secțiune de top folosește deja `h2`, sub-titlurile din interiorul unei secțiuni (metodologie, Rezultatul, Soluție) folosesc `h3` — niciun salt de nivel găsit nicăieri pe pagină. Confirmă că §02 trebuia să rămână `h2`, fără nicio schimbare de tag. | — (audit, fără modificare) |
+| **D67** | §02 Problema — copy nou integral: `h2` + două liste (simptome, apoi întrebările care blochează) + o concluzie de trei propoziții | Text primit de la Ciprian, înlocuiește integral varianta anterioară — `sauPoate`, `intreTimp`, `intrebare`, `intrebareSub` au dispărut, niciuna nu mai apare în textul nou. Închiderea nu se mai termină cu o întrebare mare, ci cu o afirmație („presiunea de a face ceva crește înainte să fie clar ce merită făcut"), care se leagă direct de h2-ul din Agravare, chiar dedesubt („Cel mai scump început..."). | `copy.ts` (`problema`), `S02Problema.astro` |
+| **D68** | Liniuțele „-" din textul brut primit → listă `<ul><li>` reală, cu ACEEAȘI clasă (`.lista`, fostă `.exemple`) pentru AMBELE grupuri de bullet-uri | Cerut explicit („schimbă liniuțele din text cu bulets"). Refolosește marcajul deja stabilit pe pagină (em-dash „—", `--accent-decor`) în loc să introducă un glif de bulă nou — distincția dintre cele două liste (simptome vs. întrebări) vine din propoziția-intro de dinaintea fiecăreia, nu dintr-un stil vizual separat. | `S02Problema.astro` |
+| **D69** | Ultima propoziție a concluziei preia rolul tipografic al fostului `.intrebare` (corp mare, `--t-h2`, bold) — restul concluziei rămâne corp obișnuit | Copy-ul nou nu se mai închide cu o întrebare extractabilă ca „mare declarație" — dar structura vizuală „vacarm mic → claritate mare" (documentată în `tokens.css`, `--t-statement`) tot are nevoie de un moment de accent la finalul secțiunii. „În tot zgomotul acesta, presiunea de a face ceva crește înainte să fie clar ce merită făcut." e singura propoziție din concluzie suficient de scurtă și de închisă ca idee ca să funcționeze ca atare. | `S02Problema.astro` |
+| **D70** | Design + tranziția în secțiune — verificate, NESCHIMBATE | Cerut explicit („asigură-te că suntem aliniați cu design-ul și tranziția"). `<Sectiune id="problema" latime="larg">` rămâne identic; delimitarea (bară subțire + contrast alb/gri față de bilet, chiar deasupra) și reveal-ul granular (`data-reveal` per element, nu pe blocul întreg) erau deja mecanismul corect — nu era nimic de reparat, doar de confirmat. | — (audit, fără modificare) |
+
+**Regresie găsită și reparată în aceeași rundă:** redenumirea `.exemple` → `.lista` a rupt tăcut
+`tests/e2e/motion.spec.ts` („fără JavaScript, tot conținutul rămâne vizibil" — selectorul
+`#problema .exemple li` nu mai exista). Prinsă la rulare, nu la revizuire de cod; actualizată
+la `#problema .lista li`.
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare (niciun invariant de copy atins —
+fără procente în afara excepției „20%/80%", fără preț, fără citate), `npm run contrast`,
+build, `tests/e2e/motion.spec.ts` (toate verzi în afara §06 GSAP, deja confirmat flaky
+independent), screenshot 360 (tranziția din Trust bar) și 1280.

@@ -8,27 +8,37 @@ import Sectiune from './Sectiune.astro';
   regulă neschimbată de pivotul de structură (2026-09-02). Rescrisă complet:
   deschide direct cu exemple concrete, nu cu un bloc de „vacarm" separat —
   absoarbe spiritul fostului grid de exemple (retras ca secțiune proprie).
+
+  Text nou (2026-09-07, a treia rundă) — două liste scurte (simptome, apoi
+  întrebările care blochează), reutilizând ACEEAȘI clasă de listă (`.lista`,
+  fost `.exemple`) pentru amândouă: aceleași marcaje, aceeași culoare —
+  distincția dintre ele o face intro-ul de dinaintea fiecăreia, nu un stil
+  vizual diferit. Închiderea nu mai e o întrebare mare (fostul `.intrebare`);
+  ultima propoziție a concluziei preia acum acel rol — vezi `<style>`.
 */}
 <Sectiune id="problema" latime="larg">
   <h2 data-reveal>{problema.h2}</h2>
 
-  <ul class="exemple">
+  <ul class="lista">
     {problema.exemple.map((linie) => (
       <li data-reveal>{linie}</li>
     ))}
   </ul>
 
-  <p class="sau-poate" data-reveal>{problema.sauPoate}</p>
+  <p class="intrebari-intro" data-reveal>{problema.intrebariIntro}</p>
 
-  <div class="intre-timp">
-    {problema.intreTimp.map((p) => (
-      <p data-reveal>{p}</p>
+  <ul class="lista">
+    {problema.intrebari.map((linie) => (
+      <li data-reveal>{linie}</li>
     ))}
-  </div>
+  </ul>
 
-  <div class="intrebare-bloc" data-reveal>
-    <p class="intrebare">{problema.intrebare}</p>
-    <p class="intrebare-sub">{problema.intrebareSub}</p>
+  <div class="concluzie-bloc" data-reveal>
+    {problema.concluzie.map((p, i) => (
+      <p class:list={['concluzie', i === problema.concluzie.length - 1 && 'concluzie-statement']}>
+        {p}
+      </p>
+    ))}
   </div>
 </Sectiune>
 
@@ -39,7 +49,10 @@ import Sectiune from './Sectiune.astro';
     margin-bottom: var(--sp-lg);
   }
 
-  .exemple {
+  /* Fost `.exemple` — refolosită acum pentru AMBELE liste (simptome ȘI
+     întrebări): același marcaj, aceeași culoare. Distincția dintre ele vine
+     din intro-ul de dinaintea fiecăreia, nu dintr-un stil vizual separat. */
+  .lista {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -48,7 +61,12 @@ import Sectiune from './Sectiune.astro';
     max-width: var(--max-proza);
   }
 
-  .exemple li {
+  .lista + .lista,
+  .lista + .intrebari-intro {
+    margin-top: var(--sp-xl);
+  }
+
+  .lista li {
     display: grid;
     grid-template-columns: 1.5rem 1fr;
     align-items: baseline;
@@ -56,43 +74,44 @@ import Sectiune from './Sectiune.astro';
     line-height: var(--lh-normal);
   }
 
-  .exemple li::before {
+  .lista li::before {
     content: '—';
     color: var(--accent-decor);
     font-weight: 600;
   }
 
-  .sau-poate {
+  .intrebari-intro {
     margin-top: var(--sp-md);
+    margin-bottom: var(--sp-sm);
     max-width: var(--max-proza);
     color: var(--text-muted);
     line-height: var(--lh-normal);
   }
 
-  .intre-timp {
-    margin-top: var(--sp-xl);
-    display: grid;
-    gap: var(--sp-xs);
-    max-width: var(--max-proza);
-  }
-
-  .intrebare-bloc {
+  .concluzie-bloc {
     margin-top: var(--sp-xl);
     padding-top: var(--sp-lg);
     border-top: 1px solid rgba(47, 79, 79, 0.18);
+    display: grid;
+    gap: var(--sp-xs);
   }
 
-  .intrebare {
-    font-family: var(--font-titlu);
-    font-weight: 700;
-    font-size: var(--t-h2);
-    max-width: 20ch;
-  }
-
-  .intrebare-sub {
-    margin-top: var(--sp-xs);
+  .concluzie {
     max-width: var(--max-proza);
     color: var(--secundar);
     line-height: var(--lh-normal);
+  }
+
+  /* Declarația de claritate a secțiunii — aceeași treabă tipografică pe care
+     o făcea fostul `.intrebare` (marele „Ce problemă merită atenția ta
+     acum?"): corp mare, aer deasupra, ca să se citească drept concluzia, nu
+     încă o propoziție din listă. */
+  .concluzie-statement {
+    margin-top: var(--sp-xs);
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-h2);
+    color: var(--text);
+    max-width: 26ch;
   }
 </style>
