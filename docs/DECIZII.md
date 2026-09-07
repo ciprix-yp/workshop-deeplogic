@@ -613,3 +613,17 @@ verificare pe domeniul real.
 build, e2e (hero + motion), contrast măsurat în browser pe fundalul real al fiecărui element
 nou, screenshot pe 360 și pe desktop, apoi `curl` pe domeniul real după deploy (inclusiv
 verificarea de sitekey Turnstile din CLAUDE.md §5).
+
+## A doua rundă a aceleiași zile (7 septembrie 2026) — corecții pe bilet + buton flotant
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D63** | Biletul, +20%, prin `--scala: 1.2` LOCAL pe `.bilet` (nu tokenii globali de tipografie) | Cerut explicit („cu 20% mai mare"). O variabilă locală, înmulțită prin `calc()` peste lățimea maximă, padding, spații, mărimea pictogramelor (suprascrise pe `<svg>` — CSS învinge atributele de prezentare `width`/`height`) și fonturile locale — schimbarea tokenilor globali `--t-h3`/`--t-corp`/`--t-mic` ar fi umflat orice altă folosire a lor pe pagină, nu doar biletul. | `TrustBar.astro` |
+| **D64** | Talonul (roșu + buton) — CENTRAT, nu într-o coloană dreapta — **înlocuiește parțial D60** | Cerut explicit („roșul pe mijlocul paginii, inclus în card"). D60 (biletul rotit pe orizontală peste 46rem) împingea vizual talonul spre marginea dreaptă a paginii — exact opusul cerinței. Biletul a revenit la o singură coloană pe verticală, la orice lățime; scara +20% (D63) rămâne, doar structura de layout pe desktop a fost reversată. | `TrustBar.astro` |
+| **D65** | Butonul flotant (`CtaFloating.astro`) — a doua condiție de ascundere: dispare la 1000ms de la ultimul `scroll`, reapare la 500ms de la primul `scroll` după inactivitate | Cerut explicit. Independentă de suprapunerea cu alt `.cta` (D50) — vizibilitatea finală cere ambele condiții simultan. Capcană găsită la testare: Lenis amortizează wheel-ul (`lerp: 0.1`, `damp()`, nu durată fixă) — timing nedeterminist pentru un test bazat pe rotiță; testul folosește salturi INSTANTE (`scrollTo({behavior:'instant'})`) repetate, ca să simuleze scroll continuu, nu un gest izolat. Cele două teste preexistente ale butonului flotant au primit un ghiont (`wheel(0, 30)` — (0,1) e prea mic, verificat empiric: zero evenimente `scroll` produse) după `scrollIntoViewIfNeeded()`, ca fereastra de vizibilitate să nu fie prea îngustă pentru polling. | `CtaFloating.astro`, `tests/e2e/motion.spec.ts` |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare, `npm run contrast` (roșul biletului
+rămâne 4,74:1 la mărimea nouă), build, `tests/e2e/motion.spec.ts` (36/36 stabil pe ambele
+proiecte, 6 repetări), screenshot 360/768/1280 după centrare. Trei eșecuri preexistente,
+neatinse de rundă (confirmate pe `HEAD` curat, prin `git stash`): `scarcity.spec.ts` (bara
+așteaptă formatul vechi de text), `formular.spec.ts` Q1/Q3, `§06` GSAP pin (flaky independent).

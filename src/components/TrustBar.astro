@@ -29,6 +29,14 @@ import { trustBar } from '../content/copy';
   `download`: fără el, telefonul recunoaște fișierul după
   `Content-Type: text/calendar` și îl deschide direct în aplicația de
   calendar, precompletat — un singur tap, „Save".
+
+  Corecție (aceeași zi, a doua rundă) — două ajustări punctuale, nu un
+  redesign: (1) tot biletul +20%, prin `--scala` local (vezi <style>), fără
+  să ating tokenii globali de tipografie; (2) talonul (textul roșu + butonul)
+  s-a mutat CENTRAT — runda anterioară rotea biletul pe orizontală peste
+  46rem, cu talonul într-o coloană dreapta, aliniat la stânga în ea; vizual
+  ajungea împins spre marginea paginii, nu la mijloc. Biletul a revenit la
+  o singură coloană, pe verticală, la orice lățime.
 */}
 <div class="trust">
   <article class="bilet card-depth card-3d" data-tilt data-reveal>
@@ -105,6 +113,19 @@ import { trustBar } from '../content/copy';
     padding-inline: var(--lat);
   }
 
+  /*
+   * ── Scara biletului (2026-09-07, cerut explicit: „cu 20% mai mare") ─────
+   * O variabilă LOCALĂ, nu tokenii globali `--t-h3`/`--t-corp`/`--t-mic` —
+   * ăia sunt folosiți și în restul paginii; schimbați global, ar fi umflat
+   * fiecare titlu/paragraf de pe site, nu doar biletul. `--scala` înmulțește
+   * fiecare dimensiune care ține de bilet: lățime, padding, spații între
+   * rânduri, mărimea pictogramelor, mărimea crestăturilor, toate mărimile
+   * de font locale.
+   */
+  .bilet {
+    --scala: 1.2;
+  }
+
   /* Aceeași economie ca la hero (2026-09-07): sub 480px, rama secțiunii e
      lățime de bilet pierdută. Adresa completă are nevoie de fiecare pixel ca
      să nu se rupă în trei rânduri. */
@@ -117,27 +138,27 @@ import { trustBar } from '../content/copy';
   .bilet {
     /* Padding-ul e o variabilă fiindcă perforația trebuie să-l anuleze exact,
        ca linia punctată să atingă ambele margini ale biletului. */
-    --pad: var(--sp-lg);
-    --crestatura: 1.5rem;
+    --pad: calc(var(--sp-lg) * var(--scala));
+    --crestatura: calc(1.5rem * var(--scala));
 
     /* Nu `--max-continut` (62rem): la lățimea aia, cu tot conținutul aliniat
        la stânga, biletul se citea ca o bandă cu jumătatea dreaptă goală. 52rem
-       îl face un OBIECT pe pagină, nu o secțiune. */
-    max-width: 52rem;
+       (× 1.2 = 62.4rem, cu scara) îl face un OBIECT pe pagină, nu o secțiune. */
+    max-width: calc(52rem * var(--scala));
     margin-inline: auto;
     padding: var(--pad);
   }
 
   @media (max-width: 30rem) {
     .bilet {
-      --pad: var(--sp-md);
+      --pad: calc(var(--sp-md) * var(--scala));
     }
   }
 
   .data {
     font-family: var(--font-titlu);
     font-weight: 700;
-    font-size: var(--t-h3);
+    font-size: calc(var(--t-h3) * var(--scala));
     line-height: var(--lh-strans);
     letter-spacing: -0.01em;
     color: var(--text);
@@ -148,7 +169,7 @@ import { trustBar } from '../content/copy';
 
   .randuri {
     display: grid;
-    gap: var(--sp-md);
+    gap: calc(var(--sp-md) * var(--scala));
     margin: 0;
   }
 
@@ -156,7 +177,7 @@ import { trustBar } from '../content/copy';
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: start;
-    gap: var(--sp-sm);
+    gap: calc(var(--sp-sm) * var(--scala));
   }
 
   .pictograma {
@@ -165,6 +186,14 @@ import { trustBar } from '../content/copy';
        blocului — la 22px pictograma stă cu ~2px mai jos decât x-height-ul. */
     margin-top: 0.1em;
     color: var(--accent);
+  }
+
+  /* Iconițele au dimensiune fixă pe atributele `width`/`height` ale
+     fiecărui `<svg>` — CSS le suprascrie (specificitate mai mare decât un
+     atribut de prezentare), ca să crească odată cu restul biletului. */
+  .pictograma svg {
+    width: calc(22px * var(--scala));
+    height: calc(22px * var(--scala));
   }
 
   .rand dd {
@@ -179,7 +208,7 @@ import { trustBar } from '../content/copy';
     text-wrap: pretty;
     font-family: var(--font-corp);
     font-weight: 600;
-    font-size: var(--t-corp);
+    font-size: calc(var(--t-corp) * var(--scala));
     line-height: var(--lh-normal);
     color: var(--text);
   }
@@ -194,7 +223,7 @@ import { trustBar } from '../content/copy';
 
   .detaliu {
     text-wrap: pretty;
-    font-size: var(--t-mic);
+    font-size: calc(var(--t-mic) * var(--scala));
     line-height: var(--lh-normal);
     /* `--text-muted` (4.91:1) e calibrat pe ALB; secțiunea asta e pe
        `--bg-secundar`, unde pică la 3.94:1 — vezi registrul din tokens.css. */
@@ -204,7 +233,7 @@ import { trustBar } from '../content/copy';
   .perforatie {
     position: relative;
     height: 0;
-    margin-block: var(--sp-md);
+    margin-block: calc(var(--sp-md) * var(--scala));
     margin-inline: calc(var(--pad) * -1);
     border-top: 1px dashed var(--sticla-bordura);
   }
@@ -232,10 +261,21 @@ import { trustBar } from '../content/copy';
     left: 100%;
   }
 
+  /*
+   * Talonul — CENTRAT (2026-09-07, cerut explicit: „textul cu roșu vreau să
+   * fie pe mijlocul paginii, inclus în card"). Corectează decizia din runda
+   * anterioară, care rotea biletul pe orizontală peste 46rem (corp stânga /
+   * talon dreapta, aliniat la stânga în coloana lui) — talonul ajungea
+   * vizual împins spre marginea dreaptă a paginii, nu la mijloc. Biletul
+   * rămâne acum pe verticală, cu aceeași perforație orizontală, la orice
+   * lățime; doar talonul (textul roșu + butonul) e centrat, ca în imaginea
+   * de referință trimisă (bilet cu buton centrat sub blocul de informații).
+   */
   .talon {
     display: grid;
-    gap: var(--sp-md);
-    justify-items: start;
+    justify-items: center;
+    gap: calc(var(--sp-md) * var(--scala));
+    text-align: center;
   }
 
   /* Condiția de acces, cerută explicit roșu (2026-09-07). `--eroare` e
@@ -245,69 +285,31 @@ import { trustBar } from '../content/copy';
   .acces {
     font-family: var(--font-titlu);
     font-weight: 600;
-    font-size: var(--t-corp);
+    font-size: calc(var(--t-corp) * var(--scala));
     line-height: var(--lh-normal);
     color: var(--eroare);
-  }
-
-  /*
-   * ── Biletul, pe orizontală ────────────────────────────────────────────
-   * Peste 46rem, biletul se rotește în forma pe care o are un bilet real de
-   * eveniment: corpul la stânga, talonul la dreapta, perforația VERTICALĂ
-   * între ele, cu crestăturile mutate sus și jos. Motivul nu e stilistic:
-   * pe desktop, cu tot conținutul într-o coloană stângă, jumătatea dreaptă
-   * rămânea goală — un gol pe care nimic nu-l justifica.
-   */
-  @media (min-width: 46rem) {
-    .bilet {
-      display: grid;
-      /* Trei coloane, nu două: corp | perforație (lățime 0) | talon. Cu două,
-         auto-placement-ul trimitea talonul pe rândul următor, sub corp. */
-      grid-template-columns: 1fr auto auto;
-      align-items: stretch;
-    }
-
-    .perforatie {
-      width: 0;
-      height: auto;
-      /* Anulează padding-ul pe verticală, ca linia să atingă ambele muchii. */
-      margin-block: calc(var(--pad) * -1);
-      margin-inline: var(--sp-xl);
-      border-top: 0;
-      border-left: 1px dashed var(--sticla-bordura);
-    }
-
-    .perforatie::before,
-    .perforatie::after {
-      left: 0;
-    }
-    .perforatie::before {
-      top: 0;
-    }
-    .perforatie::after {
-      top: 100%;
-    }
-
-    .talon {
-      max-width: 17rem;
-      align-content: center;
-    }
+    max-width: 30ch;
   }
 
   .calendar-cta {
     display: inline-flex;
     align-items: center;
-    gap: var(--sp-xs);
-    padding: var(--sp-xs) var(--sp-md);
+    gap: calc(var(--sp-xs) * var(--scala));
+    padding: calc(var(--sp-xs) * var(--scala)) calc(var(--sp-md) * var(--scala));
     border-radius: var(--radius-cta);
     background: var(--lime);
     color: var(--pe-lime);
     font-family: var(--font-titlu);
     font-weight: 600;
-    font-size: var(--t-mic);
+    font-size: calc(var(--t-mic) * var(--scala));
     text-decoration: none;
     min-height: var(--touch);
     transition: background-color 0.15s ease, transform 0.15s var(--ease-out);
+  }
+
+  .calendar-cta svg {
+    width: calc(18px * var(--scala));
+    height: calc(18px * var(--scala));
   }
 
   @media (hover: hover) and (pointer: fine) {

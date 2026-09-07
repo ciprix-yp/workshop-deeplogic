@@ -132,10 +132,9 @@ de trei ore, restul paginii (§Rezultatul, `meta.descriere`) spunea deja „vali
   vizual, valoarea se descrie singură.
 - **Forma de bilet, cu perforație și crestături.** Crestăturile sunt două cercuri în culoarea
   secțiunii, tăiate de `overflow: hidden` al lui `.card-depth` — nu au nevoie de `mask`, deci
-  funcționează și peste `backdrop-filter`. Pe mobil perforația e orizontală (corp / talon);
-  **peste 46rem biletul se rotește: corp la stânga, talon la dreapta, perforație verticală** —
-  la `--max-continut` (62rem) jumătatea dreaptă rămânea pur și simplu goală. Biletul e acum
-  plafonat la **52rem**, ca să citească a obiect, nu a bandă.
+  funcționează și peste `backdrop-filter`. Perforația e orizontală (corp deasupra / talon
+  dedesubt), la orice lățime — **corectat la a doua rundă a aceleiași zile, vezi mai jos**;
+  varianta inițială (biletul rotit pe orizontală peste 46rem) a fost reversată.
 - **Talonul poartă condiția de acces, în roșu** (`--eroare`, cerut explicit): „Participarea
   este gratuită, pe bază de invitație." Absoarbe fostul rând italic de sub card ȘI cuvântul
   „Gratuit" din fostul `trustBar.format` — atenție la invariantul „«gratuit» de exact trei
@@ -144,6 +143,44 @@ de trei ore, restul paginii (§Rezultatul, `meta.descriere`) spunea deja „vali
   rândurile vizibile). D6 — adresa completă pe pagină — e acoperit acum de rândul `loc`,
   vizibil. Cele două aserțiuni din `copy-invariants` care se agățau de `meta`/`format` au fost
   mutate pe `JSON.stringify(copy.trustBar)`: verifică același fapt, nu forma câmpului.
+
+**A doua rundă a aceleiași zile (2026-09-07, Ciprian — „cardul cu 20% mai mare", „roșul la
+mijloc") — două corecții punctuale pe bilet, plus butonul flotant:**
+
+- **Biletul, +20%, prin `--scala: 1.2` LOCAL pe `.bilet`** — nu tokenii globali
+  `--t-h3`/`--t-corp`/`--t-mic`, folosiți și în restul paginii; schimbați global, ar fi umflat
+  fiecare titlu de pe site, nu doar biletul. `--scala` înmulțește (`calc()`) lățimea maximă
+  (52rem → 62,4rem), padding-ul, spațiile dintre rânduri, mărimea pictogramelor (atribute
+  `width`/`height` pe fiecare `<svg>`, suprascrise prin CSS — specificitate mai mare decât un
+  atribut de prezentare) și toate mărimile de font locale ale biletului.
+- **Talonul (textul roșu + butonul) — CENTRAT, nu într-o coloană dreapta.** Reversează decizia
+  de mai sus („peste 46rem biletul se rotește pe orizontală"): pe desktop, talonul ajungea
+  vizual împins spre marginea paginii, nu la mijloc — exact opusul cerinței. Biletul a revenit
+  la o singură coloană, pe verticală, la orice lățime; doar talonul e centrat
+  (`justify-items: center` + `text-align: center`), ca în imaginea de referință trimisă.
+- **Butonul flotant (`CtaFloating.astro`) — a doua condiție de ascundere, independentă de
+  suprapunerea cu alt `.cta`:** dispare la **1000ms** de la ULTIMUL eveniment `scroll` (nu
+  concurează vizual cu conținutul cât timp cineva citește static), reapare la **500ms** de la
+  PRIMUL eveniment de scroll după inactivitate. Cele două valori sunt debounce-uri (cât se
+  așteaptă după evenimentul declanșator), nu durate de animație — tranziția CSS
+  (opacitate/transform, 250ms) rămâne neschimbată. Vizibilitatea finală e ȘI cele două condiții
+  simultan (fără suprapunere ȘI scroll activ recent).
+  - **Capcana de verificat, dacă se schimbă din nou:** Lenis amortizează wheel-ul (`lerp: 0.1`
+    implicit — `damp()`, nu o animație cu durată fixă), deci un `page.mouse.wheel()` continuă
+    să producă evenimente `scroll` REALE o vreme după ultimul tick — timpul depinde de istoricul
+    de input, nedeterminist pentru un test. `tests/e2e/motion.spec.ts` verifică timing-ul cu
+    salturi INSTANTE (`window.scrollTo({behavior:'instant'})`, câștigă în fața CSS-ului
+    `scroll-behavior: smooth`), repetate la ~150ms ca să simuleze scroll continuu, nu un singur
+    gest izolat — un singur salt izolat produce o fereastră de vizibilitate îngustă și corectă
+    (apare la 500ms, dispare la 1000ms de la ACEEAȘI mișcare), dar nereprezentativă pentru
+    „rămâne vizibil cât timp chiar se scrollează".
+  - **Cele două teste PREEXISTENTE** („apare după hero", mobil și desktop) foloseau
+    `scrollIntoViewIfNeeded()` (scroll animat, `scroll-behavior: smooth`) urmat direct de un
+    `expect(...).toBeVisible()` — fereastra de vizibilitate de mai sus (500ms–1000ms de la
+    finalul glisării, care poate fi scurtă) era ocazional prea îngustă pentru polling-ul lui
+    `expect`. Fix: un ghiont mic (`page.mouse.wheel(0, 30)` — **nu (0, 1)**, prea mic ca să
+    treacă de rotunjirea la pixel a lui Lenis, verificat empiric: zero evenimente `scroll`
+    produse) imediat după, care resetează debounce-ul de ascundere și lărgește fereastra.
 
 ---
 

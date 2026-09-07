@@ -14,6 +14,13 @@ import { CTA } from '../content/copy';
   peste CTA-ul din mijlocul secțiunii Rezultatul. Acum observă fiecare
   `.cta` din pagină, generic — se ascunde cât timp oricare e vizibil.
 
+  A doua condiție de ascundere (2026-09-07, cerută explicit): butonul dispare
+  și când utilizatorul se OPREȘTE din derulat, nu doar când un alt CTA e pe
+  ecran — nu are rost să concureze vizual cu conținutul cât timp cineva
+  citește static o secțiune. Reapare la primul gest de scroll. Vizibilitatea
+  finală e ȘI cele două condiții simultan (nu doar `.cta` suprapus, nu doar
+  scroll activ) — vezi `actualizeaza()`.
+
   E un `<a href="#inscriere">` normal — interceptat de ascultătorul global
   din DialogInscriere.astro (`a[href="#inscriere"]`), la fel ca orice alt
   CTA de pe pagină. Niciun cod separat de deschidere aici.
@@ -37,11 +44,52 @@ import { CTA } from '../content/copy';
     // CTA din flux ieșit din cadru).
     const vizibile = new Set<Element>();
 
+    /*
+     * ── Ascundere la inactivitate (2026-09-07, cerut explicit) ─────────────
+     * „Dispare când se oprește scroll-ul, la 1 sec. Reapare la scroll, la
+     * 0.5sec." Cele două valori sunt DEBOUNCE-uri — cât se așteaptă după
+     * evenimentul declanșator — nu durate de animație; tranziția CSS
+     * (opacitate/transform, 250ms) rămâne neschimbată.
+     *
+     * `opritScroll` se resetează la FIECARE eveniment de scroll (debounce
+     * clasic „a stat liniștit X ms") — firește 1000ms după ultimul scroll.
+     * `pornitScroll` se pornește O SINGURĂ DATĂ per tranziție inactiv→activ,
+     * fără reset: dacă l-am reporni la fiecare eveniment (ca pe celălalt),
+     * un scroll continuu mai lung de 500ms n-ar mai apuca niciodată să tragă
+     * concluzia „chiar se derulează" — reveal-ul ar fi amânat la nesfârșit.
+     *
+     * Pornește ascuns (`true`): înainte de primul gest de scroll, pagina
+     * „stă", exact starea pe care regula o tratează ca inactivitate.
+     */
+    let opritScroll: ReturnType<typeof setTimeout> | undefined;
+    let pornitScroll: ReturnType<typeof setTimeout> | undefined;
+    let ascunsInactiv = true;
+
     const actualizeaza = () => {
-      const arata = vizibile.size === 0;
+      const arata = vizibile.size === 0 && !ascunsInactiv;
       buton.hidden = !arata;
       buton.classList.toggle('vizibil', arata);
     };
+
+    const laScroll = () => {
+      clearTimeout(opritScroll);
+      opritScroll = setTimeout(() => {
+        ascunsInactiv = true;
+        actualizeaza();
+      }, 1000);
+
+      if (ascunsInactiv && !pornitScroll) {
+        pornitScroll = setTimeout(() => {
+          ascunsInactiv = false;
+          pornitScroll = undefined;
+          actualizeaza();
+        }, 500);
+      }
+    };
+    // `passive`: nu blochează scroll-ul propriu-zis (nici pe cel cu inerție
+    // al Lenis — vezi Base.astro; Lenis mișcă `window.scrollTo()` real în
+    // modul implicit, fără wrapper, deci evenimentul nativ tot pornește).
+    window.addEventListener('scroll', laScroll, { passive: true });
 
     const observator = new IntersectionObserver(
       (intrari) => {

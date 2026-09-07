@@ -164,10 +164,24 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          unei promisiuni: „roadmap de implementare" → „roadmap personalizat de validare".
          Alarmă nouă pentru copy viitor: `tests/e2e/hero.spec.ts` (9 lățimi, prag 18px).
       2. **Trust bar → BILET**: pictograme desenate ca ancore de scanare, mono strict pe date,
-         perforație cu crestături, talon cu condiția de acces în roșu. Peste 46rem se rotește
-         în forma unui bilet real (corp stânga / talon dreapta, perforație verticală).
+         perforație cu crestături, talon cu condiția de acces în roșu.
       3. **Ritual nou, cerut explicit**: fiecare rundă se închide cu documentație actualizată
          + commit + push + `npm run deploy` + verificare pe domeniul real.
+- [x] **A doua rundă a aceleiași zile (7 septembrie 2026)** — corecții pe bilet + buton flotant.
+      `docs/DECIZII.md` D63–D65.
+      1. **Biletul, +20%** (`--scala` local, nu tokenii globali de tipografie) și **talonul
+         (roșu + buton) centrat** — înlocuiește parțial D60: rotirea biletului pe orizontală
+         peste 46rem împingea talonul spre marginea paginii, opusul cerinței („pe mijlocul
+         paginii, inclus în card"). Bilet pe o singură coloană la orice lățime, de-acum.
+      2. **Butonul flotant — a doua condiție de ascundere**: dispare la 1s de inactivitate,
+         reapare la 0.5s de la reluarea scroll-ului, independent de suprapunerea cu alt CTA.
+         Capcană de test găsită și documentată: Lenis amortizează wheel-ul (timing
+         nedeterminist) — `tests/e2e/motion.spec.ts` verifică prin salturi instante, nu rotiță.
+      3. **Trei eșecuri PREEXISTENTE, confirmate neatinse** (verificat pe `HEAD` curat, prin
+         `git stash`, înainte de orice modificare a acestei runde): `scarcity.spec.ts` (bara
+         așteaptă formatul vechi de text, dinainte de runda 6), `formular.spec.ts` Q1/Q3, `§06`
+         GSAP pin (flaky independent, 2/5 pe run izolat). Niciunul cauzat de această sesiune —
+         semnalate, nu reparate, fiind în afara scopului cerut.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

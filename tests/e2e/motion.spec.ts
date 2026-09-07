@@ -117,6 +117,14 @@ test('butonul CTA flotant apare după hero și dispare la formular — pe mobil'
   await expect(buton).toBeHidden();
 
   await page.locator('#ce-facem').scrollIntoViewIfNeeded();
+  // Un mic ghiont după — de la runda cu ascunderea la inactivitate
+  // (2026-09-07): fără el, fereastra în care butonul e vizibil aici e
+  // îngustă (500ms–1000ms de la finalul glisării animate a
+  // `scrollIntoView`, care poate fi scurtă) — ocazional prea îngustă ca
+  // polling-ul lui `expect` s-o prindă sigur. Ghiontul resetează debounce-ul
+  // de ascundere, lărgind fereastra, fără să schimbe ce testăm de fapt
+  // (că butonul apare când hero-ul a ieșit din cadru).
+  await page.mouse.wheel(0, 30);
   await expect(buton).toBeVisible({ timeout: 3000 });
 
   // La chemarea finală dispare: ar dubla exact CTA-ul de-acolo.
@@ -135,9 +143,54 @@ test('butonul CTA flotant apare și pe desktop (pivot 2026-09-02 — nu mai e do
   await expect(buton).toBeHidden();
 
   await page.locator('#ce-facem').scrollIntoViewIfNeeded();
+  // Vezi nota din testul de mai sus (mobil): ghiont mic, ca fereastra de
+  // vizibilitate să nu fie prea îngustă pentru polling-ul lui `expect`.
+  await page.mouse.wheel(0, 30);
   await expect(buton).toBeVisible({ timeout: 3000 });
 
   await page.locator('#inscriere-cta').scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
   await expect(buton).toBeHidden();
+});
+
+test('butonul CTA flotant dispare la 1s de la oprirea scroll-ului și reapare la scroll', async ({ page }) => {
+  // Cerut explicit (2026-09-07). A doua condiție de ascundere, independentă
+  // de suprapunerea cu alt `.cta` (testată mai sus): butonul nu trebuie să
+  // concureze vizual cu conținutul cât timp cineva citește, static, o
+  // secțiune. `page.mouse.wheel()`, nu `scrollIntoViewIfNeeded()`: al doilea
+  // declanșează scroll-ul programatic al lui `scrollIntoView()`, animat de
+  // `scroll-behavior: smooth` din tokens.css — durata lui variază cu
+  // distanța și strică exact cronometrarea pe care vrem s-o verificăm.
+  // Rotița produce evenimente `scroll` native, instant, neafectate de acea
+  // proprietate CSS (se aplică doar scroll-ului programatic).
+  await page.goto('/');
+
+  const buton = page.locator('#cta-floating');
+
+  // Salturi INSTANTE repetate (`behavior: 'instant'` — câștigă în fața
+  // CSS-ului `scroll-behavior: smooth` din tokens.css, care s-ar aplica
+  // altfel unui `scrollTo()` programatic), la ~150ms distanță unul de altul
+  // — simulează un scroll CONTINUU de aproape o secundă, nu un singur salt
+  // izolat. Nu rotița: un `wheel()` e amortizat de Lenis (`lerp: 0.1`,
+  // implicit) — timing-ul lui variază cu istoricul de input, nedeterminist
+  // pentru un test. Un singur salt izolat ar reproduce exact „apare la
+  // 500ms, dispare la 1000ms de la ACEEAȘI mișcare" — corect pentru un gest
+  // scurt, dar nu ce verificăm aici: că rămâne vizibil CÂT TIMP se scrollează.
+  for (let tinta = 500; tinta <= 3000; tinta += 500) {
+    await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), tinta);
+    await page.waitForTimeout(150);
+  }
+
+  // Peste 500ms de scroll continuu — deja vizibil.
+  await expect(buton).toBeVisible({ timeout: 500 });
+
+  // Debounce de ascundere: 1000ms de la ULTIMUL eveniment `scroll` (ultimul
+  // salt din buclă). Marjă generoasă (câteva ori peste țintă, ca la
+  // `scarcity.spec.ts`) — verificăm proprietatea reală (dispare, reapare),
+  // nu cursa pe milisecundă.
+  await expect(buton).toBeHidden({ timeout: 3000 });
+
+  // Un singur scroll mic trebuie să-l aducă înapoi.
+  await page.mouse.wheel(0, 40);
+  await expect(buton).toBeVisible({ timeout: 2000 });
 });

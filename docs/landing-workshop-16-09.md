@@ -183,6 +183,15 @@ Adaugă în calendar → /eveniment.ics (precompletat: locație, dată, oră, al
   invitație se poate înscrie. Formularea veche („distribuit **în principal** prin invitații")
   exista exact din motivul ăsta.
 
+**Resincronizat 7 septembrie 2026 (a doua rundă a aceleiași zile) — bilet +20%, talon
+centrat.** Cerut explicit: „cardul... cu 20% mai mare" și „textul cu roșu... pe mijlocul
+paginii, inclus în card". Prima variantă a biletului (mai sus) rotea structura pe orizontală
+peste 46rem — corp stânga, talon dreapta — ca să evite un gol în jumătatea dreaptă a unui
+card lat. Rezultatul împingea vizual `[TALON — ACCES]` spre marginea paginii, opusul cerinței.
+Corectat: biletul rămâne pe o singură coloană, pe verticală, la orice lățime; talonul (roșu +
+buton) e centrat. Mărimea (+20%) e o scară locală peste tot ce ține de bilet — text,
+pictograme, spațiere — nu o schimbare a tipografiei globale a paginii.
+
 **Notă de implementare:** distinct de `BaraScarcity.astro` (bara fixă, mereu vizibilă la
 scroll) — Trust bar e un bloc din flux, o singură dată. Cardul „Adaugă în calendar" e o
 funcție reală (nu doar link static): deschide aplicația de calendar a telefonului
