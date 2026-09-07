@@ -590,3 +590,26 @@ decizia rămâne a lui.
 **Ce n-a fost atins:** `docs/landing-workshop-16-09.md` a fost resincronizat odată cu acest
 pivot (vezi antetul documentului) — nu mai există o divergență cunoscută între el și
 `copy.ts` la data acestei intrări.
+
+---
+
+## Runda 7 de revizuire, secțiune cu secțiune (7 septembrie 2026)
+
+Sesiune de review pe live, pe telefon: Ciprian trimite câte un screenshot per secțiune și
+descrie ce trebuie schimbat. Fiecare rundă se închide cu commit + push + `npm run deploy` +
+verificare pe domeniul real.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D56** | H1-ul din hero — fiecare rând ocupă EXACT un rând vizual, pe orice ecran, cu mărime derivată din lățimea containerului (`cqi` + `white-space: nowrap`), nu din `clamp()` pe viewport | Cerut explicit („font mai mic să încapă în primul rând pe orice ecran, dinamic adaptabil la telefonul pe care e afișat"). D-ul care se reversează parțial e runda a cincea (3 `span`-uri de mărime egală): aceea rezolva UNDE cade ruptura, nu faptul că fiecare rând se rupea în două pe 360px — H1-ul ajungea la cinci rânduri vizuale. `vw` nu putea rezolva: lățimea în care încape textul e fereastra minus două rame de padding fluide, plafonată pe desktop de `--max-proza`. Factorii de lățime sunt MĂSURAȚI în browser cu Inter încărcat (10,19em / 9,37em / 11,39em), nu estimați. Rolurile s-au despărțit: rândul 1 e afirmația de deschidere (0,75×), rândurile 2–3 sunt întrebarea, egale între ele, cu „PRIMUL PAS" în `--accent`. | `S01Hero.astro`, `copy.ts` (`hero.h1` devine obiect), `tests/e2e/hero.spec.ts` (nou) |
+| **D57** | Sub 480px, ramele hero-ului și ale secțiunii Trust bar se strâng (12px + 16px, de la ~21+21) | Când titlul își ia mărimea din lățimea containerului, fiecare pixel de padding e mărime de titlu pierdută: pe 360px containerul urcă de la 275 la 302px, adică ~10% titlu mai mare, fără să pierzi cadrul de sticlă. | `S01Hero.astro`, `TrustBar.astro` |
+| **D58** | Copy nou în hero: `subheadline` pe două paragrafe, `corp` pe o propoziție; **„roadmap de implementare" → „roadmap personalizat de validare"** | Text primit de la Ciprian. Schimbarea care contează nu e lungimea, ci promisiunea: hero-ul era singurul loc din pagină care promitea implementare într-un workshop de trei ore, în timp ce §09 și `meta.descriere` spuneau deja „validare". Un copy care promite altceva decât livrează sistemul e un bug (CLAUDE.md §5). | `copy.ts` (`hero`) |
+| **D59** | Cardul de logistică → **BILET**: titlu (data), patru rânduri cu pictogramă desenată, perforație cu crestături, talon | Cerut explicit („mi se pare doar aglomerat... vreau un bilet premium, ușor de parcurs cognitiv"). Diagnosticul mecanic: patru propoziții de aceeași greutate, aproape toate în IBM Plex Mono la 13px — inclusiv adresa, care e proză, nu date. Nicio ancoră de scanare, deci se citea rând cu rând. Fix: pictograme desenate ca ancore (aceeași familie — viewBox 24, stroke 1.7, `--accent`; nu emoji, nu glife Unicode), mono STRICT pe date, fiecare rând = valoare + detaliu opțional. Crestăturile sunt cercuri în culoarea secțiunii tăiate de `overflow: hidden` al lui `.card-depth` — nu au nevoie de `mask`, deci merg și peste `backdrop-filter`. | `TrustBar.astro`, `copy.ts` (`trustBar`) |
+| **D60** | Peste 46rem, biletul se rotește: corp la stânga, talon la dreapta, perforație VERTICALĂ. Plafonat la 52rem, nu `--max-continut` (62rem) | La 62rem, cu tot conținutul aliniat la stânga, jumătatea dreaptă a cardului rămânea gol pur — un gol pe care nimic nu-l justifica. 52rem îl face un obiect pe pagină, nu o bandă. | `TrustBar.astro` |
+| **D61** | Talonul poartă condiția de acces în roșu (`--eroare`): „Participarea este gratuită, pe bază de invitație." Absoarbe fostul rând italic de sub card ȘI cuvântul „Gratuit" din `trustBar.format` | Cerut explicit („vreau să scrie clar cu roșu"). Cele două spuneau bucăți din aceeași condiție de acces, în două locuri diferite. Contrast măsurat pe fundalul REAL al biletului (sub tenta de sticlă, nu pe alb teoretic): 4,74:1 la 360px. **Semnalat, decizia lui Ciprian:** „pe bază de invitație" e mai tare decât ce face sistemul — formularul e deschis pe o pagină publică; formularea veche („distribuit *în principal* prin invitații") exista exact din motivul ăsta. | `TrustBar.astro`, `copy.ts` |
+| **D62** | `trustBar.meta` eliminat; cele două aserțiuni din `copy-invariants` care se agățau de `meta`/`format` mutate pe `JSON.stringify(copy.trustBar)` | `meta` era un rezumat doar pentru cititoarele de ecran care dubla exact rândurile devenite vizibile — D6 (adresa completă pe pagină) e acoperit acum vizibil, nu prin text ascuns. Aserțiunile verifică un FAPT (capacitatea e 30, data e 16 septembrie peste tot), nu forma câmpului — mutate, nu slăbite. | `copy.ts`, `tests/copy-invariants.test.ts` |
+
+**Verificare, la fiecare rundă:** `astro check` (0 erori), 139 teste unitare, `npm run contrast`,
+build, e2e (hero + motion), contrast măsurat în browser pe fundalul real al fiecărui element
+nou, screenshot pe 360 și pe desktop, apoi `curl` pe domeniul real după deploy (inclusiv
+verificarea de sitekey Turnstile din CLAUDE.md §5).

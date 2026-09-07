@@ -104,17 +104,21 @@ vizual:
 [EYEBROW]
 PRIMUL PAS · Workshop by Deep Logic
 
-[H1]
-Afacerea ta este diferită.
-Care este PRIMUL PAS în noua eră digitală?
+[H1]  — trei rânduri cu roluri diferite, nu trei fragmente egale
+Afacerea ta este diferită.                 ← afirmația de deschidere, corp mai mic (0,75×)
+Cum faci PRIMUL PAS                        ← întrebarea, corp mare; „PRIMUL PAS" accentuat
+în noua eră digitală?                      ← întrebarea, exact aceeași mărime ca rândul 2
 
-[SUBHEADLINE]
-În 3 ore lucrezi pe propria afacere ca să identifici ce merită schimbat, cât ar putea conta
-și ce trebuie să verifici înainte să implementezi ceva.
+[SUBHEADLINE]  — două paragrafe
+Vino să descoperi, alături de alți antreprenori ca tine, ce merită făcut mai întâi pentru a
+aduce automatizările și AI-ul în compania ta.
+
+Lucrăm timp de 3 ore, fiecare pe propria afacere. La final, pleci cu un roadmap personalizat
+de validare — ca să știi ce merită investigat, ce procese sau sarcini ar putea fi automatizate
+ori delegate AI-ului și care este, pe bune, PRIMUL PAS.
 
 [CORP]
-Nu vii la un curs despre tehnologie.
-Vii să lucrezi pe o problemă reală din afacerea ta.
+Nu discutăm tehnic, discutăm soluții la probleme reale.
 
 [CTA]
 Rezervă-ți locul
@@ -124,27 +128,60 @@ Rezervă-ți locul
 de structură — Trust bar, chiar dedesubt, o acoperă deja. Hero rămâne strict: titlu,
 promisiune, CTA.
 
+**Resincronizat 7 septembrie 2026 (runda 7).** Două schimbări, ambele cerute direct:
+
+1. **H1-ul e o structură, nu o listă.** Fiecare rând trebuie să ocupe EXACT un rând vizual pe
+   orice ecran — de aici mărimea calculată din lățimea containerului (`cqi`) și
+   `white-space: nowrap`, nu `clamp()` pe viewport. Vezi CLAUDE.md §1, runda a șaptea, și
+   `tests/e2e/hero.spec.ts` (alarma pentru un copy viitor care nu mai încape).
+2. **„roadmap de implementare" → „roadmap personalizat de validare".** Hero-ul era singurul
+   loc din pagină care promitea implementare într-un workshop de trei ore; §09 și
+   `meta.descriere` spuneau deja „validare". Divergența era o promisiune, nu o nuanță.
+
 ---
 
 ## 02 — TRUST BAR *(secțiune nouă)*
 
 ```COPY
-[META]
-Miercuri, 16 septembrie 2026 · 14:00–17:00 · Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1,
-440010 Satu Mare
+[TITLU]
+Miercuri, 16 septembrie 2026
 
-[FORMAT]
-20% context · 80% lucru aplicat · Maximum 30 de participanți · Gratuit
+[RÂNDURI]  — fiecare: pictogramă + valoare + detaliu opțional
+⏱  14:00–17:00
+   3 ore: 20% context · 80% lucru pe propria afacere
+⌖  Casa Dăinuirii
+   Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare
+⚇  Maximum 30 de participanți
+▤  Roadmap digital personalizat
+   Primit pe email, la final.
 
-[ROADMAP]
-Roadmap digital personalizat, primit pe email la final.
+── perforație ──
 
-[CTA CALENDAR]
-📅 Adaugă în calendar → /eveniment.ics (precompletat: locație, dată, oră, alertă 24h înainte)
+[TALON — ACCES]  (roșu)
+Participarea este gratuită, pe bază de invitație.
 
-[INVITAȚIE]
-Workshop restrâns, distribuit în principal prin invitații.
+[TALON — CTA CALENDAR]
+Adaugă în calendar → /eveniment.ics (precompletat: locație, dată, oră, alertă 24h înainte)
 ```
+
+**Resincronizat 7 septembrie 2026 (runda 7) — cardul a devenit BILET.** Motivul declarat:
+„acum mi se pare doar aglomerat". Ce s-a schimbat la nivel de copy, nu doar de formă:
+
+- **`[META]` a dispărut.** Era o propoziție-rezumat doar pentru cititoarele de ecran, care
+  dubla exact rândurile vizibile. D6 (adresa completă pe pagină) e acoperit acum de rândul
+  vizibil „Casa Dăinuirii / Strada 1 Decembrie 1918…", nu de text ascuns.
+- **`[FORMAT]` s-a spart în rânduri.** „20% context · 80% lucru" a devenit detaliul rândului
+  de oră (unde înseamnă ceva: cum se împart cele 3 ore), „Maximum 30" e rând propriu.
+  Formulările „20% context" și „80% lucru" trebuie păstrate LITERAL — sunt singura excepție
+  din invariantul „fără procente pe pagină" (`tests/copy-invariants.test.ts`).
+- **`[INVITAȚIE]` + „Gratuit" s-au unit în `[TALON — ACCES]`**, în roșu, cerut explicit.
+  Spuneau bucăți din aceeași condiție de acces, în două locuri diferite. Atenție:
+  invariantul „«gratuit» apare de exact trei ori în corpul paginii" (Trust bar + FAQ + CTA
+  final) — rândul ăsta e unicul „gratuit" din Trust bar.
+- **Semnalat lui Ciprian, decizia lui:** „pe bază de invitație" e mai tare decât ce face
+  sistemul — formularul e deschis pe o pagină publică, deci cine ajunge pe link fără
+  invitație se poate înscrie. Formularea veche („distribuit **în principal** prin invitații")
+  exista exact din motivul ăsta.
 
 **Notă de implementare:** distinct de `BaraScarcity.astro` (bara fixă, mereu vizibilă la
 scroll) — Trust bar e un bloc din flux, o singură dată. Cardul „Adaugă în calendar" e o

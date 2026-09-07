@@ -156,6 +156,18 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
 - [x] `docs/landing-workshop-16-09.md` resincronizat cu structura și copy-ul curent (era
       marcat explicit „nesincronizat" după pivotul de narativă — rezolvat odată cu acest pas
       de documentare).
+- [x] **Runda 7 de revizuire, secțiune cu secțiune (7 septembrie 2026)** — review pe live, pe
+      telefon, un screenshot per secțiune. `docs/DECIZII.md` D56–D62.
+      1. **Hero**: H1-ul ocupă acum trei rânduri REALE pe orice ecran (mărime derivată din
+         lățimea containerului prin `cqi` + `nowrap`, cu factori măsurați în browser — nu
+         `clamp()` pe viewport, care nu vede ramele de padding). Copy nou, plus corectarea
+         unei promisiuni: „roadmap de implementare" → „roadmap personalizat de validare".
+         Alarmă nouă pentru copy viitor: `tests/e2e/hero.spec.ts` (9 lățimi, prag 18px).
+      2. **Trust bar → BILET**: pictograme desenate ca ancore de scanare, mono strict pe date,
+         perforație cu crestături, talon cu condiția de acces în roșu. Peste 46rem se rotește
+         în forma unui bilet real (corp stânga / talon dreapta, perforație verticală).
+      3. **Ritual nou, cerut explicit**: fiecare rundă se închide cu documentație actualizată
+         + commit + push + `npm run deploy` + verificare pe domeniul real.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
