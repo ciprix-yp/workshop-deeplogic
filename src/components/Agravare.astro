@@ -3,8 +3,17 @@ import { agravare } from '../content/copy';
 import Sectiune from './Sectiune.astro';
 ---
 
-{/* Secțiune nouă (pivot de structură 2026-09-02) — costul tăcut al unui
-    început fără o problemă clară. */}
+{/*
+  Secțiune nouă (pivot de structură 2026-09-02) — costul tăcut al unui
+  început fără o problemă clară.
+
+  Text nou (2026-09-07, a patra rundă): secțiunea s-a strâns de la trei
+  blocuri de proză + un card bogat la titlu → UN paragraf → card. Cardul
+  („quickwin", numit așa de Ciprian) rămâne pe `.card-depth`, aceeași sticlă
+  mată ca biletul din Trust bar — nu un al doilea tratament de card pe
+  pagină. E singura întoarcere pozitivă din secțiune, după acumularea din
+  paragraful de deasupra.
+*/}
 <Sectiune id="agravare">
   <h2 data-reveal>{agravare.h2}</h2>
 
@@ -14,18 +23,11 @@ import Sectiune from './Sectiune.astro';
     ))}
   </div>
 
-  <div class="alternativa">
-    {agravare.alternativa.map((p) => (
-      <p data-reveal>{p}</p>
-    ))}
-  </div>
-
   <div class="merita card-depth" data-reveal>
-    <h3>{agravare.h3}</h3>
-    {agravare.corpFinal.map((p) => (
+    <h3>{agravare.card.h3}</h3>
+    {agravare.card.linii.map((p) => (
       <p>{p}</p>
     ))}
-    <p class="concluzie">{agravare.concluzie}</p>
   </div>
 </Sectiune>
 
@@ -36,37 +38,32 @@ import Sectiune from './Sectiune.astro';
     margin-bottom: var(--sp-md);
   }
 
-  .corp,
-  .alternativa {
+  .corp {
     display: grid;
     gap: var(--sp-xs);
     max-width: var(--max-proza);
-  }
-
-  .alternativa {
-    margin-top: var(--sp-md);
-    color: var(--text-muted);
+    font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
   }
 
   .merita {
     margin-top: var(--sp-xl);
     padding: var(--sp-lg);
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-xs);
   }
 
   .merita h3 {
     font-family: var(--font-titlu);
     font-weight: 700;
     font-size: var(--t-h3);
+    margin-bottom: var(--sp-2xs);
   }
 
+  /* Cele două rânduri, aceeași greutate: perechea „nu X / ci Y" își face
+     singură contrastul din cuvinte, n-are nevoie și de unul tipografic. */
   .merita p {
     line-height: var(--lh-normal);
-  }
-
-  .concluzie {
-    font-weight: 600;
     color: var(--secundar);
   }
 </style>

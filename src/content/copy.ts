@@ -260,23 +260,31 @@ export const problema = {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const agravare = {
-  h2: 'Cel mai scump început este cel făcut fără o problemă clară.',
+  /*
+   * Text nou, primit de la Ciprian (2026-09-07, a patra rundă) — înlocuiește
+   * integral varianta anterioară (`alternativa`, `corpFinal` și `concluzie`
+   * au dispărut, niciuna nu mai apare în textul nou). Secțiunea se strânge
+   * de la trei blocuri de proză + un card bogat la: titlu, UN paragraf, card.
+   *
+   * Paragraful e deliberat o singură frază lungă, cu patru propoziții
+   * înlănțuite — acumularea E mesajul („toate acestea se adună"). Nu-l tăia
+   * în propoziții separate: efectul de îngrămădire dispare.
+   */
+  h2: 'Ambiguitatea are un cost. Și poate ți-e groază să-l calculezi.',
   corp: [
-    'De obicei nu arată dramatic.',
-    'Alegi o unealtă înainte să alegi problema. Cineva din echipă o testează. Primele zile par promițătoare.',
-    'Apoi apar excepțiile, lipsesc datele, procesul real e mai complicat decât părea, iar oamenii revin la vechiul mod de lucru.',
-    'Ai consumat timp și bani. Și, uneori, ai întărit ideea că „la noi nu merge”.',
+    'Presiunea pusă pe echipă crește până când nu mai rămâne nicio marjă de înțelegere, compania se mișcă prea încet față de piață și așteptările clienților, iar concurența folosește deja instrumente moderne — simți că rămâi în urmă, iar toate acestea se adună în costuri ascunse care apasă sănătatea financiară a companiei.',
   ],
-  alternativa: [
-    'Cealaltă variantă e să amâni.',
-    'Mai citești. Mai vezi o demonstrație. Mai salvezi un articol. Dar în afacere nu se schimbă nimic.',
-  ],
-  h3: 'De aceea merită cele 3 ore.',
-  corpFinal: [
-    'Nu pentru că în 3 ore îți rezolvăm afacerea. Nu îți promit asta.',
-    'Merită pentru că nu petrecem timpul pe trenduri, predicții sau liste de instrumente.',
-  ],
-  concluzie: 'Îl folosim ca să scoatem din ceață un lucru concret: ce vrei să schimbi, de ce contează și ce trebuie verificat înainte să mergi mai departe.',
+  /*
+   * Cardul de quick-win (numit așa explicit de Ciprian) — singura întoarcere
+   * pozitivă din secțiune, după acumularea de mai sus. Cele două rânduri sunt
+   * o pereche de contrast (nu X / ci Y) și rămân la ACEEAȘI greutate: textul
+   * primit nu marchează niciun accent, iar ierarhia neinventată e regula
+   * după corecția din §02 („nu trebuie divizată").
+   */
+  card: {
+    h3: 'De aceea merită cele 3 ore.',
+    linii: ['Nu ca să alegi încă o unealtă.', 'Ci ca să clarifici ce merită rezolvat mai întâi.'],
+  },
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -205,6 +205,13 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          contrast alb/gri față de bilet) și reveal-ul granular erau deja mecanismul corect.
       4. **Regresie prinsă la testare, nu la revizuire**: redenumirea `.exemple` → `.lista` a
          rupt tăcut un selector din `motion.spec.ts` — reparat în aceeași rundă.
+- [x] **A patra rundă a aceleiași zile (7 septembrie 2026)** — copy nou pentru §04 Agravare.
+      `docs/DECIZII.md` D72.
+      1. **Copy nou integral**: secțiunea s-a strâns de la trei blocuri de proză + un card
+         cu trei câmpuri la titlu → un singur paragraf → card „quickwin" cu două rânduri.
+         Paragraful e păstrat ca o singură frază lungă — acumularea e mesajul.
+      2. **Cardul refolosește `.card-depth`** (aceeași sticlă mată ca biletul din Trust bar),
+         cu cele două rânduri la aceeași greutate tipografică — fără accent inventat.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

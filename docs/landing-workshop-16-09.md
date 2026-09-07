@@ -258,28 +258,27 @@ o declara deja. Vezi `docs/DECIZII.md` D71.
 
 ```COPY
 [H2]
-Cel mai scump început este cel făcut fără o problemă clară.
+Ambiguitatea are un cost. Și poate ți-e groază să-l calculezi.
 
-[CORP]
-De obicei nu arată dramatic.
-Alegi o unealtă înainte să alegi problema. Cineva din echipă o testează. Primele zile par
-promițătoare.
-Apoi apar excepțiile, lipsesc datele, procesul real e mai complicat decât părea, iar oamenii
-revin la vechiul mod de lucru.
-Ai consumat timp și bani. Și, uneori, ai întărit ideea că „la noi nu merge".
+[CORP — o singură frază]
+Presiunea pusă pe echipă crește până când nu mai rămâne nicio marjă de înțelegere, compania se
+mișcă prea încet față de piață și așteptările clienților, iar concurența folosește deja
+instrumente moderne — simți că rămâi în urmă, iar toate acestea se adună în costuri ascunse
+care apasă sănătatea financiară a companiei.
 
-[ALTERNATIVA]
-Cealaltă variantă e să amâni.
-Mai citești. Mai vezi o demonstrație. Mai salvezi un articol. Dar în afacere nu se schimbă
-nimic.
-
-[H3 + CORP FINAL — card]
+[CARD — quickwin]
 De aceea merită cele 3 ore.
-Nu pentru că în 3 ore îți rezolvăm afacerea. Nu îți promit asta.
-Merită pentru că nu petrecem timpul pe trenduri, predicții sau liste de instrumente.
-Îl folosim ca să scoatem din ceață un lucru concret: ce vrei să schimbi, de ce contează și
-ce trebuie verificat înainte să mergi mai departe.
+Nu ca să alegi încă o unealtă.
+Ci ca să clarifici ce merită rezolvat mai întâi.
 ```
+
+**Resincronizat 7 septembrie 2026 (a patra rundă a aceleiași zile) — copy nou, primit de la
+Ciprian.** Înlocuiește integral varianta de mai sus: `[ALTERNATIVA]` a dispărut, iar cardul s-a
+strâns de la trei câmpuri (h3 + corp final + concluzie) la titlu + două rânduri de contrast
+(„nu X / ci Y"), numit explicit „quickwin card". Paragraful `[CORP]` e păstrat ca O SINGURĂ
+frază — patru propoziții înlănțuite, nu tăiate separat: acumularea („toate acestea se adună")
+e mesajul, nu doar conținutul lui. Cardul refolosește `.card-depth` (aceeași sticlă mată ca
+biletul din Trust bar) — vezi `docs/DECIZII.md` D72.
 
 ---
 

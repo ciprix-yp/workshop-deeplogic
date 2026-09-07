@@ -649,3 +649,14 @@ la `#problema .lista li`.
 fără procente în afara excepției „20%/80%", fără preț, fără citate), `npm run contrast`,
 build, `tests/e2e/motion.spec.ts` (toate verzi în afara §06 GSAP, deja confirmat flaky
 independent), screenshot 360 (tranziția din Trust bar) și 1280.
+
+## A patra rundă a aceleiași zile (7 septembrie 2026) — copy nou §04 Agravare
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D72** | §04 Agravare — copy nou integral: `h2` + UN paragraf + card „quickwin" | Text primit de la Ciprian, înlocuiește integral varianta anterioară — secțiunea se strânge de la trei blocuri de proză (`corp`, `alternativa`) + un card cu trei câmpuri (`h3`, `corpFinal`, `concluzie`) la titlu → un singur paragraf → card cu două rânduri. `alternativa`/`corpFinal`/`concluzie` au dispărut, niciuna nu mai apare în textul nou. Paragraful e păstrat ca O SINGURĂ frază lungă (patru propoziții înlănțuite, nu tăiate separat) — acumularea „toate acestea se adună" e mesajul, nu doar conținutul lui. Cardul refolosește `.card-depth` (aceeași sticlă mată ca biletul din Trust bar), cu cele două rânduri „nu X / ci Y" la aceeași greutate tipografică — fără accent inventat, ca la corecția din §02 (D69). | `copy.ts` (`agravare`), `Agravare.astro` |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare (aserțiunile de copy referă
+`copy.agravare` ca obiect întreg, nu câmpuri numite — nimic de actualizat acolo), `npm run
+contrast`, build, `tests/e2e/motion.spec.ts` 14/14 pe mobil-360 + desktop (inclusiv §06 GSAP,
+verde în ambele rulări), screenshot 360 și 1280.
