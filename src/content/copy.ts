@@ -153,10 +153,69 @@ export const hero = {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const trustBar = {
-  meta: `${EVENIMENT.dataText} · ${EVENIMENT.ora} · ${EVENIMENT.locatie}, ${EVENIMENT.adresa}`,
-  format: `20% context · 80% lucru aplicat · Maximum ${EVENIMENT.capacitate} de participanți · ${EVENIMENT.cost}`,
-  roadmap: 'Roadmap digital personalizat, primit pe email la final.',
-  invitatie: 'Workshop restrâns, distribuit în principal prin invitații.',
+  /*
+   * BILETUL (a șaptea rundă, 2026-09-07, Ciprian: „acum mi se pare doar
+   * aglomerat"). Înainte: patru propoziții de aceeași mărime, aproape tot
+   * textul în IBM Plex Mono la 13px — inclusiv adresa, care e proză, nu date.
+   * Nimic nu ancora privirea, deci cardul se citea rând cu rând, nu dintr-o
+   * privire.
+   *
+   * Acum e un bilet: un titlu (data), patru rânduri cu pictogramă, o
+   * perforație și un talon. Fiecare rând are o `valoare` (ce citești întâi)
+   * și, opțional, un `detaliu` (ce citești doar dacă te interesează rândul).
+   * Pictograma e ancora de scanare; eticheta rămâne doar pentru cititoarele
+   * de ecran, fiindcă valoarea se descrie deja singură („Maximum 30 de
+   * participanți" nu are nevoie de eticheta „Grup").
+   *
+   * `meta` (propoziția-rezumat de dinainte) a dispărut: era text doar pentru
+   * cititoarele de ecran care dubla exact ce scrie acum vizibil în rânduri.
+   * D6 (adresa completă pe pagină) e acoperit de rândul `loc`, vizibil —
+   * mai bine decât ascuns.
+   */
+  titlu: EVENIMENT.dataText,
+  randuri: [
+    {
+      cheie: 'ora',
+      eticheta: 'Ora',
+      valoare: EVENIMENT.ora,
+      // „20% context" și „80% lucru" sunt singurele procente permise pe
+      // pagină (excepție explicită în tests/copy-invariants.test.ts) —
+      // formulările astea două trebuie păstrate literal, altfel invariantul
+      // „fără procente" prinde restul.
+      detaliu: '3 ore: 20% context · 80% lucru pe propria afacere',
+    },
+    {
+      cheie: 'loc',
+      eticheta: 'Locul',
+      valoare: EVENIMENT.locatie,
+      detaliu: EVENIMENT.adresa,
+    },
+    {
+      cheie: 'grup',
+      eticheta: 'Grupul',
+      valoare: `Maximum ${EVENIMENT.capacitate} de participanți`,
+      detaliu: null,
+    },
+    {
+      cheie: 'roadmap',
+      eticheta: 'Ce pleacă cu tine',
+      valoare: 'Roadmap digital personalizat',
+      detaliu: 'Primit pe email, la final.',
+    },
+  ],
+  /*
+   * Talonul. Cerut explicit roșu (2026-09-07) — singurul roșu din fluxul
+   * paginii, în afara mesajelor de validare și a barei fixe. Absoarbe și
+   * fostul rând italic de sub card („Workshop restrâns, distribuit în
+   * principal prin invitații.") și cuvântul „Gratuit" din fostul `format`:
+   * amândouă spuneau bucăți din aceeași condiție de acces, în două locuri.
+   *
+   * ATENȚIE la invariantul „«gratuit» apare de exact trei ori în corpul
+   * paginii" (trust bar + FAQ + CTA final): rândul ăsta e unicul „gratuit"
+   * din trustBar. Dacă mai apare unul aici, testul pică — corect.
+   */
+  acces: 'Participarea este gratuită, pe bază de invitație.',
+  calendar: 'Adaugă în calendar',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

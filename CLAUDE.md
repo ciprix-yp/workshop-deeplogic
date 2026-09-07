@@ -120,6 +120,31 @@ reale."). Schimbarea care contează: **„roadmap de IMPLEMENTARE" → „roadma
 VALIDARE"** — hero-ul era singurul loc din pagină care promitea implementare într-un workshop
 de trei ore, restul paginii (§Rezultatul, `meta.descriere`) spunea deja „validare".
 
+**Cardul de logistică → BILET (aceeași rundă, „acum mi se pare doar aglomerat"):**
+`TrustBar.astro` era patru propoziții de aceeași greutate, aproape toate în IBM Plex Mono la
+13px — inclusiv adresa, care e proză, nu date. Nimic nu ancora privirea. Acum e un bilet:
+
+- **Pictograme desenate ca ancore de scanare** — patru, aceeași familie (viewBox 24, stroke
+  1.7, capete rotunde), `--accent`. Nu emoji, nu glife Unicode.
+- **Mono STRICT pe date** („14:00–17:00"). Adresa și restul au trecut pe fontul de corp.
+- **Fiecare rând = `valoare` + `detaliu` opțional** — ce citești întâi și ce citești doar dacă
+  te interesează rândul. Eticheta („Ora", „Locul") rămâne DOAR pentru cititoarele de ecran:
+  vizual, valoarea se descrie singură.
+- **Forma de bilet, cu perforație și crestături.** Crestăturile sunt două cercuri în culoarea
+  secțiunii, tăiate de `overflow: hidden` al lui `.card-depth` — nu au nevoie de `mask`, deci
+  funcționează și peste `backdrop-filter`. Pe mobil perforația e orizontală (corp / talon);
+  **peste 46rem biletul se rotește: corp la stânga, talon la dreapta, perforație verticală** —
+  la `--max-continut` (62rem) jumătatea dreaptă rămânea pur și simplu goală. Biletul e acum
+  plafonat la **52rem**, ca să citească a obiect, nu a bandă.
+- **Talonul poartă condiția de acces, în roșu** (`--eroare`, cerut explicit): „Participarea
+  este gratuită, pe bază de invitație." Absoarbe fostul rând italic de sub card ȘI cuvântul
+  „Gratuit" din fostul `trustBar.format` — atenție la invariantul „«gratuit» de exact trei
+  ori pe pagină": rândul ăsta e unicul din trustBar.
+- **`trustBar.meta` a dispărut** (era rezumat doar-pentru-cititoare-de-ecran care dubla exact
+  rândurile vizibile). D6 — adresa completă pe pagină — e acoperit acum de rândul `loc`,
+  vizibil. Cele două aserțiuni din `copy-invariants` care se agățau de `meta`/`format` au fost
+  mutate pe `JSON.stringify(copy.trustBar)`: verifică același fapt, nu forma câmpului.
+
 ---
 
 ## 2. Reguli de build

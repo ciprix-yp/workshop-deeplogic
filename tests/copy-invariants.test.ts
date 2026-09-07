@@ -268,7 +268,9 @@ describe('PRIMUL PAS (pivot 2026-08-31) — „ce nu apare deliberat", lista nou
 describe('consistență internă', () => {
   it('capacitatea e aceeași peste tot — 30, unificată cu pragul din bază (migrația 0007)', () => {
     expect(copy.EVENIMENT.capacitate).toBe(30);
-    expect(copy.trustBar.format).toMatch(/Maximum 30/);
+    // Biletul (2026-09-07) a spart fostul `trustBar.format` în rânduri;
+    // capacitatea trăiește acum pe rândul „grup".
+    expect(JSON.stringify(copy.trustBar)).toMatch(/Maximum 30/);
     expect(copy.ctaFinal.meta).toMatch(/30 de locuri/);
     expect(copy.faq.intrebari.at(-1)!.a).toMatch(/Sunt 30/);
   });
@@ -277,7 +279,9 @@ describe('consistență internă', () => {
     const zi = new Date(copy.EVENIMENT.data + 'T00:00:00Z').getUTCDay();
     expect(zi).toBe(3); // 0 = duminică, 3 = miercuri
     expect(copy.EVENIMENT.dataText).toMatch(/^Miercuri, 16 septembrie 2026$/);
-    expect(copy.trustBar.meta).toContain('16 septembrie 2026');
+    // Fostul `trustBar.meta` (rezumat doar pentru cititoarele de ecran) a
+    // fost eliminat odată cu biletul — data e acum `trustBar.titlu`, vizibilă.
+    expect(JSON.stringify(copy.trustBar)).toContain('16 septembrie 2026');
   });
 
   it('CTA-ul are un singur text pe toată pagina', () => {

@@ -1,54 +1,101 @@
 ---
-import { trustBar, EVENIMENT } from '../content/copy';
+import { trustBar } from '../content/copy';
 ---
 
 {/*
-  Strip compact, imediat sub hero (secțiune nouă, pivot de structură
-  2026-09-02) — tot ce trebuie știut dintr-o privire, inclusiv adresa
-  completă (D6, obligatorie pe pagină — vezi tests/copy-invariants.test.ts).
+  BILETUL — blocul de logistică de sub hero (redesenat 2026-09-07, Ciprian:
+  „acum mi se pare doar aglomerat... vreau un bilet premium, ușor de parcurs
+  cognitiv").
+
+  Ce s-a schimbat față de cardul vechi, și de ce:
+  — Patru propoziții de aceeași greutate, aproape toate în IBM Plex Mono la
+    13px (inclusiv adresa, care e proză, nu date), nu ofereau nicio ancoră de
+    scanare. Acum fiecare rând începe cu o pictogramă desenată, aceeași
+    familie (24px viewBox, stroke 1.7, capete rotunde) — ochiul sare din
+    pictogramă în pictogramă, nu citește rând cu rând.
+  — Mono a rămas STRICT pe date („14:00–17:00"). Adresa și restul au trecut
+    pe fontul de corp, unde se citesc.
+  — Forma e de bilet, nu de card: perforație cu crestături la margini și un
+    talon dedesubt, care poartă condiția de acces (roșu) și acțiunea.
+    Crestăturile sunt cercuri în culoarea secțiunii, tăiate de
+    `overflow: hidden` al lui `.card-depth` — nu au nevoie de mască, deci
+    merg și peste `backdrop-filter`.
 
   Distinct de BaraScarcity.astro (bara fixă, mereu vizibilă la scroll): asta
-  e un bloc din flux, o singură dată, cu mai mult context și fără poziție
-  fixă — nu concurează cu bara pentru atenție.
+  e un bloc din flux, o singură dată, cu mai mult context.
 
-  Card 3D + „Adaugă în calendar" — cerut explicit (2026-09-02). Linkul duce
-  la `/eveniment.ics` (generat static la build, `scripts/generate-ics.mjs` +
-  `src/lib/ics.ts`), NU descarcă fișierul — fără atributul `download`,
-  telefonul îl recunoaște după `Content-Type: text/calendar` și îl deschide
-  direct în aplicația de calendar, precompletat: locație, dată, oră și o
-  alertă cu 24h înainte (`VALARM`, adăugat în același pivot). Un singur tap,
-  „Save", fără să introducă nimic manual.
+  „Adaugă în calendar" duce la `/eveniment.ics` (generat static la build,
+  `scripts/generate-ics.mjs` + `src/lib/ics.ts`) și NU are atributul
+  `download`: fără el, telefonul recunoaște fișierul după
+  `Content-Type: text/calendar` și îl deschide direct în aplicația de
+  calendar, precompletat — un singur tap, „Save".
 */}
-<div class="trust" data-reveal>
-  <div class="card card-depth card-3d" data-tilt>
-    {/*
-      Ordonat (2026-09-02, a patra rundă — „să se vadă clar datele"): data,
-      ora și locația erau înainte o singură propoziție înghesuită
-      (`trustBar.meta`) — acum trei rânduri separate, scanabile. `trustBar.meta`
-      rămâne sursa de adevăr pentru D6 (adresa pe pagină, verificat de
-      tests/copy-invariants.test.ts) și pentru un rezumat SR-only: cititorii de
-      ecran primesc o singură propoziție coerentă, nu trei fragmente citite pe
-      rând fără context.
-    */}
-    <p class="vizual-ascuns">{trustBar.meta}</p>
-    <div class="cand-unde" aria-hidden="true">
-      <p class="data">{EVENIMENT.dataText}</p>
-      <p class="ora">{EVENIMENT.ora}</p>
-      <p class="locatie">{EVENIMENT.locatie}, {EVENIMENT.adresa}</p>
+<div class="trust">
+  <article class="bilet card-depth card-3d" data-tilt data-reveal>
+    <div class="corp">
+      <p class="data">{trustBar.titlu}</p>
+
+      <dl class="randuri">
+        {trustBar.randuri.map((rand) => (
+          <div class="rand">
+            <span class="pictograma" aria-hidden="true">
+              {rand.cheie === 'ora' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M12 7.2V12l3.2 2" />
+                </svg>
+              )}
+              {rand.cheie === 'loc' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <path d="M12 21.2c4.2-4.3 6.3-7.6 6.3-10.2a6.3 6.3 0 1 0-12.6 0c0 2.6 2.1 5.9 6.3 10.2z" />
+                  <circle cx="12" cy="10.6" r="2.4" />
+                </svg>
+              )}
+              {rand.cheie === 'grup' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <circle cx="9.2" cy="8.4" r="3.3" />
+                  <path d="M3.4 19.4c0-3.2 2.6-5.2 5.8-5.2s5.8 2 5.8 5.2" />
+                  <path d="M16.4 6.2a3.3 3.3 0 0 1 0 6.1M17.4 14.6c2.1.5 3.4 2.2 3.4 4.8" />
+                </svg>
+              )}
+              {rand.cheie === 'roadmap' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <rect x="4.2" y="3.2" width="15.6" height="17.6" rx="2.4" />
+                  <path d="M8.2 8.4h7.6M8.2 12h7.6" />
+                  <path d="M8.2 15.9l1.9 1.9 3.6-3.7" />
+                </svg>
+              )}
+            </span>
+
+            {/* Eticheta rămâne doar pentru cititoarele de ecran: vizual,
+                valoarea se descrie deja singură, iar pictograma o ancorează. */}
+            <dt class="vizual-ascuns">{rand.eticheta}</dt>
+            <dd>
+              <span class:list={['valoare', rand.cheie === 'ora' && 'valoare-date']}>{rand.valoare}</span>
+              {rand.detaliu && <span class="detaliu">{rand.detaliu}</span>}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
-    <p class="linie format">{trustBar.format}</p>
-    <p class="linie roadmap">{trustBar.roadmap}</p>
 
-    <a href="/eveniment.ics" class="calendar-cta">
-      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
-        <path d="M3 9.5h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-      </svg>
-      Adaugă în calendar
-    </a>
-  </div>
+    {/* Perforația: linia punctată taie cardul dintr-o margine în alta (de aici
+        marginile negative), iar cele două cercuri în culoarea secțiunii devin
+        crestături pentru că `.card-depth` are `overflow: hidden`. */}
+    <div class="perforatie" aria-hidden="true"></div>
 
-  <p class="invitatie">{trustBar.invitatie}</p>
+    <div class="talon">
+      <p class="acces">{trustBar.acces}</p>
+
+      <a href="/eveniment.ics" class="calendar-cta">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+          <path d="M3 9.5h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        {trustBar.calendar}
+      </a>
+    </div>
+  </article>
 </div>
 
 <style>
@@ -58,55 +105,199 @@ import { trustBar, EVENIMENT } from '../content/copy';
     padding-inline: var(--lat);
   }
 
-  .card {
-    max-width: var(--max-continut);
+  /* Aceeași economie ca la hero (2026-09-07): sub 480px, rama secțiunii e
+     lățime de bilet pierdută. Adresa completă are nevoie de fiecare pixel ca
+     să nu se rupă în trei rânduri. */
+  @media (max-width: 30rem) {
+    .trust {
+      padding-inline: 0.75rem;
+    }
+  }
+
+  .bilet {
+    /* Padding-ul e o variabilă fiindcă perforația trebuie să-l anuleze exact,
+       ca linia punctată să atingă ambele margini ale biletului. */
+    --pad: var(--sp-lg);
+    --crestatura: 1.5rem;
+
+    /* Nu `--max-continut` (62rem): la lățimea aia, cu tot conținutul aliniat
+       la stânga, biletul se citea ca o bandă cu jumătatea dreaptă goală. 52rem
+       îl face un OBIECT pe pagină, nu o secțiune. */
+    max-width: 52rem;
     margin-inline: auto;
-    padding: var(--sp-lg);
-    display: grid;
-    gap: var(--sp-2xs);
+    padding: var(--pad);
   }
 
-  .linie {
-    font-family: var(--font-mono);
-    font-size: var(--t-mic);
-    line-height: var(--lh-normal);
-    color: var(--secundar);
-  }
-
-  .cand-unde {
-    display: grid;
-    gap: 0.15rem;
-    margin-bottom: var(--sp-xs);
+  @media (max-width: 30rem) {
+    .bilet {
+      --pad: var(--sp-md);
+    }
   }
 
   .data {
     font-family: var(--font-titlu);
     font-weight: 700;
-    font-size: var(--t-corp-lg);
+    font-size: var(--t-h3);
+    line-height: var(--lh-strans);
+    letter-spacing: -0.01em;
     color: var(--text);
+    /* `.card-depth::before` desenează banda de 4px în capul cardului; puțin
+       aer sub ea, ca titlul să nu pară lipit de muchie. */
+    margin-bottom: var(--sp-md);
+  }
+
+  .randuri {
+    display: grid;
+    gap: var(--sp-md);
+    margin: 0;
+  }
+
+  .rand {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--sp-sm);
+  }
+
+  .pictograma {
+    display: flex;
+    /* Aliniat optic cu prima linie a valorii, nu cu marginea de sus a
+       blocului — la 22px pictograma stă cu ~2px mai jos decât x-height-ul. */
+    margin-top: 0.1em;
+    color: var(--accent);
+  }
+
+  .rand dd {
+    margin: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .valoare {
+    /* Fără cuvinte singure pe ultimul rând — `text-wrap: pretty` e pe `p` în
+       reset, dar astea sunt `span`-uri. */
+    text-wrap: pretty;
+    font-family: var(--font-corp);
+    font-weight: 600;
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+    color: var(--text);
+  }
+
+  /* Mono STRICT pe date — ora e singurul lucru din bilet care se citește ca
+     un cadran, nu ca o propoziție. */
+  .valoare-date {
+    font-family: var(--font-mono);
+    font-weight: 600;
     letter-spacing: -0.01em;
   }
 
-  .ora {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    font-size: var(--t-corp);
-    color: var(--secundar);
-  }
-
-  .locatie {
-    font-family: var(--font-mono);
+  .detaliu {
+    text-wrap: pretty;
     font-size: var(--t-mic);
     line-height: var(--lh-normal);
-    color: var(--secundar);
+    /* `--text-muted` (4.91:1) e calibrat pe ALB; secțiunea asta e pe
+       `--bg-secundar`, unde pică la 3.94:1 — vezi registrul din tokens.css. */
+    color: var(--text-muted-pe-secundar);
+  }
+
+  .perforatie {
+    position: relative;
+    height: 0;
+    margin-block: var(--sp-md);
+    margin-inline: calc(var(--pad) * -1);
+    border-top: 1px dashed var(--sticla-bordura);
+  }
+
+  .perforatie::before,
+  .perforatie::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: var(--crestatura);
+    height: var(--crestatura);
+    border-radius: 50%;
+    /* Culoarea secțiunii, nu a cardului: cercul trebuie să pară o gaură prin
+       bilet. `.trust` are fundal opac, deci în spate e exact
+       `--bg-secundar` — nicio nuanță de ghicit. */
+    background: var(--bg-secundar);
+    border: 1px solid var(--sticla-bordura);
+    transform: translate(-50%, -50%);
+  }
+
+  .perforatie::before {
+    left: 0;
+  }
+  .perforatie::after {
+    left: 100%;
+  }
+
+  .talon {
+    display: grid;
+    gap: var(--sp-md);
+    justify-items: start;
+  }
+
+  /* Condiția de acces, cerută explicit roșu (2026-09-07). `--eroare` e
+     singurul roșu din sistem care trece AA pe fundal deschis (5.90:1 pe alb,
+     4.74:1 pe secundar) — verificat pe fundalul REAL al biletului, sub
+     tenta de sticlă, nu pe alb teoretic. */
+  .acces {
+    font-family: var(--font-titlu);
+    font-weight: 600;
+    font-size: var(--t-corp);
+    line-height: var(--lh-normal);
+    color: var(--eroare);
+  }
+
+  /*
+   * ── Biletul, pe orizontală ────────────────────────────────────────────
+   * Peste 46rem, biletul se rotește în forma pe care o are un bilet real de
+   * eveniment: corpul la stânga, talonul la dreapta, perforația VERTICALĂ
+   * între ele, cu crestăturile mutate sus și jos. Motivul nu e stilistic:
+   * pe desktop, cu tot conținutul într-o coloană stângă, jumătatea dreaptă
+   * rămânea goală — un gol pe care nimic nu-l justifica.
+   */
+  @media (min-width: 46rem) {
+    .bilet {
+      display: grid;
+      /* Trei coloane, nu două: corp | perforație (lățime 0) | talon. Cu două,
+         auto-placement-ul trimitea talonul pe rândul următor, sub corp. */
+      grid-template-columns: 1fr auto auto;
+      align-items: stretch;
+    }
+
+    .perforatie {
+      width: 0;
+      height: auto;
+      /* Anulează padding-ul pe verticală, ca linia să atingă ambele muchii. */
+      margin-block: calc(var(--pad) * -1);
+      margin-inline: var(--sp-xl);
+      border-top: 0;
+      border-left: 1px dashed var(--sticla-bordura);
+    }
+
+    .perforatie::before,
+    .perforatie::after {
+      left: 0;
+    }
+    .perforatie::before {
+      top: 0;
+    }
+    .perforatie::after {
+      top: 100%;
+    }
+
+    .talon {
+      max-width: 17rem;
+      align-content: center;
+    }
   }
 
   .calendar-cta {
-    margin-top: var(--sp-sm);
     display: inline-flex;
     align-items: center;
     gap: var(--sp-xs);
-    justify-self: start;
     padding: var(--sp-xs) var(--sp-md);
     border-radius: var(--radius-cta);
     background: var(--lime);
@@ -128,14 +319,5 @@ import { trustBar, EVENIMENT } from '../content/copy';
 
   .calendar-cta:active {
     transform: scale(0.97);
-  }
-
-  .invitatie {
-    max-width: var(--max-continut);
-    margin-inline: auto;
-    margin-top: var(--sp-sm);
-    font-size: var(--t-mic);
-    font-style: italic;
-    color: var(--text-muted);
   }
 </style>

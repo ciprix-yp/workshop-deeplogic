@@ -60,7 +60,12 @@ test('fiecare rând din H1 încape pe un singur rând, la orice lățime', async
 
     // Ierarhia cerută: rândul de deschidere e vizibil mai mic decât întrebarea,
     // iar cele două rânduri ale întrebării sunt identice între ele.
-    const [setup, intrebare1, intrebare2] = masuratori.randuri;
+    expect(masuratori.randuri).toHaveLength(3);
+    const [setup, intrebare1, intrebare2] = masuratori.randuri as [
+      (typeof masuratori.randuri)[number],
+      (typeof masuratori.randuri)[number],
+      (typeof masuratori.randuri)[number],
+    ];
     expect(intrebare1.fontSize, `rândurile întrebării diferă la ${latime}px`).toBeCloseTo(
       intrebare2.fontSize,
       1
