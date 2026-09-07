@@ -190,7 +190,12 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
       2. **Copy nou integral**: două liste (simptome → întrebările care blochează), apoi o
          concluzie de trei propoziții care se închide cu o afirmație, nu o întrebare — legată
          narativ de h2-ul din Agravare, chiar dedesubt. Liniuțele din textul brut au devenit o
-         listă `<ul><li>` reală, cu marcajul deja stabilit pe pagină (em-dash, nu un glif nou).
+         listă `<ul><li>` reală, cu marcaj **bulină** (`•`).
+      2b. **Două corecții pe loc, la feedback direct** (aceeași rundă): (a) marcajul livrat
+         inițial era em-dash („am cerut bulets nu linii") — refolosisem marcajul moștenit ca să
+         nu introduc un al doilea limbaj vizual, dar cerința era explicită; (b) linia de
+         separare + propoziția finală la corp mare făceau secțiunea să pară două („ce ți-am dat
+         este o secțiune, nu trebuie divizată") — ambele scoase, secțiunea curge continuu.
       3. **Design + tranziția în secțiune, verificate — neschimbate**: delimitarea (bară +
          contrast alb/gri față de bilet) și reveal-ul granular erau deja mecanismul corect.
       4. **Regresie prinsă la testare, nu la revizuire**: redenumirea `.exemple` → `.lista` a

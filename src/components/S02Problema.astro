@@ -10,11 +10,21 @@ import Sectiune from './Sectiune.astro';
   absoarbe spiritul fostului grid de exemple (retras ca secțiune proprie).
 
   Text nou (2026-09-07, a treia rundă) — două liste scurte (simptome, apoi
-  întrebările care blochează), reutilizând ACEEAȘI clasă de listă (`.lista`,
-  fost `.exemple`) pentru amândouă: aceleași marcaje, aceeași culoare —
-  distincția dintre ele o face intro-ul de dinaintea fiecăreia, nu un stil
-  vizual diferit. Închiderea nu mai e o întrebare mare (fostul `.intrebare`);
-  ultima propoziție a concluziei preia acum acel rol — vezi `<style>`.
+  întrebările care blochează), reutilizând ACEEAȘI clasă de listă (`.lista`)
+  pentru amândouă: aceleași marcaje, aceeași culoare — distincția dintre ele
+  o face intro-ul de dinaintea fiecăreia, nu un stil vizual diferit.
+
+  Corectat imediat după (aceeași zi, feedback direct: „nu este bine, am cerut
+  bulets nu linii... ce ți-am dat este o secțiune, nu trebuie divizată"):
+  — Marcajul e BULINĂ (`•`), nu em-dash. Prima variantă refolosea marcajul
+    em-dash moștenit din fosta listă `.exemple`, ca să nu introducă un al
+    doilea limbaj vizual — dar cerința era explicită, iar cerința bate
+    consecvența cu un marcaj pe care oricum îl înlocuim peste tot aici.
+  — Secțiunea e UN bloc continuu. Varianta dinainte avea o linie orizontală
+    (`border-top`) înainte de concluzie și ultima propoziție la corp mare,
+    bold — împreună, cele două citeau ca începutul unei secțiuni NOI, nu ca
+    închiderea acesteia. Ambele scoase: tot ce urmează listelor curge în
+    aceeași voce.
 */}
 <Sectiune id="problema" latime="larg">
   <h2 data-reveal>{problema.h2}</h2>
@@ -34,10 +44,8 @@ import Sectiune from './Sectiune.astro';
   </ul>
 
   <div class="concluzie-bloc" data-reveal>
-    {problema.concluzie.map((p, i) => (
-      <p class:list={['concluzie', i === problema.concluzie.length - 1 && 'concluzie-statement']}>
-        {p}
-      </p>
+    {problema.concluzie.map((p) => (
+      <p class="concluzie">{p}</p>
     ))}
   </div>
 </Sectiune>
@@ -68,16 +76,23 @@ import Sectiune from './Sectiune.astro';
 
   .lista li {
     display: grid;
-    grid-template-columns: 1.5rem 1fr;
+    /* Bulina e mult mai îngustă decât fostul em-dash — coloana de marcaj
+       scade odată cu ea, altfel textul rămâne împins inutil spre dreapta. */
+    grid-template-columns: 1.1rem 1fr;
     align-items: baseline;
     font-size: var(--t-corp-lg);
     line-height: var(--lh-normal);
   }
 
+  /* Bulină, cerută explicit (2026-09-07). `::before`, nu `list-style`/`::marker`:
+     `li` e `display: grid` (ca să țină marcajul și textul în două coloane, cu
+     rândurile 2+ aliniate sub prima literă, nu sub bulină) — iar un element
+     grid nu mai randează marcajul nativ de listă în toate motoarele. */
   .lista li::before {
-    content: '—';
+    content: '•';
     color: var(--accent-decor);
-    font-weight: 600;
+    font-size: 1.15em;
+    line-height: 1;
   }
 
   .intrebari-intro {
@@ -88,10 +103,15 @@ import Sectiune from './Sectiune.astro';
     line-height: var(--lh-normal);
   }
 
+  /*
+   * Fără linie de separare și fără propoziție „mare" la final — cerut direct:
+   * textul primit e O secțiune, nu două. Concluzia curge din liste ca un
+   * paragraf normal, la aceeași greutate. Singura diferență față de rândurile
+   * de listă e mărimea de corp (`--t-corp`, nu `--t-corp-lg`): listele sunt
+   * enumerarea, asta e proza care le comentează.
+   */
   .concluzie-bloc {
-    margin-top: var(--sp-xl);
-    padding-top: var(--sp-lg);
-    border-top: 1px solid rgba(47, 79, 79, 0.18);
+    margin-top: var(--sp-lg);
     display: grid;
     gap: var(--sp-xs);
   }
@@ -100,18 +120,5 @@ import Sectiune from './Sectiune.astro';
     max-width: var(--max-proza);
     color: var(--secundar);
     line-height: var(--lh-normal);
-  }
-
-  /* Declarația de claritate a secțiunii — aceeași treabă tipografică pe care
-     o făcea fostul `.intrebare` (marele „Ce problemă merită atenția ta
-     acum?"): corp mare, aer deasupra, ca să se citească drept concluzia, nu
-     încă o propoziție din listă. */
-  .concluzie-statement {
-    margin-top: var(--sp-xs);
-    font-family: var(--font-titlu);
-    font-weight: 700;
-    font-size: var(--t-h2);
-    color: var(--text);
-    max-width: 26ch;
   }
 </style>

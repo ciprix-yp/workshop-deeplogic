@@ -241,9 +241,11 @@ export const problema = {
   ],
   intrebariIntro: 'Iar întrebările care nu-ți dau pace sunt:',
   intrebari: ['De unde să încep?', 'Ce arde mai tare?', 'Cine urlă mai tare?'],
-  // Ultima propoziție e declarația de claritate a secțiunii (`--t-h2`,
-  // aceeași treabă tipografică pe care o făcea fostul `intrebare`) — restul
-  // rămân corp obișnuit. Nu tăia „FOMO": e cuvântul cerut explicit.
+  // Trei propoziții la aceeași greutate, fără nicio linie de separare între
+  // liste și ele: textul primit e O secțiune, nu două (corectat pe loc, la
+  // feedback direct — prima variantă punea ultima propoziție la corp mare,
+  // bold, iar împreună cu bara de deasupra citea ca o secțiune NOUĂ).
+  // Nu tăia „FOMO": e cuvântul cerut explicit.
   concluzie: [
     'Rezultatul acestor incertitudini? Te blochezi. Apar anxietatea și frica de a pierde oportunități — FOMO.',
     'Unde mai pui că tehnologia avansează rapid și, sincer, devine copleșitoare chiar și pentru experții din domeniu.',

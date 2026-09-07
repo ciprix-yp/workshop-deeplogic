@@ -238,8 +238,14 @@ care NU se mai închide cu o întrebare mare, ci cu o afirmație — legată nar
 §04 Agravare, chiar dedesubt („Cel mai scump început..."). Ierarhia de titluri a fost
 verificată înainte de implementare (cerut explicit): `h1` STRICT în hero, fiecare altă
 secțiune de top pe `h2` — niciun salt găsit, §03 rămâne `h2`. Liniuțele din textul brut trimis
-au devenit o listă `<ul><li>` reală, cu marcajul deja stabilit pe pagină (em-dash „—",
-`--accent-decor`), nu un glif de bulă nou — vezi `docs/DECIZII.md` D66–D70.
+au devenit o listă `<ul><li>` reală, cu marcaj **bulină** (`•`, `--accent-decor`) — vezi
+`docs/DECIZII.md` D66–D70.
+
+**Două corecții pe loc, la feedback direct, în aceeași rundă:** (1) marcajul livrat prima dată
+era em-dash, nu bulină („am cerut bulets nu linii"); (2) blocul de concluzie fusese separat
+printr-o linie orizontală, cu ultima propoziție la corp mare — împreună, cele două citeau ca o
+secțiune NOUĂ („ce ți-am dat este o secțiune, nu trebuie divizată"). Textul de mai sus e UN
+bloc: h2, listă, propoziție de legătură, listă, concluzie — fără nicio ruptură vizuală.
 
 ---
 
