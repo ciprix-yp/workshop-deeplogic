@@ -12,7 +12,14 @@ import Sectiune from './Sectiune.astro';
   Text nou (2026-09-07, a treia rundă) — două liste scurte (simptome, apoi
   întrebările care blochează), reutilizând ACEEAȘI clasă de listă (`.lista`)
   pentru amândouă: aceleași marcaje, aceeași culoare — distincția dintre ele
-  o face intro-ul de dinaintea fiecăreia, nu un stil vizual diferit.
+  o face titlul de deasupra fiecăreia, nu un stil vizual diferit.
+
+  A treia corecție, aceeași zi („«Iar întrebările...» trebuie să fie la
+  nivelul «Simți că unele aspecte...». Echilibrează pagina și secțiunea"):
+  al doilea intro era un paragraf mic, gri — acum e `h2`, la fel ca primul,
+  iar cele două perechi titlu+listă stau una lângă alta peste 52rem. Vezi
+  `<style>` pentru de ce perechile și de ce `--t-h2` în loc de
+  `--t-statement`.
 
   Corectat imediat după (aceeași zi, feedback direct: „nu este bine, am cerut
   bulets nu linii... ce ți-am dat este o secțiune, nu trebuie divizată"):
@@ -27,21 +34,25 @@ import Sectiune from './Sectiune.astro';
     aceeași voce.
 */}
 <Sectiune id="problema" latime="larg">
-  <h2 data-reveal>{problema.h2}</h2>
+  <div class="perechi">
+    <div class="pereche">
+      <h2 data-reveal>{problema.h2}</h2>
+      <ul class="lista">
+        {problema.exemple.map((linie) => (
+          <li data-reveal>{linie}</li>
+        ))}
+      </ul>
+    </div>
 
-  <ul class="lista">
-    {problema.exemple.map((linie) => (
-      <li data-reveal>{linie}</li>
-    ))}
-  </ul>
-
-  <p class="intrebari-intro" data-reveal>{problema.intrebariIntro}</p>
-
-  <ul class="lista">
-    {problema.intrebari.map((linie) => (
-      <li data-reveal>{linie}</li>
-    ))}
-  </ul>
+    <div class="pereche">
+      <h2 data-reveal>{problema.intrebariIntro}</h2>
+      <ul class="lista">
+        {problema.intrebari.map((linie) => (
+          <li data-reveal>{linie}</li>
+        ))}
+      </ul>
+    </div>
+  </div>
 
   <div class="concluzie-bloc" data-reveal>
     {problema.concluzie.map((p) => (
@@ -51,15 +62,49 @@ import Sectiune from './Sectiune.astro';
 </Sectiune>
 
 <style>
+  /*
+   * Cele două intro-uri sunt la ACELAȘI nivel — cerut direct („«Iar
+   * întrebările care nu-ți dau pace sunt:» trebuie să fie la nivelul «Simți
+   * că unele aspecte...»"). Sunt amândouă `h2`, nu doar la fel la privire:
+   * dacă arată ca titlu, e titlu și pentru un cititor de ecran. Precedent în
+   * pagină — `S04PentruCine.astro` are tot două `h2` în aceeași secțiune.
+   *
+   * `--t-h2`, nu `--t-statement`: pe două coloane, declarația mare (până la
+   * 3rem) umplea coloana cu 4-5 rânduri de titlu și lăsa lista să pară o
+   * notă de subsol. `--t-h2` (max 2.25rem) ține perechea titlu+listă
+   * echilibrată în interiorul coloanei.
+   */
   h2 {
-    font-size: var(--t-statement);
-    max-width: 20ch;
-    margin-bottom: var(--sp-lg);
+    font-size: var(--t-h2);
+    margin-bottom: var(--sp-md);
+    text-wrap: balance;
+  }
+
+  /*
+   * Echilibrul secțiunii, cerut în aceeași propoziție („echilibrează pagina
+   * și secțiunea"). Problema declara `latime="larg"` (62rem) dar stivuia tot
+   * într-o singură coloană plafonată la `--max-proza` (38rem) — pe desktop
+   * rămânea un gol de ~40% în dreapta, în timp ce vecinele ei `larg`
+   * (PentruCine, Soluție, Rezultatul) își umplu lățimea cu grile. Acum cele
+   * două perechi titlu+listă stau una lângă alta și chiar folosesc lățimea
+   * declarată. Pe mobil, aceeași grilă se stivuiește — nicio schimbare.
+   */
+  .perechi {
+    display: grid;
+    gap: var(--sp-xl);
+  }
+
+  @media (min-width: 52rem) {
+    .perechi {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-2xl);
+      align-items: start;
+    }
   }
 
   /* Fost `.exemple` — refolosită acum pentru AMBELE liste (simptome ȘI
      întrebări): același marcaj, aceeași culoare. Distincția dintre ele vine
-     din intro-ul de dinaintea fiecăreia, nu dintr-un stil vizual separat. */
+     din titlul de deasupra fiecăreia, nu dintr-un stil vizual separat. */
   .lista {
     list-style: none;
     padding: 0;
@@ -67,11 +112,6 @@ import Sectiune from './Sectiune.astro';
     display: grid;
     gap: var(--sp-sm);
     max-width: var(--max-proza);
-  }
-
-  .lista + .lista,
-  .lista + .intrebari-intro {
-    margin-top: var(--sp-xl);
   }
 
   .lista li {
@@ -93,14 +133,6 @@ import Sectiune from './Sectiune.astro';
     color: var(--accent-decor);
     font-size: 1.15em;
     line-height: 1;
-  }
-
-  .intrebari-intro {
-    margin-top: var(--sp-md);
-    margin-bottom: var(--sp-sm);
-    max-width: var(--max-proza);
-    color: var(--text-muted);
-    line-height: var(--lh-normal);
   }
 
   /*

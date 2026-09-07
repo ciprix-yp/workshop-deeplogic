@@ -210,7 +210,7 @@ Gestionarea și procesarea informațiilor din documente
 Viteza de răspuns la solicitările de ofertă venite din partea prospecților sau clienților
 Raportările către management sau direct către tine, pe baza cărora poți lua decizii informate
 
-[ÎNTREBĂRI INTRO]
+[H2 — al doilea, la ACELAȘI nivel cu primul]
 Iar întrebările care nu-ți dau pace sunt:
 
 [ÎNTREBĂRI — listă]
@@ -245,7 +245,12 @@ au devenit o listă `<ul><li>` reală, cu marcaj **bulină** (`•`, `--accent-d
 era em-dash, nu bulină („am cerut bulets nu linii"); (2) blocul de concluzie fusese separat
 printr-o linie orizontală, cu ultima propoziție la corp mare — împreună, cele două citeau ca o
 secțiune NOUĂ („ce ți-am dat este o secțiune, nu trebuie divizată"). Textul de mai sus e UN
-bloc: h2, listă, propoziție de legătură, listă, concluzie — fără nicio ruptură vizuală.
+bloc: h2, listă, al doilea h2, listă, concluzie — fără nicio ruptură vizuală.
+
+**A treia corecție, aceeași rundă:** „Iar întrebările care nu-ți dau pace sunt:" a trecut de la
+paragraf mic, gri, la `h2` — la același nivel cu primul intro, cerut direct. Cele două perechi
+titlu+listă stau una lângă alta peste 52rem, ca secțiunea să folosească lățimea `larg` pe care
+o declara deja. Vezi `docs/DECIZII.md` D71.
 
 ---
 
