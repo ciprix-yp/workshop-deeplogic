@@ -407,16 +407,22 @@ interesează ce poate schimba ea într-o companie reală, ce merită construit �
 Astăzi pot să-mi construiesc propriile unelte digitale în jurul problemelor pe care le am.
 De aici vine Deep Logic și ordinea în care lucrăm: business → oameni → procese → impact →
 tehnologie.
-La patru ani legam mobilierul din camera părinților mei cu elastic. În mintea mea, făceam
-obiectele să comunice.
-După piatră, am descoperit ciocanul. Dar ciocanul nu îți spune ce trebuie construit. Pentru
-asta ai nevoie de primul pas.
+Cred că trăim un moment asemănător cu cel în care omenirea a descoperit prima unealtă —
+piatra cioplită, apoi ciocanul. De-acolo au apărut, una după alta, toate celelalte unelte.
+AI-ul e, pentru mine, „ciocanul” de azi: nu scopul, ci unealta cu care construim următoarele
+unelte digitale.
 ```
 
 **Notă de implementare:** layout byline — poză rotundă (112px), nume+rol în stânga, poză în
 dreapta, bio pe toată lățimea dedesubt. Poza (`public/ciprian-micu.jpg`) — verificată la
 `existsSync` la build (cale stabilă via `process.cwd()`, nu `import.meta.url` — vezi D51);
 fără fișier, secțiunea randează fără poză, fără iconiță ruptă.
+
+**Resincronizat 8 septembrie 2026 — ultimele două propoziții înlocuite.** Povestea personală
+(„la patru ani legam mobilierul... după piatră, am descoperit ciocanul") a devenit metafora
+ciocanului ca unealtă civilizațională — cerut explicit, text brut adaptat la vocea paginii
+(zero semne de exclamare) și legat de propoziția anterioară prin cuvântul „unelte digitale",
+deja prezent acolo. Vezi `docs/DECIZII.md` D80.
 
 ---
 

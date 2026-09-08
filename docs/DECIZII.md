@@ -690,3 +690,14 @@ de element întreg).
 `tests/e2e/motion.spec.ts` (toate testele rămase verzi, inclusiv cele reancorate pe
 `#facilitator`), `grep -rn` pentru `S06CeFacem`/`ceFacem`/`#ce-facem`/`gsap`/`lenis` pe tot
 `src/`+`tests/` — zero referințe funcționale rămase, doar comentarii istorice explicative.
+
+## A treia rundă din 8 septembrie 2026 — §07 Facilitator, metafora ciocanului
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D80** | Ultimele două propoziții din bio-ul lui Ciprian („La patru ani legam mobilierul... după piatră, am descoperit ciocanul") înlocuite cu metafora ciocanului ca unealtă civilizațională, legată explicit de propoziția anterioară prin cuvântul „unelte digitale" | Cerut explicit, text brut primit: „Consider ca azi ne aflăm într-un moment similar cu cel în care omenirea a inventat ciocanul! Și de acolo s-au creat restul uneltelor! Tot așa și azi, AI este «ciocanul» care ne ajută să ne creem instrumentele digitale ale viitorului" — cu instrucțiunea explicită „poți adapta textul să fie în ton cu restul și poți introduce un element de legătură". **Adaptare de ton** (skill-ul de copywriting, invocat explicit): zero semne de exclamare — verificat, tot fișierul `copy.ts` are zero „!" înainte și după —, „Cred că" în loc de „Consider că" (mai simplu, aceeași poziție subiectivă, evită să prezinte analogia ca fapt verificat). **Elementul de legătură**: propoziția dinainte se termină deja pe „unelte digitale" („Astăzi pot să-mi construiesc propriile unelte digitale... De aici vine Deep Logic...") — noul text pornește de la același cuvânt, trece prin analogia istorică (piatră → ciocan → toate uneltele care au urmat), apoi revine explicit la „unelte digitale" în ultima propoziție („AI-ul e... unealta cu care construim următoarele unelte digitale") — buclă închisă, nu salt de subiect. Tiparul „nu X, ci Y" repetă un dispozitiv retoric deja folosit peste tot pe pagină (Hero, §04 card, §05 Soluție). Ghilimelele drepte din textul brut, puse în jurul cuvântului „ciocanul", au trecut la convenția românească a paginii (deschidere jos, închidere sus) — verificat balansat de `copy-invariants.test.ts`. | `copy.ts` (`facilitator.corp`) |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare (inclusiv balansul „…" — nicio
+ghilimea neînchisă), `npm run contrast`, build, `motion.spec.ts` 10/10 pe desktop + mobil-360,
+screenshot 360 și 1280 (secțiunea nu se rupe, byline-ul cu poza rămâne neatins — schimbare
+STRICT de copy, zero atingere de componentă/CSS).

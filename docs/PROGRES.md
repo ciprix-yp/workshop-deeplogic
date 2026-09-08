@@ -239,6 +239,15 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          (`depth`, vanilla) rămân neatinse — nu depindeau de GSAP.
       3. **Teste**: cele două specifice pin/scrub-ului GSAP șterse; testele de buton flotant
          care foloseau `#ce-facem` doar ca punct de scroll, reancorate pe `#facilitator`.
+- [x] **A treia rundă din 8 septembrie 2026 — §07 Facilitator, metafora ciocanului.**
+      `docs/DECIZII.md` D80.
+      1. **Ultimele două propoziții din bio-ul lui Ciprian înlocuite**: povestea personală
+         (elasticul, ciocanul din copilărie) → metafora ciocanului ca unealtă
+         civilizațională, cu AI-ul drept „ciocanul de azi". Text brut primit, adaptat la
+         vocea stabilită a paginii (zero semne de exclamare, verificat pe tot fișierul).
+      2. **Element de legătură cerut explicit**: propoziția dinainte se termina deja pe
+         „unelte digitale" — noul text pornește de-acolo, trece prin analogia istorică, și
+         se închide tot pe „unelte digitale". Buclă, nu salt de subiect.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

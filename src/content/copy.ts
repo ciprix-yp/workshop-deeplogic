@@ -407,8 +407,18 @@ export const solutie = {
 /* ═══════════════════════════════════════════════════════════════════════════
    07 — DESPRE CIPRIAN MICU (FACILITATOR)
    Bio rescrisă după v4 — mai multă autoritate practică (15 ani, decembrie
-   2022), aceeași poveste (elasticul, ciocanul), fără blocul despre faliment
-   (D8, neschimbat).
+   2022), fără blocul despre faliment (D8, neschimbat).
+
+   Ultimele două propoziții înlocuite (2026-09-08, D80) — povestea personală
+   („la patru ani legam mobilierul cu elastic... după piatră, am descoperit
+   ciocanul") a devenit metafora ciocanului ca unealtă civilizațională:
+   descoperirea lui a dus la toate uneltele care au urmat, așa cum AI-ul e
+   azi unealta cu care construim uneltele digitale următoare. Text primit
+   brut de la Ciprian („Consider ca azi ne aflăm...!"), adaptat la vocea
+   stabilită (fără semne de exclamare — zero în tot fișierul, verificat;
+   „Cred că" în loc de „Consider că", mai simplu) și legat explicit de
+   propoziția de dinainte prin cuvântul „unelte digitale", deja prezent
+   acolo — nu un salt de subiect, o continuare.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const facilitator = {
@@ -420,8 +430,8 @@ export const facilitator = {
     'În decembrie 2022 am început să lucrez serios cu inteligența artificială dintr-un motiv simplu: aveam o afacere și căutam soluții pentru probleme reale.',
     'N-am pornit din IT. Și nu țin workshopul ca să-ți arăt cât de complicată e tehnologia. Mă interesează ce poate schimba ea într-o companie reală, ce merită construit și ce nu merită.',
     'Astăzi pot să-mi construiesc propriile unelte digitale în jurul problemelor pe care le am. De aici vine Deep Logic și ordinea în care lucrăm: business → oameni → procese → impact → tehnologie.',
-    'La patru ani legam mobilierul din camera părinților mei cu elastic. În mintea mea, făceam obiectele să comunice.',
-    'După piatră, am descoperit ciocanul. Dar ciocanul nu îți spune ce trebuie construit. Pentru asta ai nevoie de primul pas.',
+    'Cred că trăim un moment asemănător cu cel în care omenirea a descoperit prima unealtă — piatra cioplită, apoi ciocanul. De-acolo au apărut, una după alta, toate celelalte unelte.',
+    'AI-ul e, pentru mine, „ciocanul” de azi: nu scopul, ci unealta cu care construim următoarele unelte digitale.',
   ],
   foto: {
     src: '/ciprian-micu.jpg',
