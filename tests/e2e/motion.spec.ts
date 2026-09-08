@@ -8,6 +8,14 @@ import { test, expect } from '@playwright/test';
  * favoarea Lenis + GSAP ScrollTrigger — folosit STRICT în §06 CeFacem (cei
  * cinci pași ai metodologiei), singurul pin/scrub de pe pagină.
  *
+ * **§06 CeFacem retrasă (2026-09-08)** — „renunțăm la metodologie... explicăm
+ * cum ajungem la rezultat" (acoperit acum de §05 Soluție, metodă proprie de
+ * 6 pași). Era singurul consumator de Lenis+GSAP de pe pagină — retragerea
+ * ei a scos apparatus-ul întreg (`Base.astro`, `docs/DECIZII.md` D78). Cele
+ * două teste de mai jos care verificau pin/scrub-ul GSAP (`§06: pașii
+ * metodologiei...`, `cu prefers-reduced-motion, pașii...`) au fost șterse
+ * odată cu secțiunea — nu mai există ce să verifice.
+ *
  * Pivot ulterior (2026-09-02, „carduri 3D" + accente): restul paginii NU mai
  * e static prin construcție — există un reveal la scroll (fade + ridicare,
  * vanilla, fără GSAP) pe fiecare `<Sectiune>` cu `reveal` implicit `true`,
@@ -26,7 +34,9 @@ test('fără JavaScript, tot conținutul rămâne vizibil', async ({ browser }) 
 
   // `.exemple` → `.lista` (2026-09-07, a treia rundă — copy nou §02, aceeași
   // clasă refolosită pentru ambele liste ale secțiunii, vezi S02Problema.astro).
-  for (const sel of ['#problema .lista li', '#agravare p', '#rezultatul li', '#ce-facem .bloc']) {
+  // `#ce-facem .bloc` a dispărut odată cu secțiunea (2026-09-08) — înlocuit
+  // cu `#solutie .pasi li` (metoda proprie a §05, listă echivalentă).
+  for (const sel of ['#problema .lista li', '#agravare p', '#solutie .pasi li', '#rezultatul li']) {
     const el = page.locator(sel).first();
     await expect(el).toBeVisible();
     await expect(el).toHaveCSS('opacity', '1');
@@ -59,52 +69,6 @@ test('fără JavaScript, formularul rămâne un bloc normal în flux, nu un dial
   await ctx.close();
 });
 
-test('§06: pașii metodologiei se dezvăluie prin pin/scrub GSAP', async ({ page }) => {
-  await page.goto('/');
-  const ultimulPas = page.locator('#ce-facem [data-pas]').last();
-
-  // Scroll incremental de la vârful paginii — mai robust decât
-  // `scrollIntoViewIfNeeded()`, care poate sări direct peste punctul de
-  // start al pin-ului în funcție de înălțimea viewport-ului (confirmat: pe
-  // desktop, jump-ul direct ateriza deja după reveal complet). Urmărim
-  // traiectoria opacității ultimului pas de-a lungul scroll-ului: trebuie
-  // să existe un punct jos (dovadă că `gsap.set(opacity:0)` chiar rulează,
-  // nu doar există în cod) urmat de o revenire la 1 (dovadă că scrub-ul
-  // chiar avansează, nu rămâne blocat).
-  // Apropiere rapidă mai întâi (pagina stivuită pe mobil e mult mai înaltă
-  // decât pe desktop — 60 de pași de 200px nu ajungeau mereu la secțiune),
-  // apoi urmărirea fină prin scroll incremental, de-aici încolo.
-  await page.locator('#ce-facem').scrollIntoViewIfNeeded();
-  await page.mouse.wheel(0, -600); // înapoi puțin, să prindem și punctul de start al pin-ului
-
-  const opacitati: number[] = [];
-  for (let i = 0; i < 60; i++) {
-    await page.mouse.wheel(0, 200);
-    await page.waitForTimeout(30);
-    if (await ultimulPas.count()) {
-      opacitati.push(parseFloat(await ultimulPas.evaluate((n) => getComputedStyle(n).opacity)));
-    }
-  }
-
-  expect(Math.min(...opacitati), `traiectorie opacitate: ${opacitati.join(',')}`).toBeLessThan(0.5);
-  expect(opacitati.at(-1)).toBeGreaterThan(0.95);
-});
-
-test('cu prefers-reduced-motion, pașii metodologiei sunt vizibili direct, fără pin', async ({ browser }) => {
-  const ctx = await browser.newContext({ reducedMotion: 'reduce' });
-  const page = await ctx.newPage();
-  await page.goto('/');
-
-  const pasi = page.locator('#ce-facem [data-pas]');
-  await page.locator('#ce-facem').scrollIntoViewIfNeeded();
-  // Guard-ul din S06CeFacem.astro: cu mișcare redusă, `gsap.set`/pin nu
-  // rulează deloc — pașii rămân la starea lor naturală din CSS.
-  await expect(pasi.first()).toHaveCSS('opacity', '1');
-  await expect(pasi.last()).toHaveCSS('opacity', '1');
-
-  await ctx.close();
-});
-
 test('butonul CTA flotant apare după hero și dispare la formular — pe mobil', async ({ browser }) => {
   const ctx = await browser.newContext({
     viewport: { width: 360, height: 800 },
@@ -118,7 +82,7 @@ test('butonul CTA flotant apare după hero și dispare la formular — pe mobil'
   // În hero, CTA-ul e deja pe ecran — un buton flotant ar dubla același buton.
   await expect(buton).toBeHidden();
 
-  await page.locator('#ce-facem').scrollIntoViewIfNeeded();
+  await page.locator('#facilitator').scrollIntoViewIfNeeded();
   // Un mic ghiont după — de la runda cu ascunderea la inactivitate
   // (2026-09-07): fără el, fereastra în care butonul e vizibil aici e
   // îngustă (500ms–1000ms de la finalul glisării animate a
@@ -144,7 +108,7 @@ test('butonul CTA flotant apare și pe desktop (pivot 2026-09-02 — nu mai e do
   const buton = page.locator('#cta-floating');
   await expect(buton).toBeHidden();
 
-  await page.locator('#ce-facem').scrollIntoViewIfNeeded();
+  await page.locator('#facilitator').scrollIntoViewIfNeeded();
   // Vezi nota din testul de mai sus (mobil): ghiont mic, ca fereastra de
   // vizibilitate să nu fie prea îngustă pentru polling-ul lui `expect`.
   await page.mouse.wheel(0, 30);
@@ -173,11 +137,14 @@ test('butonul CTA flotant dispare la 1s de la oprirea scroll-ului și reapare la
   // CSS-ului `scroll-behavior: smooth` din tokens.css, care s-ar aplica
   // altfel unui `scrollTo()` programatic), la ~150ms distanță unul de altul
   // — simulează un scroll CONTINUU de aproape o secundă, nu un singur salt
-  // izolat. Nu rotița: un `wheel()` e amortizat de Lenis (`lerp: 0.1`,
-  // implicit) — timing-ul lui variază cu istoricul de input, nedeterminist
-  // pentru un test. Un singur salt izolat ar reproduce exact „apare la
-  // 500ms, dispare la 1000ms de la ACEEAȘI mișcare" — corect pentru un gest
-  // scurt, dar nu ce verificăm aici: că rămâne vizibil CÂT TIMP se scrollează.
+  // izolat. Un singur salt izolat ar reproduce exact „apare la 500ms,
+  // dispare la 1000ms de la ACEEAȘI mișcare" — corect pentru un gest scurt,
+  // dar nu ce verificăm aici: că rămâne vizibil CÂT TIMP se scrollează.
+  // (Notă istorică: până la retragerea Lenis, 2026-09-08, un `wheel()` real
+  // era în plus amortizat de `lerp: 0.1`, cu timing nedeterminist pentru un
+  // test — motiv în plus, atunci, pentru salturi programatice. Fără Lenis,
+  // motivul rămâne valabil doar pentru primul: simularea unui scroll
+  // continuu, nu instantaneul unui singur gest.)
   for (let tinta = 500; tinta <= 3000; tinta += 500) {
     await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), tinta);
     await page.waitForTimeout(150);

@@ -226,6 +226,19 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
       4. **Numerotare zero-padded în date** (`'01'`…`'06'`), ca la `ceFacem.blocuri` — nu
          `counter()` CSS, care ar fi dat „1", nu „01". Fix-ul de contrast preexistent pe
          marcaj (podea 24px) păstrat, nu reinventat.
+- [x] **A doua rundă din 8 septembrie 2026 — §06 CeFacem retrasă, Lenis+GSAP eliminate.**
+      `docs/DECIZII.md` D78–D79.
+      1. **Pagina revine la exact 10 secțiuni** (Hero → Trust bar → Problemă → Agravare →
+         Soluție → Facilitator → Cui i se adresează/nu → Ce rezultat promitem → FAQ), fără
+         cea de-a 11-a ținută deliberat separat până acum. Cerut explicit: §05 Soluție
+         acoperă deja metoda, cu propriile 6 pași.
+      2. **Cascadă tehnică**: GSAP trăia STRICT în §06, singurul lui consumator — retragerea
+         secțiunii a lăsat orfan apparatus-ul Lenis+GSAP (~49KB gzip JS). Eliminat, nu lăsat
+         încărcat degeaba: `npm uninstall gsap lenis`, propul `motion` scos din
+         `Base.astro`, `S06CeFacem.astro` șters. Reveal-ul la scroll + tilt-ul pe carduri
+         (`depth`, vanilla) rămân neatinse — nu depindeau de GSAP.
+      3. **Teste**: cele două specifice pin/scrub-ului GSAP șterse; testele de buton flotant
+         care foloseau `#ce-facem` doar ca punct de scroll, reancorate pe `#facilitator`.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

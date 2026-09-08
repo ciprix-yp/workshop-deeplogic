@@ -195,39 +195,51 @@ mijloc") — două corecții punctuale pe bilet, plus butonul flotant:**
   un buton flotant (`CtaFloating.astro`, cerut explicit 2026-09-02) mereu vizibil după
   ce iese hero-ul din cadru, pe toate viewport-urile. Fără CTA secundar, fără „află mai multe".
 - **Problema și „Ce rezultat promitem" nu se taie la mobil.** Sunt cele mai importante
-  două secțiuni ale structurii lean din 2026-09-02 (10 secțiuni: Hero → Trust bar →
-  Problemă → Agravare → Soluție → Facilitator → Cui i se adresează/nu →
-  Ce rezultat promitem → FAQ, plus metodologia cu pin GSAP, păstrată separat).
-  Dacă tai ceva, nu de-acolo.
+  două secțiuni ale structurii lean din 2026-09-02 (10 secțiuni, mai jos). Dacă tai ceva,
+  nu de-acolo.
+- **Exact 10 secțiuni, nici una în plus.** Hero → Trust bar → Problemă → Agravare →
+  Soluție → Facilitator → Cui i se adresează → Cui nu i se adresează →
+  Ce rezultat promitem → FAQ. Până pe 8 septembrie 2026 mai exista o a 11-a, ținută
+  deliberat separat de numărătoare — „Cei cinci pași ai metodologiei" (`S06CeFacem.astro`,
+  singurul pin/scrub GSAP de pe pagină). **Retrasă**, explicit: „renunțăm la metodologie...
+  pentru că explicăm cum ajungem la rezultat" — §05 Soluție capătase între timp propria
+  metodă (6 pași, titlu+descriere), scrisă chiar în ziua precedentă; o secțiune separată
+  care repeta aceeași idee, cu alți 5 pași, devenise dublură, nu întărire. Vezi §Motion
+  mai jos pentru ce a scos retragerea odată cu ea.
 - **Fundal curat.** Fără imagini generice cu roboți, creiere sau rețele neuronale.
+- **Fără parallax pe fundal, cursor custom, particule, WebGL, React/Vue.** Regulă evergreen,
+  independentă de ce bibliotecă de motion rulează la un moment dat (inclusiv acum, când nu
+  rulează niciuna — vezi §Motion) — Astro randează totul nativ, ca `<script>` de modul, fără
+  niciun framework UI.
 - **Tot copy-ul trăiește în [`src/content/copy.ts`](src/content/copy.ts).** Un singur loc,
   tipat. Nicio secțiune nu-și scrie textul inline.
 
-**Motion — pivot de arhitectură (2026-09-01, Ciprian, împotriva recomandării inițiale):**
-motorul de scroll custom (vanilla TS, opt scene coregrafiate individual, 0KB dependințe) a
-fost retras în favoarea **Lenis + GSAP ScrollTrigger**. Reversează `docs/DECIZII.md` D29
-(„zero dependințe noi... ~40KB gzip peste o pagină al cărei JS total e azi ~6KB") — decizia
-veche rămâne corectă ca istoric, nu ca regulă curentă. Cost măsurat după swap: **~49KB gzip
-JS total pe pagină** (Lenis + GSAP core + ScrollTrigger + scripturile proprii). Regulile care
-rămân, neschimbate de pivot:
+**Motion — pivot de arhitectură (2026-09-01, Ciprian, împotriva recomandării inițiale),
+REVERSAT (2026-09-08):** motorul de scroll custom (vanilla TS, opt scene coregrafiate
+individual, 0KB dependințe) fusese retras în favoarea **Lenis + GSAP ScrollTrigger** —
+reversând atunci `docs/DECIZII.md` D29 („zero dependințe noi... ~40KB gzip peste o pagină al
+cărei JS total e azi ~6KB"). Cost măsurat după acel swap: **~49KB gzip JS total pe pagină**
+(Lenis + GSAP core + ScrollTrigger + scripturile proprii), justificat STRICT de pin/scrub-ul
+din `S06CeFacem.astro` (cei cinci pași ai metodologiei) — singurul consumator al lor pe toată
+pagina, scris explicit așa în regulile de-atunci („GSAP trăiește STRICT în S06CeFacem, nicio
+altă secțiune").
 
-- **GSAP ScrollTrigger trăiește STRICT în `S06CeFacem.astro`** (pin + scrub pe cei cinci pași
-  ai metodologiei) — nicio altă secțiune. Rămâne singurul pin/scrub de pe pagină, chiar și
-  după pivotul de mai jos.
-- **Lenis global, o singură dată, în `Base.astro`** (fără `anchors: true` — Lenis interceptează
-  și clickurile pe CTA-uri fără să verifice `event.defaultPrevented`, dublând scroll-ul peste
-  interceptarea proprie din `DialogInscriere.astro`; vezi commit-ul care a scos opțiunea).
-- **Guard obligatoriu `prefers-reduced-motion` pe pin/scrub-ul din §06** (GSAP nu îl respectă
-  singur, spre deosebire de Lenis). Cu mișcare redusă, cei cinci pași rămân direct vizibili.
-- **Fără parallax pe fundal, cursor custom, particule, WebGL, React/Vue.** Astro rulează
-  Lenis/GSAP nativ, ca `<script>` de modul — n-a fost nevoie de framework UI ca să le pornească.
+**§06 CeFacem a fost retrasă (2026-09-08, vezi §2 mai sus)** — și, cu ea, a dispărut și
+singurul motiv pentru Lenis+GSAP. Pachetele au ieșit din `package.json`
+(`npm uninstall gsap lenis`), scriptul de modul din `Base.astro` (fostul prop `motion`) a
+fost șters, nu doar dezactivat. Pagina revine, de fapt, la poziția lui D29 — nu prin
+reversare manuală a deciziei, ci pentru că motivul care o depășise a dispărut. **Dacă apare
+vreodată un motiv nou** pentru scroll cu inerție sau pin/scrub, decizia se ia din nou,
+informat, cu propriul cost măsurat — nu se reintroduce tăcut.
 
-**Reveal la scroll + tilt 3D — pivot ulterior (2026-09-02), reversează parțial regula de mai
-sus:** restul paginii NU mai e static prin construcție. Fiecare paragraf/listă/card care poartă
+**Reveal la scroll + tilt 3D — pivot ulterior (2026-09-02), independent de motorul Lenis+GSAP
+de mai sus (și, la retragerea lui, 2026-09-08, singurul mecanism de mișcare rămas pe
+pagină):** pagina NU e static prin construcție. Fiecare paragraf/listă/card care poartă
 `data-reveal` (pus explicit, per componentă — vezi `tokens.css` `[data-reveal]`) fade+ridică la
 intrarea în viewport; cardurile cu profunzime (`.card-depth`/`.card-3d`, `data-tilt`) înclină la
-cursor pe pointer fin. Vanilla, fără GSAP (`Base.astro`, prop `depth`) — mecanismul e simplu
-(IntersectionObserver + tranziție CSS), n-are nevoie de motorul de scroll. Reguli:
+cursor pe pointer fin. Vanilla, fără nicio bibliotecă (`Base.astro`, prop `depth`) — mecanismul
+e simplu (IntersectionObserver + tranziție CSS), n-a avut niciodată nevoie de un motor de
+scroll dedicat. Reguli:
 
 - **`data-reveal` la nivel de element, nu de secțiune întreagă.** Un fade pe tot blocul unei
   secțiuni bogate (Soluție, Rezultatul) își pierde relevanța — secțiunea e deja pe jumătate

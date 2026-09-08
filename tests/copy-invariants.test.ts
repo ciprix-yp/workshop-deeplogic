@@ -128,7 +128,7 @@ describe('legislația, dacă apare, apare o singură dată, ca zgomot — niciod
     // oriunde altundeva decât §02, testul pică.
     const restul = [
       copy.hero, copy.trustBar, copy.agravare, copy.rezultatul, copy.pentruCine,
-      copy.ceFacem, copy.solutie, copy.facilitator, copy.detalii,
+      copy.solutie, copy.facilitator, copy.detalii,
       copy.faq, copy.ctaFinal, copy.stari, copy.meta,
     ];
     for (const sectiune of restul) {
@@ -345,7 +345,7 @@ describe('ghilimele românești', () => {
     // tipografică, dar au aceleași caractere, deci filtrăm pe copy-ul de pagină.
     const paginaText = [
       copy.hero, copy.trustBar, copy.problema, copy.agravare, copy.solutie,
-      copy.ceFacem, copy.facilitator, copy.pentruCine, copy.rezultatul,
+      copy.facilitator, copy.pentruCine, copy.rezultatul,
       copy.detalii, copy.faq, copy.ctaFinal, copy.stari,
     ]
       .map((s) => JSON.stringify(s))

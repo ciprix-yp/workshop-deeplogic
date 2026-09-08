@@ -24,8 +24,19 @@ import { CTA } from '../content/copy';
   E un `<a href="#inscriere">` normal — interceptat de ascultătorul global
   din DialogInscriere.astro (`a[href="#inscriere"]`), la fel ca orice alt
   CTA de pe pagină. Niciun cod separat de deschidere aici.
+
+  Formă schimbată din pastilă-în-colț în bară pe lățime plină, jos (audit de
+  design, 2026-09-07): scanare vizuală programatică la 360px a găsit pastila
+  (165×72px, colț dreapta-jos) acoperind text îngroșat intenționat, la
+  mijloc de propoziție, în ~40% din pozițiile de scroll unde era eligibilă
+  să apară (§Agravare, §Facilitator, §FAQ) — rootMargin-ul pozitiv de mai
+  jos apără doar de suprapunerea cu alt `.cta`, proza n-a fost niciodată în
+  ecuație. O bară pe lățime plină nu reduce ce se acoperă pe orizontală, dar
+  mută ocluzia într-o zonă FIXĂ și previzibilă (ultimii ~60px de jos), la
+  fel cum BaraScarcity ocupă deja o zonă fixă sus — mai bine decât să taie
+  aleator orice paragraf ajunge sub colțul din dreapta la momentul potrivit.
 */}
-<a href={CTA.ancora} id="cta-floating" class="floating" hidden aria-label={CTA.text}>
+<a href={CTA.ancora} id="cta-floating" class="floating" hidden aria-label={CTA.text} aria-haspopup="dialog">
   <span class="text">{CTA.text}</span>
   <span class="locuri" data-locuri-cta hidden></span>
 </a>
@@ -128,15 +139,15 @@ import { CTA } from '../content/copy';
 <style>
   .floating {
     position: fixed;
-    right: 20px;
-    bottom: 20px;
+    inset-inline: 0;
+    bottom: 0;
     z-index: 45;
-    display: inline-flex;
-    flex-direction: column;
+    display: flex;
     align-items: center;
-    gap: 2px;
-    padding: 13px 24px;
-    border-radius: var(--radius-cta);
+    justify-content: center;
+    gap: var(--sp-sm);
+    padding: 14px var(--lat);
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
     /*
      * Sticlă mată — cerută explicit (2026-09-02): lime translucid + blur,
      * nu opac plat. Opacitate ținută sus (0.88) deliberat: contrastul de
@@ -149,13 +160,13 @@ import { CTA } from '../content/copy';
     background: rgba(132, 204, 22, 0.88);
     backdrop-filter: blur(20px) saturate(1.6);
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
     color: var(--pe-lime);
     text-decoration: none;
     font-family: var(--font-titlu);
-    box-shadow: 0 10px 26px -6px rgba(132, 204, 22, 0.5), 0 2px 6px rgba(42, 52, 57, 0.16);
+    box-shadow: 0 -10px 26px -6px rgba(132, 204, 22, 0.5), 0 -2px 6px rgba(42, 52, 57, 0.16);
     opacity: 0;
-    transform: translateY(16px) scale(0.96);
+    transform: translateY(100%);
     transition:
       opacity 0.25s var(--ease-out),
       transform 0.25s var(--ease-out),
@@ -170,7 +181,6 @@ import { CTA } from '../content/copy';
   @media (hover: hover) and (pointer: fine) {
     .floating:hover {
       background: rgba(107, 168, 18, 0.9);
-      transform: translateY(-2px);
     }
   }
 
@@ -179,7 +189,7 @@ import { CTA } from '../content/copy';
   }
 
   .floating:active {
-    transform: scale(0.97);
+    transform: scale(0.99);
   }
 
   .text {
@@ -192,15 +202,6 @@ import { CTA } from '../content/copy';
     font-size: 0.7rem;
     font-weight: 500;
     opacity: 0.85;
-  }
-
-  /* Safe-area pe iPhone — butonul nu trebuie să cadă peste bara de gesturi. */
-  @media (max-width: 26rem) {
-    .floating {
-      right: 14px;
-      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-      padding: 12px 20px;
-    }
   }
 
   /* Fallback fără backdrop-filter (Firefox < 103, WebView Android vechi) —

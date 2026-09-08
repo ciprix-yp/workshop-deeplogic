@@ -16,8 +16,6 @@ interface Props {
    * pollingul de 20s continuă cât timp tab-ul stă deschis degeaba.
    */
   scarcity?: boolean;
-  /** Lenis + GSAP ScrollTrigger — doar unde chiar există ceva de animat (§06, index.astro). */
-  motion?: boolean;
   /**
    * Reveal la scroll (`[data-reveal]`, vezi Sectiune.astro) + înclinare la
    * cursor pe carduri (`[data-tilt]`) — pivot 2026-09-02, linia vizuală
@@ -31,7 +29,6 @@ const {
   descriere = meta.descriere,
   noindex = false,
   scarcity = false,
-  motion = false,
   depth = false,
 } = Astro.props;
 
@@ -142,69 +139,24 @@ const jsonLd = {
     <slot />
 
     {/*
-      Lenis + GSAP — doar pe pagina de landing (`motion` prop, vezi
-      index.astro). Pivot de arhitectură deliberat (2026-09-01, Ciprian):
-      motorul de scroll custom (MotionEngine.astro + docs/design/storyboard.json,
-      opt de scene coregrafiate individual) e retras în favoarea Lenis
-      (scroll cu inerție) + GSAP ScrollTrigger, folosit DOAR în §06 CeFacem
-      (cei cinci pași ai metodologiei — vezi scriptul din S06CeFacem.astro).
-      Restul paginii rămâne static, fără fade-up, fără tilt pe carduri —
-      cost acceptat: JS real (Lenis + GSAP), nu mai 0KB, în schimbul
-      scroll-ului cu inerție și al unui pin/scrub matur pe singura secțiune
-      care încă animă la scroll.
+      Reveal la scroll + tilt pe carduri (`depth` prop) — vanilla, fără nicio
+      bibliotecă de motion: efectul e un simplu fade+ridicare la intrarea în
+      viewport și o înclinare 3D la cursor, niciunul n-are nevoie de un
+      motor de scroll dedicat.
 
-      Găsit la audit (impeccable, 2026-09-01): înainte se monta necondiționat
-      în Base.astro, deci `/checkin`, `/multumesc`, `/raspuns` etc. plăteau
-      costul bundle-ului (Lenis+GSAP+ScrollTrigger) și rulau un RAF loop
-      permanent fără niciun pin/scrub de sincronizat — zero beneficiu vizual.
-
-      Script de MODUL (nu `is:inline`): are nevoie de `import`-uri npm, pe
-      care bundler-ul Vite le rezolvă doar pentru scripturi procesate.
-    */}
-    {motion && (
-    <script>
-      import Lenis from 'lenis';
-      import { gsap } from 'gsap';
-      import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-      gsap.registerPlugin(ScrollTrigger);
-
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      const lenis = new Lenis({
-        autoRaf: false,
-        // Fix (audit impeccable, 2026-09-01): `anchors: true` făcea Lenis să
-        // intercepteze ȘI clickurile pe CTA-uri (`href="#inscriere"`), peste
-        // interceptarea proprie din DialogInscriere.astro — care cheamă deja
-        // `preventDefault()` + `showModal()`. Lenis nu verifică
-        // `event.defaultPrevented` (verificat direct în sursă), deci ambele
-        // rulau: dialogul se deschidea ȘI pagina săgeta spre `#inscriere`
-        // (acum un `<dialog>` închis, fără poziție reală de scroll) — un
-        // scroll vizibil, nedorit, la fiecare click de CTA. Singura ancoră
-        // reală rămasă e `#continut` (skip-link), pentru care un salt nativ,
-        // instant, e oricum comportamentul corect de accesibilitate — nu
-        // unul animat.
-        // Respectă mișcarea redusă la firul ei, nu doar la salturi
-        // programatice: `respectReducedMotion` (implicit `true` în Lenis)
-        // afectează DOAR `scrollTo()`, nu scroll-ul obișnuit de la rotița
-        // mouse-ului/gest tactil (verificat în sursă) — fără asta, cineva
-        // cu „prefers-reduced-motion" tot primea scroll cu inerție.
-        smoothWheel: !reduceMotion,
-        syncTouch: false,
-      });
-
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => lenis.raf(time * 1000));
-      gsap.ticker.lagSmoothing(0);
-    </script>
-    )}
-
-    {/*
-      Reveal la scroll + tilt pe carduri (`depth` prop) — vanilla, fără GSAP:
-      efectul e un simplu fade+ridicare la intrarea în viewport și o
-      înclinare 3D la cursor, niciunul n-are nevoie de motorul de scroll —
-      adăugarea lui GSAP peste asta ar fi cost fără beneficiu (regula rămâne
-      neschimbată: GSAP trăiește STRICT în §06CeFacem).
+      **Lenis + GSAP ScrollTrigger — retrase (2026-09-08, D78).** Existau
+      STRICT pentru pin/scrub-ul din §06 CeFacem (cei cinci pași ai
+      metodologiei, singurul consumator de pe toată pagina — motiv pentru
+      care D29 fusese reversat la introducerea lor, CLAUDE.md §2). Secțiunea
+      a fost retrasă („renunțăm la metodologie... explicăm cum ajungem la
+      rezultat" — acoperit acum de §05 Soluție, metodă proprie de 6 pași),
+      deci apparatus-ul Lenis+GSAP (~49KB gzip JS) a rămas fără niciun
+      consumator — eliminat odată cu ea, nu lăsat încărcat degeaba. Pachetele
+      `gsap`/`lenis` au ieșit din `package.json`; pagina revine, de fapt, la
+      poziția lui D29 („zero dependințe noi de motion"), nu prin reversare
+      manuală a deciziei, ci pentru că motivul care o depășise a dispărut.
+      Dacă apare vreodată un motiv nou pentru scroll cu inerție sau
+      pin/scrub, decizia se ia din nou, informat — nu se reintroduce tăcut.
     */}
     {depth && (
     <script>

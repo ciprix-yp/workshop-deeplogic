@@ -28,13 +28,19 @@
  *   — „Detalii practice" (tabel) — absorbit: adresa completă trăiește acum
  *     în `detalii` (folosit de TrustBar), fără componentă proprie.
  *
- * Ce a rămas, deliberat, deși nu apare explicit în cele 10 puncte ale lui
- * Ciprian: `ceFacem` (cei cinci pași ai metodologiei, pin/scrub GSAP) —
- * confirmat explicit prin AskUserQuestion („păstrez secțiunea GSAP separat")
- * — e singurul moment de mișcare semnificativă de pe pagină și costul GSAP
- * (~49KB gzip) fusese deja aprobat special pentru el (pivotul Lenis/GSAP,
- * 2026-09-01). Poziționat după Soluție, înainte de Facilitator: Soluția
- * explică mecanismul conceptual, CeFacem îl arată ca pași concreți.
+ * A rămas o vreme, deliberat, deși nu apărea explicit în cele 10 puncte ale
+ * lui Ciprian: `ceFacem` (cei cinci pași ai metodologiei, pin/scrub GSAP) —
+ * confirmat explicit prin AskUserQuestion („păstrez secțiunea GSAP separat"),
+ * poziționat după Soluție, înainte de Facilitator (Soluția explica mecanismul
+ * conceptual, CeFacem îl arăta ca pași concreți).
+ *
+ * **Retrasă (2026-09-08), explicit:** „renunțăm la metodologie... explicăm
+ * cum ajungem la rezultat" — §05 Soluție a căpătat între timp propria metodă
+ * (6 pași, titlu+descriere, D73–D75), scrisă chiar în ziua precedentă. O
+ * secțiune separată care repeta aceeași idee, cu alți 5 pași, devenise
+ * dublură, nu întărire. Retragerea a scos și SINGURUL consumator al Lenis+
+ * GSAP de pe pagină (~49KB gzip) — apparatus-ul a ieșit odată cu ea, vezi
+ * `Base.astro` și `docs/DECIZII.md` D78.
  *
  * Istoricul complet al deciziilor de narativă (H1, mecanismul owner→echipă→
  * date, etc.) rămâne în `docs/DECIZII.md` (D31–D36, pivotul de narativă din
@@ -385,52 +391,18 @@ export const solutie = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   06 — CEI CINCI PAȘI AI METODOLOGIEI
-   Păstrată explicit (AskUserQuestion, 2026-09-02) deși nu apare ca secțiune
-   separată în v4 — singurul moment de pin/scrub GSAP de pe pagină, cost deja
-   aprobat special pentru el. Neschimbată de pivotul de structură, doar
-   redenumirea „02 REALITATEA ECHIPEI" → „WORKSHOP CU ECHIPA" rămâne
-   (pivot de narativă, D34).
+   06 — CEI CINCI PAȘI AI METODOLOGIEI — RETRASĂ (2026-09-08)
+   Era păstrată explicit (AskUserQuestion, 2026-09-02) deși nu apărea ca
+   secțiune separată în v4 — singurul moment de pin/scrub GSAP de pe pagină,
+   cost aprobat special pentru el (D38). Retrasă acum, explicit: „renunțăm la
+   metodologie... pentru că explicăm cum ajungem la rezultat" — §05 Soluție
+   acoperă deja același teritoriu, cu metodă proprie (6 pași, titlu+
+   descriere, D73–D75, scrisă chiar în ziua precedentă). O secțiune separată
+   care repeta aceeași idee, cu alți 5 pași, era dublură, nu întărire.
+   Retragerea a scos și SINGURUL consumator al Lenis+GSAP de pe pagină —
+   vezi `Base.astro` și `docs/DECIZII.md` D78. `S06CeFacem.astro` a fost
+   șters, nu doar dezactivat.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-export const ceFacem = {
-  h2: 'Cei cinci pași ai metodologiei Deep Logic',
-  blocuri: [
-    {
-      numar: '01',
-      titlu: 'PRIMUL PAS',
-      corp: [
-        'Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și construim ipoteze inițiale de lucru.',
-      ],
-    },
-    {
-      numar: '02',
-      titlu: 'WORKSHOP CU ECHIPA',
-      corp: [
-        'Descoperim nevoile oamenilor care lucrează efectiv în procese, analizăm blocajele și verificăm ipoteza ta în realitatea de zi cu zi.',
-      ],
-    },
-    {
-      numar: '03',
-      titlu: 'PROCESE + IMPACT + ROI',
-      corp: [
-        'Suprapunem perspectiva managementului cu realitatea echipei, procesele și datele disponibile.',
-      ],
-    },
-    {
-      numar: '04',
-      titlu: 'DECIZIA',
-      corp: ['Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.'],
-    },
-    {
-      numar: '05',
-      titlu: 'IMPLEMENTAREA',
-      corp: ['Construim doar acolo unde există suficiente motive să o facem.'],
-    },
-  ],
-  notaFormat: ['Nu pornim de la „Ce putem face cu AI?”'],
-  final: 'Pornim de la: „Ce merită să rezolvăm?”',
-} as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    07 — DESPRE CIPRIAN MICU (FACILITATOR)

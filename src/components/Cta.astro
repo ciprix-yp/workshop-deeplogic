@@ -19,7 +19,7 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
 ---
 
 <div class:list={['invelis', spatiuSus && 'spatiu-sus']}>
-  <a href={CTA.ancora} class:list={['cta', marime]}>
+  <a href={CTA.ancora} class:list={['cta', marime]} aria-haspopup="dialog">
     <span class="cta-text">{CTA.text}</span>
     {/*
       Numărul real de locuri, ÎN interiorul butonului (2026-09-02, a patra
@@ -78,9 +78,14 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
   }
 
   /* Doar pe pointer fin (mouse real) — pe touch, „hover" rămâne lipit după
-     atingere și butonul ar arăta permanent ridicat. */
+     atingere, deci și schimbarea de culoare intră în gate-ul ăsta (fix
+     2026-09-07: `background` era pe o regulă separată, neprotejată — pe
+     touch rămânea `--lime-hover` vizibil pe buton exact cât se închidea
+     modalul deschis de acest CTA). `:focus-visible` rămâne AFARĂ, separat
+     mai jos — altfel se pierde feedback-ul de tastatură. */
   @media (hover: hover) and (pointer: fine) {
     .cta:hover {
+      background: var(--lime-hover);
       transform: translateY(-1px);
       box-shadow: 0 8px 20px -6px rgba(132, 204, 22, 0.55);
     }
@@ -99,7 +104,6 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
     }
   }
 
-  .cta:hover,
   .cta:focus-visible {
     background: var(--lime-hover);
   }

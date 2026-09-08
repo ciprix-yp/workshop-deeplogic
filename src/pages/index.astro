@@ -5,7 +5,6 @@ import TrustBar from '../components/TrustBar.astro';
 import S02Problema from '../components/S02Problema.astro';
 import Agravare from '../components/Agravare.astro';
 import Solutie from '../components/Solutie.astro';
-import S06CeFacem from '../components/S06CeFacem.astro';
 import S11Facilitator from '../components/S11Facilitator.astro';
 import S04PentruCine from '../components/S04PentruCine.astro';
 import S03Rezultatul from '../components/S03Rezultatul.astro';
@@ -20,17 +19,30 @@ import DialogInscriere from '../components/DialogInscriere.astro';
  * către o rută separată, randată la cerere. Pagina se servește de pe CDN-ul
  * Cloudflare, ceea ce contează pe 4G, în browserul in-app din WhatsApp.
  *
- * Ordinea (pivot de structură, 2026-09-02): Hero → Trust bar → Problemă →
- * Agravare → Soluție → [metodologia, păstrată — vezi comentariul din
- * copy.ts] → Facilitator → Cui i se adresează/nu → Ce rezultat promitem →
- * FAQ → CTA final. Numele fișierelor de componente (`S0X...`) sunt
- * parțial istorice — ordinea reală e cea din markup-ul de mai jos, nu
- * numărul din nume (același precedent ca la pivotul de narativă, aceeași zi).
+ * Ordinea (pivot de structură, 2026-09-02, revizuită 2026-09-08 — vezi mai
+ * jos): Hero → Trust bar → Problemă → Agravare → Soluție → Facilitator →
+ * Cui i se adresează/nu → Ce rezultat promitem → FAQ → CTA final. Exact
+ * cele 10 secțiuni din framework-ul anunțat, fără nicio secțiune în plus.
+ * Numele fișierelor de componente (`S0X...`) sunt parțial istorice —
+ * ordinea reală e cea din markup-ul de mai jos, nu numărul din nume
+ * (același precedent ca la pivotul de narativă, aceeași zi).
+ *
+ * **Metodologia cu 5 pași (S06CeFacem.astro, pin/scrub GSAP) — RETRASĂ
+ * (2026-09-08).** Ciprian, explicit: „renunțăm la metodologie... pentru că
+ * explicăm cum ajungem la rezultat" — §05 Soluție acoperă acum același
+ * teritoriu, cu METODĂ PROPRIE (6 pași, titlu+descriere, D73–D75), scris
+ * chiar în ziua precedentă. O secțiune separată care repeta aceeași idee,
+ * cu alți 5 pași, ar fi fost dublură, nu întărire. Reversează D38 (decizia
+ * de a păstra metodologia separat de cele 10 — confirmată atunci explicit
+ * prin `AskUserQuestion`, corectă la momentul ei, depășită acum de conținut).
+ *
+ * Reversarea a scos și SINGURUL consumator al Lenis+GSAP de pe pagină —
+ * vezi `Base.astro`, prop `motion` eliminat, și `docs/DECIZII.md` D78.
  */
 export const prerender = true;
 ---
 
-<Base scarcity motion depth>
+<Base scarcity depth>
   <S01Hero />
   <TrustBar />
 
@@ -38,7 +50,6 @@ export const prerender = true;
     <S02Problema />
     <Agravare />
     <Solutie />
-    <S06CeFacem />
     <S11Facilitator />
     <S04PentruCine />
     <S03Rezultatul />

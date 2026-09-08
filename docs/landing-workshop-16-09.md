@@ -367,36 +367,23 @@ afterlife (aceeași bulină ca la corecția din §02), nu liniuțe. Vezi `docs/D
 
 ---
 
-## *(metodologia cu cinci pași — păstrată separat, pin/scrub GSAP)*
+## *(metodologia cu cinci pași — RETRASĂ 2026-09-08)*
 
-```COPY
-[H2]
-Cei cinci pași ai metodologiei Deep Logic
+Exista aici, până pe 8 septembrie 2026, un al 11-lea bloc — „Cei cinci pași ai metodologiei
+Deep Logic" (PRIMUL PAS / WORKSHOP CU ECHIPA / PROCESE + IMPACT + ROI / DECIZIA /
+IMPLEMENTAREA), păstrat deliberat în afara celor 10 secțiuni cerute explicit de Ciprian —
+confirmat printr-o decizie separată (`AskUserQuestion`, D38), singurul pin/scrub GSAP de pe
+pagină, poziționat după Soluție, înainte de Facilitator.
 
-[01] PRIMUL PAS — Clarificăm nevoia pe care tu, ca owner sau decident, vrei să o explorezi și
-construim ipoteze inițiale de lucru.
+**Retras, explicit:** „renunțăm la metodologie, secțiunea mai jos, pentru că explicăm cum
+ajungem la rezultat" — §05 Soluție a căpătat între timp propria metodă (6 pași, titlu+
+descriere, D73–D75), scrisă chiar în ziua precedentă. O secțiune separată care repeta aceeași
+idee, cu alți 5 pași diferiți, era dublură, nu întărire — reversează D38. Pagina revine astfel
+la exact cele 10 secțiuni din framework-ul anunțat inițial, fără nicio secțiune în plus.
 
-[02] WORKSHOP CU ECHIPA — Descoperim nevoile oamenilor care lucrează efectiv în procese,
-analizăm blocajele și verificăm ipoteza ta în realitatea de zi cu zi.
-
-[03] PROCESE + IMPACT + ROI — Suprapunem perspectiva managementului cu realitatea echipei,
-procesele și datele disponibile.
-
-[04] DECIZIA — Stabilim ce merită făcut, ce nu merită și ce trebuie prioritizat.
-
-[05] IMPLEMENTAREA — Construim doar acolo unde există suficiente motive să o facem.
-
-[NOTĂ FORMAT]
-Nu pornim de la „Ce putem face cu AI?"
-
-[FINAL]
-Pornim de la: „Ce merită să rezolvăm?"
-```
-
-**Notă de implementare:** nu apare ca secțiune de sine stătătoare în cadrul celor 10 cerute
-explicit de Ciprian — păstrată printr-o decizie separată, confirmată prin `AskUserQuestion`
-(D38): singurul pin/scrub GSAP de pe pagină, cost deja aprobat special pentru el. Poziționată
-după Soluție, înainte de Facilitator.
+Retragerea a scos și singurul consumator al Lenis+GSAP de pe pagină (~49KB gzip JS) —
+apparatus-ul a ieșit odată cu ea (`npm uninstall gsap lenis`, `S06CeFacem.astro` șters). Vezi
+`docs/DECIZII.md` D78–D79 pentru cascada completă.
 
 ---
 

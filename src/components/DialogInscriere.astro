@@ -57,7 +57,21 @@ const stariClient = JSON.stringify({
     </svg>
   </button>
 
-  <div class="continut">
+  {/*
+    `data-lenis-prevent`: Lenis interceptează `wheel` GLOBAL, pe `window`
+    (Base.astro), și cheamă `preventDefault()` — inclusiv când evenimentul
+    pornește dintr-un container cu scroll intern propriu, dacă acel container
+    nu poartă atributul ăsta (`allowNestedScroll` e `false` implicit, verificat
+    în `node_modules/lenis/dist/lenis.mjs`). Fără el, rotița/trackpad-ul pe
+    desktop, cu dialogul deschis, mișcă pagina din spate — formularul (mai
+    înalt decât `max-height`, deci scrolabil pe cont propriu) rămâne blocat.
+    A scăpat de toate plasele de siguranță existente: pe touch `syncTouch:
+    false` trimite evenimentul pe ramura nativă (neatinsă), la fel cu
+    `prefers-reduced-motion` (`smoothWheel: false`), iar testele Playwright
+    scrolează programatic, niciodată cu `wheel` real. NU se rezolvă cu
+    `lenis.stop()` la deschidere — tot cheamă `preventDefault()` cât e oprit.
+  */}
+  <div class="continut" data-lenis-prevent>
     <h2 id="dialog-titlu">{inscriere.h2}</h2>
 
     <div data-pas="formular">
@@ -704,6 +718,15 @@ const stariClient = JSON.stringify({
      stătător între blocuri. */
   .camp-text-companion {
     margin-top: calc(-1 * var(--sp-2xs));
+    /* Fix (audit design, 2026-09-07): aceeași idee ca `#camp-sursa-detaliu`
+       mai jos — `wrap.hidden = false` sărea instant la vizibil. Era singurul
+       din cele două câmpuri condiționate ale formularului fără tranziție. */
+    opacity: 1;
+    transition: opacity 200ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .optiuni {
@@ -825,7 +848,15 @@ const stariClient = JSON.stringify({
     }
   }
 
-  .cta-submit:hover:not(:disabled),
+  /* Aceeași capcană ca `.cta` din Cta.astro (fix 2026-09-07): fără gate, pe
+     touch `background` rămânea lipit după tap. `:focus-visible` rămâne
+     afară, neconditionat. */
+  @media (hover: hover) and (pointer: fine) {
+    .cta-submit:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+  }
+
   .cta-submit:focus-visible:not(:disabled) {
     background: var(--accent-hover);
   }
