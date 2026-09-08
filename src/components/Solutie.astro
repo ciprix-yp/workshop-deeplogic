@@ -12,6 +12,19 @@ import Sectiune from './Sectiune.astro';
   despre „noua eră digitală"), rolul se clarifică: e diferențiatorul central
   al paginii, poziționat devreme (după Problemă și Agravare), nu o prefață
   despre firmă.
+
+  Rescrisă complet (2026-09-08, text nou de la Ciprian) — secțiunea crește
+  mult: intro → metodă (6 pași, titlu+descriere) → card „la finalul celor
+  trei ore" → afterlife (ce faci a doua zi cu roadmap-ul, 6 bullete) → card
+  de închidere. Vechea structură (întrebările de deschidere, „Afacerea ta nu
+  are o singură realitate" + cele patru perspective, „noua eră digitală")
+  dispare integral — nimic din ea nu mai apare în textul nou.
+
+  Ierarhie: `h3Metoda` NU e heading — rămâne `<p>` stilizat. Cele șase
+  titluri de pași sunt `h3`, direct sub `h2`-ul secțiunii, exact ca la
+  S06CeFacem.astro (h2 → h3 pe fiecare bloc, fără treaptă intermediară) și
+  S03Rezultatul.astro (mai multe h3 frați sub un singur h2). O pagină cu
+  STRICT h1→h2→h3 (verificat runda trecută) nu capătă acum primul h4.
 */}
 <Sectiune id="solutie" latime="larg">
   <h2 data-reveal>{solutie.h2}</h2>
@@ -21,40 +34,40 @@ import Sectiune from './Sectiune.astro';
     ))}
   </div>
 
-  <ul class="intrebari">
-    {solutie.intrebari.map((q) => (
-      <li data-reveal>{q}</li>
-    ))}
-  </ul>
-
-  <div class="concluzie-intro">
-    {solutie.concluzieIntro.map((p) => (
-      <p data-reveal>{p}</p>
-    ))}
-  </div>
-
-  <h3 data-reveal>{solutie.h3}</h3>
-  <ul class="perspectiva">
-    {solutie.perspectiva.map((p) => (
-      <li data-reveal><strong>{p.cine}</strong> {p.ce}</li>
-    ))}
-  </ul>
-
-  <p class="mecanism-intro" data-reveal>{solutie.mecanismIntro}</p>
-  <ol class="mecanism">
-    {solutie.mecanism.map((linie) => (
-      <li data-reveal>{linie}</li>
+  <p class="metoda-eticheta" data-reveal>{solutie.h3Metoda}</p>
+  <ol class="pasi">
+    {solutie.pasi.map((pas) => (
+      <li data-reveal>
+        <span class="numar" aria-hidden="true">{pas.numar}</span>
+        <div class="pas-corp">
+          <h3>{pas.titlu}</h3>
+          <p>{pas.corp}</p>
+        </div>
+      </li>
     ))}
   </ol>
 
-  <p class="sinteza card-depth" data-reveal>{solutie.sinteza}</p>
+  <div class="card-final card-depth" data-reveal>
+    <p class="card-final-eyebrow">{solutie.cardFinal.eyebrow}</p>
+    <p class="card-final-corp">{solutie.cardFinal.corp}</p>
+  </div>
 
-  <h3 data-reveal>{solutie.h3Era}</h3>
-  <div class="era">
-    {solutie.eraCorp.map((p) => (
+  <h3 data-reveal>{solutie.h3Afterlife}</h3>
+  <p class="afterlife-intro" data-reveal>{solutie.afterlifeIntro}</p>
+
+  <ul class="afterlife-pasi">
+    {solutie.afterlifePasi.map((linie) => (
+      <li data-reveal>{linie}</li>
+    ))}
+  </ul>
+
+  <div class="afterlife-concluzie">
+    {solutie.afterlifeConcluzie.map((p) => (
       <p data-reveal>{p}</p>
     ))}
   </div>
+
+  <p class="sinteza card-depth" data-reveal>{solutie.cardInchidere}</p>
 </Sectiune>
 
 <style>
@@ -64,19 +77,21 @@ import Sectiune from './Sectiune.astro';
     max-width: 24ch;
   }
 
+  /* Titlul „Ce poți face, concret, cu roadmap-ul?" — singurul h3 propriu-zis
+     din afara listei de pași. */
   h3 {
     font-size: var(--t-h3);
     margin-top: var(--sp-xl);
     margin-bottom: var(--sp-sm);
-    max-width: 24ch;
+    max-width: 26ch;
   }
 
-  .intro,
-  .concluzie-intro,
-  .era {
+  .intro {
     display: grid;
     gap: var(--sp-sm);
     max-width: var(--max-proza);
+    font-size: var(--t-corp-lg);
+    line-height: var(--lh-normal);
   }
 
   /* A doua propoziție a introducerii e teza secțiunii. */
@@ -85,79 +100,130 @@ import Sectiune from './Sectiune.astro';
     color: var(--secundar);
   }
 
-  .intrebari {
-    list-style: none;
-    padding: 0;
-    margin: var(--sp-md) 0 0;
-    display: grid;
-    gap: var(--sp-xs);
-    max-width: var(--max-proza);
+  .metoda-eticheta {
+    margin-top: var(--sp-xl);
+    margin-bottom: var(--sp-sm);
+    font-family: var(--font-titlu);
+    font-weight: 700;
+    font-size: var(--t-corp-lg);
   }
 
-  .intrebari li {
-    display: grid;
-    grid-template-columns: 1.25rem 1fr;
-    align-items: baseline;
-    line-height: var(--lh-normal);
-  }
-
-  .intrebari li::before {
-    content: '—';
-    color: var(--accent-decor);
-    font-weight: 600;
-  }
-
-  .concluzie-intro {
-    margin-top: var(--sp-md);
-    color: var(--text-muted);
-  }
-
-  .perspectiva {
+  .pasi {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    gap: var(--sp-sm);
+    gap: var(--sp-lg);
     max-width: var(--max-proza);
   }
 
-  .perspectiva strong {
+  .pasi li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--sp-sm);
+    /* `start`, nu `baseline`: conținutul e acum titlu + descriere pe mai
+       multe rânduri, nu o singură linie — numărul trebuie să alinieze cu
+       vârful blocului, nu cu prima linie de text a lui. */
+    align-items: start;
+  }
+
+  .pasi .numar {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--accent-decor);
+    /*
+     * Fix de contrast (audit design, 2026-09-07, păstrat la rescriere):
+     * `--accent-decor` e 4,06:1 — trece AA doar la ≥24px (regula e
+     * documentată chiar pe token, în tokens.css). Același clamp, cu podea
+     * la 24px, ca în S03Rezultatul.astro și S06CeFacem.astro.
+     */
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+    line-height: 1;
+  }
+
+  .pas-corp {
+    display: grid;
+    gap: var(--sp-2xs);
+  }
+
+  /* Titlul unui pas — mai mic decât h3-ul secțiunii (nu concurează cu „Ce
+     poți face, concret, cu roadmap-ul?"), aceeași rețetă ca titlurile din
+     S06CeFacem.astro. */
+  .pas-corp h3 {
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    max-width: none;
+  }
+
+  .pas-corp p {
+    line-height: var(--lh-normal);
+    color: var(--text-muted);
+  }
+
+  .card-final {
+    margin-top: var(--sp-xl);
+    padding: var(--sp-lg);
+    display: grid;
+    gap: var(--sp-xs);
+    max-width: 44ch;
+  }
+
+  /* Aceeași rețetă ca `.eyebrow` din hero — mono, majuscule, `--accent`
+     (6,15:1 pe alb, sigur la mărimea asta mică). */
+  .card-final-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: var(--accent);
   }
 
-  .mecanism-intro {
-    margin-top: var(--sp-lg);
+  .card-final-corp {
+    font-size: var(--t-corp-lg);
     font-weight: 600;
+    color: var(--secundar);
+    line-height: var(--lh-normal);
   }
 
-  .mecanism {
+  .afterlife-intro {
+    max-width: var(--max-proza);
+    line-height: var(--lh-normal);
+  }
+
+  /* Bulete reale (2026-09-08, cerut explicit — aceeași bulină ca în §02,
+     nu liniuțe, nu un al doilea limbaj vizual de marcaj pe pagină). */
+  .afterlife-pasi {
     list-style: none;
     padding: 0;
     margin: var(--sp-sm) 0 0;
     display: grid;
     gap: var(--sp-sm);
-    counter-reset: mecanism;
+    max-width: var(--max-proza);
   }
 
-  .mecanism li {
+  .afterlife-pasi li {
     display: grid;
-    grid-template-columns: 1.75rem 1fr;
-    gap: var(--sp-sm);
+    grid-template-columns: 1.1rem 1fr;
     align-items: baseline;
-    font-family: var(--font-titlu);
-    font-weight: 600;
-    font-size: var(--t-corp-lg);
     line-height: var(--lh-normal);
-    max-width: 44ch;
   }
 
-  .mecanism li::before {
-    counter-increment: mecanism;
-    content: counter(mecanism);
-    font-family: var(--font-mono);
-    font-weight: 500;
+  .afterlife-pasi li::before {
+    content: '•';
     color: var(--accent-decor);
-    font-size: var(--t-corp);
+    font-size: 1.15em;
+    line-height: 1;
+  }
+
+  .afterlife-concluzie {
+    margin-top: var(--sp-md);
+    display: grid;
+    gap: var(--sp-sm);
+    max-width: var(--max-proza);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
   }
 
   .sinteza {

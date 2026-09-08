@@ -286,55 +286,84 @@ biletul din Trust bar) — vezi `docs/DECIZII.md` D72.
 
 ```COPY
 [H2]
-PRIMUL PAS este munca de dinaintea implementării.
+Soluția este PRIMUL PAS, munca dinaintea implementării.
 
 [INTRO]
-Pornim de la perspectiva ta, ca antreprenor sau persoană de decizie.
+În AI și automatizări, blocajul nu vine din lipsa de informații. Vine din faptul că prea multe
+arii ale afacerii par să merite atenție în același timp. Fără o metodă, fie amâni, fie alegi
+după ce pare urgent astăzi.
 
-[ÎNTREBĂRI]
-Ce ai vrea să funcționeze diferit?
-Unde simți că se pierde timp, atenție, bani sau oportunitate?
-De ce contează?
-Cine trăiește problema în fiecare zi?
-Ce ar trebui să vedem înainte să spunem că merită construit ceva?
+În cele trei ore punem perspectiva ta de owner într-o ordine de lucru și stabilim ce arie
+merită investigată prima.
 
-[CONCLUZIE INTRO]
-Din răspunsurile tale formulăm o primă ipoteză și construim un roadmap de validare.
-Nu un plan final de implementare. Nu o soluție aleasă dinainte.
-Un punct de plecare suficient de clar încât să poată fi verificat.
+[METODĂ — etichetă, nu heading]
+Cum lucrăm, concret
+
+[01] Punem pe masă ce te apasă — Inventariem ariile în care simți că se pierd timp, bani sau
+oportunități. Fără să alegem și fără să căutăm încă soluții.
+
+[02] Clarificăm ce vrei să fie diferit — Pentru fiecare arie, definim ce se întâmplă acum, ce
+rezultat ai vrea să obții și după ce ai recunoaște o schimbare reală.
+
+[03] Le punem una lângă alta — Le comparăm pe baza a ceea ce știi astăzi: cât de des apar
+blocajele, ce consumă, ce întârzie și cât de mult contează pentru direcția companiei.
+
+[04] Prioritizăm o singură arie — Nu alegem ce sună mai spectaculos pentru AI. Alegem aria
+pentru care există cele mai bune motive să începi investigația.
+
+[05] Separăm ce știi de ce presupui — Notăm ce este fapt, ce este estimare și ce trebuie
+verificat. Așa vedem ce presupunere ar putea confirma sau răsturna alegerea făcută.
+
+[06] Construim roadmap-ul de validare — Stabilim ce trebuie să afli mai departe, cu cine din
+companie trebuie să vorbești, la ce date merită să te uiți și care este primul pas concret
+după workshop.
+
+[CARD — quickwin #1]
+La finalul celor trei ore
+Pleci cu aria prioritară, prima ipoteză de business și un roadmap de validare: ce verifici,
+cu cine, în ce ordine și care este primul pas.
 
 [H3]
-Afacerea ta nu are o singură realitate.
+Ce poți face, concret, cu roadmap-ul?
 
-[PERSPECTIVA]
-Ownerul vede direcția și rezultatul pe care îl dorește.
-Managerul vede dependențele și blocajele.
-Omul care lucrează în proces vede excepțiile și realitatea de zi cu zi.
-Datele și cifrele arată dacă problema e suficient de importantă.
+[AFTERLIFE INTRO]
+A doua zi, nu te întorci în companie cu „ar trebui să facem și noi ceva cu AI”. Ai un punct
+clar de pornire:
 
-[MECANISM]
-De aceea, la Deep Logic:
-Pornim de la nevoia ownerului.
-O verificăm în realitatea echipei.
-Analizăm procesul, impactul și ROI-ul.
-Implementăm doar dacă există motive reale.
+[AFTERLIFE — listă]
+Îl prezinți partenerului sau managerilor ca perspectivă a ta de owner — nu ca verdict.
+Organizezi un workshop de discovery cu oamenii care lucrează în aria respectivă.
+Compari ceea ce vezi tu cu realitatea lor: blocajele, excepțiile și munca nevăzută din proces.
+Identifici ce procese trebuie analizate și ce proceduri, informații sau date lipsesc ori
+trebuie actualizate.
+Transformi concluziile în următoarea acțiune: ce verifici, cine se ocupă și ce dovadă cauți.
+Folosești rezultatul ca filtru pentru orice soluție de AI sau automatizare care îți este
+propusă.
 
-[SINTEZA — card]
-Perspectiva ownerului este punctul de plecare. Nu verdictul.
+[AFTERLIFE CONCLUZIE]
+Poți parcurge pașii cu echipa ta. Sau putem continua împreună: facilităm discovery-ul, mapăm
+procesul real și stabilim dacă există motive suficiente pentru o implementare.
 
-[H3]
-Asta înseamnă pentru mine noua eră digitală.
+Abia atunci decidem ce trebuie construit — și dacă AI-ul este, într-adevăr, soluția potrivită.
 
-[CORP]
-Până acum, cumpăram un software și ne adaptam modul de lucru la el.
-Astăzi putem începe să construim instrumente mai apropiate de felul în care funcționează
-afacerea în realitate.
-Tocmai de aceea alegerea primei probleme contează atât de mult.
+[CARD — quickwin #2, închidere]
+PRIMUL PAS nu este implementarea. Este prima acțiune concretă care face o implementare bună
+posibilă.
 ```
 
 **Notă de implementare:** diferențiatorul central al paginii, poziționat devreme (după
 Problemă și Agravare), nu o prefață despre firmă. Fostă `despreDeepLogic`/S10Deeplogic.astro —
 vezi `docs/DECIZII.md` D31–D33 pentru istoricul mecanismului.
+
+**Resincronizat 8 septembrie 2026 — copy nou, primit de la Ciprian.** Înlocuiește integral
+varianta de mai sus: `[ÎNTREBĂRI]`, `[CONCLUZIE INTRO]`, fostul `[H3]` „Afacerea ta nu are o
+singură realitate" + `[PERSPECTIVA]`, `[MECANISM]` (vechiul, 4 rânduri) și al doilea `[H3]`
+„Asta înseamnă pentru mine noua eră digitală" au dispărut integral. Secțiunea crește mult:
+intro (2 paragrafe) → metodă (6 pași, titlu+descriere) → card quickwin → afterlife (h3 + intro
++ 6 bullete + 2 paragrafe de închidere) → card final. Ierarhie verificată explicit: cele șase
+titluri de pași sunt `h3`, direct sub `h2`-ul secțiunii — eticheta „Cum lucrăm, concret" NU e
+heading (altfel ar fi împins titlurile la h4, primul de pe pagină). Bulete reale pe lista
+afterlife (aceeași bulină ca la corecția din §02), nu liniuțe. Vezi `docs/DECIZII.md` D73–D77.
 
 ---
 

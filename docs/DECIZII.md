@@ -660,3 +660,21 @@ independent), screenshot 360 (tranziția din Trust bar) și 1280.
 `copy.agravare` ca obiect întreg, nu câmpuri numite — nimic de actualizat acolo), `npm run
 contrast`, build, `tests/e2e/motion.spec.ts` 14/14 pe mobil-360 + desktop (inclusiv §06 GSAP,
 verde în ambele rulări), screenshot 360 și 1280.
+
+## 8 septembrie 2026 — copy nou §05 Soluție
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D73** | §05 Soluție — copy nou integral, secțiunea crește mult: intro (2 paragrafe) → metodă (h3 + 6 pași, titlu+descriere) → card „la finalul celor trei ore" → afterlife (h3 + intro + 6 bullete + 2 paragrafe de închidere) → card final | Text primit de la Ciprian, înlocuiește integral varianta anterioară — `intrebari` (5 întrebări retorice), `concluzieIntro`, fostul `h3` („Afacerea ta nu are o singură realitate.") + `perspectiva` (owner/manager/om din proces/date), `mecanismIntro` + vechiul `mecanism` (4 rânduri scurte) și `h3Era` + `eraCorp` („noua eră digitală") au dispărut integral — niciunul nu mai apare în textul nou. | `copy.ts` (`solutie`), `Solutie.astro` |
+| **D74** | Cele șase titluri de pași („Punem pe masă ce te apasă"… „Construim roadmap-ul de validare") sunt `h3`, direct sub `h2`-ul secțiunii — eticheta „Cum lucrăm, concret" dinaintea lor NU e heading | Ierarhia verificată explicit înainte de scris (aceeași disciplină ca la §02, D66): pagina are STRICT h1→h2→h3, fără h4. Un h3 intermediar pentru „Cum lucrăm, concret" ar fi împins titlurile de pași la h4 — primul de pe pagină. În loc, structura urmează exact precedentul de la `S06CeFacem.astro` (h2 secțiune → h3 pe fiecare bloc, fără treaptă intermediară) și `S03Rezultatul.astro` (mai mulți h3 frați sub un singur h2, teme diferite — „Ce nu îți promit" / „Cum lucrăm" / „De ce să mai chemi pe cineva?"). Verificat după: outline-ul paginii rămâne 1× `h1`, restul `h2`/`h3`, fără salturi. | `Solutie.astro` |
+| **D75** | Numerotarea pașilor — șiruri zero-padded în date (`'01'`…`'06'`), nu `counter()` CSS | Textul primit are exact formatul „01 — Titlu"; `counter(mecanism)` (folosit înainte pe vechiul `.mecanism`) ar fi dat „1", nu „01". Același tipar ca `ceFacem.blocuri[].numar` — literele zero-padded trăiesc în date, nu se calculează în CSS. Fix-ul de contrast preexistent pe marcaj (`--accent-decor`, 4,06:1, prag AA doar ≥24px — `clamp(1.5rem, 1.3rem + 0.8vw, 2rem)`, aceeași rețetă ca `S03Rezultatul.astro`/`S06CeFacem.astro`) a fost păstrat, nu reinventat. | `copy.ts`, `Solutie.astro` |
+| **D76** | Bullete reale pe lista „afterlife" (ce faci a doua zi cu roadmap-ul) — aceeași bulină (`•`) ca în §02, nu liniuțe | Cerut explicit („folosește bullets pt rândurile de mai jos"), cu exact cuvântul care a corectat §02 (D68) — bulina refolosită direct, fără să repet greșeala de-atunci (em-dash moștenit). Un al doilea limbaj vizual de marcaj pe pagină ar fi fost o inconsecvență nouă, nu o alegere. | `Solutie.astro` |
+| **D77** | Cardul de închidere („PRIMUL PAS nu este implementarea…") refolosește exact rețeta fostului `.sinteza` — o singură propoziție, `.card-depth`, fără eyebrow | Structural identic cu ce înlocuiește (o frază de sinteză într-un card de sticlă mată) — nicio clasă CSS nouă necesară, doar textul s-a schimbat. Cardul „la finalul celor trei ore" (D73), cu eyebrow + corp, e o rețetă NOUĂ (mono mic + `--accent`, ca `.eyebrow` din hero), fiindcă are două niveluri de informație, nu unul. | `copy.ts`, `Solutie.astro` |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare (aserțiunile de copy referă
+`copy.solutie` ca obiect întreg — nimic de actualizat pe câmpuri numite), `npm run contrast`,
+build, outline de titluri (1× `h1`, restul `h2`/`h3`, fără salturi), `tests/e2e/motion.spec.ts`
+13/14 (§06 GSAP pe mobil-360 a picat o dată din patru rulări izolate — confirmat flaky
+independent de conținut, nu regresie: trece 3/4, inclusiv pe desktop), screenshot 360 (patru
+capturi la scroll) și 1280 (trei capturi la scroll, fără artefactul barei fixe din screenshot-ul
+de element întreg).

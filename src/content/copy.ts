@@ -295,43 +295,93 @@ export const agravare = {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const solutie = {
-  h2: 'PRIMUL PAS este munca de dinaintea implementării.',
+  /*
+   * Text nou, primit de la Ciprian (2026-09-08) — înlocuiește integral
+   * varianta anterioară. `intrebari`, `concluzieIntro`, fostul `h3`
+   * („Afacerea ta nu are o singură realitate.”) + `perspectiva`,
+   * `mecanismIntro`, vechiul `mecanism` (4 rânduri) și `h3Era` + `eraCorp`
+   * au dispărut — niciunul nu mai apare în textul nou.
+   *
+   * Structură nouă, mult mai lungă: intro (2 paragrafe) → metodă (h3 +
+   * 6 pași, titlu+descriere fiecare) → card „la finalul celor trei ore" →
+   * afterlife (h3 + intro + 6 bullets + 2 paragrafe de închidere) → card
+   * final, o singură propoziție.
+   */
+  h2: 'Soluția este PRIMUL PAS, munca dinaintea implementării.',
   intro: [
-    'Pornim de la perspectiva ta, ca antreprenor sau persoană de decizie.',
+    'În AI și automatizări, blocajul nu vine din lipsa de informații. Vine din faptul că prea multe arii ale afacerii par să merite atenție în același timp. Fără o metodă, fie amâni, fie alegi după ce pare urgent astăzi.',
+    'În cele trei ore punem perspectiva ta de owner într-o ordine de lucru și stabilim ce arie merită investigată prima.',
   ],
-  intrebari: [
-    'Ce ai vrea să funcționeze diferit?',
-    'Unde simți că se pierde timp, atenție, bani sau oportunitate?',
-    'De ce contează?',
-    'Cine trăiește problema în fiecare zi?',
-    'Ce ar trebui să vedem înainte să spunem că merită construit ceva?',
+  /*
+   * Titlul metodei — deliberat NU un heading (rămâne `<p>`, stilizat): cele
+   * șase titluri de pași de mai jos sunt `h3`, direct sub `h2`-ul secțiunii,
+   * la fel ca la S06CeFacem.astro (h2 → h3 pe fiecare pas, fără o treaptă
+   * intermediară). O pagină care are STRICT h1→h2→h3 (verificat runda
+   * trecută) nu capătă acum primul h4 doar pentru eticheta asta.
+   */
+  h3Metoda: 'Cum lucrăm, concret',
+  /*
+   * Numerotare ca la `ceFacem.blocuri` — șiruri zero-padded în date
+   * (`'01'`…`'06'`), nu `counter()` CSS: textul primit are exact formatul
+   * „01 — Titlu", iar `counter()` ar fi dat „1", nu „01".
+   */
+  pasi: [
+    {
+      numar: '01',
+      titlu: 'Punem pe masă ce te apasă',
+      corp: 'Inventariem ariile în care simți că se pierd timp, bani sau oportunități. Fără să alegem și fără să căutăm încă soluții.',
+    },
+    {
+      numar: '02',
+      titlu: 'Clarificăm ce vrei să fie diferit',
+      corp: 'Pentru fiecare arie, definim ce se întâmplă acum, ce rezultat ai vrea să obții și după ce ai recunoaște o schimbare reală.',
+    },
+    {
+      numar: '03',
+      titlu: 'Le punem una lângă alta',
+      corp: 'Le comparăm pe baza a ceea ce știi astăzi: cât de des apar blocajele, ce consumă, ce întârzie și cât de mult contează pentru direcția companiei.',
+    },
+    {
+      numar: '04',
+      titlu: 'Prioritizăm o singură arie',
+      corp: 'Nu alegem ce sună mai spectaculos pentru AI. Alegem aria pentru care există cele mai bune motive să începi investigația.',
+    },
+    {
+      numar: '05',
+      titlu: 'Separăm ce știi de ce presupui',
+      corp: 'Notăm ce este fapt, ce este estimare și ce trebuie verificat. Așa vedem ce presupunere ar putea confirma sau răsturna alegerea făcută.',
+    },
+    {
+      numar: '06',
+      titlu: 'Construim roadmap-ul de validare',
+      corp: 'Stabilim ce trebuie să afli mai departe, cu cine din companie trebuie să vorbești, la ce date merită să te uiți și care este primul pas concret după workshop.',
+    },
   ],
-  concluzieIntro: [
-    'Din răspunsurile tale formulăm o primă ipoteză și construim un roadmap de validare.',
-    'Nu un plan final de implementare. Nu o soluție aleasă dinainte.',
-    'Un punct de plecare suficient de clar încât să poată fi verificat.',
+  // Card „quickwin" #1 — ce pleacă acasă cu tine, imediat după cele 6 etape.
+  cardFinal: {
+    eyebrow: 'La finalul celor trei ore',
+    corp: 'Pleci cu aria prioritară, prima ipoteză de business și un roadmap de validare: ce verifici, cu cine, în ce ordine și care este primul pas.',
+  },
+  h3Afterlife: 'Ce poți face, concret, cu roadmap-ul?',
+  afterlifeIntro: 'A doua zi, nu te întorci în companie cu „ar trebui să facem și noi ceva cu AI”. Ai un punct clar de pornire:',
+  // Bullete reale, cerute explicit — aceeași bulină (`•`) ca în §02, nu
+  // liniuțe și nu un al doilea limbaj vizual de marcaj pe pagină.
+  afterlifePasi: [
+    'Îl prezinți partenerului sau managerilor ca perspectivă a ta de owner — nu ca verdict.',
+    'Organizezi un workshop de discovery cu oamenii care lucrează în aria respectivă.',
+    'Compari ceea ce vezi tu cu realitatea lor: blocajele, excepțiile și munca nevăzută din proces.',
+    'Identifici ce procese trebuie analizate și ce proceduri, informații sau date lipsesc ori trebuie actualizate.',
+    'Transformi concluziile în următoarea acțiune: ce verifici, cine se ocupă și ce dovadă cauți.',
+    'Folosești rezultatul ca filtru pentru orice soluție de AI sau automatizare care îți este propusă.',
   ],
-  h3: 'Afacerea ta nu are o singură realitate.',
-  perspectiva: [
-    { cine: 'Ownerul', ce: 'vede direcția și rezultatul pe care îl dorește.' },
-    { cine: 'Managerul', ce: 'vede dependențele și blocajele.' },
-    { cine: 'Omul care lucrează în proces', ce: 'vede excepțiile și realitatea de zi cu zi.' },
-    { cine: 'Datele și cifrele', ce: 'arată dacă problema e suficient de importantă.' },
+  afterlifeConcluzie: [
+    'Poți parcurge pașii cu echipa ta. Sau putem continua împreună: facilităm discovery-ul, mapăm procesul real și stabilim dacă există motive suficiente pentru o implementare.',
+    'Abia atunci decidem ce trebuie construit — și dacă AI-ul este, într-adevăr, soluția potrivită.',
   ],
-  mecanismIntro: 'De aceea, la Deep Logic:',
-  mecanism: [
-    'Pornim de la nevoia ownerului.',
-    'O verificăm în realitatea echipei.',
-    'Analizăm procesul, impactul și ROI-ul.',
-    'Implementăm doar dacă există motive reale.',
-  ],
-  sinteza: 'Perspectiva ownerului este punctul de plecare. Nu verdictul.',
-  h3Era: 'Asta înseamnă pentru mine noua eră digitală.',
-  eraCorp: [
-    'Până acum, cumpăram un software și ne adaptam modul de lucru la el.',
-    'Astăzi putem începe să construim instrumente mai apropiate de felul în care funcționează afacerea în realitate.',
-    'Tocmai de aceea alegerea primei probleme contează atât de mult.',
-  ],
+  // Card „quickwin" #2 — închiderea secțiunii, o singură propoziție (aceeași
+  // rețetă vizuală ca fostul `sinteza`: o frază, `.card-depth`).
+  cardInchidere:
+    'PRIMUL PAS nu este implementarea. Este prima acțiune concretă care face o implementare bună posibilă.',
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════

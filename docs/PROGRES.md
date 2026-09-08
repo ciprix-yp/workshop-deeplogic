@@ -212,6 +212,20 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          Paragraful e păstrat ca o singură frază lungă — acumularea e mesajul.
       2. **Cardul refolosește `.card-depth`** (aceeași sticlă mată ca biletul din Trust bar),
          cu cele două rânduri la aceeași greutate tipografică — fără accent inventat.
+- [x] **8 septembrie 2026 — copy nou pentru §05 Soluție.** `docs/DECIZII.md` D73–D77.
+      1. **Copy nou integral, secțiunea crește mult**: intro (2 paragrafe) → metodă (h3 +
+         6 pași, titlu+descriere fiecare) → card „la finalul celor trei ore" → afterlife
+         (h3 + intro + 6 bullete + 2 paragrafe de închidere) → card final. Toată structura
+         veche (întrebările retorice, „Afacerea ta nu are o singură realitate" + cele patru
+         perspective, „noua eră digitală") a dispărut — niciuna nu mai apare în textul nou.
+      2. **Ierarhie verificată înainte de scris**: cele șase titluri de pași sunt `h3`,
+         direct sub `h2`-ul secțiunii — eticheta „Cum lucrăm, concret" NU e heading, ca să nu
+         apară primul `h4` de pe pagină. Precedent direct: `S06CeFacem.astro`, `S03Rezultatul.astro`.
+      3. **Bullete reale pe lista afterlife** — aceeași bulină ca la corecția din §02, nu
+         liniuțe, nu un al doilea limbaj vizual de marcaj.
+      4. **Numerotare zero-padded în date** (`'01'`…`'06'`), ca la `ceFacem.blocuri` — nu
+         `counter()` CSS, care ar fi dat „1", nu „01". Fix-ul de contrast preexistent pe
+         marcaj (podea 24px) păstrat, nu reinventat.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
