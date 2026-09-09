@@ -813,3 +813,34 @@ testarea reală a fiecărei situații care trimite email. Trei descoperiri, toat
 45/48 pe desktop + mobil-360 (3 eșecuri pre-existente, confirmate independent de această
 rundă), screenshot 360 pe `/multumesc` (toate cele trei stări) și pe confirmarea în-dialog
 (computed style verificat direct, nu doar vizual).
+
+## 9 septembrie 2026 — testul real, pe stack-ul de producție (Ciprian ca înscris de test)
+
+Cerut explicit: „inscrie-ma pe mine cu emailul ciprian.micu@gmail.com... declanșează fiecare
+situație care necesită trimitere de mail... vreau să testăm dacă triggerele merg". Rezultatul,
+per email/tranziție — Supabase și Resend sunt ACELEAȘI credențiale reale în dev și în
+producție (fără stack de staging separat), deci orice scriere din testul ăsta e o scriere
+reală. Turnstile-ul de producție e o piedică deliberată la automatizare (widget managed,
+randat prin canvas/shadow DOM) — nu s-a încercat ocolit; testul a rulat pe `astro dev` local
+cu cheia de TEST oficială Cloudflare (`1x00000000000000000000AA`), aceleași `RESEND_API_KEY`/
+`SUPABASE_SERVICE_ROLE_KEY` ca producția.
+
+| Situație | Metodă | Rezultat |
+|---|---|---|
+| Email 1 (confirmare imediată) | Înscriere reală prin `/api/register`, POST cu numele și emailul lui Ciprian | Declanșat REAL prin Inngest local. Trace confirmat pas cu pas: `email-1-confirmare` (600ms) + `marcheaza-welcome-trimis` (97ms), ambele fără eroare; funcția și-a continuat corect execuția până la primul `sleepUntil`. |
+| Reconfirmare (`r=da`) | `POST /api/raspuns` direct, cu tokenul REAL primit la înscriere | `inscris → reconfirmat` — confirmat prin răspunsul API și prin randarea `/rezultat?stare=reconfirmat` (buton de calendar prezent, `color: rgb(47, 79, 79)` — fix-ul D100 verificat live, nu doar în test automat). |
+| Anulare (`r=nu`) | `POST /api/raspuns` direct, același token, după reconfirmare | `reconfirmat → anulat` — confirmat prin `/rezultat?stare=anulat` (fără buton de calendar, corect). A emis real `workshop/seat_freed`, care a declanșat funcția `workshop-seat-freed` — a rulat curat (522ms), a interogat waitlist-ul real, l-a găsit gol și **nu** a trimis niciun email — comportamentul corect specificat în cod, nu o eroare. |
+| Email 2, 3 (+.ics), 4, 5, 6, 7, 8 | **Nu** prin fluxul real — `sleepUntil` la 5-7 zile distanță (2, 3, 4), condiție de capacitate plină (5), waitlist nevid (6), declanșare manuală post-eveniment (7), vechime de 1 an (8) — niciuna reproductibilă azi fără fie să aștept zile, fie să corup date reale de producție. Trimise prin rută API temporară, dev-only (`import.meta.env.DEV` gate, ștearsă imediat după test, niciodată în `git`), care apelează direct `trimiteEmail()`/templates cu tokenuri EVIDENT false | Toate 7 trimise cu succes prin Resend (id confirmat pentru fiecare) — verificare de DESIGN/randare HTML, nu de declanșator real. Etichetate clar către Ciprian ca atare. |
+
+**Limitare găsită, comunicată direct:** emailurile trimise din testul local au `PUBLIC_SITE_URL`
+= `http://localhost:4321` (valoarea din `.env`, corectă pentru dev) — deci butoanele din
+emailul 1 real ȘI din cele 7 de previzualizare duc spre localhost, nu spre
+`workshop.deeplogic.ro`. Mecanismul din spatele lor (reconfirmare/anulare) e verificat separat,
+direct prin API, cu tokenul real — nu prin clickul din email. Înscrierea lui Ciprian a rămas,
+la finalul testului, în starea `reconfirmat` (loc real, valid pentru evenimentul din 16
+septembrie) — nu `anulat`, starea intermediară de test.
+
+**Verificare:** trace Inngest citit direct din Dev Server (REST API + UI), nu presupus din
+statusul funcției; ambele randări `/rezultat` (reconfirmat + anulat) capturate desktop+mobil.
+Servere locale (astro dev + Inngest Dev Server) oprite curat la final — nimic rămas pornit
+care ar putea trimite emailuri neașteptate mai târziu.

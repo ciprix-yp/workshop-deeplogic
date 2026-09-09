@@ -307,6 +307,21 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          multă vreme, dar nu se aplica niciodată, fiindcă elementele sunt create din JS, fără
          atributul de scope al Astro. Fix: `:global()` pe selectoarele care țintesc conținut
          creat din JS. Test nou care prinde regresia dacă cineva scoate `:global()`.
+- [x] **9 septembrie 2026 — testul real, pe stack-ul de producție.** `docs/DECIZII.md`,
+      secțiunea „testul real, pe stack-ul de producție". Ciprian înscris de test
+      (ciprian.micu@gmail.com) prin `/api/register` real — Supabase/Resend sunt aceleași
+      credențiale în dev și producție, deci orice scriere e reală. Email 1 confirmat livrat
+      (trace Inngest citit pas cu pas, fără eroare). Reconfirmare și anulare testate direct
+      prin `POST /api/raspuns` cu tokenul real — ambele tranziții corecte, `/rezultat`
+      randează corect pentru fiecare (buton de calendar prezent/absent, culoare verificată
+      live). Anularea a emis real `workshop/seat_freed` — funcția a rulat curat și a no-op-uit
+      corect (waitlist gol), comportament așteptat, nu eroare. Emailurile 2-8 (sleep de zile,
+      capacitate plină, waitlist nevid, declanșare manuală, vechime 1 an — niciuna
+      reproductibilă azi prin fluxul real) trimise separat prin Resend real, ca previzualizare
+      de design, printr-o rută API temporară ștearsă imediat după test. Limitare comunicată:
+      linkurile din emailurile de test duc spre `localhost:4321` (`PUBLIC_SITE_URL` de dev),
+      nu spre `workshop.deeplogic.ro` — mecanismul e verificat separat, prin API direct.
+      Înscrierea lui Ciprian a rămas `reconfirmat` (loc real, valid) la final.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
