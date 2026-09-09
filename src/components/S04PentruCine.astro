@@ -28,8 +28,16 @@ import Sectiune from './Sectiune.astro';
     </div>
   </div>
 
-  <div class="outro">
-    {pentruCine.outro.map((p) => <p data-reveal>{p}</p>)}
+  {/*
+    Quickwin box (2026-09-09, cerut explicit) — înlocuiește fosta linie
+    despărțitoare + text simplu. Refolosește `.card-depth` (aceeași sticlă
+    mată ca biletul din Trust bar, cardurile din Agravare/Soluție), nu un
+    tratament nou. Cele două propoziții („nu X... Este despre Y") rămân la
+    ACEEAȘI greutate — aceeași disciplină ca la cardurile „nu X / ci Y" din
+    Agravare (D69) și Soluție (D77): niciun accent inventat între ele.
+  */}
+  <div class="outro card-depth" data-reveal>
+    {pentruCine.outro.map((p) => <p>{p}</p>)}
   </div>
 </Sectiune>
 
@@ -50,7 +58,7 @@ import Sectiune from './Sectiune.astro';
   }
 
   h2 {
-    font-size: var(--t-h3);
+    font-size: var(--t-h2);
     margin-bottom: var(--sp-sm);
   }
 
@@ -90,11 +98,19 @@ import Sectiune from './Sectiune.astro';
 
   .outro {
     margin-top: var(--sp-xl);
-    padding-top: var(--sp-lg);
-    border-top: 1px solid rgba(47, 79, 79, 0.18);
+    padding: var(--sp-lg);
     display: grid;
-    gap: var(--sp-2xs);
-    max-width: var(--max-proza);
+    gap: var(--sp-xs);
+    max-width: 44ch;
+  }
+
+  /* Aceeași rețetă tipografică ca `.sinteza` din Soluție — corp mare,
+     greutate 600, `--secundar`. Ambele rânduri, nu doar unul: „nu X / ci Y"
+     rămâne fără accent inventat între cele două jumătăți. */
+  .outro p {
+    font-size: var(--t-corp-lg);
+    font-weight: 600;
     color: var(--secundar);
+    line-height: var(--lh-normal);
   }
 </style>
