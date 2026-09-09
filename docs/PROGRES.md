@@ -248,6 +248,16 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
       2. **Element de legătură cerut explicit**: propoziția dinainte se termina deja pe
          „unelte digitale" — noul text pornește de-acolo, trece prin analogia istorică, și
          se închide tot pe „unelte digitale". Buclă, nu salt de subiect.
+- [x] **9 septembrie 2026 — §08 Cui i se adresează/nu, strânsă la top 3.** `docs/DECIZII.md`
+      D81–D82.
+      1. **7 → 3 rânduri pe fiecare listă**, alese pe criteriul explicit „relevanță pentru
+         profil și promisiune" — fiecare rând rămas face o treabă distinctă, nimic redundant
+         cu alt rând sau cu ce spune deja pagina în altă parte (Trust bar, Hero).
+      2. **Cele trei rânduri de pe fiecare parte se oglindesc intenționat** — vezi
+         `docs/DECIZII.md` D81 pentru maparea completă.
+      3. **Marcajul listelor migrat la bulină** (§08 era ultima secțiune rămasă pe em-dash,
+         semnalat explicit la corecția din §02) — regula „coloane vizual egale" rămâne
+         respectată.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

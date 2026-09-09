@@ -432,24 +432,16 @@ deja prezent acolo. Vezi `docs/DECIZII.md` D80.
 [H2 DA]
 Este pentru tine dacă
 
-— Ai o afacere funcțională sau iei decizii importante într-o companie
-— Știi că unele lucruri ar putea funcționa mai bine, dar nu știi de unde să începi
-— Ai o echipă, procese, informații sau decizii care se repetă
-— Ai testat instrumente noi, dar nu le-ai legat încă de o nevoie clară de business
-— N-ai explorat aproape deloc zona și vrei să înțelegi ce ar putea avea sens pentru tine
-— Vrei să înțelegi problema înainte să cumperi soluția
-— Ești dispus să lucrezi trei ore pe propria afacere, nu doar să asculți
+• Ai o afacere funcțională sau iei decizii importante într-o companie
+• Știi că unele lucruri ar putea funcționa mai bine, dar nu știi de unde să începi
+• Vrei să înțelegi problema înainte să cumperi soluția
 
 [H2 NU]
 Nu este pentru tine dacă
 
-— Cauți o listă cu cele mai bune tool-uri sau prompturi
-— Vrei o prezentare despre ce va face tehnologia peste cinci ani
-— Te aștepți să construim o soluție completă în trei ore
-— Vrei o rețetă universală pe care s-o copiezi în companie
-— Vrei să ți se spună ce trebuie implementat fără să discutăm mai întâi despre business
-— Vii doar să privești și nu vrei să lucrezi pe cazul tău
-— Ai deja o strategie digitală matură și cauți arhitectură tehnică avansată
+• Cauți o listă cu cele mai bune tool-uri sau prompturi
+• Te aștepți să construim o soluție completă în trei ore
+• Vrei să ți se spună ce trebuie implementat fără să discutăm mai întâi despre business
 
 [OUTRO]
 PRIMUL PAS nu este despre a introduce cât mai multă tehnologie în companie.
@@ -457,7 +449,27 @@ Este despre a decide mai bine ce merită schimbat și de unde merită să încep
 ```
 
 **Notă de implementare:** cele două coloane rămân VIZUAL EGALE — aceeași dimensiune de titlu,
-aceeași culoare de text, aceeași greutate. Regulă neschimbată de niciun pivot.
+aceeași culoare de text, aceeași greutate. Regulă neschimbată de niciun pivot. Marcajul e
+bulină (`•`), nu em-dash — migrat 2026-09-09, vezi mai jos.
+
+**Resincronizat 9 septembrie 2026 — 7 → 3 rânduri pe fiecare listă**, cerut explicit: „alege
+ce este mai relevant pentru profilul și promisiunea workshopului". Rândurile scoase (istoric,
+nu mai apar pe pagină):
+
+*Din „Este pentru tine dacă":* „Ai o echipă, procese, informații sau decizii care se repetă"
+(redundant cu „afacere funcțională") · „Ai testat instrumente noi, dar nu le-ai legat încă de
+o nevoie clară de business" și „N-ai explorat aproape deloc zona..." (cele două capete ale
+aceleiași idei — experiență cu unelte AI, oricare ar fi ea) · „Ești dispus să lucrezi trei ore
+pe propria afacere, nu doar să asculți" (formatul e deja în Trust bar și Hero).
+
+*Din „Nu este pentru tine dacă":* „Vrei o prezentare despre ce va face tehnologia peste cinci
+ani" · „Vrei o rețetă universală pe care s-o copiezi în companie" (redundant cu „listă de
+tool-uri") · „Vii doar să privești și nu vrei să lucrezi pe cazul tău" (reversul formatului,
+deja acoperit) · „Ai deja o strategie digitală matură și cauți arhitectură tehnică avansată".
+
+Criteriul: fiecare rând rămas face o treabă distinctă — profil sau promisiune, nu doar „încă
+un motiv plauzibil". Cele trei rânduri de pe fiecare parte se oglindesc intenționat — vezi
+`docs/DECIZII.md` D81 pentru maparea completă.
 
 ---
 

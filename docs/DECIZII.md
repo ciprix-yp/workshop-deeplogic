@@ -701,3 +701,14 @@ de element întreg).
 ghilimea neînchisă), `npm run contrast`, build, `motion.spec.ts` 10/10 pe desktop + mobil-360,
 screenshot 360 și 1280 (secțiunea nu se rupe, byline-ul cu poza rămâne neatins — schimbare
 STRICT de copy, zero atingere de componentă/CSS).
+
+## 9 septembrie 2026 — §08 Cui i se adresează/nu, strânsă la top 3
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D81** | Ambele liste (`pentruCine.da`/`.nu`) strânse de la 7 la 3 rânduri fiecare, alese pe criteriul „relevanță pentru profilul și promisiunea workshopului" | Cerut explicit. Criteriu de selecție scris în cod, nu doar ținut minte: fiecare rând rămas face o treabă DISTINCTĂ — profil (cine ești) SAU promisiune (ce primești/ce nu), nu doar „încă un motiv plauzibil". Scoase: rânduri redundante cu unul păstrat („echipă/procese repetitive" ≈ „afacere funcțională"; „ai testat unelte" + „n-ai explorat deloc" sunt cele două capete ale aceleiași idei) sau deja acoperite altundeva pe pagină (formatul „lucrezi 3 ore pe propria afacere" e în Trust bar și Hero; „nu vii doar să privești" e reversul aceluiași lucru). Cele trei rânduri păstrate pe fiecare parte se oglindesc intenționat: DA „știi că ceva ar putea funcționa mai bine, dar nu știi de unde să începi" ↔ NU „vrei să ți se spună ce trebuie implementat fără să discutăm mai întâi despre business" (unul vine curios, celălalt vrea un scurtcircuit peste proces); DA „vrei să înțelegi problema înainte să cumperi soluția" ↔ NU „cauți o listă de tool-uri" + NU „te aștepți la o soluție completă în trei ore" (amândouă contrazic direct exact ce cere rândul DA). Ambele ecouă `outro`, neschimbat: „a decide mai bine ce merită schimbat și de unde merită să începi" — nu „a introduce mai multă tehnologie". Cele 4+4 rânduri scoase rămân în `docs/landing-workshop-16-09.md`, ca istoric, nu doar șterse tăcut. | `copy.ts` (`pentruCine`) |
+| **D82** | Marcajul listelor — em-dash → BULINĂ (`•`), coloană de marcaj îngustată la 1.1rem | §08 era ultima secțiune de pe pagină rămasă pe marcajul vechi (semnalat explicit la corecția din §02, D68 — promis atunci: „la momentul potrivit, îți amintesc"). Regula „VIZUAL EGALE" a celor două coloane (comentariu preexistent în `S04PentruCine.astro`, neschimbat) rămâne respectată — ambele coloane primesc același marcaj, aceeași culoare relativă (`--accent-decor` pe DA, `--text-muted` pe NU, neschimbate). | `S04PentruCine.astro` |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare, `npm run contrast`, build,
+`motion.spec.ts` 10/10 pe desktop + mobil-360, screenshot 360 și 1280 (cele două coloane rămân
+vizual egale — 3 rânduri fiecare, aceeași greutate).

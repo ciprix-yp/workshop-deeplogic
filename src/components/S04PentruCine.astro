@@ -64,23 +64,27 @@ import Sectiune from './Sectiune.astro';
 
   .lista li {
     display: grid;
-    grid-template-columns: 1.5rem 1fr;
+    /* 1.1rem, nu 1.5rem — bulina e mult mai îngustă decât fostul em-dash,
+       aceeași corecție ca la §02/§05. */
+    grid-template-columns: 1.1rem 1fr;
     align-items: baseline;
     /* Aceeași culoare în ambele coloane. Vezi comentariul de sus. */
     color: var(--text);
   }
 
+  /* Bulină (`•`), nu em-dash — aliniat cu §02/§05 (2026-09-09: era ultima
+     secțiune rămasă pe marcajul vechi, semnalat explicit runda trecută). */
   .lista li::before {
-    font-weight: 600;
+    content: '•';
+    font-size: 1.15em;
+    line-height: 1;
   }
 
   .da li::before {
-    content: '—';
     color: var(--accent-decor);
   }
 
   .nu li::before {
-    content: '—';
     color: var(--text-muted);
   }
 

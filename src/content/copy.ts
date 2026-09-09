@@ -445,29 +445,47 @@ export const facilitator = {
    neschimbată). Conținut rescris după v4.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/*
+ * Strânsă la top 3 pe listă (2026-09-09, cerut explicit: „alege ce este mai
+ * relevant pentru profilul și promisiunea workshopului") — de la 7+7 la 3+3.
+ * Cele 4+4 scoase din fiecare listă rămân în `docs/landing-workshop-16-09.md`
+ * ca istoric (D81), nu doar șterse tăcut.
+ *
+ * Criteriul de selecție, explicit: fiecare rând rămas trebuie să facă o
+ * treabă DISTINCTĂ — profil (cine ești) SAU promisiune (ce primești/ce nu) —
+ * nu doar „încă un motiv plauzibil". Rândurile scoase erau fie redundante cu
+ * unul păstrat (echipă/procese repetitive ≈ „afacere funcțională"; „ai
+ * testat unelte" + „n-ai explorat deloc" sunt cele două capete ale aceleiași
+ * idei — oricine se regăsește undeva între ele), fie deja acoperite explicit
+ * altundeva pe pagină (formatul „lucrezi 3 ore pe propria afacere" e în
+ * Trust bar și Hero; „nu vii doar să privești" e reversul aceluiași lucru).
+ *
+ * Cele trei rânduri păstrate pe `da` și `nu` se oglindesc intenționat:
+ * — DA „știi că ceva ar putea funcționa mai bine, dar nu știi de unde să
+ *   începi" ↔ NU „vrei să ți se spună ce trebuie implementat fără să
+ *   discutăm mai întâi despre business" — unul vine curios, celălalt vrea
+ *   un scurtcircuit peste proces.
+ * — DA „vrei să înțelegi problema înainte să cumperi soluția" ↔ NU „cauți o
+ *   listă de tool-uri" + NU „te aștepți la o soluție completă în trei ore"
+ *   — amândouă contrazic direct exact ce cere rândul DA.
+ * Ambele ecouă `outro`, neschimbat: „a decide mai bine ce merită schimbat și
+ * de unde merită să începi" — nu „a introduce mai multă tehnologie".
+ */
 export const pentruCine = {
   da: {
     h2: 'Este pentru tine dacă',
     lista: [
       'Ai o afacere funcțională sau iei decizii importante într-o companie',
       'Știi că unele lucruri ar putea funcționa mai bine, dar nu știi de unde să începi',
-      'Ai o echipă, procese, informații sau decizii care se repetă',
-      'Ai testat instrumente noi, dar nu le-ai legat încă de o nevoie clară de business',
-      'N-ai explorat aproape deloc zona și vrei să înțelegi ce ar putea avea sens pentru tine',
       'Vrei să înțelegi problema înainte să cumperi soluția',
-      'Ești dispus să lucrezi trei ore pe propria afacere, nu doar să asculți',
     ],
   },
   nu: {
     h2: 'Nu este pentru tine dacă',
     lista: [
       'Cauți o listă cu cele mai bune tool-uri sau prompturi',
-      'Vrei o prezentare despre ce va face tehnologia peste cinci ani',
       'Te aștepți să construim o soluție completă în trei ore',
-      'Vrei o rețetă universală pe care s-o copiezi în companie',
       'Vrei să ți se spună ce trebuie implementat fără să discutăm mai întâi despre business',
-      'Vii doar să privești și nu vrei să lucrezi pe cazul tău',
-      'Ai deja o strategie digitală matură și cauți arhitectură tehnică avansată',
     ],
   },
   outro: [
