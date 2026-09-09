@@ -471,63 +471,70 @@ Criteriul: fiecare rând rămas face o treabă distinctă — profil sau promisi
 un motiv plauzibil". Cele trei rânduri de pe fiecare parte se oglindesc intenționat — vezi
 `docs/DECIZII.md` D81 pentru maparea completă.
 
+**A doua corecție, aceeași zi — `[OUTRO]` devine quickwin box.** Textul rămâne neschimbat;
+containerul trece la aceeași rețetă `.card-depth` (sticlă mată) ca biletul din Trust bar și
+cardurile din Agravare/Soluție. Cele două propoziții rămân la aceeași greutate tipografică —
+niciun accent inventat între ele, aceeași disciplină ca la cardurile „nu X / ci Y" de-acolo.
+
 ---
 
-## 08 — CE REZULTAT PROMITEM
+## 08 — CE REZULTAT PROMITEM *(retrasă parțial 2026-09-09 — vezi mai jos)*
 
 ```COPY
-[H2]
-Ce primești pentru cele 3 ore?
+[H2 — fost „Cum lucrăm" ca h3, promovat]
+Cum lucrăm
 
-[1] O nevoie clar formulată — Nu „Ar trebui să facem și noi ceva." Ci: „Asta este problema
-sau oportunitatea pe care vreau s-o investighez."
-
-[2] O primă estimare a impactului — Cât de des apare, câți oameni implică, cât timp consumă.
-Nu inventăm ROI — vedem dacă merită investigată.
-
-[3] Oamenii care trebuie implicați — Identifici cine execută procesul, cine îl coordonează,
-cine primește rezultatul și cine trăiește blocajele lui zi de zi.
-
-[4] Un roadmap personalizat de validare — Nevoia identificată, de ce contează, impactul
-preliminar, ce trebuie verificat, cine trebuie implicat, acțiunile concrete pentru următorul
-pas și recomandarea Deep Logic privind continuarea — pe email.
-
-[GRANIȚA — „Ce nu îți promit"]
-Nu îți promit că, după trei ore, știm dacă ipoteza e corectă. Ar fi incorect.
-Pentru asta trebuie să vorbim cu oamenii care lucrează în proces, să vedem cum funcționează
-în realitate și să analizăm datele, impactul, efortul și riscurile.
-PRIMUL PAS îți arată ce merită investigat. Nu pretinde că îți dă verdictul înainte de
-investigație.
-
-[SUB — „Cum lucrăm"]
 20% context. 80% lucru aplicat.
 Contextul există doar cât să punem întrebările corecte.
-— Ce ai vrea să funcționeze diferit
-— Unde se consumă timp, bani, energie sau atenție
-— Cine este implicat
-— Ce valoare ar avea schimbarea
-— Ce ar putea fi delegat sau construit diferit
-— Ce trebuie validat înainte să implementezi
+• Ce ai vrea să funcționeze diferit
+• Unde se consumă timp, bani, energie sau atenție
+• Ce proceduri sau procese există deja și ce lipsește
 Nu lucrăm pe un business imaginar. Lucrăm pe al tău.
 Nu trebuie să fii IT-ist. Nu trebuie să știi să programezi. Laptopul nu este obligatoriu.
 
-[SUB — „De ce să mai chemi pe cineva?"]
-Pentru că un singur om vede doar o parte din afacere.
-Tu poți vedea obiectivul. Un partener, un manager sau un coleg-cheie poate vedea procesul
-altfel. Un alt antreprenor îți poate pune întrebarea pe care tu nu ți-o mai pui.
-Dacă vii împreună cu cineva în care ai încredere, nu dublezi informația.
-Dublezi perspectiva.
-Și plecați cu un pas pe care îl puteți continua și după workshop, nu doar cu o idee care
-rămâne într-un carnețel. Poate fi cineva din compania ta sau un alt antreprenor cu care ai
-o relație bună.
+[H3 — „De ce să mai chemi pe cineva?"]
+Ai fost invitat la acest workshop — și poți, la rândul tău, să aduci o persoană. Vezi-o ca
+pe un cadou pe care îl faci unui partener, unui client sau unui colaborator: un plus de
+valoare, prin relația pe care o aveți deja. Sunt șanse mari să se regăsească în aceeași
+situație — și să găsească, în cele trei ore, răspuns la propriile întrebări.
 
 [CTA]
 Rezervă-ți locul
 ```
 
 **Notă de implementare:** absoarbe fostul §12 Precedent („20/80", acum subsecțiunea „Cum
-lucrăm") și conținut nou din draftul v4 („De ce să mai chemi pe cineva"). CTA repetat aici —
-singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
+lucrăm"). CTA repetat aici — singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
+
+**Resincronizat 9 septembrie 2026 — secțiunea retrasă parțial, cerut explicit.** Textul de
+mai sus era, până acum, DOAR subsecțiunea finală a §08 — deasupra lui existau `[H2] Ce
+primești pentru cele 3 ore?`, o listă de 4 livrabile numerotate (nevoie clar formulată /
+estimare a impactului / oamenii implicați / roadmap personalizat de validare) și un bloc de
+onestitate „Ce nu îți promit" (3 propoziții). Toate trei au dispărut integral — Ciprian a
+citat exact acest text ca „secțiunea [care] trebuie ștearsă". `[SUB — „Cum lucrăm"]` și
+`[SUB — „De ce să mai chemi pe cineva?"]` NU au fost citate pentru ștergere și au primit, în
+aceeași rundă, propriile instrucțiuni de editare — dovadă că rămân, promovate la conținutul
+principal al secțiunii.
+
+**Semnalat lui Ciprian, decizia lui:** blocul „Ce nu îți promit" avea un comentariu
+„obligatoriu" direct în cod (`S03Rezultatul.astro`: „singura formă de credibilitate care
+funcționează la un om saturat de promisiuni"), iar CLAUDE.md §2 marca secțiunea asta drept
+una din cele două „cele mai importante" ale paginii. Cerința a fost menținută după semnalare.
+
+**„Cum lucrăm" strânsă la 3 puncte** (6→3, aceeași metodă ca §07/D81) — păstrate „ce ai vrea
+să funcționeze diferit" (întrebarea de deschidere) și „unde se consumă timp, bani, energie
+sau atenție" (diagnostic de cost concret); adăugată explicit o întrebare nouă despre
+existența proceselor/procedurilor în zona respectivă.
+
+**„De ce să mai chemi pe cineva?" rescrisă**: de la trei propoziții + o linie de accent
+(„Dublezi perspectiva.") + două propoziții de încheiere, la UN paragraf — cerut explicit
+(„răspunsul trebuie dat într-un paragraf"). Unghi nou: nu „o a doua perspectivă vede ce tu nu
+vezi" (vechiul unghi funcțional), ci „ai fost invitat, poți la rândul tău invita — vezi-o ca
+pe un cadou de valoare pentru cineva din relațiile tale" (unghi relațional). O corectare de
+acuratețe pe parcurs: textul dictat spunea „invitat direct de speaker" — schimbat în „ai fost
+invitat", fără atribuire la o persoană anume, fiindcă pagina spune deja că invitațiile
+circulă „în principal" prin distribuire (`trustBar.acces`), nu mereu direct de la Ciprian.
+
+Vezi `docs/DECIZII.md` D82b–D86 pentru toate deciziile acestei runde.
 
 ---
 

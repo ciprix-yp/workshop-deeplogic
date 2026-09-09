@@ -196,7 +196,10 @@ mijloc") — două corecții punctuale pe bilet, plus butonul flotant:**
   ce iese hero-ul din cadru, pe toate viewport-urile. Fără CTA secundar, fără „află mai multe".
 - **Problema și „Ce rezultat promitem" nu se taie la mobil.** Sunt cele mai importante
   două secțiuni ale structurii lean din 2026-09-02 (10 secțiuni, mai jos). Dacă tai ceva,
-  nu de-acolo.
+  nu de-acolo. Regula e despre TĂIERE pe motiv de spațiu pe ecrane înguste, nu despre
+  imutabilitatea conținutului — „Ce rezultat promitem" a fost retrasă parțial deliberat pe
+  9 septembrie 2026 (D83, mai jos), la cerere explicită, repetată după semnalare. Ce rămâne
+  din ea (`Cum lucrăm` + `De ce să mai chemi pe cineva?`) tot nu se taie la mobil.
 - **Exact 10 secțiuni, nici una în plus.** Hero → Trust bar → Problemă → Agravare →
   Soluție → Facilitator → Cui i se adresează → Cui nu i se adresează →
   Ce rezultat promitem → FAQ. Până pe 8 septembrie 2026 mai exista o a 11-a, ținută

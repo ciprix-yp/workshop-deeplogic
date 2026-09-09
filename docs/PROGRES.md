@@ -258,6 +258,25 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
       3. **Marcajul listelor migrat la bulină** (§08 era ultima secțiune rămasă pe em-dash,
          semnalat explicit la corecția din §02) — regula „coloane vizual egale" rămâne
          respectată.
+- [x] **A doua rundă din 9 septembrie 2026 — §08 outro → quickwin box, §09 retrasă parțial.**
+      `docs/DECIZII.md` D82b–D86.
+      1. **§08 outro devine quickwin box** — refolosește `.card-depth`, aceeași disciplină
+         „nu X / ci Y" fără accent inventat.
+      2. **§09 retrasă parțial**: h2 + lista de 4 livrabile + „Ce nu îți promit" au dispărut
+         (cerut explicit, text exact citat). `cumLucram` și `chemaCineva` rămân — primesc,
+         în aceeași rundă, propriile instrucțiuni de editare. Semnalat, nu blocat: `.granita`
+         avea comentariu „obligatoriu" în cod, secțiunea era marcată „cea mai importantă" în
+         CLAUDE.md §2 — cerința menținută după semnalare.
+      3. **Consecință structurală rezolvată**: `cumLucram.h3` a preluat rolul de `h2` al
+         secțiunii, ca să nu rămână un `h3` orfan — verificat explicit în outline.
+      4. **`cumLucram.lista` strânsă la 3** (6→3, aceeași metodă ca §08) + o întrebare nouă
+         despre existența proceselor/procedurilor, cerută explicit.
+      5. **`chemaCineva` rescrisă**: de la trei câmpuri la un singur paragraf, unghi nou
+         („invitație ca gest de valoare", nu „a doua perspectivă"). O corectare de acuratețe
+         pe parcurs: „invitat direct de speaker" (formularea primită) → „ai fost invitat",
+         fără atribuire specifică — pagina spune deja că invitațiile circulă prin distribuire,
+         nu mereu direct de la Ciprian.
+      6. **Ultimul marcaj em-dash de pe pagină migrat la bulină** — migrarea e acum completă.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
