@@ -9,59 +9,32 @@ import Cta from './Cta.astro';
   „Precedent" (20% context / 80% lucru, acum `cumLucram`) și conținut nou
   din v4 („de ce să mai chemi pe cineva", `chemaCineva`). CTA repetat la
   final: singurul repetaj din mijlocul paginii, după cel mai „cald" moment.
+
+  Retrasă parțial (2026-09-09, D83) — fostul `h2` + lista de 4 livrabile +
+  blocul „Ce nu îți promit" au dispărut, cerut explicit. `cumLucram.h3`
+  („Cum lucrăm") a preluat rolul de heading `h2` al secțiunii — fără el,
+  primul heading rămas ar fi fost un `h3` orfan, fără `h2` părinte în
+  aceeași secțiune. Detalii complete în `copy.ts`, chiar deasupra
+  exportului `rezultatul`.
 */}
 <Sectiune id="rezultatul" latime="larg">
-  <h2 data-reveal>{rezultatul.h2}</h2>
-
-  <ol class="lista">
-    {rezultatul.lista.map((item, i) => (
-      <li data-reveal>
-        <span class="numar" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-        <span class="text">
-          <strong>{item.titlu}</strong>
-          <span class="sub">{item.corp}</span>
-        </span>
-      </li>
+  <h2 data-reveal>{rezultatul.cumLucram.h3}</h2>
+  <p class="format" data-reveal>{rezultatul.cumLucram.intro}</p>
+  {rezultatul.cumLucram.corp.map((p) => (
+    <p data-reveal>{p}</p>
+  ))}
+  <ul class="lista-simpla">
+    {rezultatul.cumLucram.lista.map((l) => (
+      <li data-reveal>{l}</li>
     ))}
-  </ol>
-
-  {/*
-    Blocul „Ce nu îți promit" e obligatoriu. E singura formă de credibilitate
-    care funcționează la un om saturat de promisiuni.
-    Stilizare deliberată: fundal secundar, FĂRĂ chenar roșu și FĂRĂ iconiță de
-    avertizare. E onestitate, nu alertă — dacă arată a warning, se citește ca
-    un disclaimer legal și își pierde efectul.
-  */}
-  <aside class="granita card-depth card-3d" data-tilt data-reveal>
-    <h3>{rezultatul.granita.h3}</h3>
-    {rezultatul.granita.corp.map((p) => (
-      <p>{p}</p>
-    ))}
-  </aside>
-
-  <div class="sub-bloc">
-    <h3 data-reveal>{rezultatul.cumLucram.h3}</h3>
-    <p class="format" data-reveal>{rezultatul.cumLucram.intro}</p>
-    {rezultatul.cumLucram.corp.map((p) => (
-      <p data-reveal>{p}</p>
-    ))}
-    <ul class="lista-simpla">
-      {rezultatul.cumLucram.lista.map((l) => (
-        <li data-reveal>{l}</li>
-      ))}
-    </ul>
-    {rezultatul.cumLucram.outro.map((p) => (
-      <p class="outro" data-reveal>{p}</p>
-    ))}
-  </div>
+  </ul>
+  {rezultatul.cumLucram.outro.map((p) => (
+    <p class="outro" data-reveal>{p}</p>
+  ))}
 
   <div class="sub-bloc">
     <h3 data-reveal>{rezultatul.chemaCineva.h3}</h3>
     {rezultatul.chemaCineva.corp.map((p) => (
-      <p data-reveal>{p}</p>
-    ))}
-    <p class="accent" data-reveal>{rezultatul.chemaCineva.accent}</p>
-    {rezultatul.chemaCineva.corpFinal.map((p) => (
       <p data-reveal>{p}</p>
     ))}
   </div>
@@ -78,64 +51,6 @@ import Cta from './Cta.astro';
   h3 {
     font-size: var(--t-h3);
     margin-bottom: var(--sp-sm);
-  }
-
-  .lista {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: var(--sp-md);
-    max-width: var(--max-proza);
-  }
-
-  .lista li {
-    display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: var(--sp-sm);
-    align-items: start;
-  }
-
-  .numar {
-    font-family: var(--font-mono);
-    /*
-     * Fix de contrast (audit impeccable, 2026-09-01): `--accent-decor` e
-     * 4.06:1, trece AA doar la ≥24px (regulă documentată pe token,
-     * tokens.css) — clamp propriu, cu podea la 24px indiferent de viewport.
-     */
-    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
-    color: var(--accent-decor);
-    font-weight: 500;
-    padding-top: 0.15em;
-  }
-
-  .text {
-    display: grid;
-    gap: var(--sp-2xs);
-  }
-
-  .text strong {
-    font-family: var(--font-titlu);
-    font-weight: 600;
-    line-height: var(--lh-normal);
-  }
-
-  .sub {
-    color: var(--text-muted);
-  }
-
-  /* Cutie + tilt din `.card-depth card-3d`, global (tokens.css) — sticlă
-     mată gri pe toate cardurile acum (2026-09-02), deci nu mai trebuie
-     forțat un fundal secundar aici doar ca să iasă din tonul alb-premium
-     de dinainte. `--text-muted-pe-secundar` rămâne ca plasă de siguranță
-     de contrast — fundalul translucid variază ușor cu ce e în spate. */
-  .granita {
-    margin-top: var(--sp-lg);
-    --text-muted: var(--text-muted-pe-secundar);
-    padding: var(--sp-md);
-    display: grid;
-    gap: var(--sp-sm);
-    max-width: var(--max-proza);
   }
 
   .sub-bloc {
@@ -161,23 +76,23 @@ import Cta from './Cta.astro';
 
   .lista-simpla li {
     display: grid;
-    grid-template-columns: 1.25rem 1fr;
+    /* 1.1rem, nu 1.25rem — bulina e mai îngustă decât fostul em-dash,
+       aceeași corecție ca la §02/§05/§08. */
+    grid-template-columns: 1.1rem 1fr;
     align-items: baseline;
     color: var(--text-muted);
   }
 
+  /* Bulină (`•`), nu em-dash — §09 era ultima secțiune rămasă pe marcajul
+     vechi (2026-09-09), acum aliniată cu tot restul paginii. */
   .lista-simpla li::before {
-    content: '—';
+    content: '•';
     color: var(--accent-decor);
+    font-size: 1.15em;
+    line-height: 1;
   }
 
   .outro {
     margin-top: var(--sp-xs);
-  }
-
-  .accent {
-    font-weight: 700;
-    color: var(--accent);
-    font-size: var(--t-corp-lg);
   }
 </style>

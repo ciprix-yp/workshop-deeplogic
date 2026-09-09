@@ -495,70 +495,77 @@ export const pentruCine = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   09 — CE REZULTAT PROMITEM
-   Fostă `rezultatul` — extinsă să absoarbă „cum lucrăm" (fost §12 Precedent,
-   20/80) și „de ce să mai chemi pe cineva" (conținut nou din v4), plus
-   blocul de onestitate „ce NU îți promit" (fostă `rezultatul.granita`).
+   09 — CE REZULTAT PROMITEM — retrasă parțial (2026-09-09, D83)
+   Era: `h2` „Ce primești pentru cele 3 ore?" + `lista` (4 livrabile) +
+   `granita` („Ce nu îți promit") + `cumLucram` („Cum lucrăm", 20/80) +
+   `chemaCineva` („De ce să mai chemi pe cineva?").
+
+   Cerut explicit: „secțiunea asta trebuie ștearsă", cu textul exact al
+   h2+lista+granita citat ca „secțiunea" — `cumLucram`/`chemaCineva` NU au
+   fost citate și au primit, în aceeași rundă, propria instrucțiune de
+   editare (trim la 3 puncte) — dovadă clară că rămân, nu doar absența unei
+   mențiuni explicite de ștergere.
+
+   `granita` avea un comentariu „obligatoriu" în `S03Rezultatul.astro`
+   (singura formă de credibilitate la un cititor saturat de promisiuni) —
+   semnalat lui Ciprian, nu blocat: cerința a fost repetată, textul exact
+   citat a doua oară, deci a rămas decizia lui.
+
+   Fără `h2` propriu, `cumLucram.h3` („Cum lucrăm") a devenit noul heading
+   de nivel `h2` al secțiunii (vezi `S03Rezultatul.astro`) — altfel primul
+   heading rămas ar fi fost un `h3` orfan, fără `h2` părinte în aceeași
+   secțiune (regulă verificată obsesiv toată sesiunea asta, de la §02).
+   `chemaCineva.h3` rămâne `h3`, sub el.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const rezultatul = {
-  h2: 'Ce primești pentru cele 3 ore?',
-  lista: [
-    {
-      titlu: 'O nevoie clar formulată',
-      corp: 'Nu „Ar trebui să facem și noi ceva.” Ci: „Asta este problema sau oportunitatea pe care vreau s-o investighez.”',
-    },
-    {
-      titlu: 'O primă estimare a impactului',
-      corp: 'Cât de des apare, câți oameni implică, cât timp consumă. Nu inventăm ROI — vedem dacă merită investigată.',
-    },
-    {
-      titlu: 'Oamenii care trebuie implicați',
-      corp: 'Identifici cine execută procesul, cine îl coordonează, cine primește rezultatul și cine trăiește blocajele lui zi de zi.',
-    },
-    {
-      titlu: 'Un roadmap personalizat de validare',
-      corp: 'Nevoia identificată, de ce contează, impactul preliminar, ce trebuie verificat, cine trebuie implicat, acțiunile concrete pentru următorul pas și recomandarea Deep Logic privind continuarea — pe email.',
-    },
-  ],
-  granita: {
-    h3: 'Ce nu îți promit',
-    corp: [
-      'Nu îți promit că, după trei ore, știm dacă ipoteza e corectă. Ar fi incorect.',
-      'Pentru asta trebuie să vorbim cu oamenii care lucrează în proces, să vedem cum funcționează în realitate și să analizăm datele, impactul, efortul și riscurile.',
-      'PRIMUL PAS îți arată ce merită investigat. Nu pretinde că îți dă verdictul înainte de investigație.',
-    ],
-  },
   cumLucram: {
     h3: 'Cum lucrăm',
     intro: '20% context. 80% lucru aplicat.',
     corp: [
       'Contextul există doar cât să punem întrebările corecte.',
     ],
+    /*
+     * Strânsă de la 6 la 3 (2026-09-09, „tot așa 3 puncte relevante" — cerut
+     * explicit, aceeași metodă ca la §08). Păstrate: întrebarea de deschidere
+     * (ce vrei să fie diferit) și diagnosticul de cost concret (unde se
+     * consumă timp/bani) — celelalte trei originale (cine e implicat, ce
+     * valoare ar avea, ce ar putea fi delegat) erau fie acoperite deja de
+     * pașii din §05 Soluție, fie prea apropiate una de alta ca unghi.
+     * A treia întrebare e NOUĂ, cerută explicit („aș adăuga o întrebare de
+     * procese/proceduri, dacă există sau nu în acea arie") — diagnostic
+     * structural, nu doar cost sau dorință.
+     */
     lista: [
       'Ce ai vrea să funcționeze diferit',
       'Unde se consumă timp, bani, energie sau atenție',
-      'Cine este implicat',
-      'Ce valoare ar avea schimbarea',
-      'Ce ar putea fi delegat sau construit diferit',
-      'Ce trebuie validat înainte să implementezi',
+      'Ce proceduri sau procese există deja și ce lipsește',
     ],
     outro: [
       'Nu lucrăm pe un business imaginar. Lucrăm pe al tău.',
       'Nu trebuie să fii IT-ist. Nu trebuie să știi să programezi. Laptopul nu este obligatoriu.',
     ],
   },
+  /*
+   * Rescrisă (2026-09-09, a doua schimbare a rundei) — de la trei câmpuri
+   * (`corp`, `accent`, `corpFinal`, șase propoziții pe unghiul „o singură
+   * persoană vede doar o parte din afacere") la UN paragraf, cerut explicit
+   * („răspunsul trebuie dat într-un paragraf"). Unghi nou, dictat de
+   * Ciprian, nu citat literal — reformulat cu vocea paginii (skill-ul de
+   * copywriting, invocat explicit): nu „de ce ajută o a doua perspectivă"
+   * (vechiul unghi funcțional), ci „ai fost invitat, poți la rândul tău
+   * invita" (unghiul relațional — invitația ca gest de valoare).
+   *
+   * „Invitat direct de speaker" (formularea primită) a devenit „ai fost
+   * invitat", fără atribuire la o persoană anume — pagina însăși spune că
+   * invitațiile circulă „în principal" prin distribuire (trustBar.acces,
+   * §1 CLAUDE.md), nu mereu direct de la Ciprian; o afirmație mai specifică
+   * decât atât ar fi riscat să nu fie adevărată pentru fiecare cititor.
+   */
   chemaCineva: {
     h3: 'De ce să mai chemi pe cineva?',
     corp: [
-      'Pentru că un singur om vede doar o parte din afacere.',
-      'Tu poți vedea obiectivul. Un partener, un manager sau un coleg-cheie poate vedea procesul altfel. Un alt antreprenor îți poate pune întrebarea pe care tu nu ți-o mai pui.',
-      'Dacă vii împreună cu cineva în care ai încredere, nu dublezi informația.',
-    ],
-    accent: 'Dublezi perspectiva.',
-    corpFinal: [
-      'Și plecați cu un pas pe care îl puteți continua și după workshop, nu doar cu o idee care rămâne într-un carnețel.',
-      'Poate fi cineva din compania ta sau un alt antreprenor cu care ai o relație bună.',
+      'Ai fost invitat la acest workshop — și poți, la rândul tău, să aduci o persoană. Vezi-o ca pe un cadou pe care îl faci unui partener, unui client sau unui colaborator: un plus de valoare, prin relația pe care o aveți deja. Sunt șanse mari să se regăsească în aceeași situație — și să găsească, în cele trei ore, răspuns la propriile întrebări.',
     ],
   },
 } as const;
