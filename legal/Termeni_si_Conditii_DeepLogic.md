@@ -19,7 +19,7 @@ Site-ul și serviciile descrise în acest document sunt operate de:
 Acești Termeni și Condiții reglementează:
 
 - utilizarea site-ului Deep Logic;
-- înscrierea și participarea la evenimente organizate de Deep Logic, inclusiv workshopul **„Prima Mutare spre un Asistent Digital"**;
+- înscrierea și participarea la evenimente organizate de Deep Logic, inclusiv workshopul **„PRIMUL PAS"**;
 - prezentarea pe site a serviciilor Deep Logic (workshopuri, diagnostic in-company, implementare de agenți AI).
 
 Documentul se aplică atât evenimentului menționat mai sus, cât și evenimentelor sau serviciilor viitoare prezentate pe site, în măsura în care nu există condiții specifice comunicate separat pentru un eveniment/serviciu anume.
@@ -48,7 +48,7 @@ Site-ul poate include:
 
 ## 5. Înscrierea la evenimente
 
-Înscrierea la un eveniment Deep Logic (ex. workshopul „Prima Mutare spre un Asistent Digital") se face prin formularul disponibil pe site sau prin canalul de înscriere comunicat pentru evenimentul respectiv.
+Înscrierea la un eveniment Deep Logic (ex. workshopul „PRIMUL PAS") se face prin formularul disponibil pe site sau prin canalul de înscriere comunicat pentru evenimentul respectiv.
 
 Locurile pot fi limitate. Deep Logic poate accepta un număr de înscrieri mai mare decât numărul de locuri disponibile, pentru a compensa eventualele neprezentări, și poate solicita o reconfirmare a participării înainte de eveniment.
 

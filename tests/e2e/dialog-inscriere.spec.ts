@@ -80,6 +80,18 @@ test('submit reușit arată confirmarea ÎN dialog, fără navigare', async ({ p
   await expect(page.locator('#dialog-titlu')).toHaveText('Gata. Locul e al tău.');
   expect(page.url()).toBe(urlInainte);
   await expect(dialog).toBeVisible();
+
+  // „Adaugă în calendar" (2026-09-09) — vizibil pentru `stare: 'inscris'`,
+  // link corect către .ics-ul generat static. Verifică și culoarea reală a
+  // corpului: bug real găsit aici — `.confirmare-corp p`/`.link-calendar`
+  // sunt create din JS, fără atributul de scope al Astro, deci selectoarele
+  // scopate normal (fără `:global()`) nu se aplicau NICIODATĂ — randau negru
+  // implicit, nu `--secundar`. `toHaveCSS` prinde regresia dacă cineva scoate
+  // `:global()` la o corectură viitoare.
+  const linkCalendar = page.locator('[data-pas="confirmare"] .link-calendar');
+  await expect(linkCalendar).toBeVisible();
+  await expect(linkCalendar).toHaveAttribute('href', '/eveniment.ics');
+  await expect(page.locator('.confirmare-corp p').first()).toHaveCSS('color', 'rgb(47, 79, 79)');
 });
 
 test('submit cu erori le arată inline, dialogul rămâne deschis', async ({ page }) => {

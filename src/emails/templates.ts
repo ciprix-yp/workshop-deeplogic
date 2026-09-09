@@ -32,7 +32,9 @@ export function email1Confirmare(p: { nume: string; linkAnulare: string }): Emai
     semnatura: `Ne vedem miercuri,\n${SEMNATURA}`,
   };
   return {
-    subject: 'Ești înscris — Prima Mutare spre un Asistent Digital',
+    // Bug real (2026-09-09): era hardcodat „Prima Mutare spre un Asistent
+    // Digital", numele vechi al produsului — vezi nota din render.ts.
+    subject: `Ești înscris — ${EVENIMENT.titlu}`,
     text: randeazaText(continut),
     html: randeazaHtml(continut),
   };
@@ -123,7 +125,7 @@ export function email5Waitlisted(p: { nume: string }): EmailGata {
     semnatura: SEMNATURA,
   };
   return {
-    subject: 'Ești pe lista de așteptare — Prima Mutare spre un Asistent Digital',
+    subject: `Ești pe lista de așteptare — ${EVENIMENT.titlu}`,
     text: randeazaText(continut),
     html: randeazaHtml(continut),
   };

@@ -233,6 +233,16 @@ const stariClient = JSON.stringify({
 
     <div data-pas="confirmare" hidden>
       <div data-confirmare-corp class="confirmare-corp"></div>
+      {/*
+        „Adaugă în calendar" — populat de `arataConfirmarea()` doar pentru
+        stările „inscris"/„reconfirmat" (2026-09-09, cerut explicit: aceeași
+        funcție ca butonul din biletul Trust bar, acum și pe confirmarea
+        imediată). Container gol în markup, ca varianta din CardRaspuns.astro
+        (`/multumesc`) să nu difere de calea cu JS — o singură sursă de
+        adevăr pentru CÂND apare linkul (`LinkCalendar.astro` + logica de-aici
+        trebuie ținute în sincron dacă se schimbă vreodată condiția).
+      */}
+      <div data-confirmare-calendar class="confirmare-calendar"></div>
       <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
     </div>
   </div>
@@ -383,6 +393,37 @@ const stariClient = JSON.stringify({
     const pasConfirmare = dialog.querySelector('[data-pas="confirmare"]');
     const titluDialog = document.getElementById('dialog-titlu');
     const confirmareCorp = dialog.querySelector('[data-confirmare-corp]');
+    const confirmareCalendar = dialog.querySelector('[data-confirmare-calendar]');
+
+    // Aceeași condiție ca `areLinkCalendar` din `multumesc.astro`/`rezultat.astro`
+    // — doar stările care înseamnă „vii", niciodată `asteptare`/`anulatAnterior`.
+    const STARI_CU_CALENDAR = new Set(['inscris', 'reconfirmat']);
+
+    // Markup identic cu `LinkCalendar.astro` (SVG + text) — componenta Astro
+    // nu poate fi randată din JS de pe client, deci dublat aici o singură
+    // dată, nu la fiecare rundă de corectură. DOM construit cu
+    // `createElementNS`/`createElement`, nu `innerHTML` — deloc conținut
+    // dinamic aici, dar tiparul e cel folosit peste tot în script (vezi
+    // paragrafele din `confirmareCorp`, mai jos).
+    const NS_SVG = 'http://www.w3.org/2000/svg';
+    function elSvg(tag, atribute) {
+      const el = document.createElementNS(NS_SVG, tag);
+      for (const [nume, val] of Object.entries(atribute)) el.setAttribute(nume, val);
+      return el;
+    }
+    function creeazaLinkCalendar() {
+      const a = document.createElement('a');
+      a.href = '/eveniment.ics';
+      a.className = 'link-calendar';
+
+      const svg = elSvg('svg', { viewBox: '0 0 24 24', width: '18', height: '18', 'aria-hidden': 'true', focusable: 'false' });
+      svg.append(
+        elSvg('rect', { x: '3', y: '5', width: '18', height: '16', rx: '2', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8' }),
+        elSvg('path', { d: 'M3 9.5h18M8 3v4M16 3v4', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round' }),
+      );
+      a.append(svg, document.createTextNode('Adaugă în calendar'));
+      return a;
+    }
 
     function arataConfirmarea(stare) {
       const continut = STARI[stare] ?? STARI.inscris;
@@ -393,6 +434,9 @@ const stariClient = JSON.stringify({
           el.textContent = p;
           return el;
         }),
+      );
+      confirmareCalendar.replaceChildren(
+        ...(STARI_CU_CALENDAR.has(stare) ? [creeazaLinkCalendar()] : []),
       );
       pasFormular.hidden = true;
       pasConfirmare.hidden = false;
@@ -885,9 +929,50 @@ const stariClient = JSON.stringify({
     margin-bottom: var(--sp-lg);
   }
 
-  .confirmare-corp p {
+  /*
+   * Bug real, găsit la testarea end-to-end (2026-09-09): `.confirmare-corp p`
+   * nu se aplica NICIODATĂ — verificat, culoarea randată era negru implicit
+   * (`rgb(0,0,0)`), nu `--secundar`. Cauza: `<p>`-urile sunt create din JS
+   * (`document.createElement`, mai sus), deci n-au atributul de scope pe
+   * care Astro îl adaugă STRICT la build, pe elementele din șablon — iar
+   * compilatorul cere atributul pe FIECARE clasă din lanțul de selector, nu
+   * doar pe strămoș. `:global()` dezactivează scoparea exact pe bucata care
+   * țintește conținut creat din JS, cu strămoșul (`.confirmare-corp`,
+   * static în șablon) tot scopat normal — nu se scurge în alte componente.
+   */
+  .confirmare-corp :global(p) {
     line-height: var(--lh-lejer);
     color: var(--secundar);
+  }
+
+  .confirmare-calendar:not(:empty) {
+    margin-bottom: var(--sp-lg);
+  }
+
+  /* Aceeași cauză și fix ca mai sus — link creat de `creeazaLinkCalendar()`,
+     nu de Astro. Identic vizual cu `LinkCalendar.astro`. */
+  .confirmare-calendar :global(.link-calendar) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2xs);
+    min-height: var(--touch);
+    padding-inline: var(--sp-md);
+    border: 1px solid rgba(47, 79, 79, 0.3);
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s var(--ease-out);
+  }
+
+  .confirmare-calendar :global(.link-calendar:hover),
+  .confirmare-calendar :global(.link-calendar:focus-visible) {
+    border-color: var(--accent);
+    background: rgba(55, 106, 102, 0.06);
+  }
+
+  .confirmare-calendar :global(.link-calendar:active) {
+    transform: scale(0.97);
   }
 
   .inapoi {

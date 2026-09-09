@@ -1,0 +1,51 @@
+{/*
+  „Adaugă în calendar" — extras din `rezultat.astro` (2026-09-09), unde
+  exista deja pentru `reconfirmat`/`locRevendicat`. Acum apare și pe
+  confirmarea IMEDIATĂ de înscriere (`/multumesc`, plus varianta în-dialog
+  din `DialogInscriere.astro`) — cerut explicit: „add to calendar cu e și pe
+  landing" (aceeași funcție ca butonul din biletul Trust bar).
+
+  Al treilea loc care avea nevoie de link+stil identic — extras acum, nu
+  duplicat a treia oară (aceeași regulă care a scos `CardRaspuns.astro` din
+  `/multumesc` + `/lista-asteptare`, „al treilea duplicat era semnul clar").
+
+  Fără `download`: fără el, telefonul recunoaște fișierul după
+  `Content-Type: text/calendar` și îl deschide direct în aplicația de
+  calendar, precompletat — un singur tap (vezi TrustBar.astro).
+*/}
+<a href="/eveniment.ics" class="link-calendar">
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+    <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+    <path d="M3 9.5h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+  </svg>
+  Adaugă în calendar
+</a>
+
+<style>
+  .link-calendar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2xs);
+    min-height: var(--touch);
+    padding-inline: var(--sp-md);
+    border: 1px solid rgba(47, 79, 79, 0.3);
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s var(--ease-out);
+  }
+
+  /* Fix (audit emil-design-eng, 2026-09-02): arată ca un buton (bordură,
+     padding, țintă de 44px) dar nu se simțea apăsabil — nici hover, nici
+     press feedback. */
+  .link-calendar:hover,
+  .link-calendar:focus-visible {
+    border-color: var(--accent);
+    background: rgba(55, 106, 102, 0.06);
+  }
+
+  .link-calendar:active {
+    transform: scale(0.97);
+  }
+</style>

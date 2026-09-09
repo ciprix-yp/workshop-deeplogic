@@ -18,7 +18,7 @@ Site-ul Deep Logic colectează date cu caracter personal în mai multe situații
 
 ### 2.1 Înscrierea la un eveniment (obligatoriu pentru participare)
 
-Pentru înscrierea la un eveniment (ex. workshopul „Prima Mutare spre un Asistent Digital"), colectăm:
+Pentru înscrierea la un eveniment (ex. workshopul „PRIMUL PAS"), colectăm:
 
 - nume
 - email

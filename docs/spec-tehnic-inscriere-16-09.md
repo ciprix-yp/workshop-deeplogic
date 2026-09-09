@@ -1,5 +1,5 @@
 # Spec tehnic — Înscriere, reconfirmare, listă de așteptare, check-in
-**Workshop „Prima Mutare spre un Asistent Digital" · 16 septembrie 2026 · Deep Logic**
+**Workshop „PRIMUL PAS" · 16 septembrie 2026 · Deep Logic**
 
 > Fișier de producție pentru Claude Code. Complementar la `landing-workshop-16-09.md`
 > (care conține copy-ul paginii). Aici e arhitectura tehnică completă. Conținutul exact
@@ -278,7 +278,7 @@ Fără asta, cineva poate rămâne înscris în Supabase fără să primească n
 ## Conținut `.ics` (atașat la emailul 3 și pe pagina de revendicare din waitlist)
 
 ```
-SUMMARY: Prima Mutare spre un Asistent Digital — Deep Logic
+SUMMARY: PRIMUL PAS — Deep Logic
 DTSTART: 20260916T140000 (Europe/Bucharest)
 DTEND:   20260916T170000 (Europe/Bucharest)
 LOCATION: Casa Dăinuirii, Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare

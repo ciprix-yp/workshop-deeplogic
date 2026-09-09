@@ -291,6 +291,22 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          ocupate?" — mecanismul de listă de așteptare există complet în cod (`stari.asteptare`)
          dar n-are nicio vizibilitate înainte de submit. Rămâne sugestie pentru o rundă
          viitoare, nu adăugată acum — ar fi depășit ținta explicită de „top 5".
+- [x] **9 septembrie 2026 — pregătire pentru testarea end-to-end pe emailuri.**
+      `docs/DECIZII.md` D98–D100.
+      1. **Bug real, găsit la citirea codului înainte de a trimite emailuri de test**:
+         denumirea veche a produsului („Prima Mutare spre un Asistent Digital") rămăsese
+         hardcodată în subsolul comun de email, două subiecte, și AMBELE pagini legale.
+         Fix la rădăcină în subsolul emailului: `EVENIMENT.titlu` dinamic, nu un șir fix.
+         Cele trei teste care afirmau numele vechi ca „așteptat" corectate, nu ocolite.
+      2. **„Adaugă în calendar" pe confirmarea imediată de înscriere** (`/multumesc` + varianta
+         în-dialog) — cerut explicit, lipsea exact pe calea cea mai frecventă (`/rezultat.astro`
+         îl avea deja, pentru confirmările ajunse prin link din email). Extras într-o
+         componentă comună, `LinkCalendar.astro`, al treilea loc care l-ar fi duplicat.
+      3. **Bug real, PREEXISTENT, găsit la implementare**: paragrafele din confirmarea
+         în-dialog nu erau NICIODATĂ colorate corect — `.confirmare-corp p` exista în CSS de
+         multă vreme, dar nu se aplica niciodată, fiindcă elementele sunt create din JS, fără
+         atributul de scope al Astro. Fix: `:global()` pe selectoarele care țintesc conținut
+         creat din JS. Test nou care prinde regresia dacă cineva scoate `:global()`.
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 

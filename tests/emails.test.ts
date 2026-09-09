@@ -48,14 +48,14 @@ describe('toate cele 7 emailuri se randează complet', () => {
 
 describe('subiectele — fidele față de docs/EMAILURI.md, aprobat 28 august', () => {
   it.each([
-    [email1Confirmare({ nume: P.nume, linkAnulare: P.linkAnulare }), 'Ești înscris — Prima Mutare spre un Asistent Digital'],
+    [email1Confirmare({ nume: P.nume, linkAnulare: P.linkAnulare }), 'Ești înscris — PRIMUL PAS'],
     [
       email2Reconfirmare({ nume: P.nume, linkConfirmare: P.linkConfirmare, linkAnulare: P.linkAnulare }),
       'Vii miercuri? Am nevoie de un răspuns până la 11:00',
     ],
     [email3NeVedemAzi({ nume: P.nume, linkAnulare: P.linkAnulare }), 'Azi, 14:00 — Casa Dăinuirii'],
     [email4CheckIn({ nume: P.nume, linkCheckin: P.linkCheckin }), 'Te aștept — check-in rapid la sosire'],
-    [email5Waitlisted({ nume: P.nume }), 'Ești pe lista de așteptare — Prima Mutare spre un Asistent Digital'],
+    [email5Waitlisted({ nume: P.nume }), 'Ești pe lista de așteptare — PRIMUL PAS'],
     [
       email6SeatFreed({ nume: P.nume, numarLocuri: 1, linkRevendicare: P.linkRevendicare }),
       'S-a eliberat un loc — primul care confirmă îl ia',
@@ -124,7 +124,7 @@ describe('semnătura — „Ciprian Micu - Deep Logic" peste tot, cratimă simpl
 describe('subsolul comun apare pe toate cele 7', () => {
   it.each(TOATE.map((e, i) => [i + 1, e] as const))('email %i', (_, e) => {
     expect(e.text).toContain('Deep Logic · Satu Mare, România');
-    expect(e.text).toMatch(/te-ai înscris la „Prima Mutare/);
+    expect(e.text).toMatch(/te-ai înscris la „PRIMUL PAS/);
   });
 });
 

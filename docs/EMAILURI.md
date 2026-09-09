@@ -1,7 +1,16 @@
-# Emailuri — Workshop „Prima Mutare spre un Asistent Digital"
+# Emailuri — Workshop „PRIMUL PAS"
 
 **Aprobat de Ciprian pe 28 august 2026.** Toate cele 4 puncte deschise din
 prima variantă sunt tranșate — vezi „Decizii" la final. Gata pentru F6.
+
+**Bug real, găsit la testarea end-to-end (2026-09-09):** denumirea veche a
+produsului, „Prima Mutare spre un Asistent Digital", rămăsese hardcodată în
+două subiecte de email și în subsolul comun (`src/emails/render.ts`,
+`src/emails/templates.ts`), plus în ambele pagini legale — pivotul de produs
+din 31 august (→ „PRIMUL PAS") actualizase `src/content/copy.ts` (pagina),
+dar niciunul din aceste fișiere nu citea de-acolo. Corectat aici ȘI în cod;
+subsolul comun citește acum `EVENIMENT.titlu` dinamic, nu un șir fix — un
+pivot viitor de produs nu mai poate uita locul ăsta.
 
 ## Cum se citește documentul ăsta
 
@@ -40,7 +49,7 @@ Cerut explicit de Ciprian — verificat, nu presupus:
 ## Email 1 — Confirmare imediată
 
 **Trimis:** imediat după `POST /api/register`, pentru status `inscris`.
-**Subiect:** `Ești înscris — Prima Mutare spre un Asistent Digital`
+**Subiect:** `Ești înscris — PRIMUL PAS`
 
 ```
 Salut, {{nume}},
@@ -169,7 +178,7 @@ Ciprian Micu - Deep Logic
 
 **Trimis:** imediat după `POST /api/register`, pentru status `asteptare`
 (funcția `workshop/waitlisted`).
-**Subiect:** `Ești pe lista de așteptare — Prima Mutare spre un Asistent Digital`
+**Subiect:** `Ești pe lista de așteptare — PRIMUL PAS`
 
 ```
 Salut, {{nume}},
@@ -307,8 +316,7 @@ filtrele de spam, gratis, și consistent cu footer-ul de pe pagină:
 ```
 —
 Deep Logic · Satu Mare, România
-Ai primit mailul ăsta pentru că te-ai înscris la „Prima Mutare spre un
-Asistent Digital" pe workshop.deeplogic.ro.
+Ai primit mailul ăsta pentru că te-ai înscris la „PRIMUL PAS" pe workshop.deeplogic.ro.
 ```
 
 ---

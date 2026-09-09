@@ -9,7 +9,7 @@
  * o persoană, nu un buletin de marketing.
  */
 
-import { footer as siteFooter } from '../content/copy';
+import { footer as siteFooter, EVENIMENT } from '../content/copy';
 
 export interface Buton {
   text: string;
@@ -29,7 +29,16 @@ const ACCENT = '#376A66'; // verificat: 6.15:1 pe alb — npm run contrast
 const TEXT = '#2A3439';
 const MUTED = '#637474';
 
-const SUBSOL_TEXT = `—\n${siteFooter.brand} · Satu Mare, România\nAi primit mailul ăsta pentru că te-ai înscris la „Prima Mutare spre un Asistent Digital" pe workshop.deeplogic.ro.`;
+/*
+ * Bug real, găsit la testarea end-to-end (2026-09-09): denumirea veche a
+ * produsului, „Prima Mutare spre un Asistent Digital", rămăsese hardcodată
+ * aici — pivotul de produs (2026-08-31, → „PRIMUL PAS") actualizase
+ * `copy.ts` (pagina), dar nu și emailurile, care nu citesc din același
+ * fișier de-atunci. Fix la rădăcină: `EVENIMENT.titlu`, nu un șir fix — un
+ * pivot viitor de produs nu mai poate uita locul ăsta, fiindcă nu-l mai
+ * atinge deloc.
+ */
+const SUBSOL_TEXT = `—\n${siteFooter.brand} · Satu Mare, România\nAi primit mailul ăsta pentru că te-ai înscris la „${EVENIMENT.titlu}" pe workshop.deeplogic.ro.`;
 
 function escapeHtml(s: string): string {
   return s
@@ -93,7 +102,7 @@ export function randeazaHtml(c: EmailContinut): string {
           <hr style="border:none;border-top:1px solid #E4E7E7;margin:32px 0 16px;" />
           <p style="margin:0;color:${MUTED};font-size:12px;line-height:1.6;">
             ${siteFooter.brand} · Satu Mare, România<br/>
-            Ai primit mailul ăsta pentru că te-ai înscris la „Prima Mutare spre un Asistent Digital" pe workshop.deeplogic.ro.
+            Ai primit mailul ăsta pentru că te-ai înscris la „${EVENIMENT.titlu}" pe workshop.deeplogic.ro.
           </p>
         </td></tr>
       </table>

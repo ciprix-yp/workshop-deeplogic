@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CardRaspuns from '../components/CardRaspuns.astro';
+import LinkCalendar from '../components/LinkCalendar.astro';
 import { stari, EVENIMENT } from '../content/copy';
 
 /**
@@ -22,8 +23,15 @@ const continut =
   stareParam === 'anulat' ? stari.anulatAnterior
   : stareParam === 'reconfirmat' || stareParam === 'prezent' ? stari.reconfirmat
   : stari.inscris;
+
+// „Adaugă în calendar" (2026-09-09, cerut explicit) — doar pe stările care
+// chiar înseamnă „vii": nu pe `anulatAnterior`, unde un buton de calendar ar
+// contrazice exact ce tocmai a citit omul.
+const areLinkCalendar = stareParam !== 'anulat';
 ---
 
 <Base titlu={`${continut.titlu} — ${EVENIMENT.titlu}`} noindex>
-  <CardRaspuns titlu={continut.titlu} corp={continut.corp} />
+  <CardRaspuns titlu={continut.titlu} corp={continut.corp}>
+    {areLinkCalendar && <LinkCalendar />}
+  </CardRaspuns>
 </Base>
