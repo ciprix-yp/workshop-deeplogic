@@ -750,3 +750,48 @@ alese pentru ea — rămâne o sugestie pentru o rundă viitoare, nu o decizie l
 sus), `npm run contrast`, build, `motion.spec.ts` + `dialog-inscriere.spec.ts` 22/22 pe desktop
 + mobil-360, verificat programatic: 5 elemente `<details>`, ordinea și textul fiecărei întrebări
 confirmate în browser (colaps și extins).
+
+## 8 septembrie 2026 — Audit extern de design/UI-UX, 7 fixuri (Claude, sesiune separată)
+
+Punct de plecare: un audit tehnic generic, primit de la Ciprian, scris fără cunoașterea codului
+curent — verificat clauză cu clauză înainte de orice acțiune (secțiunea Tailwind era
+inaplicabilă, proiectul n-are Tailwind; culoarea propusă pentru CTA era exact valoarea RESPINSĂ
+din tabelul de contrast; `<dialog>` nativ, fluid typography și feedback-ul de hover erau deja
+implementate). Din verificarea propriu-zisă (trei agenți specializați — art-director,
+motion-director, visual-critic — plus captură de ecran programatică la 360px) au ieșit șapte
+lucruri reale, nesemnalate de audit.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D89** | `data-lenis-prevent` adăugat pe `.continut` (containerul cu scroll intern al dialogului de înscriere) | Lenis interceptează `wheel` GLOBAL pe `window` și cheamă `preventDefault()` — inclusiv când evenimentul pornește dintr-un container cu scroll propriu, dacă acela nu poartă atributul (`allowNestedScroll` e `false` implicit, verificat direct în `node_modules/lenis/dist/lenis.mjs`). Fără el, rotița/trackpad-ul pe desktop, cu dialogul deschis, mișca pagina din spate — formularul (mai înalt decât `max-height`) rămânea blocat pe touch-ul de scroll. Defectul a scăpat de toate plasele existente: pe touch `syncTouch: false` trimite evenimentul pe ramura nativă (neatinsă), la fel `prefers-reduced-motion` (`smoothWheel: false`), iar testele Playwright scrolează programatic, niciodată cu `wheel` real. Singura interacțiune de pe pagină care aduce bani, nefuncțională pe desktop, nedetectată de nimic. | `DialogInscriere.astro` |
+| **D90** | Butonul CTA flotant (`CtaFloating.astro`) — schimbat din pastilă-în-colț (poziție fixă, dreapta-jos) în bară pe lățime plină, ancorată jos | Scanare vizuală programatică la 360px, prin toată pagina: pastila (165×72px) acoperea text îngroșat intenționat, la mijloc de propoziție, în ~40% din pozițiile de scroll unde era eligibilă să apară (§Agravare, §Facilitator, §FAQ) — rootMargin-ul pozitiv existent (D-ul din 2026-09-02, „butonul flotant se suprapune cu CTA-ul") apăra doar de suprapunerea cu alt `.cta`, proza n-a fost niciodată în ecuație. O bară pe lățime plină nu reduce ce se acoperă pe orizontală, dar mută ocluzia într-o zonă FIXĂ și previzibilă (ultimii ~60px de jos) — la fel cum bara de sus (`BaraScarcity`) ocupă deja o zonă fixă, acceptată. Mecanismul de arătare/ascundere (debounce 1000ms/500ms, `IntersectionObserver` pe `.cta`) rămâne complet neschimbat — doar forma vizuală. | `CtaFloating.astro` |
+| **D91** | `aria-haspopup="dialog"` adăugat pe ambele CTA-uri care deschid `#inscriere` (`Cta.astro`, `CtaFloating.astro`) | Lipsea complet (verificat: zero rezultate pe `aria-haspopup`/`aria-modal` în tot `src/`) — singurul punct valid, ieftin, corect al auditului extern. Dialogul folosește deja nativ `<dialog>` + `.showModal()`, care conveiește semantica modală singur; `aria-haspopup` anunță cititoarelor de ecran, ÎNAINTE de activare, că butonul deschide un dialog, nu navighează. | `Cta.astro`, `CtaFloating.astro` |
+| **D92** | Hover-ul (`background-color`) rămânea „lipit" pe touch pe `.cta` ȘI pe `.cta-submit` — mutat în gate-ul `@media (hover: hover) and (pointer: fine)` existent; `:focus-visible` rămâne neconditionat | Ambele reguli aveau transform/box-shadow deja corect protejate de gate, dar `background-color` era pe o linie separată, neprotejată — pe touch, culoarea de hover rămânea vizibilă pe buton exact cât se închidea modalul deschis de acel CTA (tap → hover „lipit" → navigare/deschidere → starea rămasă vizuală, incorectă la următoarea privire). Aceeași capcană, în două fișiere diferite, cu aceeași cauză. | `Cta.astro`, `DialogInscriere.astro` (`.cta-submit`) |
+| **D93** | Al doilea câmp condiționat din formular („Altceva:", companion la `provocare_business`) — primește tranziție de apariție (`@starting-style`, opacity), identică cu singurul alt câmp condiționat din formular („De la cine?") | `wrap.hidden = false` sărea instant la vizibil — singurul din cele două câmpuri condiționate ale formularului fără tranziție (celălalt fusese reparat la audit-ul emil-design-eng din 2026-09-01). Inconsistență de coerență, nu de funcționalitate. | `DialogInscriere.astro` (`.camp-text-companion`) |
+| **D94** | Numerotarea mecanismului din §05 Soluție (`.mecanism li::before`) — `font-size` mutat de la `var(--t-corp)` (~17-19px) la `clamp(1.5rem, 1.3rem + 0.8vw, 2rem)` cu podea la 24px; coloana grid lărgită de la `1.75rem` la `2.5rem` | `--accent-decor` e 4.06:1 — trece AA doar la ≥24px, regulă documentată chiar pe token (tokens.css) și deja aplicată identic în `S03Rezultatul.astro` și fosta `S06CeFacem.astro` (audit impeccable, 2026-09-01). Aici scăpase: un contrast real picat sub prag, nedetectat de `check-contrast.mjs` fiindcă scriptul verifică VALORILE tokenilor, nu utilizările lor la dimensiuni sub prag. | `Solutie.astro` |
+| **D95** | `check-contrast.mjs` — adăugate perechile CTA-ului principal, lime (`--pe-lime` pe `--lime`, 8.01:1; pe `--lime-hover`, 5.45:1) | Perechea veche verificată (`#FFFFFF` pe `#376A66`) rămâne corectă — e `.cta-submit` din formular, care încă folosește `--accent`. Dar CTA-ul PRINCIPAL, cel repetat de patru ori plus butonul flotant — motivul explicit pentru care scriptul există, scris chiar în docstring-ul lui — trecuse de la `--accent` la `--lime` la pivotul din 2026-09-02 și nu fusese niciodată adăugat aici. Poarta de contrast a paginii nu apăra deloc, de șase zile, exact butonul pe care fusese construită ca să-l apere. | `scripts/check-contrast.mjs` |
+
+**Verificare:** `npm run contrast` (22/22 perechi peste prag, cele două noi incluse), `astro
+check` (0 erori), 139 teste unitare, `tests/e2e/dialog-inscriere.spec.ts` + `formular.spec.ts`
++ `motion.spec.ts` — 44/46 (2 eșecuri pe „Q1/Q3 blochează a 3-a bifă", confirmate preexistente
+prin `git stash` + rerulare pe HEAD curat, neregresie). Verificat prin `git stash`/`pop` că
+toate cele 7 fixuri au supraviețuit intacte unei resincronizări cu lucrul concurent al altei
+sesiuni pe același working tree.
+
+## 9 septembrie 2026 — Audit tipografie, dimensiuni h1/h2/h3 unitare (Claude, sesiune separată)
+
+Cerut explicit: verificare că fontul și dimensiunile h1/h2/h3 sunt unitare pe toată pagina, plus
+alinierea textului, mobil și desktop. Verificare exhaustivă (grep pe toate cele 16 componente +
+`tokens.css`), nu impresie vizuală.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D96** | h2-urile „Da"/„Nu" din §08 (Cui i se adresează) — `font-size` mutat de la `--t-h3` la `--t-h2`, ca toate celelalte opt h2-uri de pe pagină | Singurul h2 de pe site mai mic decât restul — restul (Agravare, §02, §03, §07, FAQ, §09-nou-devenit-h2 din §09, Soluție) foloseau deja unitar `--t-h2`. Font-family/weight/line-height rămân neatinse — vin dintr-o regulă globală (`h1,h2,h3` în `tokens.css`), deja unitară, nesuprascrisă nicăieri. | `S04PentruCine.astro` |
+| **D97** | h1-ul paginilor de confirmare (`CardRaspuns.astro`, folosit de `/multumesc` și `/lista-asteptare`) — `font-size` mutat de la `--t-h2` la `--t-h1` | Singurul h1 de pe tot site-ul care nu atingea nici scara de h1, nici tokenul dedicat (`--t-h1`, folosit corect în `Legal.astro`; hero-ul de pe pagina principală folosește un sistem `cqi` propriu, documentat, cu plafon echivalent — nu o excepție reală). `--t-h1` nefolosit nicăieri altundeva pe pagina principală înainte de acest fix. | `CardRaspuns.astro` |
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare, `npm run contrast`. Alinierea
+textului verificată separat, fără modificări necesare: nu există niciun reset global de
+`text-align` (implicit stânga peste tot), exact 3 utilizări explicite de `text-align: center`
+pe pagina principală (bara de countdown, talonul biletului, cardul de confirmare — toate trei
+deja documentate/justificate), și zero `@media` care schimbă `text-align` — mobilul și
+desktopul se comportă identic.
