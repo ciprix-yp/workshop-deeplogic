@@ -538,7 +538,7 @@ Vezi `docs/DECIZII.md` D82b–D86 pentru toate deciziile acestei runde.
 
 ---
 
-## 09 — FAQ
+## 09 — FAQ *(strânsă la top 5, 2026-09-09 — vezi mai jos)*
 
 ```COPY
 [H2]
@@ -550,50 +550,49 @@ prezentare de 30 de minute. Avem nevoie de timp ca să formulăm problema, să-i
 să identificăm oamenii implicați și să construim următorii pași. Mai puțin ar însemna să
 vorbesc eu mai mult — scopul e să lucrezi tu.
 
-[Q2] De ce aș invita și pe altcineva?
-[A2] Pentru că discuția continuă mai ușor după workshop când mai există cineva care a trecut
-prin același proces — un co-owner, un manager, un coleg-cheie sau un alt antreprenor. Vă
-puteți provoca ipotezele și vă puteți ține responsabili pentru pasul pe care spuneți că îl
-veți face. Fiecare persoană trebuie să-și rezerve propriul loc.
-
-[Q3] Trebuie să am experiență cu AI sau cu instrumente digitale noi?
-[A3] Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai explorat serios
-zona. Workshopul pornește de la afacerea ta, nu de la tehnologie.
-
-[Q4] Trebuie să vin cu problema deja identificată?
-[A4] Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine. O parte
+[Q2] Trebuie să vin cu problema deja identificată?
+[A2] Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine. O parte
 importantă din workshop e chiar formularea nevoii.
 
-[Q5] Este potrivit pentru domeniul meu?
-[A5] Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, ai suficient
-material de lucru. Nu venim cu același caz pentru toate firmele — lucrăm pornind de la
-situația ta.
-
-[Q6] Trebuie să aduc laptop?
-[A6] Nu. Laptopul nu este obligatoriu și nu trebuie să te pregătești tehnic înainte.
-
-[Q7] Ce primesc după workshop?
-[A7] Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar, ce
-trebuie validat, cine trebuie implicat și acțiunile recomandate pentru următorul pas.
-
-[Q8] O să-mi vindeți ceva la final?
-[A8] Nu de la microfon. Pe formularul de la final există o singură bifă, prin care poți cere
+[Q3] O să-mi vindeți ceva la final?
+[A3] Nu de la microfon. Pe formularul de la final există o singură bifă, prin care poți cere
 o discuție dacă vrei. Dacă n-o bifezi, nu te caută nimeni.
 
-[Q9] Este participarea cu adevărat gratuită?
-[A9] Da. Vreau să fac metodologia Deep Logic cunoscută și să o validez în sală, pe situații
+[Q4] Este participarea cu adevărat gratuită?
+[A4] Da. Vreau să fac metodologia Deep Logic cunoscută și să o validez în sală, pe situații
 reale aduse de antreprenori și oameni de decizie. Tu vii cu realitatea afacerii tale și cu
 trei ore de atenție. Eu vin cu metodologia, facilitarea și roadmap-ul personalizat. La final,
 îți voi cere feedback sincer.
 
-[Q10] Ce se întâmplă dacă mă înscriu și nu pot ajunge?
-[A10] Anunță-mă și eliberez locul pentru altcineva. Sunt 30 și, la mine, chiar sunt 30.
+[Q5] Ce se întâmplă dacă mă înscriu și nu pot ajunge?
+[A5] Anunță-mă și eliberez locul pentru altcineva. Sunt 30 și, la mine, chiar sunt 30.
 ```
 
 **Notă de implementare:** accordion (`<details>`/`<summary>`, CSS-only, fără JS) — reversare
-deliberată a regulii anterioare „fără accordion" (D54). Q8 și Q10 nu erau în draftul v4 —
-păstrate din structura veche: Q8 explică mecanismul bifei opționale din formular, Q10 e
-singurul loc de pe pagină care spune explicit că cifra de capacitate nu e umflată.
+deliberată a regulii anterioare „fără accordion" (D54). Q3 și Q5 nu erau în draftul v4 —
+păstrate din structura veche: Q3 explică mecanismul bifei opționale din formular, Q5 e
+singurul loc de pe pagină care spune explicit că cifra de capacitate nu e umflată — trebuie
+să rămână ULTIMA, verificat automat de `tests/copy-invariants.test.ts`.
+
+**Resincronizat 9 septembrie 2026 — 10 → 5 întrebări, cerut explicit:** „top 5, selectează tu
+ce vezi important pentru contextul întregului eveniment. Poți să adaugi alta dacă cumva este
+relevantă și s-a omis." Scoase, cu motivul:
+
+- **„De ce aș invita și pe altcineva?"** — unghiul ei (continuitate/responsabilizare după
+  workshop) rămâne acoperit de `chemaCineva`, rescris chiar în runda precedentă cu alt unghi
+  (invitația ca gest de valoare) — vezi §08 mai sus.
+- **„Trebuie să am experiență cu AI...?"** și **„Trebuie să aduc laptop?"** — ambele
+  redundante, cuvânt cu cuvânt, cu `cumLucram.outro`: „Nu trebuie să fii IT-ist. Nu trebuie
+  să știi să programezi. Laptopul nu este obligatoriu."
+- **„Ce primesc după workshop?"** — redundant cu biletul din Trust bar („Roadmap digital
+  personalizat, primit pe email") ȘI cu cardul `solutie.cardFinal`.
+- **„Este potrivit pentru domeniul meu?"** — cea mai generică dintre toate, fără fapt unic.
+
+**Candidat de adăugat, semnalat, nu adăugat:** „Ce se întâmplă dacă locurile sunt deja
+ocupate?" — mecanismul de listă de așteptare (`stari.asteptare`) e complet scris, dar n-are
+nicio vizibilitate înainte de submit. Rămâne sugestie pentru o rundă viitoare — adăugarea ar
+fi depășit ținta explicită de „top 5" fără o cerere clară de a scoate una din cele cinci deja
+alese pentru ea. Vezi `docs/DECIZII.md` D87–D88.
 
 ---
 

@@ -589,6 +589,41 @@ export const detalii = {
    netestat de cititor. Adăugată ca a 8-a, nu forțată în locul alteia.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/*
+ * Strânsă de la 10 la 5 (2026-09-09) — cerut explicit: „top 5, selectează tu
+ * ce vezi important pentru contextul întregului eveniment". Criteriul
+ * aplicat: fiecare întrebare rămasă trebuie fie să răspundă unei obiecții
+ * majore ce n-ar avea unde altundeva pe pagină să fie tratată direct, fie să
+ * poarte un fapt unic (nescris nicăieri altundeva). Scoase, cu motivul:
+ *
+ * — „De ce aș invita și pe altcineva?" — unghiul ei (continuitate/
+ *   responsabilizare după workshop) rămâne acoperit de paragraful rescris
+ *   `rezultatul.chemaCineva` (D85, 2026-09-09), care are acum propria
+ *   secțiune dedicată, cu alt unghi (invitația ca gest de valoare).
+ * — „Trebuie să am experiență cu AI...?" și „Trebuie să aduc laptop?" —
+ *   ambele redundante cu `rezultatul.cumLucram.outro`, cuvânt cu cuvânt:
+ *   „Nu trebuie să fii IT-ist. Nu trebuie să știi să programezi. Laptopul
+ *   nu este obligatoriu."
+ * — „Ce primesc după workshop?" — redundant cu biletul din Trust bar
+ *   („Roadmap digital personalizat, primit pe email") ȘI cu cardul
+ *   `solutie.cardFinal` („Pleci cu aria prioritară, prima ipoteză de
+ *   business și un roadmap de validare...").
+ * — „Este potrivit pentru domeniul meu?" — cea mai generică dintre toate;
+ *   niciun fapt unic, doar reasigurare fără conținut nou.
+ *
+ * Păstrate: obiecția de timp (cea mai imediată), obiecția „nu am o problemă
+ * clară" (miezul psihologic al întregii pagini, de la §02 încoace),
+ * obiecția „o să-mi vindeți ceva" (singura formă directă de a răspunde
+ * suspiciunii de agendă ascunsă), întrebarea despre gratuitate (verificată
+ * automat — vezi mai jos) și ultima, despre capacitatea reală — SINGURUL loc
+ * de pe pagină care spune explicit că cifra de 30 nu e umflată.
+ *
+ * Ordinea contează la ultimele două: `tests/copy-invariants.test.ts`
+ * verifică explicit (1) că „gratuit" apare de exact trei ori în
+ * trustBar+faq+ctaFinal — dacă întrebarea despre gratuitate dispare vreodată
+ * de-aici, testul pică, nu doar copy-ul se schimbă tăcut — și (2) că
+ * ULTIMUL element din `intrebari` conține „Sunt 30" (capacitatea reală).
+ */
 export const faq = {
   h2: 'Întrebări directe',
   intrebari: [
@@ -597,28 +632,8 @@ export const faq = {
       a: 'Pentru că trecerea de la „ceva nu merge bine” la o nevoie clară cere mai mult decât o prezentare de 30 de minute. Avem nevoie de timp ca să formulăm problema, să-i estimăm miza, să identificăm oamenii implicați și să construim următorii pași. Mai puțin ar însemna să vorbesc eu mai mult — scopul e să lucrezi tu.',
     },
     {
-      q: 'De ce aș invita și pe altcineva?',
-      a: 'Pentru că discuția continuă mai ușor după workshop când mai există cineva care a trecut prin același proces — un co-owner, un manager, un coleg-cheie sau un alt antreprenor. Vă puteți provoca ipotezele și vă puteți ține responsabili pentru pasul pe care spuneți că îl veți face. Fiecare persoană trebuie să-și rezerve propriul loc.',
-    },
-    {
-      q: 'Trebuie să am experiență cu AI sau cu instrumente digitale noi?',
-      a: 'Nu. Poți veni și dacă ai folosit doar de câteva ori ChatGPT sau dacă n-ai explorat serios zona. Workshopul pornește de la afacerea ta, nu de la tehnologie.',
-    },
-    {
       q: 'Trebuie să vin cu problema deja identificată?',
       a: 'Nu. Este suficient să știi că există lucruri pe care ai vrea să le faci mai bine. O parte importantă din workshop e chiar formularea nevoii.',
-    },
-    {
-      q: 'Este potrivit pentru domeniul meu?',
-      a: 'Dacă ai procese, oameni, informații, clienți sau decizii care se repetă, ai suficient material de lucru. Nu venim cu același caz pentru toate firmele — lucrăm pornind de la situația ta.',
-    },
-    {
-      q: 'Trebuie să aduc laptop?',
-      a: 'Nu. Laptopul nu este obligatoriu și nu trebuie să te pregătești tehnic înainte.',
-    },
-    {
-      q: 'Ce primesc după workshop?',
-      a: 'Un roadmap digital personalizat pe email: nevoia identificată, impactul preliminar, ce trebuie validat, cine trebuie implicat și acțiunile recomandate pentru următorul pas.',
     },
     {
       q: 'O să-mi vindeți ceva la final?',

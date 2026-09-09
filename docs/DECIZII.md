@@ -729,3 +729,24 @@ titluri (1× `h1`, restul `h2`/`h3`, fără salturi — verificat explicit: `h2 
 desktop + mobil-360 (inclusiv CTA-ul repetat de la finalul secțiunii, neatins), CSS moart
 (`.lista`/`.numar`/`.text`/`.granita`/`.accent`, nemaifolosite după restructurare) eliminat din
 `S03Rezultatul.astro`.
+
+## A treia rundă din 9 septembrie 2026 — FAQ strânsă la top 5
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D87** | `faq.intrebari` strânsă de la 10 la 5, cerut explicit: „top 5, selectează tu ce vezi important pentru contextul întregului eveniment" | Criteriu aplicat, scris în cod: fiecare întrebare rămasă răspunde unei obiecții majore fără alt loc pe pagină unde să fie tratată direct, SAU poartă un fapt unic. Păstrate: „De ce să-mi dau 3 ore" (obiecția de timp, cea mai imediată), „Trebuie să vin cu problema deja identificată?" (miezul psihologic al întregii pagini, de la §02 încoace), „O să-mi vindeți ceva la final?" (singura formă directă de răspuns la suspiciunea de agendă ascunsă), „Este participarea cu adevărat gratuită?" (verificată automat — vezi D88) și „Ce se întâmplă dacă mă înscriu și nu pot ajunge?" (singurul loc de pe pagină care spune explicit că cifra de 30 nu e umflată — trebuie să rămână ULTIMA, verificat automat — vezi D88). Scoase, cu motivul: „De ce aș invita și pe altcineva?" (unghiul ei — continuitate/responsabilizare — rămâne acoperit de `chemaCineva`, rescris chiar în runda precedentă cu alt unghi); „Trebuie să am experiență cu AI...?" și „Trebuie să aduc laptop?" (ambele redundante, cuvânt cu cuvânt, cu `cumLucram.outro`: „Nu trebuie să fii IT-ist. Nu trebuie să știi să programezi. Laptopul nu este obligatoriu."); „Ce primesc după workshop?" (redundant cu biletul din Trust bar ȘI cu `solutie.cardFinal`); „Este potrivit pentru domeniul meu?" (cea mai generică, fără fapt unic). | `copy.ts` (`faq`) |
+| **D88** | Nicio schimbare de test — două invariante existente au constrâns direct selecția, nu doar au fost verificate după | `tests/copy-invariants.test.ts` verifică (1) că „gratuit" apare de exact trei ori în `trustBar`+`faq`+`ctaFinal` — întrebarea despre gratuitate NU putea fi scoasă fără să pice testul; (2) că ULTIMUL element din `faq.intrebari` conține „Sunt 30" — întrebarea despre capacitate trebuia păstrată ȘI menținută ultima în array, nu doar păstrată undeva. Ambele constrângeri au fost respectate prin construcție, nu descoperite la rulare. | — (constrângere verificată, nicio modificare) |
+
+**Candidat de adăugat, semnalat lui Ciprian, nu adăugat:** „Ce se întâmplă dacă locurile sunt
+deja ocupate?" — mecanismul de listă de așteptare (`stari.asteptare`: „Se eliberează locuri
+aproape întotdeauna... primul care confirmă ia locul") e complet scris și corect, dar n-are
+NICIO vizibilitate înainte de submit — apare abia în ecranul de confirmare, după ce cineva
+încearcă să se înscrie. Pe o pagină cu atâta accent pe scarcity live (bara fixă, insigna de pe
+CTA, biletul), e o întrebare pe care contorul însuși o ridică. Nu a fost adăugată: ar fi
+depășit ținta explicită de „top 5" fără o cerere clară de a scoate una din cele cinci deja
+alese pentru ea — rămâne o sugestie pentru o rundă viitoare, nu o decizie luată unilateral.
+
+**Verificare:** `astro check` (0 erori), 139 teste unitare (inclusiv ambele invariante de mai
+sus), `npm run contrast`, build, `motion.spec.ts` + `dialog-inscriere.spec.ts` 22/22 pe desktop
++ mobil-360, verificat programatic: 5 elemente `<details>`, ordinea și textul fiecărei întrebări
+confirmate în browser (colaps și extins).

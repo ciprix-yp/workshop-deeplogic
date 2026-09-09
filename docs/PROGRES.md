@@ -277,6 +277,20 @@ Detaliile complete (motiv, decizii individuale, verificare) sunt în `docs/DECIZ
          fără atribuire specifică — pagina spune deja că invitațiile circulă prin distribuire,
          nu mereu direct de la Ciprian.
       6. **Ultimul marcaj em-dash de pe pagină migrat la bulină** — migrarea e acum completă.
+- [x] **A treia rundă din 9 septembrie 2026 — FAQ strânsă la top 5.** `docs/DECIZII.md`
+      D87–D88.
+      1. **10 → 5 întrebări**, alese pe criteriul explicit „relevant pentru contextul
+         întregului eveniment" — fiecare întrebare rămasă răspunde unei obiecții fără alt loc
+         pe pagină, sau poartă un fapt unic. Trei din cele cinci scoase erau redundante cu
+         copy deja existent în altă secțiune (`cumLucram.outro`, biletul, `solutie.cardFinal`).
+      2. **Două invariante de test au constrâns selecția, nu doar au verificat-o**:
+         „gratuit" trebuie să apară de exact 3 ori pe pagină (întrebarea despre gratuitate nu
+         putea fi scoasă), iar ULTIMUL element din listă trebuie să conțină „Sunt 30"
+         (întrebarea despre capacitate trebuia păstrată ultima).
+      3. **Un candidat nou, semnalat, nu adăugat**: „Ce se întâmplă dacă locurile sunt deja
+         ocupate?" — mecanismul de listă de așteptare există complet în cod (`stari.asteptare`)
+         dar n-are nicio vizibilitate înainte de submit. Rămâne sugestie pentru o rundă
+         viitoare, nu adăugată acum — ar fi depășit ținta explicită de „top 5".
 
 ## F4 — Înscriere — GATA, verificat end-to-end pe stack-ul real
 
