@@ -149,22 +149,22 @@ import { CTA } from '../content/copy';
     padding: 14px var(--lat);
     padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
     /*
-     * Sticlă mată — cerută explicit (2026-09-02): lime translucid + blur,
-     * nu opac plat. Opacitate ținută sus (0.88) deliberat: contrastul de
-     * 8.01:1 verificat pentru --pe-lime pe lime OPAC nu se garantează
-     * automat pe un fundal translucid — la opacitate mare, orice s-ar vedea
-     * prin spate rămâne un ecart mic față de lime pur, deci marja se
-     * păstrează practic neschimbată; blur-ul dă senzația de sticlă fără
-     * să sacrifice lizibilitatea.
+     * Sticlă mată — cerută explicit (2026-09-02): turcoaz translucid + blur
+     * (pivot 2026-09-10, fost lime), nu opac plat. Opacitate ținută sus
+     * (0.88) deliberat: contrastul de 8.69:1 verificat pentru --pe-turcoaz
+     * pe turcoaz OPAC nu se garantează automat pe un fundal translucid — la
+     * opacitate mare, orice s-ar vedea prin spate rămâne un ecart mic față
+     * de turcoaz pur, deci marja se păstrează practic neschimbată; blur-ul
+     * dă senzația de sticlă fără să sacrifice lizibilitatea.
      */
-    background: rgba(132, 204, 22, 0.88);
+    background: rgba(79, 209, 224, 0.88);
     backdrop-filter: blur(20px) saturate(1.6);
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
     border-top: 1px solid rgba(255, 255, 255, 0.25);
-    color: var(--pe-lime);
+    color: var(--pe-turcoaz);
     text-decoration: none;
     font-family: var(--font-titlu);
-    box-shadow: 0 -10px 26px -6px rgba(132, 204, 22, 0.5), 0 -2px 6px rgba(42, 52, 57, 0.16);
+    box-shadow: 0 -10px 26px -6px rgba(79, 209, 224, 0.5), 0 -2px 6px rgba(42, 52, 57, 0.16);
     opacity: 0;
     transform: translateY(100%);
     transition:
@@ -180,12 +180,12 @@ import { CTA } from '../content/copy';
 
   @media (hover: hover) and (pointer: fine) {
     .floating:hover {
-      background: rgba(107, 168, 18, 0.9);
+      background: rgba(36, 188, 206, 0.9);
     }
   }
 
   .floating:focus-visible {
-    background: rgba(107, 168, 18, 0.9);
+    background: rgba(36, 188, 206, 0.9);
   }
 
   .floating:active {
@@ -208,7 +208,7 @@ import { CTA } from '../content/copy';
      opacitate mai mare, ca sticla să nu devină ilizibilă fără blur. */
   @supports not (backdrop-filter: blur(1px)) {
     .floating {
-      background: rgb(132, 204, 22);
+      background: rgb(79, 209, 224);
     }
   }
 

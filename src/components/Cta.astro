@@ -47,8 +47,8 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
   }
 
   /*
-   * Fundal lime (cerut explicit, 2026-09-02) — text pe `--pe-lime`
-   * (= --bg-inchis, 8.01:1), nu alb: alb pe acest lime ar da ~1.6:1,
+   * Fundal turcoaz (pivot 2026-09-10, fost lime) — text pe `--pe-turcoaz`
+   * (= --bg-inchis, 8.69:1), nu alb: alb pe acest turcoaz ar da 1.82:1,
    * ilizibil. Vezi comentariul din tokens.css.
    */
   .cta {
@@ -57,8 +57,8 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    background: var(--lime);
-    color: var(--pe-lime);
+    background: var(--turcoaz);
+    color: var(--pe-turcoaz);
     font-family: var(--font-titlu);
     font-weight: 600;
     text-decoration: none;
@@ -80,14 +80,14 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
   /* Doar pe pointer fin (mouse real) — pe touch, „hover" rămâne lipit după
      atingere, deci și schimbarea de culoare intră în gate-ul ăsta (fix
      2026-09-07: `background` era pe o regulă separată, neprotejată — pe
-     touch rămânea `--lime-hover` vizibil pe buton exact cât se închidea
+     touch rămânea `--turcoaz-hover` vizibil pe buton exact cât se închidea
      modalul deschis de acest CTA). `:focus-visible` rămâne AFARĂ, separat
      mai jos — altfel se pierde feedback-ul de tastatură. */
   @media (hover: hover) and (pointer: fine) {
     .cta:hover {
-      background: var(--lime-hover);
+      background: var(--turcoaz-hover);
       transform: translateY(-1px);
-      box-shadow: 0 8px 20px -6px rgba(132, 204, 22, 0.55);
+      box-shadow: 0 8px 20px -6px rgba(79, 209, 224, 0.55);
     }
   }
 
@@ -105,7 +105,7 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
   }
 
   .cta:focus-visible {
-    background: var(--lime-hover);
+    background: var(--turcoaz-hover);
   }
 
   .cta:active {
@@ -119,12 +119,12 @@ const { marime = 'normal', spatiuSus = false } = Astro.props;
     font-family: var(--font-mono);
     font-size: var(--t-mic);
     font-weight: 500;
-    /* Acum trăiește ÎN buton, pe fundal lime — nu `--secundar` (gândit pentru
-       fundal alb, sub buton). `--pe-lime`, ca textul principal: aceeași
-       marjă de contrast verificată (8.01:1), diferențiat de restul textului
-       doar prin mărime/font, nu prin opacitate (pattern respins explicit în
-       proiect — vezi §3 din CLAUDE.md, „NU opacitate 70%"). */
-    color: var(--pe-lime);
+    /* Acum trăiește ÎN buton, pe fundal turcoaz — nu `--secundar` (gândit
+       pentru fundal alb, sub buton). `--pe-turcoaz`, ca textul principal:
+       aceeași marjă de contrast verificată (8.69:1), diferențiat de restul
+       textului doar prin mărime/font, nu prin opacitate (pattern respins
+       explicit în proiect — vezi §3 din CLAUDE.md, „NU opacitate 70%"). */
+    color: var(--pe-turcoaz);
     /* Fix (audit emil-design-eng, 2026-09-01): `el.hidden = false` arăta
        numărul instant, fără nicio tranziție. `@starting-style` animă exact
        momentul în care `hidden` e scos. */

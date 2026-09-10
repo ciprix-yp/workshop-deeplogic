@@ -941,3 +941,17 @@ nu primește nimic și nimeni nu află; cele 8 teste e2e picate și `test:e2e` a
 `npm run verify` (I-4); `test:visual` care rulează 0 teste (I-5); gaura fără JS (I-6); gate-ul
 `LEGAL` fără linkul de Termeni în bifă (B-4). Vezi artifact-ul de audit pentru lista completă
 și ordinea propusă.
+
+## 10 septembrie 2026 — Repivotare de culoare: lime → turcoaz (Claude, sesiune separată)
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D98** | Accentul lime (`#84CC16`, pivot 2026-09-02) înlocuit cu turcoaz (`#4FD1E0`); token-urile REDENUMITE (`--lime`→`--turcoaz`, `--pe-lime`→`--pe-turcoaz`, `--lime-hover`→`--turcoaz-hover`, `--lime-wash`→`--turcoaz-wash`, `--lime-edge`→`--turcoaz-edge`), nu doar recolorate | Cerut explicit: „Miami blue / baby blue, dar nu electric blue" — schimbare de identitate vizuală, nu corecție de defect. Cinci candidați (baby blue clasic, powder blue, sky blue moale, Miami blue turcoaz, cyan-albastru muiat) comparați într-un artifact, aplicați pe forma reală a butonului CTA (Inter 600, colț 14px radius, text închis, insignă mono) — nu pătrățele de culoare izolate. Ales „Miami blue (turcoaz)" — cel mai apropiat de senzația cerută fără să treacă în saturația electrică exclusă explicit. Redenumirea tokenilor (nu doar schimbarea valorii) e deliberată: un token numit `--lime` cu valoare albastră ar fi mințit pe orice cititor viitor al codului — proiectul tratează asta ca bug de acuratețe, nu detaliu cosmetic (vezi „un copy care minte e un bug", CLAUDE.md §5, extins aici la nume de tokeni). | `tokens.css`, `Cta.astro`, `CtaFloating.astro`, `TrustBar.astro` (butonul de calendar), `S01Hero.astro` (`.hero-glass`) |
+| **D99** | Nuanța de hover (`--turcoaz-hover: #24BCCE`) derivată prin aceeași proporție HSL ca la vechiul lime (lime→lime-hover scădea luminozitatea cu ~21% relativ, păstrând nuanța/saturația) — nu aleasă din ochi | Turcoaz de bază: HSL(186°, 70%, 59%). O reducere de 12 puncte de luminozitate (≈21% relativ, aceeași proporție ca lime→lime-hover) dă `#24BCCE`, cu 6.90:1 contrast pentru text închis deasupra — comfortabil peste pragul AA (4.5:1), coerent cu regula „fundal SOLID, text ÎNCHIS deasupra" păstrată neschimbată de la lime. | `tokens.css` |
+| **D100** | `check-contrast.mjs` — perechea `lime`/`limeHover` redenumită `turcoaz`/`turcoazHover`, cu valorile noi | Gate-ul verifică acum CTA-ul principal real, nu un nume rămas în urmă. Perechea `accentCta` (`#376A66`, folosită de `.cta-submit` din formular) rămâne neatinsă — cele două sisteme de culoare coexistă, nu se exclud (vezi D95). | `scripts/check-contrast.mjs` |
+
+**Verificare:** `npm run contrast` (22/22 perechi peste prag, inclusiv cele două ale turcoaz-ului
+și hover-ul lui), `astro check` (0 erori), 150 teste unitare, grep exhaustiv pe tot `src/` —
+zero referințe active la `--lime`/`--pe-lime`/`--lime-hover` sau la RGB brut al vechiului lime
+(`132, 204, 22` / `107, 168, 18`) rămase; toate mențiunile „lime" rămase în cod sunt comentarii
+istorice explicite (ex. „fost lime"), nu valori active.

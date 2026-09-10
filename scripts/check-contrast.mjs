@@ -17,13 +17,14 @@ const TOKENS = {
   accentCta: '#376A66', // corectat: original #468984 = 4.06:1, pica AA
   accentDecor: '#468984', // pastrat DOAR pentru text >=24px si elemente non-text
 
-  // CTA-ul principal, live (pivot 2026-09-02 — Cta.astro, CtaFloating.astro,
-  // butonul de calendar din TrustBar): repetat de patru ori plus butonul
-  // flotant, dar niciodata adaugat aici. `accentCta` de mai sus ramane corect
-  // pentru `.cta-submit` din DialogInscriere.astro (butonul de SUBMIT al
-  // formularului, care inca foloseste `--accent`) — cele doua nu se exclud.
-  lime: '#84CC16', // --lime
-  limeHover: '#6BA812', // --lime-hover
+  // CTA-ul principal, live (pivot 2026-09-02 lime, repivotat 2026-09-10
+  // turcoaz — Cta.astro, CtaFloating.astro, butonul de calendar din
+  // TrustBar): repetat de patru ori plus butonul flotant. `accentCta` de mai
+  // sus ramane corect pentru `.cta-submit` din DialogInscriere.astro
+  // (butonul de SUBMIT al formularului, care inca foloseste `--accent`) —
+  // cele doua nu se exclud.
+  turcoaz: '#4FD1E0', // --turcoaz
+  turcoazHover: '#24BCCE', // --turcoaz-hover
   secundar: '#2F4F4F',
   inainte: '#637474', // `--text-muted`; corectat fata de #2F4F4F la opacitate 70% (= 4.23:1)
   // Pe registrul secundar, #637474 da 3.94:1 — defect PREEXISTENT, gasit la
@@ -70,8 +71,8 @@ const PERECHI = [
   { nume: 'CTA submit formular — text alb pe buton', fg: '#FFFFFF', bg: TOKENS.accentCta, min: 4.5 },
   { nume: 'CTA — link pe fundal primar', fg: TOKENS.accentCta, bg: TOKENS.bgPrimar, min: 4.5 },
   { nume: 'CTA — link pe fundal secundar', fg: TOKENS.accentCta, bg: TOKENS.bgSecundar, min: 4.5 },
-  { nume: 'CTA principal (lime) — text pe fundal', fg: TOKENS.bgInchis, bg: TOKENS.lime, min: 4.5 },
-  { nume: 'CTA principal (lime) — text pe hover', fg: TOKENS.bgInchis, bg: TOKENS.limeHover, min: 4.5 },
+  { nume: 'CTA principal (turcoaz) — text pe fundal', fg: TOKENS.bgInchis, bg: TOKENS.turcoaz, min: 4.5 },
+  { nume: 'CTA principal (turcoaz) — text pe hover', fg: TOKENS.bgInchis, bg: TOKENS.turcoazHover, min: 4.5 },
   { nume: 'secundar pe fundal primar', fg: TOKENS.secundar, bg: TOKENS.bgPrimar, min: 4.5 },
   { nume: 'secundar pe fundal secundar', fg: TOKENS.secundar, bg: TOKENS.bgSecundar, min: 4.5 },
   { nume: 'text muted pe fundal primar (§01, §04, §09, §16)', fg: TOKENS.inainte, bg: TOKENS.bgPrimar, min: 4.5 },

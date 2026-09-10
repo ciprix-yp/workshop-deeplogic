@@ -58,11 +58,12 @@ import Cta from './Cta.astro';
 
   /*
    * Cadru „frozen glass" pe toată zona hero — cerut explicit (2026-09-02).
-   * Aceeași rețetă ca `.card-depth` (tokens.css: gradient lime+accent PROPRIU
-   * fundalului, sub `backdrop-filter`, altfel blurul n-are ce înmuia peste un
-   * fundal alb plat), dar la 70% transparență (alpha 0.3, nu 0.6 ca
-   * `--sticla-fundal`) — cerut explicit, ca să se citească efectul de gheață
-   * blurată, nu un card gri aproape opac.
+   * Aceeași rețetă ca `.card-depth` (tokens.css: gradient turcoaz+accent
+   * PROPRIU fundalului, sub `backdrop-filter`, altfel blurul n-are ce înmuia
+   * peste un fundal alb plat — turcoaz de la pivotul 2026-09-10, fost lime),
+   * dar la 70% transparență (alpha 0.3, nu 0.6 ca `--sticla-fundal`) —
+   * cerut explicit, ca să se citească efectul de gheață blurată, nu un card
+   * gri aproape opac.
    */
   .hero-glass {
     max-width: var(--max-continut);
@@ -72,7 +73,7 @@ import Cta from './Cta.astro';
     border: 1px solid var(--sticla-bordura);
     box-shadow: var(--shadow-card);
     background:
-      radial-gradient(120% 140% at 15% -10%, rgba(132, 204, 22, 0.22), transparent 55%),
+      radial-gradient(120% 140% at 15% -10%, rgba(79, 209, 224, 0.22), transparent 55%),
       radial-gradient(100% 120% at 100% 110%, rgba(55, 106, 102, 0.16), transparent 55%),
       rgba(228, 231, 231, 0.3);
     backdrop-filter: blur(20px) saturate(1.3);

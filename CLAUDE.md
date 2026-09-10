@@ -98,8 +98,8 @@ diferite (`hero.h1` e obiect, nu array: `rand1` / `rand2{inainte,accent}` / `ran
 
 - **Rândul 1 („Afacerea ta este diferită.") e afirmația de deschidere**, la 0,75 din mărimea
   întrebării. **Rândurile 2 și 3 sunt întrebarea, la mărime identică între ele**, cu „PRIMUL
-  PAS" în `--accent` — singura bucată colorată din H1 (nu `--lime`: pe fundal deschis dă ~2:1
-  și e culoare de FUNDAL pentru CTA, vezi §3).
+  PAS" în `--accent` — singura bucată colorată din H1 (nu `--turcoaz`: pe fundal deschis dă
+  ~1.8:1 și e culoare de FUNDAL pentru CTA, vezi §3).
 - **Mărimea vine din lățimea CONTAINERULUI (`cqi`), nu din `vw`.** Lățimea în care încape
   textul e fereastra minus două rame de padding fluide, plafonată pe desktop de `--max-proza`
   — un `vw` nu vede niciuna dintre cele trei. `white-space: nowrap` + `min(plafon, 100cqi /
@@ -254,7 +254,7 @@ scroll dedicat. Reguli:
   primul paint) e condiția, nu prezența atributului.
 
 **Cadru „frozen glass" pe hero — a patra rundă (2026-09-02):** toată zona hero e încadrată de
-`.hero-glass` (`S01Hero.astro`) — aceeași rețetă ca `.card-depth` (gradient lime+accent
+`.hero-glass` (`S01Hero.astro`) — aceeași rețetă ca `.card-depth` (gradient turcoaz+accent
 PROPRIU fundalului, sub `backdrop-filter: blur()`, altfel blurul n-are ce înmuia peste un
 fundal alb plat), dar la **70% transparență** (alpha `0.3`, nu `0.6` ca `--sticla-fundal`) —
 cerut explicit, ca efectul de gheață blurată să se citească, nu un card gri aproape opac.
@@ -283,13 +283,24 @@ Rulează `npm run contrast` după orice schimbare de culoare.
 `#468984` (4.06, CTA original) · `#B85C5C` (4.45, eroare originală) · `#6B7F7F`
 (4.23, ≈ opacitate 70%) · `#3A716D` (4.49 pe fundal secundar — trecea pe alb, pica în §03).
 
-**Accent lime + sticlă mată (pivot 2026-09-02) — CTA-urile nu mai folosesc `--accent`:**
+**Accent turcoaz + sticlă mată (pivot 2026-09-02, culoare repivotată 2026-09-10) — CTA-urile nu
+mai folosesc `--accent`:**
+
+**Repivotare de culoare (2026-09-10, Ciprian — „Miami blue / baby blue, dar nu electric
+blue"):** cerere explicită de identitate vizuală, nu corecție de defect — verdele lime
+(`#84CC16`) devine turcoaz (`#4FD1E0`). Cinci candidați comparați într-un artifact, aplicați pe
+forma reală a butonului CTA, cu contrastul calculat pentru fiecare — ales cel mai apropiat de
+senzația „Miami" (turcoaz, nu pastel neutru) fără să treacă în saturația electrică exclusă
+explicit. Token-urile au fost REDENUMITE (`--lime`→`--turcoaz`, `--pe-lime`→`--pe-turcoaz`,
+etc.), nu doar recolorate — păstrarea numelui vechi cu o valoare nouă ar fi mințit codul.
+Regula de contrast rămâne identică celei de la pivotul din 2026-09-02: fundal SOLID, text
+ÎNCHIS deasupra, niciodată alb.
 
 | Rol | Valoare | Contrast | Unde |
 |---|---|---|---|
-| **lime** | `#84CC16` | — (fundal, nu text) | CTA-uri, buton flotant, buton calendar |
-| **text pe lime** ⚠ | `--pe-lime` = `--bg-inchis` (`#1B2426`) | **8.01:1** pe lime | text pe orice fundal lime — **niciodată alb** (~1.6:1, verificat, respins) |
-| lime hover | `#6BA812` | — | `:hover`/`:focus-visible` pe CTA-uri |
+| **turcoaz** | `#4FD1E0` | — (fundal, nu text) | CTA-uri, buton flotant, buton calendar |
+| **text pe turcoaz** ⚠ | `--pe-turcoaz` = `--bg-inchis` (`#1B2426`) | **8.69:1** pe turcoaz | text pe orice fundal turcoaz — **niciodată alb** (1.82:1, verificat, respins) |
+| turcoaz hover | `#24BCCE` | **6.90:1** pe `--bg-inchis` | `:hover`/`:focus-visible` pe CTA-uri |
 | `--radius-cta` | `14px` fix, **nu procent** | — | toate butoanele CTA — vezi nota de mai jos |
 | `--sticla-fundal` | `rgba(228,231,231,0.6)` | — | `.card-depth` — presupune `backdrop-filter: blur()` alături |
 
@@ -301,7 +312,7 @@ oval alungit, nu un dreptunghi rotunjit curat. Corectat după feedback direct (�
 blurează ce e ÎN SPATE — peste un fundal plat (alb sau gri uniform), o culoare uniformă rămâne
 aceeași culoare, blurată sau nu. Prima variantă (blur peste un strat decorativ fix, extern) era
 tehnic corectă dar vizual invizibilă ori de câte ori cardul nu cădea peste o pată de culoare.
-`.card-depth` are acum un gradient lime+accent direct în propriul fundal — sticla arată
+`.card-depth` are acum un gradient turcoaz+accent direct în propriul fundal — sticla arată
 colorată indiferent unde ajunge cardul pe parcursul scroll-ului.
 
 **Variantă mai transparentă pe hero (a patra rundă, 2026-09-02):** `.hero-glass`
