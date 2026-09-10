@@ -107,7 +107,17 @@ export async function registerParticipant(
 
 /* ── respond_to_invite ───────────────────────────────────────────────────── */
 
-export type RaspunsRezultat = 'reconfirmat' | 'anulat' | 'deja' | 'invalid';
+/**
+ * `pe_asteptare` (migrația 0008): cineva care a anulat sau a devenit `no_show`
+ * apasă „Confirm că vin", dar sala s-a umplut între timp — e trecut automat pe
+ * lista de așteptare, nu refuzat sec. Cerut explicit (2026-09-10).
+ */
+export type RaspunsRezultat =
+  | 'reconfirmat'
+  | 'anulat'
+  | 'pe_asteptare'
+  | 'deja'
+  | 'invalid';
 
 export async function respondToInvite(token: string, vine: boolean): Promise<RaspunsRezultat> {
   const { data, error } = await supabaseAdmin()
@@ -287,15 +297,24 @@ async function numaraOcupate(statusuri: RegisterStatus[]): Promise<number> {
  * reflectă starea reală mai fidel decât ar face suma evenimentelor primite
  * (pe care Inngest oricum le coalesce, nu le agregă).
  *
- * Numără DOAR `reconfirmat`/`prezent` — locuri fizic confirmate, folosit de
- * broadcast-ul intern către waitlist (email 6) când se eliberează un loc
- * real. Diferit de `locuriDisponibilePublic()` de mai jos, care numără și
- * `inscris`/`asteptare` — pragul care decide dacă un NOU înscris intră direct
- * sau pe listă. (Seturile de status DIFERĂ deliberat — nu unificate, deși
- * query-ul de sub ele acum e comun.)
+ * Numără „locurile ocupate": `inscris`, `reconfirmat`, `prezent` — exact
+ * predicatul din migrația 0008, aplicat de porțile care alocă un scaun fizic
+ * (`claim_waitlist_seat` și revenirea din `anulat`/`no_show`). `asteptare` NU
+ * ocupă loc: sunt exact cei cărora le trimitem broadcast-ul.
+ *
+ * Bug real, găsit la review-ul din 10 septembrie 2026: numărase DOAR
+ * `reconfirmat`/`prezent`. Până pe 14 septembrie nimeni nu e `reconfirmat`,
+ * deci o singură anulare randa „S-au eliberat 30 locuri" către tot
+ * waitlist-ul — și, mai grav, poarta din SQL aproba fiecare revendicare.
+ * Vezi `supabase/migrations/0008_loc_ocupat.sql` pentru analiza completă.
+ *
+ * Diferit, DELIBERAT, de `locuriDisponibilePublic()` de mai jos, care numără
+ * și `asteptare`: acela răspunde la altă întrebare — „un om NOU intră direct
+ * sau pe listă?" — și trebuie să numere waitlist-ul, altfel pagina ar arăta
+ * locuri disponibile exact când un submit real ar fi trimis pe listă.
  */
 export async function locuriLibere(): Promise<number> {
-  const ocupate = await numaraOcupate(['reconfirmat', 'prezent']);
+  const ocupate = await numaraOcupate(['inscris', 'reconfirmat', 'prezent']);
   return Math.max(0, CAPACITATE - ocupate);
 }
 

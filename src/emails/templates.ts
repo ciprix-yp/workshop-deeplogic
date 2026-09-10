@@ -19,7 +19,20 @@ const SEMNATURA = 'Ciprian Micu - Deep Logic';
 
 /* ── Email 1 — Confirmare imediată ──────────────────────────────────────── */
 
-export function email1Confirmare(p: { nume: string; linkCalendar: string; linkAnulare: string }): EmailGata {
+export function email1Confirmare(p: {
+  nume: string;
+  linkCalendar: string;
+  linkAnulare: string;
+  /**
+   * `false` pentru înscrierile din fereastra `tarziu` (după 14 sep 09:00),
+   * care sunt marcate `reconfirmat` direct — reconfirmarea a fost deja cerută
+   * tuturor celorlalți, deci nu mai vine niciun email 2. Fără comutatorul
+   * ăsta, subsolul promitea o scrisoare care sosea în aceeași secundă (B-3
+   * din auditul din 10 septembrie 2026).
+   */
+  cereReconfirmare?: boolean;
+}): EmailGata {
+  const cere = p.cereReconfirmare ?? true;
   const continut = {
     salut: p.nume,
     paragrafe: [
@@ -29,7 +42,9 @@ export function email1Confirmare(p: { nume: string; linkCalendar: string; linkAn
     bilet: true,
     butoane: [{ text: 'Adaugă în calendar', href: p.linkCalendar }],
     notePicior: [
-      'Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid, atât.',
+      cere
+        ? 'Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid, atât.'
+        : 'Ești confirmat direct — nu mai trebuie să răspunzi la nimic.',
       'Întrebări? Răspunde direct la mailul ăsta.',
       'Dacă între timp știi sigur că nu mai poți veni, anunță-mă din timp, ca să dau locul mai departe.',
     ],

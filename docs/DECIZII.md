@@ -885,3 +885,44 @@ feedback, în aceeași zi. Las intrarea neschimbată ca istoric al deciziei, nu 
 anulării în text, ambele linkuri prezente), `astro check` (0 erori). Randare verificată
 vizual (390px + 700px) — ierarhia corectă: buton verde plin sus, buton conturat mic jos.
 Trimis real prin Resend, subiect `[PREVIEW v2 — buton mic]`.
+
+## 10 septembrie 2026 — code review front→back: două blockere de capacitate + cascada de după cutoff (D102–D104)
+
+Cerut explicit: „verifici cu code review tot de la front la back, pentru a ne asigura că totul
+funcționează, nu este cod mort, nu avem bugs și avem documentația la zi". Șase agenți read-only
+pe domenii separate, plus verificare directă pe producție. Raport complet ca artifact; aici
+doar deciziile luate în urma lui. Fiecare constatare blocantă a fost reverificată manual
+înainte de a intra în raport, iar un fals pozitiv a fost respins pe parcurs (`noindex` pe
+`/lista-asteptare` — prima verificare nu urmărise un redirect 307).
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D102** | Predicat unic de „loc ocupat" — `inscris`, `reconfirmat`, `prezent` — aplicat sub `pg_advisory_xact_lock` pe TOATE porțile care alocă un scaun: revendicarea din waitlist ȘI revenirea din `anulat`/`no_show`. `register_participant` și contorul public rămân neschimbate (numără deliberat și `asteptare`) | **Două bug-uri reale, ambele capabile să aloce fizic același scaun de mai multe ori.** (a) Migrația 0007 unificase CIFRA (25 și 30 → 30), dar nu NUMITORUL: `claim_waitlist_seat` număra doar `reconfirmat`/`prezent`. Până pe 14 septembrie nimeni nu e `reconfirmat`, deci poarta vedea 0 din 30 ocupate și aproba FIECARE revendicare — o singură anulare, cu waitlist nevid, putea produce ~59 de oameni pentru 30 de scaune. Advisory lock-ul funcționa impecabil: serializa corect o predicație greșită. (b) `respond_to_invite` muta în `reconfirmat` plecând și din `anulat`/`no_show` — statusuri care nu ocupă loc — fără lock și fără renumărare; locul se năștea din nimic. Cauza adâncă a lui (a): predicația îngustă e corectă DOAR după cutoff, iar decizia B3 (anulare încă din emailul 1) a făcut posibil un `seat_freed` înainte de cutoff. Fiecare decizie era corectă separat; împreună, incompatibile. | `supabase/migrations/0008_loc_ocupat.sql`, `src/lib/supabase.ts` (`locuriLibere`), `tests/db/state-machine.sql` (16 aserțiuni noi), `CLAUDE.md` §4 |
+| **D103** | Cine revine după ce a anulat, iar sala s-a umplut între timp, e trecut **automat pe lista de așteptare** — nu refuzat sec. Stare nouă `pe_asteptare` în SQL, ecran și copy noi (`stari.revenitPeAsteptare`) | Cerut explicit (Ciprian, dintre trei variante: mesaj sec / waitlist automat / interzicerea revenirii). Ecranul e distinct de `locLuat` (cursa pierdută din waitlist) fiindcă situația e alta: omul a avut un loc, l-a eliberat el însuși, iar între timp l-a luat altcineva — textul trebuie să confirme că a făcut lucrul corect, nu să-l facă să pară penalizat. Reutilizează integral mecanica existentă: odată `asteptare`, prinde următorul broadcast de loc eliberat. | `0008_loc_ocupat.sql`, `src/pages/api/raspuns.ts`, `src/content/copy.ts`, `src/pages/rezultat.astro` |
+| **D104** | Ciclul de emailuri se ramifică pe **fereastra** în care a picat înscrierea (`fereastraInscrierii()`): `normala` / `tarziu` / `same_day` / `dupa_eveniment` | `step.sleepUntil()` cu o țintă din TRECUT se rezolvă instant, și nimic nu compara ceasul cu `PROGRAM`. Consecințe: (a) din 14 septembrie 09:00 — adică pentru tot restul campaniei — emailurile 1 și 2 plecau la secundă distanță, iar emailul 1 promitea în subsol o scrisoare care sosea imediat; (b) cine se înscria pe 16 septembrie după 11:00 primea o confirmare, apoi un email 2 cu deadline-ul deja trecut, apoi era marcat `no_show` și își vedea locul difuzat pe waitlist — la câteva secunde după înscriere. Decizia (Ciprian): înscrierile târzii nu se resping, se tratează pe cale proprie, cu copy onest. `tarziu` → `reconfirmat` direct (înscrierea ÎNSĂȘI e confirmarea), fără email 2, iar emailul 1 primește `cereReconfirmare: false`. `same_day` → un singur email, chiar emailul 3 („Azi ne vedem", cu `.ics` atașat), care e deja exact copy-ul potrivit; fără `no_show` automat. `dupa_eveniment` → niciun email, `welcome_sent_at` rămâne nemarcat deliberat, ca reconciliarea B11 să-l vadă ca pe un caz care cere decizie umană. | `src/inngest/schedule.ts`, `src/inngest/functions/registered.ts`, `src/emails/templates.ts`, `tests/schedule.test.ts` (nou), `tests/emails.test.ts` |
+
+**Două fixuri mici, în aceeași trecere:** `seat_freed` nu se mai emite când anulează cineva de
+pe lista de AȘTEPTARE (n-avea loc, deci nu eliberează niciunul — `stareCurenta` era oricum
+citit, deci verificarea e gratuită). Și `stari.asteptare` nu mai promite „un email cu poziția
+ta": poziția fusese scoasă deliberat din emailul 5 (sistemul nu e FIFO), deci pagina promitea
+exact ce fusese eliminat — și se contrazicea cu propria frază de două rânduri mai jos.
+
+**Capcană reală, prinsă de suita SQL înainte de deploy:** prima versiune a migrației adăuga
+`p_capacitate` la `respond_to_invite`. `create or replace` cu o semnătură DIFERITĂ nu
+înlocuiește funcția — adaugă o supraîncărcare, iar apelul aplicației (trei parametri numiți)
+devine ambiguu: „function ... is not unique". Ar fi picat fiecare reconfirmare și fiecare
+anulare în producție, imediat după migrație. Semnătura a rămas neschimbată, capacitatea e o
+constantă locală. Regula generală a intrat în `CLAUDE.md` §4.
+
+**Verificare:** 150 de teste unitare (+9: clasificatorul de fereastră, varianta de email 1),
+suita SQL cu 16 aserțiuni noi pe porțile de capacitate, cursa 20/20, `astro check` 0 erori,
+build, `npm run contrast`. **Testul pentru B-1 a fost falsificat, nu doar rulat:** cu
+predicația veche reintrodusă, pică exact cu „am primit `revendicat`, așteptam `plin`" — deci
+prinde chiar bug-ul pentru care a fost scris. Ecranul nou verificat vizual pe 390px, fără
+buton de calendar (omul nu are loc).
+
+**Rămas explicit nefăcut, din raport:** reconcilierea B11 (I-1) — singurul loc unde un om real
+nu primește nimic și nimeni nu află; cele 8 teste e2e picate și `test:e2e` absent din
+`npm run verify` (I-4); `test:visual` care rulează 0 teste (I-5); gaura fără JS (I-6); gate-ul
+`LEGAL` fără linkul de Termeni în bifă (B-4). Vezi artifact-ul de audit pentru lista completă
+și ordinea propusă.

@@ -87,6 +87,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     if (rezultat === 'reconfirmat') stareRezultat = 'reconfirmat';
     else if (rezultat === 'anulat') stareRezultat = 'anulat';
+    else if (rezultat === 'pe_asteptare') stareRezultat = 'revenitPeAsteptare';
     else if (rezultat === 'deja') {
       // Deja în starea cerută — arătăm ecranul care corespunde REZULTATULUI
       // dorit, nu unul separat de „deja făcut": pentru om, contează că
@@ -99,7 +100,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     // B1, a doua jumătate: anulare REALĂ (nu „deja anulat") → emite
     // seat_freed. `deja` nu re-emite — locul a fost eliberat la tranziția
     // originală, nu acum.
-    if (rezultat === 'anulat') {
+    //
+    // Excepție (fix 2026-09-10): cine anulează de pe lista de AȘTEPTARE nu
+    // eliberează niciun loc — n-avea unul. Emiteam degeaba un broadcast care
+    // anunța locuri inexistente. `stareCurenta` e citit oricum mai sus, deci
+    // verificarea e gratuită.
+    if (rezultat === 'anulat' && stareCurenta !== 'asteptare') {
       try {
         await inngest.send(
           evtSeatFreed.create(

@@ -100,6 +100,24 @@ static ca butonul de pe pagină/`/multumesc`/`/rezultat`). `{{maps_url}}` =
 la fel ca în email 2 și 3 — B3 rămâne acoperit din email 1, nu doar de-acolo
 încolo.
 
+**Variantă pentru înscrierile târzii (D104, 10 septembrie 2026):** pentru cine
+se înscrie după 14 septembrie 09:00, rândul
+
+```
+Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid, atât.
+```
+
+devine
+
+```
+Ești confirmat direct — nu mai trebuie să răspunzi la nimic.
+```
+
+Restul emailului e identic. Motivul: din momentul ăla, înscrierea însăși e
+tratată ca reconfirmare (marcat `reconfirmat` direct), deci emailul 2 nu mai
+pleacă niciodată — iar varianta veche promitea o scrisoare care ar fi sosit în
+aceeași secundă. Comutatorul e `cereReconfirmare` în `email1Confirmare()`.
+
 ---
 
 ## Email 2 — Reconfirmare
@@ -142,6 +160,13 @@ vezi `expire_unconfirmed()`.
 
 **Trimis:** miercuri, 16 septembrie, 11:00, doar pentru status `reconfirmat`.
 **Subiect:** `Azi, 14:00 — Casa Dăinuirii`
+
+**A doua utilizare (D104, 10 septembrie 2026):** același email e ȘI confirmarea
+de înscriere pe calea `same_day` — cine se înscrie pe 16 septembrie după 11:00
+primește direct emailul ăsta, nu emailul 1, fiindcă textul lui e deja exact ce
+trebuie spus („Azi ne vedem. 14:00, adresa. Am atașat evenimentul"). Nu s-a
+scris copy nou; s-a refolosit cel potrivit. Fără cerere de reconfirmare, fără
+marcare automată ca `no_show`.
 
 ```
 Salut, {{nume}},

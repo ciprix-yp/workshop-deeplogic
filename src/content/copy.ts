@@ -714,7 +714,12 @@ export const stari = {
   asteptare: {
     titlu: 'Ești pe lista de așteptare.',
     corp: [
-      `Cele ${EVENIMENT.capacitate} de locuri sunt luate. Ți-am trimis un email cu poziția ta.`,
+      // Fix 2026-09-10: spunea „un email cu poziția ta". Poziția a fost scoasă
+      // deliberat din email 5 (docs/EMAILURI.md, decizia 1) fiindcă sistemul
+      // nu e FIFO — o poziție ar promite o ordine care nu există. Textul
+      // promitea exact ce fusese eliminat, și se contrazicea cu propria frază
+      // de două rânduri mai jos.
+      `Cele ${EVENIMENT.capacitate} de locuri sunt luate. Ți-am trimis un email cu ce urmează.`,
       'Se eliberează locuri aproape întotdeauna — oameni care anunță că nu mai pot veni. Când se întâmplă, primești un mesaj și primul care confirmă ia locul.',
       'Nu e ordine de așteptare, e cine răspunde primul. Ține telefonul la îndemână pe 14 și 16 septembrie.',
     ],
@@ -775,6 +780,20 @@ export const stari = {
     corp: [
       'Cineva a confirmat înaintea ta. Îmi pare rău — chiar a fost o chestiune de minute.',
       'Rămâi pe listă. Dacă se mai eliberează unul, primești din nou mesaj.',
+    ],
+  },
+
+  /**
+   * Revenire după anulare, la sală plină (migrația 0008, cerut 2026-09-10).
+   * Distinct de `locLuat`, care e cursa pierdută din waitlist: aici omul a
+   * avut un loc, l-a eliberat el însuși, iar între timp l-a luat altcineva.
+   */
+  revenitPeAsteptare: {
+    titlu: 'Locul plecase. Te-am pus pe listă.',
+    corp: [
+      'Ai anunțat că nu mai poți veni, iar locul tău a plecat mai departe — exact cum trebuia. Între timp s-au ocupat toate.',
+      'Te-am trecut pe lista de așteptare, ca să nu rămâi complet afară. Se eliberează locuri aproape întotdeauna, până în ultima zi.',
+      'Când se eliberează unul, primești mesaj. Nu e ordine de așteptare, e cine confirmă primul.',
     ],
   },
 

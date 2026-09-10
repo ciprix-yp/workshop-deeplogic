@@ -366,6 +366,26 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
       Supabase-ul real cu rânduri de test la fiecare rulare. Logica SQL e acoperită de
       `tests/db/`, logica de graniță (Turnstile/rate-limit) verificată manual mai sus.
 
+- [x] **10 septembrie 2026 — code review front→back: două blockere de capacitate reparate
+      (D102–D104).** `docs/DECIZII.md`, secțiunea „code review front→back". Șase agenți
+      read-only + verificare pe producție; raport complet ca artifact.
+      1. **Sala putea ajunge la ~59 de oameni pentru 30 de scaune.** `claim_waitlist_seat`
+         număra doar `reconfirmat`/`prezent`, dar până pe 14 septembrie nimeni nu e
+         `reconfirmat` — deci poarta vedea 0 din 30 ocupate și aproba fiecare revendicare,
+         peste cei 30 care dețineau deja locuri ca `inscris`. Fix: predicat unic de „loc
+         ocupat" (`inscris|reconfirmat|prezent`) pe toate porțile care alocă un scaun.
+      2. **Revenirea din `anulat`/`no_show` crea un loc din nimic** — fără lock, fără
+         renumărare. Acum trece prin aceeași poartă; la sală plină, omul e trecut automat pe
+         lista de așteptare (ecran și copy noi), nu refuzat sec.
+      3. **Înscrierile de după cutoff se autodistrugeau:** marcate `no_show` și cu locul
+         difuzat pe waitlist la câteva secunde după înscriere, plus un email 2 cu deadline-ul
+         deja trecut. Cauza: `sleepUntil` cu țintă în trecut se rezolvă instant. Fix: ciclul
+         se ramifică pe fereastra înscrierii, cu cale `same_day` proprie.
+      Verificat: 150 teste unitare, 16 aserțiuni SQL noi, cursa 20/20, `astro check`, build.
+      Testul pentru bug-ul (1) a fost **falsificat** — cu predicația veche reintrodusă, pică
+      exact cum trebuie. Capcană prinsă înainte de deploy: schimbarea semnăturii unei funcții
+      SQL ar fi creat o supraîncărcare ambiguă și ar fi picat tot fluxul în producție.
+
 ## F5 — Emailuri — GATA, textele aprobate
 
 - [x] `docs/EMAILURI.md` — toate cele 7 texte, **aprobate de Ciprian pe 28 august**.

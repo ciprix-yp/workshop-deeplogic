@@ -327,8 +327,36 @@ Mașina de stări e partea care poate aloca fizic același scaun de două ori. R
   înseamnă oameni marcați absenți fără să fi dat click, cu locul plecat instant prin broadcast.
 - **Toate `UPDATE`-urile sunt condiționate pe starea așteptată:** `WHERE ... AND status = '<starea de plecare>'`.
   Niciodată read-then-write.
-- **Cursa din waitlist trece prin `pg_advisory_xact_lock`.** Cap dur 30 (unificat cu bufferul
-  de la înscriere — vezi §1), verificat *în interiorul* tranzacției.
+- **Un singur predicat de „loc ocupat", pe toate porțile care alocă un scaun:**
+  `inscris`, `reconfirmat`, `prezent`. `asteptare` NU ocupă loc (sunt exact cei care
+  revendică); `anulat` și `no_show` l-au eliberat. Cap dur 30, verificat *în interiorul*
+  tranzacției, sub `pg_advisory_xact_lock` — atât la revendicarea din waitlist, cât și la
+  **revenirea din `anulat`/`no_show`** (migrația `0008_loc_ocupat.sql`).
+  - **Poarta NU se aplică pe `inscris → reconfirmat`.** Omul ocupă deja locul pe care poarta
+    l-ar verifica; gardată acolo, ar refuza fiecare reconfirmare legitimă exact la sală
+    plină — adică exact când toți reconfirmă. Testat explicit ca non-regresie.
+  - **`register_participant` și contorul public numără DELIBERAT și `asteptare`** — ele
+    răspund la altă întrebare („un om NOU intră direct sau pe listă?") și trebuie să vadă
+    waitlist-ul, altfel pagina ar arăta locuri libere exact când un submit real ar fi trimis
+    pe listă. Asimetria e corectă; ce era greșit (bug real, 2026-09-10) era ca porțile de
+    ALOCARE să numere mai puțin decât ocupă cineva.
+  - **Capacitatea 30 stă literal în trei locuri** (`respond_to_invite`,
+    `claim_waitlist_seat.p_capacitate`, `register_participant.p_prag_waitlist`). O sursă
+    unică în SQL rămâne de făcut; până atunci, schimbi în toate trei.
+- **Nicio funcție SQL existentă nu-și schimbă semnătura într-o migrație.** `create or replace`
+  cu o listă de parametri diferită NU înlocuiește funcția — adaugă o supraîncărcare, iar
+  apelul aplicației devine ambiguu („function ... is not unique") și pică *tot* fluxul,
+  imediat după migrație. Prins de suita SQL înainte de deploy la 0008; dacă chiar trebuie
+  schimbată semnătura, `drop function` explicit pe cea veche, în aceeași tranzacție.
+- **Ciclul de emailuri se ramifică pe fereastra în care a picat înscrierea**
+  (`fereastraInscrierii()` în `src/inngest/schedule.ts`): `normala` → ciclul complet;
+  `tarziu` (după 14 sep 09:00) → marcat `reconfirmat` direct, fără email 2, iar emailul 1
+  nu mai promite o reconfirmare care n-ar mai veni; `same_day` (după cutoff-ul de 11:00) →
+  un singur email cu detaliile practice + `.ics`, fără marcare automată ca `no_show`;
+  `dupa_eveniment` → niciun email. Motivul: `step.sleepUntil()` cu o țintă din TRECUT se
+  rezolvă instant, deci fără poarta asta o înscriere de după cutoff era marcată absentă și
+  își vedea locul difuzat pe waitlist la câteva secunde după înscriere. Clasificarea e
+  memoizată în `step.run` — o reluare nu reevaluează ceasul.
 - **`workshop/seat_freed` are `debounce` + `singleton` pe `event_slug`.** La cutoff-ul de
   11:00 pe 16 septembrie, toți nereconfirmații devin `no_show` în același moment. Fără
   coalescing, fiecare om de pe waitlist primește câte un email pentru fiecare loc eliberat.

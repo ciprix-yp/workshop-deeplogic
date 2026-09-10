@@ -100,6 +100,27 @@ describe('linkurile ajung acolo unde trebuie', () => {
     expect(e.text).not.toMatch(/\bpix\b/i);
   });
 
+  it('email 1 nu promite o reconfirmare care nu mai vine (B-3, fereastra `tarziu`)', () => {
+    // Înscrierile de după 14 sep 09:00 sunt marcate `reconfirmat` direct, deci
+    // emailul 2 nu mai pleacă niciodată. Subsolul n-are voie să-l promită —
+    // altfel promite o scrisoare care ar sosi în aceeași secundă.
+    const normal = email1Confirmare({
+      nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare,
+    });
+    expect(normal.text).toMatch(/Cu două zile înainte îți scriu/);
+
+    const tarziu = email1Confirmare({
+      nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare,
+      cereReconfirmare: false,
+    });
+    expect(tarziu.text).not.toMatch(/Cu două zile înainte/);
+    expect(tarziu.text).toMatch(/Ești confirmat direct/);
+    // Restul emailului rămâne identic — bilet, calendar, buton de anulare.
+    expect(tarziu.text).toContain(P.linkCalendar);
+    expect(tarziu.text).toContain(P.linkAnulare);
+    expect(tarziu.text).toContain('Casa Dăinuirii');
+  });
+
   it('email 1 include biletul — titlu, dată/oră, locație, adresă cu link de hartă', () => {
     const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.text).toContain('PRIMUL PAS');

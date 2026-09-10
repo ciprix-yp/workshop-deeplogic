@@ -300,6 +300,85 @@ select assert_eq(
   true, 'tokenii sunt URL-safe — fără +, /, =');
 
 \echo ''
+\echo '── 0008: poarta de „loc ocupat" (B-1, B-2 din auditul din 10 sep) ─────'
+
+-- Starea de dinainte de 14 septembrie: 30 de oameni `inscris`, NIMENI
+-- reconfirmat — fiindcă reconfirmarea nici nu s-a cerut încă. Exact fereastra
+-- în care bug-ul era declanșabil.
+truncate contacts cascade;
+
+do $$
+begin
+  for i in 1..30 loop
+    perform t_register('ocupat' || i || '@test.ro');
+  end loop;
+end $$;
+
+select assert_eq(
+  (select count(*)::int from event_registrations where status = 'inscris'),
+  30, '30 de oameni `inscris`, niciunul reconfirmat');
+
+select assert_eq(t_register('wait31@test.ro'), 'asteptare', 'al 31-lea intră pe listă');
+
+-- B-1: revendicarea trebuie REFUZATĂ. Cele 30 de locuri sunt ținute de oameni
+-- `inscris`. Înainte de 0008, poarta număra doar `reconfirmat`/`prezent`,
+-- vedea 0 din 30 ocupate și aproba fiecare revendicare — o singură anulare
+-- putea produce ~59 de oameni pentru 30 de scaune.
+select assert_eq(
+  claim_waitlist_seat(t_token('wait31@test.ro')),
+  'plin', 'B-1: revendicarea e refuzată când locurile sunt ținute de `inscris`');
+select assert_eq(
+  t_status('wait31@test.ro'), 'asteptare', 'B-1: a rămas pe listă, n-a intrat');
+
+-- Non-regresie CRITICĂ: reconfirmarea normală nu e gardată de capacitate.
+-- Omul `inscris` ocupă deja locul pe care poarta l-ar verifica — gardat aici,
+-- fiecare reconfirmare legitimă ar fi refuzată exact la sală plină, adică
+-- exact când toți reconfirmă.
+select assert_eq(
+  respond_to_invite(t_token('ocupat1@test.ro'), true),
+  'reconfirmat', 'inscris → reconfirmat trece la sală plină (poarta NU se aplică)');
+
+-- B-2: cine anulează și se răzgândește, la sală plină, ajunge pe listă.
+select assert_eq(
+  respond_to_invite(t_token('ocupat2@test.ro'), false), 'anulat', 'anulare reușită');
+select assert_eq(
+  claim_waitlist_seat(t_token('wait31@test.ro')),
+  'revendicat', 'locul eliberat e luat de pe listă');
+select assert_eq(
+  respond_to_invite(t_token('ocupat2@test.ro'), true),
+  'pe_asteptare', 'B-2: revenirea la sală plină → pe lista de așteptare');
+select assert_eq(
+  t_status('ocupat2@test.ro'), 'asteptare', 'B-2: chiar a fost mutat pe listă');
+
+select assert_eq(
+  (select count(*)::int from event_registrations
+    where status in ('inscris','reconfirmat','prezent')),
+  30, 'B-1+B-2: exact 30 de locuri ocupate, niciodată 31');
+
+-- Aceeași revenire, dar CU loc liber: duce în `reconfirmat`, nu pe listă.
+select assert_eq(
+  respond_to_invite(t_token('ocupat3@test.ro'), false), 'anulat', 'încă o anulare');
+select assert_eq(
+  respond_to_invite(t_token('ocupat3@test.ro'), true),
+  'reconfirmat', 'revenirea cu loc liber → reconfirmat');
+
+-- `no_show` se comportă identic cu `anulat` la revenire — omul care ratează
+-- cutoff-ul de 11:00 și apasă „Confirm că vin" la 11:30, după ce locul lui a
+-- fost deja difuzat pe waitlist.
+update event_registrations set status = 'no_show'
+ where confirm_token = t_token('ocupat4@test.ro');
+select assert_eq(
+  claim_waitlist_seat(t_token('ocupat2@test.ro')),
+  'revendicat', 'locul rămas no_show e luat de pe listă');
+select assert_eq(
+  respond_to_invite(t_token('ocupat4@test.ro'), true),
+  'pe_asteptare', 'B-2: revenirea din `no_show` la sală plină → pe listă');
+
+select assert_eq(
+  (select count(*)::int from event_registrations
+    where status in ('inscris','reconfirmat','prezent')),
+  30, 'B-2: capacitatea ține și pe calea `no_show`');
+
 \echo '── Constrângeri ───────────────────────────────────────────────────────'
 
 do $$
