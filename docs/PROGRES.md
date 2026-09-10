@@ -385,6 +385,14 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
       Testul pentru bug-ul (1) a fost **falsificat** — cu predicația veche reintrodusă, pică
       exact cum trebuie. Capcană prinsă înainte de deploy: schimbarea semnăturii unei funcții
       SQL ar fi creat o supraîncărcare ambiguă și ar fi picat tot fluxul în producție.
+      **Migrația 0008 e APLICATĂ în producție** (prin `supabase db query --linked`, nu prin
+      `db push` — vezi DECIZII.md pentru de ce push-ul e o capcană aici), cu backup al
+      definițiilor înainte și verificare după: o singură variantă per funcție, predicatul nou
+      în ambele porți, baza neatinsă.
+- [ ] **De reconciliat după eveniment: istoricul de migrații Supabase.** Fișierele locale sunt
+      `0001`…`0008`; remote-ul are 7 versiuni cu timestamp din 27–28 august. `supabase db push`
+      ar încerca să reaplice tot de la zero și ar pica. Nu e urgent — dar e o capcană pentru
+      oricine rulează push următorul.
 
 ## F5 — Emailuri — GATA, textele aprobate
 

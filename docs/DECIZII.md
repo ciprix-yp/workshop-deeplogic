@@ -921,6 +921,21 @@ predicația veche reintrodusă, pică exact cu „am primit `revendicat`, aștep
 prinde chiar bug-ul pentru care a fost scris. Ecranul nou verificat vizual pe 390px, fără
 buton de calendar (omul nu are loc).
 
+**Aplicarea în producție (10 septembrie 2026, verificat):** migrația a fost rulată direct prin
+`npx supabase db query --linked < supabase/migrations/0008_loc_ocupat.sql`, nu prin
+`supabase db push`. **`db push` NU e sigur pe proiectul ăsta** — fișierele locale sunt numite
+`0001`…`0008`, dar istoricul remote are versiuni cu timestamp (7 intrări din 27–28 august,
+`20260827152403`…`20260828170905`). Push-ul le-ar considera pe toate opt neaplicate și ar pica
+pe `create table`-uri pentru tabele care există deja. **Reconcilierea istoricului de migrații
+rămâne de făcut după eveniment** — până atunci, orice `db push` e o capcană pentru oricine o
+rulează.
+
+Verificat după aplicare, nu presupus: definițiile din producție au fost salvate ÎNAINTE ca
+cale de întoarcere; după aplicare, `pg_proc` arată **exact o variantă per funcție** (nicio
+supraîncărcare), predicatul `('inscris','reconfirmat','prezent')` e prezent în ambele porți,
+cele trei funcții rulează fără eroare pe tokeni inexistenți, iar starea bazei a rămas
+neatinsă (o înscriere, `reconfirmat`; contorul public 29/30, consistent).
+
 **Rămas explicit nefăcut, din raport:** reconcilierea B11 (I-1) — singurul loc unde un om real
 nu primește nimic și nimeni nu află; cele 8 teste e2e picate și `test:e2e` absent din
 `npm run verify` (I-4); `test:visual` care rulează 0 teste (I-5); gaura fără JS (I-6); gate-ul
