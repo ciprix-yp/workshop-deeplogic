@@ -40,6 +40,16 @@ test('click pe backdrop închide dialogul', async ({ page }) => {
   // de colț) cade pe `.continut`, nu pe `<dialog>` însuși. Ținta corectă e
   // la câțiva pixeli ÎNAINTE de marginea stângă — sigur pe backdrop, cât timp
   // dialogul e centrat cu spațiu în jur (mereu adevărat sub 100vw lățime).
+  // Așteaptă SFÂRȘITUL animației de deschidere înainte de a măsura (220ms,
+  // `scale` + `opacity` — vezi `@starting-style` din DialogInscriere.astro).
+  // Cursă reală, găsită pe 2026-09-10: `boundingBox()` luat în timpul animației
+  // întoarce cutia dialogului la scară intermediară, deci `box.x - 5` putea
+  // cădea ÎN interiorul dialogului final, pe `.continut`, care nu închide
+  // nimic. Testul trecea „de obicei"; când conținutul formularului a crescut
+  // până la plafonul de `max-height: min(90dvh, 52rem)`, a început să pice
+  // determinist. Aceeași clasă de capcană ca la butonul flotant (CLAUDE.md §1).
+  await expect(dialog).toHaveCSS('opacity', '1');
+
   const box = await dialog.boundingBox();
   if (!box) throw new Error('dialogul nu are boundingBox — nu e vizibil');
   await page.mouse.click(Math.max(2, box.x - 5), box.y + 10);

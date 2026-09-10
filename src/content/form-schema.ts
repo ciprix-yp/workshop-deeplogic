@@ -94,8 +94,6 @@ export const INTERES_INCOMPANY = [
  * opțiune adăugată în array intră automat și în tip. Folosite de
  * src/lib/supabase.ts pentru a tipa `qualification_answers`.
  */
-export type Sursa = (typeof SURSA)[number];
-export type NivelAi = (typeof NIVEL_AI)[number];
 export type Asteptare = (typeof ASTEPTARI)[number];
 export type Frica = (typeof FRICA)[number];
 export type ProvocareBusiness = (typeof PROVOCARE_BUSINESS)[number];
@@ -237,8 +235,6 @@ export const inscriereSchema = z
     }
   });
 
-export type InscriereInput = z.input<typeof inscriereSchema>;
-export type Inscriere = z.output<typeof inscriereSchema>;
 
 /**
  * `FormData` → obiectul pe care îl așteaptă `inscriereSchema`.
@@ -302,7 +298,6 @@ export interface Camp {
   placeholder?: string;
   autocomplete?: string;
   /** Doar `tip: 'checkbox'`. `maxSelectii` absent = fără limită (vezi Q4/blocaj_istoric). */
-  minSelectii?: number;
   maxSelectii?: number;
   /** Doar checkbox cu `maxSelectii`: mesaj afișat când se încearcă o bifă peste limită. */
   mesajLimita?: string;
@@ -380,7 +375,6 @@ export const BLOCURI: Bloc[] = [
         tip: 'checkbox',
         obligatoriu: true,
         optiuni: ASTEPTARI,
-        minSelectii: 1,
         maxSelectii: 2,
         mesajLimita: M.alegeDoarDoua,
       },
@@ -397,7 +391,6 @@ export const BLOCURI: Bloc[] = [
         tip: 'checkbox',
         obligatoriu: true,
         optiuni: PROVOCARE_BUSINESS,
-        minSelectii: 1,
         maxSelectii: 2,
         mesajLimita: M.alegeDoarDoua,
         optiuneText: { valoare: PROVOCARE_ALTCEVA, idCamp: 'provocare_business_altceva', label: 'Altceva:' },
@@ -409,7 +402,6 @@ export const BLOCURI: Bloc[] = [
         tip: 'checkbox',
         obligatoriu: true,
         optiuni: BLOCAJ_ISTORIC,
-        minSelectii: 1,
         // Fără maxSelectii — deliberat (formular-calificare-workshop.md): aici
         // vrei tot ce se aplică, nu o prioritizare la 2.
       },
@@ -430,7 +422,19 @@ export const BIFE = {
     label:
       'Sunt de acord ca Deep Logic să-mi prelucreze datele pentru organizarea acestui workshop.',
     obligatoriu: true,
-    linkPolitica: { text: 'Politica de confidențialitate', href: '/confidentialitate' },
+    /*
+     * AMBELE documente, nu doar politica (B-4, fix 2026-09-10). Gate-ul
+     * `LEGAL` din CLAUDE.md §6 cere literal „Termeni + Confidențialitate
+     * linkate din bifă", iar `PROGRES.md` îl marca drept complet — dar
+     * `/termeni` nu apărea nicăieri în fluxul de înscriere, doar în footer și
+     * între paginile legale. Documentul de Termeni afirmă el însuși că
+     * utilizarea site-ului constituie acceptare, ceea ce face absența lui
+     * exact în punctul de consimțământ greu de apărat.
+     */
+    linkuri: [
+      { text: 'Politica de confidențialitate', href: '/confidentialitate' },
+      { text: 'Termeni și condiții', href: '/termeni' },
+    ],
   },
   discutie: {
     id: 'vrea_discutie',

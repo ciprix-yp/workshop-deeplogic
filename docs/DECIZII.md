@@ -955,3 +955,77 @@ nu primește nimic și nimeni nu află; cele 8 teste e2e picate și `test:e2e` a
 zero referințe active la `--lime`/`--pe-lime`/`--lime-hover` sau la RGB brut al vechiului lime
 (`132, 204, 22` / `107, 168, 18`) rămase; toate mențiunile „lime" rămase în cod sunt comentarii
 istorice explicite (ex. „fost lime"), nu valori active.
+
+## 10 septembrie 2026, a doua parte — restul auditului reparat (D105–D110)
+
+Cerut explicit: „repară tot ce mai este de reparat". Pornit de la lista din auditul
+front→back de mai sus. Ordinea e cea din planul propus atunci: mai întâi lucrurile prin care
+un om real nu primește nimic, apoi infrastructura care face restul verificabil, apoi curățenia.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D105** | **App-ul sincronizat cu Inngest Cloud**, prin `PUT /api/inngest` pe producție (mecanismul oficial de sync al SDK-ului) | Singura întrebare din audit pe care n-o puteam verifica: cheile erau setate, dar nicăieri nu era consemnat că app-ul fusese sincronizat, iar testul de pe 9 septembrie rulase pe Dev Server-ul LOCAL, deci nu spunea nimic despre Cloud. Răspuns: `{"message":"Successfully registered","modified":true}`, HTTP 200 — deci ori nu fusese sincronizat niciodată, ori era vechi. Cu app-ul nesincronizat, nimic din ciclul reparat n-ar fi trimis niciun email în producție. Descoperit pe drum și de ce API-ul REST al Inngest răspundea 401: cheile din `.env`-ul LOCAL sunt goale (corect — dev-ul vorbește cu Dev Server-ul), deci trimiteam Bearer gol; producția le are prin secretele Worker-ului. | — (acțiune pe producție, consemnată aici) |
+| **D106** | **Reconcilierea B11 scrisă** — cron la 10 minute care găsește înscrierile cu `welcome_sent_at IS NULL` mai vechi de 10 minute, re-emite evenimentul original și alertează | Singurul loc unde un om real nu primea nimic și nimeni nu afla. Infrastructura exista din migrația 0001 (coloană + index parțial construit exact pentru interogarea asta); consumatorul n-a fost scris niciodată, iar comentariul din `register.ts` îl descria la PREZENT. Re-emiterea e sigură prin D16: același `id` de idempotență face un no-op dacă evenimentul ajunsese deja, și o recuperare dacă emiterea eșuase. Alerta e ancorată pe `registration_id` ca cheie Resend, deci pleacă o singură dată per om — altfel un rând rămas nemarcat ar fi alertat la fiecare 10 minute, la infinit. | `src/inngest/functions/reconciliere-welcome.ts` (nou), `src/lib/supabase.ts` (`gasesteInscrieriFaraWelcome`), `src/pages/api/inngest.ts` |
+| **D107** | **`markWelcomeSent` nu mai poate bloca lanțul** — eșecul e prins și logat, nu propagat | Rula ca pas propriu DUPĂ ce emailul 1 plecase. Un eșec persistent epuiza cele 4 reîncercări și rata TOATĂ rularea: emailurile 2/3/4 nu mai plecau, omul nu era nici reconfirmat nici marcat `no_show`, iar locul rămânea ocupat fără curățare. Acum eșecul lasă `welcome_sent_at` NULL — exact semnalul pe care D106 îl caută, deci cele două fixuri se compun. | `registered.ts` (ambele căi), `waitlisted.ts` |
+| **D108** | **`singleton: 'skip'` PĂSTRAT pe `seat-freed`, comentariul corectat** — nu schimbat pe `cancel`, cum sugera auditul | Comentariul afirma că a doua rulare „așteaptă"; semantica reală a lui `skip` e că o ARUNCĂ. Aia era eroarea. Dar `cancel` ar fi mai rău: ar opri rularea în curs și ar retrimite întregii liste cu o cheie de idempotență nouă, deci oamenii care primiseră deja ar primi un al doilea email — cost sigur, pe toată lista. `skip` riscă doar un anunț întârziat, și doar dacă o a doua fereastră de debounce se închide cât prima rulare încă rulează (~500ms rulare vs. 2 minute fereastră) — iar **se autovindecă**: următorul `seat_freed`, inclusiv cutoff-ul, citește starea curentă și anunță tot ce e liber. | `src/inngest/functions/seat-freed.ts` |
+| **D109** | **Gate-ul `LEGAL` completat** — bifa linkează AMBELE documente; `BIFE.consimtamant.linkPolitica` a devenit `linkuri[]` | `PROGRES.md` marca gate-ul complet, dar `/termeni` nu apărea nicăieri în fluxul de înscriere, iar testul e2e verifica doar politica, deci CI-ul nu putea vedea lipsa. Documentul de Termeni afirmă el însuși că utilizarea site-ului constituie acceptare. | `src/content/form-schema.ts`, `src/components/DialogInscriere.astro`, `tests/e2e/formular.spec.ts` |
+| **D110** | **Gaura fără JS închisă, pe ambele jumătăți** | (a) `register.ts` redirecta la eșec spre `/?eroare=<mesaj>`, dar nimeni nu citea parametrul, iar `index.astro` e prerandată, deci nici n-ar fi putut: orice eroare de validare ateriza pe un formular gol, fără explicație. Acum merge spre `/rezultat?stare=eroareFormular`, randată pe server. (b) Cele două câmpuri companion condiționat-obligatorii erau dezvăluite doar din JS, deci cine alegea „invitație de la un membru BIZZ.CLUB" — exact calea pe care pagina canalizează — nu putea ajunge la câmpul devenit obligatoriu. Rezolvat cu un `<noscript>` care le arată din start. | `src/pages/api/register.ts`, `src/content/copy.ts` (`stari.eroareFormular`), `rezultat.astro`, `DialogInscriere.astro` |
+
+**Robustețe și accesibilitate, în aceeași trecere:** try/catch pe cele trei rute care mutau
+stare fără el (`raspuns`, `checkin`, `pastreaza-datele`) — cea mai riscantă fiind
+`/api/checkin`, folosită live la ușă; gardă la rulare pentru cheile Inngest, care strigă doar
+în afara dev-ului (schema rămâne `optional`, fiindcă `.env`-ul local le are goale legitim —
+un câmp `required` gol ar bloca toată aplicația, capcana `ALERT_EMAIL` din §4);
+`aria-describedby` include acum și microcopy-ul grupurilor de radio/checkbox.
+
+**Infrastructura de test, reparată — de aici încolo restul e verificabil:**
+- **`npm run verify` include acum `test:e2e`.** Absența lui e motivul pentru care 8 teste au
+  putrezit nevăzute trei runde la rând.
+- **Cele 8 e2e picate → 0.** Trei teste `scarcity` codificau formatul barei de dinainte de
+  runda a șasea; unul din `formular` nu putea trece NICIODATĂ (`check()` din Playwright
+  verifică automat starea de după click, deci picarea lui era chiar dovada că limita de 2 bife
+  funcționează).
+- **Regresie proprie, prinsă și reparată:** al doilea link legal a împins conținutul
+  dialogului până la plafonul de `max-height: min(90dvh, 52rem)`, iar testul de click pe
+  backdrop a devenit determinist-picant. Cauza reală era o cursă preexistentă în test:
+  măsura `boundingBox()` ÎN TIMPUL animației de deschidere (220ms, `scale`+`opacity`), deci
+  coordonata calculată era a dialogului la scară intermediară. Trecea „de obicei". Fixat cu o
+  așteptare pe `opacity: 1` înainte de măsurare — aceeași clasă de capcană ca la butonul
+  flotant (§1).
+- **`npm run test:visual` rulează din nou ceva.** Era `playwright test tests/visual`, dar
+  `testDir` e `./tests/e2e`, deci potrivea zero teste și ieșea cu cod 1 — un gate din §5 care
+  eșua în loc să ruleze. Acum e legat la `scripts/screenshots.mjs`, care produce chiar cele 5
+  breakpoint-uri descrise în §5. Verificat: zero defecte pe toate cinci.
+
+**Cod mort eliminat** (~180 linii): fișierele orfane de visual-regression (spec + config cu
+port greșit + 4 PNG-uri), ultimul rest de cod viu din eliminarea Lenis (`data-lenis-prevent`
+și cele 15 linii de comentariu care descriau un handler global inexistent), comentariile din
+`tokens.css` care afirmau la prezent că singura mișcare la scroll e pin/scrub-ul GSAP din §06
+(secțiune ștearsă pe 8 septembrie), exportul `detalii` (pe care NIMIC nu-l randa, cu un
+comentariu care afirma fals că TrustBar îl consumă), `stari.dejaInscris`, `EVENIMENT.slug`
+(a treia copie a literalului), `.timezone`, `.cost`, patru tipuri neimportate,
+`Camp.minSelectii` (setat în 3 locuri, citit nicăieri), atributul `data-camp`,
+`--ease-in-out`, și lista `SECTIUNI` din `scripts/sectiuni.mjs` (9 din 17 id-uri nu mai
+existau, iar 3 secțiuni vii lipseau, deci nu erau capturate niciodată).
+
+**Păstrat deliberat, cu explicația în cod:** `walkInCheckIn()` n-are apelant, dar e singura
+cale prin care cineva NEÎNSCRIS care apare la ușă pe 16 septembrie poate fi bifat — capacitate
+de zi-de-eveniment, nu rest de refactorizare. Funcția SQL din spate e testată. Mai lipsește
+doar ruta.
+
+**Doi invarianți reparați, nu doar mutați:** allowlist-ul pentru „legislație doar în §02"
+omitea `copy.inscriere` și `copy.footer` — o mențiune de GDPR adăugată în blocul de
+consimțământ, exact locul cel mai probabil, n-ar fi picat build-ul. Iar invariantul D6
+(adresa completă pe pagină) se agăța de exportul mort `detalii`; acum verifică `trustBar`,
+unde adresa se randează efectiv.
+
+**Documentație resincronizată:** `CLAUDE.md` §2 (cele 10 secțiuni erau enumerate greșit —
+despărțea „Cui i se adresează/nu" și omitea CTA-ul final; butonul flotant nu e „mereu
+vizibil"), §3 (rândul pentru §05 lista `#637474` la 4.91 „pe alb", dar §05 are fundal
+secundar, unde acela dă 3.94 și PICĂ AA — tokenul real e `--text-muted-pe-secundar`), plus o
+notă de sincronizare în capul specului tehnic, cu cele nouă divergențe verificate față de cod.
+
+**Verificare:** 150 teste unitare, **70/70 e2e** (de la 62/70), suita SQL completă cu cursa
+20/20, `astro check` 0 erori, build, `npm run contrast`, `npm run test:visual` (5
+breakpoint-uri, zero defecte). Migrația 0008 rămâne cea aplicată mai devreme — runda asta n-a
+adăugat nicio schimbare de schemă.

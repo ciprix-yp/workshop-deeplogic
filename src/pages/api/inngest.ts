@@ -11,10 +11,18 @@ import { waitlisted } from '../../inngest/functions/waitlisted';
 import { seatFreed } from '../../inngest/functions/seat-freed';
 import { leftoverWaitlistNotice } from '../../inngest/functions/leftover-waitlist-notice';
 import { retentionSweep } from '../../inngest/functions/retention-sweep';
+import { reconciliereWelcome } from '../../inngest/functions/reconciliere-welcome';
 
 export const prerender = false;
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [registered, waitlisted, seatFreed, leftoverWaitlistNotice, retentionSweep],
+  functions: [
+    registered,
+    waitlisted,
+    seatFreed,
+    leftoverWaitlistNotice,
+    retentionSweep,
+    reconciliereWelcome,
+  ],
 });

@@ -389,6 +389,26 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
       `db push` — vezi DECIZII.md pentru de ce push-ul e o capcană aici), cu backup al
       definițiilor înainte și verificare după: o singură variantă per funcție, predicatul nou
       în ambele porți, baza neatinsă.
+- [x] **10 septembrie 2026, a doua parte — restul auditului reparat (D105–D110).**
+      `docs/DECIZII.md`, secțiunea „restul auditului reparat".
+      1. **App-ul sincronizat cu Inngest Cloud** (`PUT /api/inngest`, „Successfully
+         registered"). Era singura necunoscută pe care n-o puteam verifica; cu app-ul
+         nesincronizat, niciun email n-ar fi plecat în producție.
+      2. **Reconcilierea B11 există** — cron la 10 minute, re-emite evenimentul (idempotent
+         prin D16) și alertează o singură dată per om. Singurul loc unde un om real nu
+         primea nimic și nimeni nu afla.
+      3. **`markWelcomeSent` nu mai blochează lanțul** de emailuri; eșecul lui devine chiar
+         semnalul pe care reconcilierea îl caută.
+      4. **Gate-ul `LEGAL` completat** — ambele documente linkate din bifă, cu aserțiune în
+         test.
+      5. **Gaura fără JS închisă** — eșecurile merg spre o pagină randată pe server, iar
+         câmpurile companion condiționat-obligatorii sunt vizibile fără JS.
+      6. **Infrastructura de test reparată:** `test:e2e` e în `npm run verify` (absența lui
+         e motivul pentru care 8 teste au putrezit trei runde), cele 8 picate → **70/70**,
+         iar `npm run test:visual` rulează din nou (era legat la o cale fără teste, deci un
+         gate din §5 eșua în loc să ruleze).
+      7. **~180 linii de cod mort eliminate**, plus doi invarianți reparați și documentația
+         resincronizată (CLAUDE.md §2/§3 + notă de sincronizare în specul tehnic).
 - [ ] **De reconciliat după eveniment: istoricul de migrații Supabase.** Fișierele locale sunt
       `0001`…`0008`; remote-ul are 7 versiuni cu timestamp din 27–28 august. `supabase db push`
       ar încerca să reaplice tot de la zero și ar pica. Nu e urgent — dar e o capcană pentru

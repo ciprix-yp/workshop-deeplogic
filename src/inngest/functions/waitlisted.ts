@@ -32,6 +32,16 @@ export const waitlisted = inngest.createFunction(
     // ambele căi la fel: un rând fără `welcome_sent_at` e un om care n-a
     // primit nicio confirmare, indiferent dacă a intrat `inscris` sau
     // `asteptare`.
-    await step.run('marcheaza-welcome-trimis', () => markWelcomeSent(registration_id));
+    await step.run('marcheaza-welcome-trimis', async () => {
+      // Eșecul nu oprește nimic aici (funcția se termină oricum), dar lasă
+      // rândul vizibil pentru reconcilierea B11 — vezi registered.ts.
+      try {
+        await markWelcomeSent(registration_id);
+        return 'marcat';
+      } catch (eroare) {
+        console.error(`markWelcomeSent a eșuat pentru ${registration_id}:`, eroare);
+        return 'nemarcat — preluat de reconcilierea B11';
+      }
+    });
   },
 );

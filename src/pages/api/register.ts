@@ -21,6 +21,7 @@ import type { APIRoute } from 'astro';
 import { inscriereSchema, formDataInSchema } from '../../content/form-schema';
 import { verificaTurnstile } from '../../lib/turnstile';
 import { subLimita } from '../../lib/rate-limit';
+import { stari } from '../../content/copy';
 import { registerParticipant, type RegisterStatus } from '../../lib/supabase';
 import { inngest, evtRegistered, evtWaitlisted } from '../../inngest/client';
 
@@ -78,7 +79,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const eșuează = (mesaj: string, statusHttp = 200) =>
     vreaJson
       ? raspundeJson({ ok: false, mesaj }, statusHttp)
-      : raspundeRedirect(`/?eroare=${encodeURIComponent(mesaj)}#inscriere`);
+      : // I-6 (fix 2026-09-10): înainte era `/?eroare=${mesaj}#inscriere` — dar
+        // nimeni nu citea parametrul, iar `index.astro` e prerandată, deci nici
+        // n-ar fi putut. Fără JS, orice eșec de validare ateriza pe un formular
+        // gol, fără nicio explicație. `/rezultat` e randată pe server, deci
+        // funcționează exact acolo unde JS-ul lipsește.
+        raspundeRedirect('/rezultat?stare=eroareFormular');
 
   // ── 1. Rate limit ──────────────────────────────────────────────────────
   const permis = await subLimita('register', clientAddress);
@@ -138,7 +144,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     });
   } catch (eroare) {
     console.error('register_participant a eșuat:', eroare);
-    return eșuează('Ceva s-a rupt la mine, nu la tine. Încearcă din nou peste un minut.', 500);
+    return eșuează(stari.eroare.corp[0], 500);
   }
 
   // ── 5. Emitere eveniment ────────────────────────────────────────────────

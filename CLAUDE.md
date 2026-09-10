@@ -192,8 +192,10 @@ mijloc") — două corecții punctuale pe bilet, plus butonul flotant:**
   În interiorul butonului, numărul real de locuri („Disponibil X/30", niciodată inventat —
   vezi §1; mutat ÎN buton la a patra rundă de polish, 2026-09-02 — înainte stătea dedesubt).
   Repetat la: hero, la finalul secțiunii „Ce rezultat promitem", în CTA final — plus
-  un buton flotant (`CtaFloating.astro`, cerut explicit 2026-09-02) mereu vizibil după
-  ce iese hero-ul din cadru, pe toate viewport-urile. Fără CTA secundar, fără „află mai multe".
+  un buton flotant (`CtaFloating.astro`, cerut explicit 2026-09-02), vizibil după ce
+  iese hero-ul din cadru — dar NU „mereu”: se ascunde la 1000ms de inactivitate de
+  scroll și reapare la 500ms de la reluare. §1 (a doua rundă din 2026-09-07) descrie
+  corect mecanismul; rândul de aici spunea „mereu vizibil”, corectat 2026-09-10. Fără CTA secundar, fără „află mai multe".
 - **Problema și „Ce rezultat promitem" nu se taie la mobil.** Sunt cele mai importante
   două secțiuni ale structurii lean din 2026-09-02 (10 secțiuni, mai jos). Dacă tai ceva,
   nu de-acolo. Regula e despre TĂIERE pe motiv de spațiu pe ecrane înguste, nu despre
@@ -201,8 +203,10 @@ mijloc") — două corecții punctuale pe bilet, plus butonul flotant:**
   9 septembrie 2026 (D83, mai jos), la cerere explicită, repetată după semnalare. Ce rămâne
   din ea (`Cum lucrăm` + `De ce să mai chemi pe cineva?`) tot nu se taie la mobil.
 - **Exact 10 secțiuni, nici una în plus.** Hero → Trust bar → Problemă → Agravare →
-  Soluție → Facilitator → Cui i se adresează → Cui nu i se adresează →
-  Ce rezultat promitem → FAQ. Până pe 8 septembrie 2026 mai exista o a 11-a, ținută
+  Soluție → Facilitator → Cui i se adresează (da/nu, o singură secțiune) →
+  Ce rezultat promitem → FAQ → CTA final (`S16Inscriere`).
+  [corectat 2026-09-10: lista de dinainte despărțea „Cui i se adresează/nu” în două
+  și omitea secțiunea de CTA final, deci nu enumera cele 10 care se livrează.] Până pe 8 septembrie 2026 mai exista o a 11-a, ținută
   deliberat separat de numărătoare — „Cei cinci pași ai metodologiei" (`S06CeFacem.astro`,
   singurul pin/scrub GSAP de pe pagină). **Retrasă**, explicit: „renunțăm la metodologie...
   pentru că explicăm cum ajungem la rezultat" — §05 Soluție capătase între timp propria
@@ -275,7 +279,7 @@ Rulează `npm run contrast` după orice schimbare de culoare.
 | **accent CTA** ⚠ | `#376A66` | **6.15 / 4.94** | butoane, linkuri, text mic |
 | accent decorativ | `#468984` | 4.06 — **doar ≥24px sau non-text** | numerotare §06, accente §05 |
 | secundar | `#2F4F4F` | 8.93 / 7.18 | headinguri secundare, footer |
-| „înainte" (§05) ⚠ | `#637474` | 4.91 pe alb | coloana ÎNAINTE — **nu** opacitate 70% |
+| „înainte" (§05) ⚠ | `--text-muted-pe-secundar` = `#576565` | 4.89 pe `#E4E7E7` | coloana ÎNAINTE — **nu** opacitate 70%. [corectat 2026-09-10: rândul lista `#637474` la 4.91 „pe alb", dar §05 are `fundal="secundar"`, unde acela dă 3.94 și PICĂ AA. Tokenul chiar folosit e `--text-muted-pe-secundar`.] |
 | **eroare** ⚠ | `#9E4B4B` | 5.90 / 4.74 | mesaje de validare |
 | succes | `#C9E3D0` | — | doar ca fundal; text pe el rămâne `#2A3439` (9.33) |
 

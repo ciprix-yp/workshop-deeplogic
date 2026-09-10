@@ -95,7 +95,17 @@ export const registered = inngest.createFunction(
           attachments: [{ filename: 'eveniment.ics', content: ics, contentType: 'text/calendar' }],
         });
       });
-      await step.run('marcheaza-welcome-trimis', () => markWelcomeSent(registration_id));
+      await step.run('marcheaza-welcome-trimis', async () => {
+        // Vezi nota de pe același pas din calea normală, mai jos: eșecul lasă
+        // rândul pe seama reconcilierii B11, nu oprește lanțul.
+        try {
+          await markWelcomeSent(registration_id);
+          return 'marcat';
+        } catch (eroare) {
+          console.error(`markWelcomeSent a eșuat pentru ${registration_id}:`, eroare);
+          return 'nemarcat — preluat de reconcilierea B11';
+        }
+      });
       await step.run('marcheaza-reconfirmat-same-day', async () => {
         // Doar din `inscris`. Dacă a anulat între timp, `respondToInvite` ar
         // intra pe calea de revenire (cu poartă de capacitate) și l-ar
@@ -142,7 +152,21 @@ export const registered = inngest.createFunction(
       });
       await trimiteEmail({ idempotencyKey: `email1/${registration_id}`, to: email, ...tmpl });
     });
-    await step.run('marcheaza-welcome-trimis', () => markWelcomeSent(registration_id));
+    await step.run('marcheaza-welcome-trimis', async () => {
+      // Eșecul NU oprește lanțul (I-2, fix 2026-09-10). Înainte, un `markWelcomeSent`
+      // care pica persistent epuiza cele 4 reîncercări și oprea TOATĂ rularea:
+      // emailurile 2/3/4 nu mai plecau, omul nu era nici reconfirmat nici marcat
+      // `no_show`, iar locul rămânea ocupat fără curățare. Acum eșecul lasă
+      // `welcome_sent_at` NULL, deci reconcilierea B11 îl vede și re-emite —
+      // idempotent prin D16, deci fără email dublu.
+      try {
+        await markWelcomeSent(registration_id);
+        return 'marcat';
+      } catch (eroare) {
+        console.error(`markWelcomeSent a eșuat pentru ${registration_id}:`, eroare);
+        return 'nemarcat — preluat de reconcilierea B11';
+      }
+    });
 
     /* ── Fereastra `tarziu`: înscrierea ÎNSĂȘI e confirmarea ─────────────
      *

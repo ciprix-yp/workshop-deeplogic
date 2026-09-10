@@ -57,21 +57,8 @@ const stariClient = JSON.stringify({
     </svg>
   </button>
 
-  {/*
-    `data-lenis-prevent`: Lenis interceptează `wheel` GLOBAL, pe `window`
-    (Base.astro), și cheamă `preventDefault()` — inclusiv când evenimentul
-    pornește dintr-un container cu scroll intern propriu, dacă acel container
-    nu poartă atributul ăsta (`allowNestedScroll` e `false` implicit, verificat
-    în `node_modules/lenis/dist/lenis.mjs`). Fără el, rotița/trackpad-ul pe
-    desktop, cu dialogul deschis, mișcă pagina din spate — formularul (mai
-    înalt decât `max-height`, deci scrolabil pe cont propriu) rămâne blocat.
-    A scăpat de toate plasele de siguranță existente: pe touch `syncTouch:
-    false` trimite evenimentul pe ramura nativă (neatinsă), la fel cu
-    `prefers-reduced-motion` (`smoothWheel: false`), iar testele Playwright
-    scrolează programatic, niciodată cu `wheel` real. NU se rezolvă cu
-    `lenis.stop()` la deschidere — tot cheamă `preventDefault()` cât e oprit.
-  */}
-  <div class="continut" data-lenis-prevent>
+  {}
+  <div class="continut">
     <h2 id="dialog-titlu">{inscriere.h2}</h2>
 
     <div data-pas="formular">
@@ -97,7 +84,7 @@ const stariClient = JSON.stringify({
             )}
 
             {bloc.campuri.map((camp) => (
-              <div class:list={['camp', `tip-${camp.tip}`]} data-camp={camp.id}>
+              <div class:list={['camp', `tip-${camp.tip}`]}>
                 {camp.tip === 'radio' || camp.tip === 'checkbox' ? (
                   <fieldset class="grup-optiuni">
                     <legend class="eticheta">{camp.label}</legend>
@@ -109,6 +96,15 @@ const stariClient = JSON.stringify({
                       data-max={camp.maxSelectii}
                       data-mesaj-limita={camp.mesajLimita}
                     >
+                      {/*
+                        `aria-describedby` include și `-ajutor` când blocul are
+                        microcopy — I-13 (fix 2026-09-10). Înainte includea DOAR
+                        `-eroare`, deși câmpurile text/textarea/select adaugă
+                        condiționat ambele, două ramuri mai jos. Concret,
+                        `blocaj_istoric` are „Bifează tot ce se aplică": vizibil
+                        pentru cine vede, inaudibil pentru cine navighează cu
+                        cititor de ecran.
+                      */}
                       {camp.optiuni?.map((op) => (
                         <label class="optiune">
                           <input
@@ -116,7 +112,7 @@ const stariClient = JSON.stringify({
                             name={camp.id}
                             value={op}
                             required={camp.tip === 'radio' ? camp.obligatoriu : undefined}
-                            aria-describedby={`${camp.id}-eroare`}
+                            aria-describedby={`${camp.id}-eroare${camp.microcopy ? ` ${camp.id}-ajutor` : ''}`}
                             data-optiune-text={camp.optiuneText?.valoare === op ? camp.optiuneText.idCamp : undefined}
                           />
                           <span>{op}</span>
@@ -124,7 +120,7 @@ const stariClient = JSON.stringify({
                       ))}
                     </div>
                     {camp.optiuneText && (
-                      <div class="camp tip-text camp-text-companion" id={`camp-${camp.optiuneText.idCamp}`} hidden>
+                      <div class="camp tip-text camp-text-companion camp-companion" id={`camp-${camp.optiuneText.idCamp}`} hidden>
                         <label class="eticheta" for={camp.optiuneText.idCamp}>{camp.optiuneText.label}</label>
                         <input
                           type="text"
@@ -182,7 +178,7 @@ const stariClient = JSON.stringify({
             ))}
 
             {bloc.id === 'cine' && (
-              <div class="camp tip-text" id="camp-sursa-detaliu" hidden>
+              <div class="camp tip-text camp-companion" id="camp-sursa-detaliu" hidden>
                 <label class="eticheta" for="sursa_detaliu" id="eticheta-sursa-detaliu">De la cine?</label>
                 <input type="text" id="sursa_detaliu" name="sursa_detaliu"
                        aria-describedby="sursa_detaliu-eroare" />
@@ -192,6 +188,23 @@ const stariClient = JSON.stringify({
           </fieldset>
         ))}
 
+        <noscript>
+          {/*
+            I-6, a doua jumătate (fix 2026-09-10): cele două câmpuri companion
+            (`sursa_detaliu` și „Altceva:") sunt randate cu `hidden` și
+            dezvăluite DOAR din JS — dar `form-schema.ts` le face condiționat
+            OBLIGATORII pe server. Fără JS, cine alege „Am primit invitația de
+            la un membru BIZZ.CLUB" — exact calea pe care pagina e construită
+            să canalizeze — nu putea ajunge niciodată la câmpul devenit
+            obligatoriu. Aici le arătăm din start: două câmpuri în plus, dar
+            un formular care poate fi trimis.
+
+            `.camp.camp-companion` are specificitate (0,2,0), deci bate
+            `[hidden]` (0,1,0) din tokens.css, indiferent de ordinea surselor.
+          */}
+          <style>.camp.camp-companion { display: block !important; }</style>
+        </noscript>
+
         <div class="bife">
           <label class="bifa">
             <input type="checkbox" name={BIFE.consimtamant.id} value="true" required
@@ -199,9 +212,12 @@ const stariClient = JSON.stringify({
             <span>{BIFE.consimtamant.label}</span>
           </label>
           <p class="link-politica" id="consimtamant-politica">
-            <a href={BIFE.consimtamant.linkPolitica.href} target="_blank" rel="noopener">
-              {BIFE.consimtamant.linkPolitica.text}
-            </a>
+            {BIFE.consimtamant.linkuri.map((l, i) => (
+              <>
+                {i > 0 && <span aria-hidden="true"> · </span>}
+                <a href={l.href} target="_blank" rel="noopener">{l.text}</a>
+              </>
+            ))}
           </p>
           <p class="eroare" id="consimtamant-eroare" role="alert" aria-live="polite"></p>
 

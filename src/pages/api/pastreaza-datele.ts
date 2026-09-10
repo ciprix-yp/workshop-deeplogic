@@ -13,6 +13,8 @@ export const prerender = false;
 
 const inputSchema = z.object({ token: z.string().min(1) });
 
+const MESAJ_EROARE = 'Ceva s-a rupt la mine, nu la tine. Încearcă din nou peste un minut.';
+
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const vreaJson = (request.headers.get('accept') ?? '').includes('application/json');
   const raspundeJson = (corp: unknown, status = 200) =>
@@ -45,7 +47,16 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       : raspundeRedirect(tinta('tokenInvalid'));
   }
 
-  const rezultat = await reconfirmaRetentie(parsed.data.token);
+  // I-7 (fix 2026-09-10) — vezi nota din checkin.ts.
+  let rezultat: Awaited<ReturnType<typeof reconfirmaRetentie>>;
+  try {
+    rezultat = await reconfirmaRetentie(parsed.data.token);
+  } catch (eroare) {
+    console.error('reconfirmaRetentie a eșuat:', eroare);
+    return vreaJson
+      ? raspundeJson({ ok: false, mesaj: MESAJ_EROARE }, 500)
+      : raspundeRedirect(tinta('tokenInvalid'));
+  }
   const stareFinala = rezultat === 'invalid' ? 'tokenInvalid' : 'datePastrate';
 
   return vreaJson

@@ -25,8 +25,10 @@
  *     din FAQ.
  *   — „20% context, 80% lucru aplicat" (fostă secțiune separată) — absorbit
  *     ca subsecțiune în `rezultatul.cumLucram`.
- *   — „Detalii practice" (tabel) — absorbit: adresa completă trăiește acum
- *     în `detalii` (folosit de TrustBar), fără componentă proprie.
+ *   — „Detalii practice" (tabel) — absorbit: adresa completă se randează
+ *     direct din `trustBar.loc`, fără componentă proprie. (Un export separat,
+ *     `detalii`, a existat o vreme în paralel — era cod mort, pe care nimic
+ *     nu-l randa; șters la review-ul din 2026-09-10.)
  *
  * A rămas o vreme, deliberat, deși nu apărea explicit în cele 10 puncte ale
  * lui Ciprian: `ceFacem` (cei cinci pași ai metodologiei, pin/scrub GSAP) —
@@ -49,7 +51,6 @@
  */
 
 export const EVENIMENT = {
-  slug: 'workshop-2026-09-16',
   titlu: 'PRIMUL PAS',
   organizator: 'Deep Logic',
   data: '2026-09-16',
@@ -57,7 +58,6 @@ export const EVENIMENT = {
   dataScurt: 'Miercuri, 16 septembrie',
   ora: '14:00–17:00',
   oraStart: '14:00',
-  timezone: 'Europe/Bucharest',
   oras: 'Satu Mare',
   locatie: 'Casa Dăinuirii',
   adresa: 'Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare',
@@ -66,7 +66,6 @@ export const EVENIMENT = {
   // în calendar" să deschidă și harta, nu doar textul adresei.
   mapsUrl: 'https://maps.app.goo.gl/QZP2Cs7owkZktZMh6',
   capacitate: 30,
-  cost: 'Gratuit',
 } as const;
 
 export const CTA = {
@@ -571,16 +570,6 @@ export const rezultatul = {
 } as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DETALII — nu mai e secțiune proprie (fostă §13). Adresa completă (D6) trăiește
-   aici, consumată de TrustBar.astro. Păstrat ca export pentru consistență cu
-   restul datelor factuale, chiar dacă nu mai are componentă dedicată.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-export const detalii = {
-  adresaCompleta: `${EVENIMENT.locatie}, ${EVENIMENT.adresa}`,
-} as const;
-
-/* ═══════════════════════════════════════════════════════════════════════════
    10 — FAQ
    Rescrisă după v4 (7 întrebări) + o a 8-a păstrată din structura veche —
    „O să-mi vindeți ceva la final?" nu mai apare în draftul lui Ciprian, dar
@@ -725,14 +714,6 @@ export const stari = {
     ],
   },
 
-  dejaInscris: {
-    titlu: 'Ești deja înscris.',
-    corp: [
-      'Am găsit adresa asta pe listă. Nu te-am înscris de două ori.',
-      'Ți-am retrimis confirmarea pe email, în caz că prima s-a pierdut.',
-    ],
-  },
-
   anulatAnterior: {
     titlu: 'Ai anulat locul ăsta mai devreme.',
     corp: [
@@ -746,6 +727,26 @@ export const stari = {
     corp: [
       'Ceva s-a rupt la mine, nu la tine. Datele tale n-au fost salvate.',
       'Încearcă din nou peste un minut. Dacă tot nu merge, scrie-mi direct la contact@deeplogic.ro și te înscriu manual.',
+    ],
+  },
+
+  /**
+   * Eșec de înscriere pentru cine navighează FĂRĂ JavaScript (I-6, fix
+   * 2026-09-10). Înainte, `register.ts` redirecta spre `/?eroare=<mesaj>`, dar
+   * nimeni nu citea parametrul, iar `index.astro` e prerandată — deci nici
+   * n-ar fi putut. Omul ateriza pe un formular gol, în capul paginii, fără
+   * nicio explicație că s-a întâmplat ceva.
+   *
+   * Textul acoperă TOATE cauzele posibile (validare, rate-limit, Turnstile,
+   * eroare de server), fiindcă redirectul e unul singur — și nu dă vina nici
+   * pe om, nici pe sistem, ci spune ce se poate face acum.
+   */
+  eroareFormular: {
+    titlu: 'Înscrierea n-a trecut.',
+    corp: [
+      'Ceva din formular n-a fost acceptat — o adresă scrisă greșit, un câmp obligatoriu gol, sau verificarea anti-robot. Datele tale n-au fost salvate.',
+      'Întoarce-te la formular și încearcă din nou.',
+      'Dacă tot nu merge, scrie-mi direct la contact@deeplogic.ro și te înscriu manual. Nu pierzi locul din cauza unui formular.',
     ],
   },
 

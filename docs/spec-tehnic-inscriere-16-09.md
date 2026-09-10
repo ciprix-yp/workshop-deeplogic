@@ -7,6 +7,31 @@
 
 ---
 
+
+> **Notă de sincronizare (10 septembrie 2026, code review front→back).** Documentul
+> ăsta rămâne sursa de adevăr pentru ARHITECTURĂ, dar a rămas în urmă în câteva
+> puncte. Toate au fost verificate împotriva codului; **codul e cel corect**. Lista
+> există ca să nu inducă în eroare pe cine citește specul înainte de cod:
+>
+> - **Rutele de răspuns sunt POST, nu GET** (`POST /api/raspuns`, `POST /api/checkin`).
+>   Specul descrie încă `GET` — adică exact bug-ul pe care fixul **B2** l-a reparat
+>   (prefetch-ul din Outlook Safe Links muta starea). Vezi `CLAUDE.md` §4.
+> - **Două rute lipsesc din tabelul de rute:** `GET /api/locuri-disponibile` (contorul
+>   public) și `POST /api/pastreaza-datele` (retenția).
+> - **Statusul `anulat` lipsește** din enumerarea de statusuri (`B8` l-a adăugat:
+>   `anulat` ≠ `no_show`). Lipsesc și coloanele `welcome_sent_at`, `cancelled_at`, cele
+>   trei de retenție, plus tabela `rate_limit_hits`.
+> - **Subsistemul de retenție nu e specificat deloc** (migrația `0006`,
+>   `retention-sweep.ts`, emailul 8) — nici în lista de out-of-scope.
+> - **Emailul de check-in pleacă la 13:30, nu 14:00** (fixul `B14`).
+> - **Numele evenimentului de leftover** e `workshop/leftover_notice_requested`.
+> - **Retry pe `inngest.send()` nu există** ca mecanism separat; recuperarea se face
+>   prin reconcilierea B11 (`reconciliere-welcome.ts`, scrisă pe 10 septembrie 2026).
+> - **Capacitatea** are acum un predicat unic de „loc ocupat", aplicat pe toate porțile
+>   care alocă un scaun — vezi migrația `0008` și `CLAUDE.md` §4.
+> - **Ciclul de emailuri se ramifică pe fereastra înscrierii** (`normala` / `tarziu` /
+>   `same_day` / `dupa_eveniment`) — vezi `src/inngest/schedule.ts`.
+
 ## Stack
 
 | Componentă | Alegere |

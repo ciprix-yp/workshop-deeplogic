@@ -27,9 +27,25 @@ export const seatFreed = inngest.createFunction(
     // suficient de scurt încât cineva care anulează izolat să nu aștepte mult
     // pentru ca waitlist-ul să afle.
     debounce: { period: '2m', key: 'event.data.event_slug' },
-    // O rulare activă per eveniment — o a doua rundă de tranziții, sosită cât
-    // prima încă rulează, așteaptă (nu pornește o rulare paralelă care ar
-    // număra din nou aceleași locuri).
+    // O rulare activă per eveniment. **`skip` ARUNCĂ rularea nouă** — nu o pune
+    // la coadă, nu o reîncearcă. Comentariul de dinainte spunea că „așteaptă",
+    // ceea ce e fals; corectat la review-ul din 10 septembrie 2026 (I-3).
+    //
+    // Păstrat totuși `skip`, deliberat, nu schimbat pe `cancel`:
+    //   · `cancel` ar opri rularea în curs și ar porni una nouă, care ar
+    //     retrimite întregului waitlist cu o cheie de idempotență NOUĂ
+    //     (`email6-batch-${event.id}`) — deci oamenii care primiseră deja din
+    //     rularea anulată ar primi un al doilea email. Cost sigur, pe toată
+    //     lista.
+    //   · `skip` riscă, în schimb, ca un loc eliberat să nu fie anunțat — dar
+    //     doar dacă o a doua fereastră de debounce se închide cât prima rulare
+    //     e încă în execuție (rularea reală durează ~500ms, fereastra e de 2
+    //     minute, deci cere retry-uri lungi). Și **se autovindecă**: următorul
+    //     `seat_freed` — altă anulare, sau cutoff-ul de la 11:00, care emite
+    //     pentru fiecare `no_show` — pornește o rulare care citește starea
+    //     CURENTĂ și anunță tot ce e liber atunci, nu doar locul nou.
+    // Un email dublu către toată lista e mai scump decât un anunț întârziat
+    // care oricum se recuperează la următorul eveniment.
     singleton: { mode: 'skip', key: 'event.data.event_slug' },
     retries: 4,
   },

@@ -21,24 +21,27 @@ const URL_BAZA = process.env.URL_BAZA ?? 'http://localhost:4321';
 const latime = Number(process.argv[2] ?? 360);
 const doarUna = process.argv[3];
 
+/*
+ * Resincronizat 2026-09-10 (review front→back): lista rămăsese la structura de
+ * 17 secțiuni. NOUĂ dintre ele nu mai există pe pagină după pivotul din 2
+ * septembrie (16 → 10 secțiuni) și retragerea §06 din 8 septembrie —
+ * `inainte-dupa`, `ce-facem`, `nu-doar-teorie`, `ce-pleci-cu-tine`,
+ * `use-cases`, `deep-logic`, `precedent`, `detalii`, `de-ce-gratuit` — iar
+ * scriptul le sărea tăcut, tipărind „(lipsă)". În schimb, TREI secțiuni vii
+ * lipseau din listă (`agravare`, `solutie`, `inscriere-cta`), deci nu erau
+ * capturate niciodată.
+ *
+ * Verificate împotriva id-urilor reale randate de `index.astro`.
+ */
 const SECTIUNI = [
-  'hero',
   'problema',
-  'rezultatul',
-  'pentru-cine',
-  'inainte-dupa',
-  'ce-facem',
-  'nu-doar-teorie',
-  'ce-pleci-cu-tine',
-  'use-cases',
-  'deep-logic',
+  'agravare',
+  'solutie',
   'facilitator',
-  'precedent',
-  'detalii',
-  'de-ce-gratuit',
+  'pentru-cine',
+  'rezultatul',
   'intrebari',
-  'inscriere',
-  'footer',
+  'inscriere-cta',
 ];
 
 await mkdir(IESIRE, { recursive: true });

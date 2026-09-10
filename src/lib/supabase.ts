@@ -158,6 +158,18 @@ export async function checkIn(token: string): Promise<CheckInRezultat> {
   return data;
 }
 
+/*
+ * PĂSTRAT deliberat fără apelant (review 2026-09-10, I-14): pagina
+ * `/checkin-loc` care ar folosi funcția a fost amânată explicit (vezi
+ * `docs/PROGRES.md`, F8). Funcția SQL din spate ESTE testată
+ * (`tests/db/state-machine.sql`, secțiunea „Walk-in din QR").
+ *
+ * Nu e ștearsă ca „cod mort" fiindcă e singura cale prin care cineva
+ * NEÎNSCRIS care apare la ușă pe 16 septembrie poate fi bifat — o capacitate
+ * de zi-de-eveniment, nu un rest de refactorizare. Dacă decizi că nu-ți
+ * trebuie, șterge ambele (TS + SQL) împreună; dacă îți trebuie, mai lipsește
+ * doar ruta.
+ */
 export async function walkInCheckIn(
   email: string,
   nume: string,
@@ -183,6 +195,63 @@ export async function markWelcomeSent(registrationId: string): Promise<void> {
     p_registration_id: registrationId,
   });
   if (error) throw new SupabaseRpcError('mark_welcome_sent', error);
+}
+
+/* ── reconcilierea B11 ───────────────────────────────────────────────────── */
+
+export interface InscriereNereconciliata {
+  registration_id: string;
+  status: RegisterStatus;
+  confirm_token: string;
+  checkin_token: string;
+  email: string;
+  nume: string;
+}
+
+/**
+ * Oamenii care au un rând în bază, dar n-au primit nicio confirmare — B11.
+ *
+ * Scenariul: `register_participant` reușește, `inngest.send()` eșuează
+ * definitiv. `register.ts` înghite eroarea deliberat (nu întoarcem 500 unui om
+ * pentru o problemă de mesagerie), deci fără jobul ăsta omul rămâne invizibil
+ * până apare la ușă. Coloana și indexul parțial existau din migrația 0001
+ * (`0001_init.sql:97`) — consumatorul lipsea, până la 10 septembrie 2026.
+ *
+ * Query-ul folosește exact indexul acela: `event_slug` + `created_at`, cu
+ * `where welcome_sent_at is null`.
+ *
+ * Doar `inscris` și `asteptare` — singurele stări cărora li se cuvine un email
+ * de bun-venit. Cine a anulat între timp nu mai are nevoie de el.
+ */
+export async function gasesteInscrieriFaraWelcome(
+  minuteVechime = 10,
+): Promise<InscriereNereconciliata[]> {
+  const prag = new Date(Date.now() - minuteVechime * 60_000).toISOString();
+
+  const { data, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select('id, status, confirm_token, checkin_token, contacts(email, nume)')
+    .eq('event_slug', EVENT_SLUG)
+    .is('welcome_sent_at', null)
+    .in('status', ['inscris', 'asteptare'])
+    .lt('created_at', prag);
+
+  if (error) throw new SupabaseRpcError('select inscrieri fără welcome', error);
+
+  return (data ?? []).flatMap((r) => {
+    const contact = Array.isArray(r.contacts) ? r.contacts[0] : r.contacts;
+    if (!contact) return [];
+    return [
+      {
+        registration_id: r.id,
+        status: r.status as RegisterStatus,
+        confirm_token: r.confirm_token,
+        checkin_token: r.checkin_token,
+        email: contact.email,
+        nume: contact.nume,
+      },
+    ];
+  });
 }
 
 /* ── expire_if_unconfirmed ───────────────────────────────────────────────── */

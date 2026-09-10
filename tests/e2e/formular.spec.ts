@@ -54,14 +54,23 @@ test('linkul către politică nu comută bifa de consimțământ', async ({ page
   const bifa = page.locator('input[name="consimtamant_comunicare"]');
   await expect(bifa).not.toBeChecked();
 
-  // Restrâns la formular: footer-ul are propriul link către aceeași pagină.
-  const link = page.locator('#form-inscriere a[href="/confidentialitate"]');
-  await expect(link).toBeVisible();
-  // Linkul nu are voie să aibă un <label> printre strămoși.
-  await expect(link.locator('xpath=ancestor::label')).toHaveCount(0);
+  // Restrâns la formular: footer-ul are propriile linkuri către aceleași pagini.
+  // AMBELE documente trebuie linkate din bifă — gate-ul `LEGAL` din CLAUDE.md §6
+  // cere literal „Termeni + Confidențialitate". Până la fixul B-4 (2026-09-10),
+  // doar politica era acolo, iar testul ăsta verifica doar politica, deci CI-ul
+  // nu putea vedea lipsa.
+  for (const href of ['/confidentialitate', '/termeni']) {
+    const link = page.locator(`#form-inscriere a[href="${href}"]`);
+    await expect(link).toBeVisible();
+    // Un <a> înăuntrul unui <label> ar comuta bifa la tap-ul pe link.
+    await expect(link.locator('xpath=ancestor::label')).toHaveCount(0);
+  }
 
   // Și dovada comportamentală: un click pe link lasă bifa neatinsă.
-  await link.click({ modifiers: ['Alt'] }).catch(() => {});
+  await page
+    .locator('#form-inscriere a[href="/confidentialitate"]')
+    .click({ modifiers: ['Alt'] })
+    .catch(() => {});
   await expect(bifa).not.toBeChecked();
 });
 
@@ -99,7 +108,10 @@ test('Q1/Q3 (checkbox) blochează a 3-a bifă cu mesajul dedicat', async ({ page
   const optiuni = page.locator('input[type="checkbox"][name="asteptari"]');
   await optiuni.nth(0).check();
   await optiuni.nth(1).check();
-  await optiuni.nth(2).check();
+  // `check()` verifică automat starea de DUPĂ click, deci arunca exact fiindcă
+  // limita funcționează — testul nu putea trece niciodată, iar linia de mai jos
+  // era inaccesibilă (I-4, fix 2026-09-10). `click()` nu face aserțiunea aia.
+  await optiuni.nth(2).click();
 
   await expect(optiuni.nth(2)).not.toBeChecked();
   await expect(page.locator('#asteptari-eroare')).toHaveText('Alege doar 2 — cele mai importante pentru tine');

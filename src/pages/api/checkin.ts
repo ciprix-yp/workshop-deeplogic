@@ -18,6 +18,8 @@ export const prerender = false;
 
 const inputSchema = z.object({ token: z.string().min(1) });
 
+const MESAJ_EROARE = 'Ceva s-a rupt la mine, nu la tine. Încearcă din nou peste un minut.';
+
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const vreaJson = (request.headers.get('accept') ?? '').includes('application/json');
   const raspundeJson = (corp: unknown, status = 200) =>
@@ -50,7 +52,20 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       : raspundeRedirect(tinta('tokenInvalid'));
   }
 
-  const rezultat = await checkIn(parsed.data.token);
+  // I-7 (fix 2026-09-10): try/catch ca în `register.ts`. Fără el, o sincopă
+  // Supabase arunca o excepție neprinsă — fără middleware și fără `5xx.astro`,
+  // omul primea pagina de eroare implicită a lui Astro, în afara contractului
+  // JSON/redirect al aplicației. Cel mai prost loc pentru asta: ruta ăsta se
+  // folosește LIVE, la ușă, pe 16 septembrie.
+  let rezultat: Awaited<ReturnType<typeof checkIn>>;
+  try {
+    rezultat = await checkIn(parsed.data.token);
+  } catch (eroare) {
+    console.error('checkIn a eșuat:', eroare);
+    return vreaJson
+      ? raspundeJson({ ok: false, mesaj: MESAJ_EROARE }, 500)
+      : raspundeRedirect(tinta('tokenInvalid'));
+  }
   // 'prezent' și 'deja' duc la același ecran — pentru om contează că e
   // bifat, nu drumul prin care s-a ajuns acolo.
   const stareFinala = rezultat === 'invalid' ? 'tokenInvalid' : 'checkinReusit';

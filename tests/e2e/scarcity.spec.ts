@@ -17,7 +17,11 @@ test('fără JavaScript, bara arată fallback-ul static, fără niciun număr de
   await expect(bara).toBeVisible();
   await expect(bara).toContainText('Maximum 30 de locuri');
   const text = await bara.textContent();
-  expect(text ?? '').not.toMatch(/\d+ locuri disponibile din/);
+  // Fără JS, bara are voie să arate STRICT fallback-ul static. Verificăm
+  // formatul LIVE (`Locuri N/M`), nu propoziția lungă din dialog — aceea nu
+  // apare în bară în nicio stare, deci aserțiunea de dinainte era o tautologie
+  // care ar fi trecut și cu tot fallback-ul rupt (I-4, fix 2026-09-10).
+  expect(text ?? '').not.toMatch(/Locuri \d+\/\d+/);
 
   await ctx.close();
 });
@@ -33,7 +37,7 @@ test('cu JS, bara citește /api/locuri-disponibile și arată numărul real', as
 
   await page.goto('/');
   const bara = page.locator('#bara-scarcity');
-  await expect(bara).toContainText('12 locuri disponibile din 30', { timeout: 3000 });
+  await expect(bara).toContainText('Locuri 12/30', { timeout: 3000 });
 });
 
 test('la 0 locuri, bara arată mesajul de listă de așteptare, nu „0 locuri disponibile"', async ({ page }) => {
@@ -100,7 +104,7 @@ test('numărul de locuri apare și în dialogul de înscriere, conectat la aceea
 
   // Aceeași cifră ca bara de sus — o singură sursă de adevăr, nu două
   // fetch-uri care ar putea, o clipă, arăta numere diferite.
-  await expect(page.locator('#bara-scarcity')).toContainText('4 locuri disponibile din 30');
+  await expect(page.locator('#bara-scarcity')).toContainText('Locuri 4/30');
 });
 
 test('la 0 locuri, rândul din dialog arată mesajul de listă de așteptare, nu „0 locuri disponibile"', async ({ page }) => {
@@ -153,9 +157,9 @@ test('numărul se reîmprospătează periodic, nu doar la încărcare — nu ră
   });
 
   await page.goto('/');
-  await expect(page.locator('#bara-scarcity')).toContainText('20 locuri disponibile din 30', { timeout: 3000 });
+  await expect(page.locator('#bara-scarcity')).toContainText('Locuri 20/30', { timeout: 3000 });
 
   await page.waitForTimeout(21000);
-  await expect(page.locator('#bara-scarcity')).toContainText('5 locuri disponibile din 30');
+  await expect(page.locator('#bara-scarcity')).toContainText('Locuri 5/30');
   expect(apeluri).toBeGreaterThanOrEqual(2);
 });

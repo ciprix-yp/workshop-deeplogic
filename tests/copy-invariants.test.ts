@@ -126,9 +126,13 @@ describe('legislația, dacă apare, apare o singură dată, ca zgomot — niciod
     // din „Prima Mutare". Regula rămâne o constrângere de LOCAȚIE, nu un
     // mandat de prezență: dacă cineva reintroduce o mențiune legislativă
     // oriunde altundeva decât §02, testul pică.
+    // Lista trebuie să conțină TOT ce nu e §02. Omitea `inscriere` și `footer`
+    // (găsit la review-ul din 10 septembrie 2026): o mențiune de GDPR adăugată
+    // în blocul de consimțământ — exact locul cel mai probabil — n-ar fi picat
+    // build-ul.
     const restul = [
       copy.hero, copy.trustBar, copy.agravare, copy.rezultatul, copy.pentruCine,
-      copy.solutie, copy.facilitator, copy.detalii,
+      copy.solutie, copy.facilitator, copy.inscriere, copy.footer,
       copy.faq, copy.ctaFinal, copy.stari, copy.meta,
     ];
     for (const sectiune of restul) {
@@ -223,10 +227,13 @@ describe('formularul nu cere ce semnalează un apel de vânzare', () => {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 describe('D6 — adresa exactă e pe pagină', () => {
-  it('`detalii` (consumat de TrustBar) conține adresa, nu trimiterea la email', () => {
-    // Pivot de structură (2026-09-02): „Detalii practice" nu mai e secțiune
-    // proprie — adresa completă trăiește în `detalii`, randată de TrustBar.
-    const detalii = JSON.stringify(copy.detalii);
+  it('`trustBar` conține adresa completă, nu trimiterea la email', () => {
+    // Se verifica pe `copy.detalii` — un export pe care NIMIC nu randa, cu un
+    // titlu care afirma fals că TrustBar îl consumă (TrustBar importă doar
+    // `trustBar`). Corectat la review-ul din 10 septembrie 2026: adresa se
+    // randează din `trustBar.loc`, deci acolo trebuie protejată. `detalii` a
+    // fost șters ca cod mort.
+    const detalii = JSON.stringify(copy.trustBar);
     expect(detalii).toMatch(/Casa Dăinuirii/);
     expect(detalii).toMatch(/Strada 1 Decembrie 1918/);
     expect(detalii).not.toMatch(/adresa exactă, în emailul de confirmare/);
@@ -236,7 +243,7 @@ describe('D6 — adresa exactă e pe pagină', () => {
     // Trei locuri care trebuie să spună același lucru. Divergența aici trimite
     // oameni la altă adresă în ziua evenimentului.
     const adresa = copy.EVENIMENT.adresa;
-    expect(JSON.stringify(copy.detalii)).toContain(adresa);
+    expect(JSON.stringify(copy.trustBar)).toContain(adresa);
     expect(JSON.stringify(copy.trustBar)).toContain(adresa);
     expect(JSON.stringify(copy.stari.reconfirmat)).toContain(adresa);
     expect(JSON.stringify(copy.stari.locRevendicat)).toContain(adresa);
@@ -346,7 +353,7 @@ describe('ghilimele românești', () => {
     const paginaText = [
       copy.hero, copy.trustBar, copy.problema, copy.agravare, copy.solutie,
       copy.facilitator, copy.pentruCine, copy.rezultatul,
-      copy.detalii, copy.faq, copy.ctaFinal, copy.stari,
+      copy.faq, copy.ctaFinal, copy.stari,
     ]
       .map((s) => JSON.stringify(s))
       .join(' ');

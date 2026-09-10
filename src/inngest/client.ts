@@ -78,6 +78,30 @@ export const evtLeftoverNoticeRequested = eventType('workshop/leftover_notice_re
   schema: z.object({ event_slug: z.string() }),
 });
 
+/*
+ * I-12 (review 10 septembrie 2026): cele două chei sunt `optional: true` în
+ * `astro.config.mjs`, și AȘA TREBUIE să rămână — `.dev.vars`/`.env` le au
+ * goale, corect, fiindcă dev-ul local vorbește cu Inngest Dev Server, care nu
+ * cere nici event key nici semnătură. Un câmp `required` gol ar bloca TOATĂ
+ * aplicația locală, nu doar Inngest (schema `astro:env` se validează integral
+ * la fiecare cerere — vezi capcana `ALERT_EMAIL` din CLAUDE.md §4).
+ *
+ * Dar în producție lipsa lor e gravă și tăcută: fără `eventKey`, `inngest.send()`
+ * eșuează și `register.ts` înghite eroarea (om în bază, fără email); fără
+ * `signingKey`, `serve()` n-are cu ce verifica semnătura cererilor primite,
+ * adică oricine ar putea POSTa direct pe `/api/inngest` ca să invoce funcțiile
+ * de stare, fără token și fără Turnstile.
+ *
+ * Deci: garda e la RULARE, nu în schemă, și doar în afara dev-ului.
+ */
+if (!import.meta.env.DEV && (!INNGEST_EVENT_KEY || !INNGEST_SIGNING_KEY)) {
+  throw new Error(
+    'INNGEST_EVENT_KEY și INNGEST_SIGNING_KEY sunt obligatorii în afara dev-ului. ' +
+      'Fără ele, emailurile nu pleacă și endpoint-ul /api/inngest e fail-open. ' +
+      'Setează-le ca secrete de Worker: `wrangler secret put INNGEST_EVENT_KEY`.',
+  );
+}
+
 export const inngest = new Inngest({
   id: 'workshop-deeplogic',
   isDev: import.meta.env.DEV,

@@ -125,7 +125,6 @@
      `CtaSticky.astro` foloseau deja `cubic-bezier(0.22, 1, 0.36, 1)` ad-hoc,
      redefinit de fiecare dată. Numite o singură dată, refolosite peste tot. */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
   /*
    * ── Accent turcoaz (pivot 2026-09-10, Ciprian — „Miami blue / baby blue,
@@ -269,7 +268,7 @@ img {
 /*
  * Restul paginii e static prin construcție (pivot 2026-09-01) — singura
  * mișcare la scroll rămasă e pin/scrub-ul GSAP din §06 CeFacem, care își
- * poartă propriul guard `prefers-reduced-motion` (vezi S06CeFacem.astro).
+ * poartă propriul guard `prefers-reduced-motion` (secțiunea a fost retrasă).
  * Regula globală de-aici rămâne ca plasă de siguranță pentru orice tranziție
  * CSS obișnuită (hover pe CTA, focus-ring etc.), nu pentru scroll-reveal —
  * acela nu mai există.
