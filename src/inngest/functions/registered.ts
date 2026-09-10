@@ -45,10 +45,13 @@ export const registered = inngest.createFunction(
     /* ── Email 1 — imediat, fără condiție de stare ─────────────────────── */
 
     await step.run('email-1-confirmare', async () => {
-      // Ton ferm (2026-09-10, cerut explicit): fără link de anulare aici —
-      // vezi D101 în DECIZII.md pentru compromisul asumat față de B3
-      // (calea de anulare rămâne, din email 2 și 3, plus răspuns direct).
-      const tmpl = email1Confirmare({ nume, linkCalendar: `${PUBLIC_SITE_URL}/eveniment.ics` });
+      // Calendarul e CTA-ul principal; anularea rămâne, ca buton secundar,
+      // mai jos — vezi D101/D101b în DECIZII.md.
+      const tmpl = email1Confirmare({
+        nume,
+        linkCalendar: `${PUBLIC_SITE_URL}/eveniment.ics`,
+        linkAnulare,
+      });
       await trimiteEmail({ idempotencyKey: `email1/${registration_id}`, to: email, ...tmpl });
     });
     await step.run('marcheaza-welcome-trimis', () => markWelcomeSent(registration_id));

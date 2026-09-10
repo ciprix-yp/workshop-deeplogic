@@ -388,16 +388,19 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
 - [x] **Trimitere reală, verificată** — toate cele 4 emailuri din ciclul principal livrate
       cu succes (`delivered@resend.dev`), la momentele corecte, conținut corect (verificat
       prin descărcarea efectivă a corpului email-ului din Resend)
-- [x] **10 septembrie 2026 — Email 1 rescris, ton ferm + bilet premium (D101).**
+- [x] **10 septembrie 2026 — Email 1 rescris, ton ferm + bilet premium (D101, D101c).**
       Cerut explicit: „ai locul și vii", nu „ești pe listă"; fără „ce aduci" (laptop sau nu,
-      nu prescriem); butonul „Nu mai pot veni" înlocuit cu „Adaugă în calendar"; logistica
-      mutată într-un bloc „bilet" nou (bordură, dată/oră mono, adresă cu link de hartă) —
-      reutilizabil din `render.ts`, nu markup unic. Subiect nou: „Locul tău e rezervat —
-      PRIMUL PAS". Compromis asumat, nu ascuns: scoaterea butonului reintroduce parțial
-      riscul pe care B3 îl rezolvase (loc blocat până la 17 din 20 de zile) — calea de
-      anulare rămâne totuși funcțională prin email 2, email 3 și răspuns direct la orice
-      mail. 141 teste unitare (2 noi), randare verificată vizual (390px + 700px) și trimisă
-      real prin Resend, marcată `[PREVIEW rescris]` ca să nu se confunde cu emailul real
+      nu prescriem); logistica mutată într-un bloc „bilet" nou (bordură, dată/oră mono,
+      adresă cu link de hartă) — reutilizabil din `render.ts`, nu markup unic. Subiect nou:
+      „Locul tău e rezervat — PRIMUL PAS". Butonul „Nu mai pot veni" — scos într-un prim
+      draft, apoi readăugat în aceeași zi (D101c), la cerere explicită („păstrăm amândouă,
+      dar calendarul e primul și cel mai important, anularea coboară, mai mică"): rămâne în
+      email 1, dar ca acțiune secundară — buton conturat, mai mic, poziționat sub notele de
+      subsol, sub CTA-ul principal de calendar. B3 (calea de anulare din email 1) rămâne
+      acoperit direct, nu doar prin email 2/3. 141 teste unitare (rescrise pentru ambele
+      butoane), randare verificată vizual (390px + 700px) și trimisă real prin Resend, de
+      două ori, marcată `[PREVIEW rescris]` și `[PREVIEW v2 — buton mic]` ca să nu se
+      confunde cu emailul real
       din testul end-to-end al rundei precedente.
 
 ## F6 — Ciclul Inngest — GATA, verificat end-to-end pe stack-ul real

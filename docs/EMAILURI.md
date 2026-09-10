@@ -36,8 +36,8 @@ Cerut explicit de Ciprian — verificat, nu presupus:
 - **List-Unsubscribe header — NU se adaugă.** E cerut de Gmail/Yahoo pentru
   expeditori de volum mare (mii de mailuri/zi). Aici: sub 200 de mailuri în
   toată campania, secvență tranzacțională legată de o înscriere concretă.
-  Opt-out real, funcțional, prin „Nu mai pot veni" din email 2 și 3 (D101 —
-  10 septembrie 2026 — a scos butonul din email 1, ton mai ferm) și prin
+  Opt-out real, funcțional, prin „Nu mai pot veni" — buton principal în
+  email 2/3, buton secundar (mai mic) în email 1 de la D101b — și prin
   răspuns direct la orice mail din secvență.
 - **Subiectele** — verificate manual pe cuvinte care declanșează filtre
   (CAPS, „gratuit", „urgent", „garantat", semne de exclamare, simboluri de
@@ -57,8 +57,11 @@ Cerut explicit de Ciprian — verificat, nu presupus:
 pe listă" suna condiționat; varianta nouă afirmă direct că locul e al
 cititorului, nu-l lasă să se întrebe dacă rezervarea contează deja. Fără
 mențiunea „ce aduci" (dacă vrea laptop, aduce; dacă nu, nu — nu prescriem).
-Butonul „Nu mai pot veni" a ieșit — vezi nota tehnică de mai jos pentru
-compromisul asumat față de B3.
+
+**A doua rundă, aceeași zi (D101b, „hai să le păstrăm pe amândouă"):** primul
+draft scosese complet butonul „Nu mai pot veni". Ciprian a cerut să rămână
+ÎN email 1, dar coborât — calendarul e primul și cel mai important, anularea
+apare mai jos, ca buton vizibil mai mic (outline, nu umplut).
 
 ```
 Salut, {{nume}},
@@ -80,6 +83,10 @@ Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare — hartă: {{maps_url}}
 Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid,
 atât.
 Întrebări? Răspunde direct la mailul ăsta.
+Dacă între timp știi sigur că nu mai poți veni, anunță-mă din timp, ca să
+dau locul mai departe.
+
+[Nu mai pot veni] (buton mic) → {{link_anulare}}
 
 Ne vedem miercuri,
 Ciprian Micu - Deep Logic
@@ -89,15 +96,9 @@ Ciprian Micu - Deep Logic
 
 **Notă tehnică:** `{{link_calendar}}` = `/eveniment.ics` (același fișier
 static ca butonul de pe pagină/`/multumesc`/`/rezultat`). `{{maps_url}}` =
-`EVENIMENT.mapsUrl`.
-
-**Compromisul asumat față de B3 (linkul de anulare din email 1):** B3 exista
-ca să nu stea un loc blocat 17 din 20 de zile dacă cineva știe din prima zi
-că nu poate veni. Scoaterea butonului de aici reintroduce parțial riscul
-ăla — asumat deliberat, ca preț pentru tonul ferm cerut („nu vreau să le dăm
-ocazia să se sucească"). Calea de anulare rămâne funcțională prin email 2 și
-3 (ambele o păstrează) și prin răspuns direct la orice mail din secvență —
-doar nu mai e un buton dedicat, vizibil, chiar în primul mail.
+`EVENIMENT.mapsUrl`. `{{link_anulare}}` = `/raspuns?token={{confirm_token}}&r=nu`,
+la fel ca în email 2 și 3 — B3 rămâne acoperit din email 1, nu doar de-acolo
+încolo.
 
 ---
 

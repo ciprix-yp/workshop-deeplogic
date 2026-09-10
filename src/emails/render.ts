@@ -29,6 +29,13 @@ export interface EmailContinut {
   butoane?: Buton[];
   /** Paragrafe mici, după butoane — note, PS-uri. */
   notePicior?: string[];
+  /**
+   * Acțiune secundară, mai jos în email, randată vizibil MAI MIC decât
+   * `butoane` (outline, nu umplut) — cerut explicit (2026-09-10): CTA-ul
+   * principal (calendar) domină, acțiunea secundară (anulare) rămâne
+   * disponibilă, dar nu concurează vizual cu prima.
+   */
+  butonSecundar?: Buton;
   semnatura?: string;
 }
 
@@ -80,6 +87,9 @@ export function randeazaText(c: EmailContinut): string {
   if (c.notePicior?.length) {
     parti.push('', c.notePicior.join('\n'));
   }
+  if (c.butonSecundar) {
+    parti.push('', `[${c.butonSecundar.text}] → ${c.butonSecundar.href}`);
+  }
   parti.push('', c.semnatura ?? 'Ciprian Micu - Deep Logic');
   parti.push('', SUBSOL_TEXT);
 
@@ -118,6 +128,12 @@ export function randeazaHtml(c: EmailContinut): string {
     )
     .join('');
 
+  const butonSecundar = c.butonSecundar
+    ? `<a href="${c.butonSecundar.href}" style="display:inline-block;margin:4px 0 0;padding:8px 16px;
+      border:1px solid ${MUTED};color:${MUTED};text-decoration:none;border-radius:4px;
+      font-weight:600;font-size:13px;">${escapeHtml(c.butonSecundar.text)}</a>`
+    : '';
+
   return `<!doctype html>
 <html lang="ro">
 <body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
@@ -130,6 +146,7 @@ export function randeazaHtml(c: EmailContinut): string {
           ${c.bilet ? BILET_HTML : ''}
           ${butoane ? `<div style="margin:24px 0;">${butoane}</div>` : ''}
           ${notePicior}
+          ${butonSecundar}
           <p style="margin:24px 0 0;color:${TEXT};font-size:16px;">${escapeHtml(c.semnatura ?? 'Ciprian Micu - Deep Logic')}</p>
           <hr style="border:none;border-top:1px solid #E4E7E7;margin:32px 0 16px;" />
           <p style="margin:0;color:${MUTED};font-size:12px;line-height:1.6;">

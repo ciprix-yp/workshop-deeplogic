@@ -19,7 +19,7 @@ const SEMNATURA = 'Ciprian Micu - Deep Logic';
 
 /* ── Email 1 — Confirmare imediată ──────────────────────────────────────── */
 
-export function email1Confirmare(p: { nume: string; linkCalendar: string }): EmailGata {
+export function email1Confirmare(p: { nume: string; linkCalendar: string; linkAnulare: string }): EmailGata {
   const continut = {
     salut: p.nume,
     paragrafe: [
@@ -31,7 +31,12 @@ export function email1Confirmare(p: { nume: string; linkCalendar: string }): Ema
     notePicior: [
       'Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid, atât.',
       'Întrebări? Răspunde direct la mailul ăsta.',
+      'Dacă între timp știi sigur că nu mai poți veni, anunță-mă din timp, ca să dau locul mai departe.',
     ],
+    // Acțiune secundară, mai mică — cerut explicit (2026-09-10, a doua rundă):
+    // calendarul rămâne CTA-ul principal, dar anularea nu dispare, doar
+    // coboară vizual. Vezi D101b în DECIZII.md.
+    butonSecundar: { text: 'Nu mai pot veni', href: p.linkAnulare },
     semnatura: `Ne vedem miercuri,\n${SEMNATURA}`,
   };
   return {

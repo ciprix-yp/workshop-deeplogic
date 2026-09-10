@@ -865,3 +865,23 @@ Randare HTML verificată vizual (screenshot 390px + 700px, local) — bloc bilet
 de calendar, fără al doilea buton. Trimis real prin Resend către ciprian.micu@gmail.com, cu
 subiect marcat `[PREVIEW rescris]` ca să nu se confunde cu emailul 1 real primit cu o zi
 înainte (test din runda precedentă, cu copy-ul vechi).
+
+## A doua rundă a aceleiași zile (10 septembrie 2026) — D101b revizuit: butonul de anulare revine, mai mic
+
+Feedback imediat de la Ciprian, după ce a văzut previzualizarea D101: „hai să le păstrăm pe
+amândouă! Dar primul și cel mai important este cel de adaugă în calendar! Apoi mai jos în
+mail să apară un buton mai mic." Reversează parțial compromisul din D101b de mai sus — nu mai
+e nevoie de el, fiindcă butonul revine.
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D101c** | Buton „Nu mai pot veni" readăugat în email 1, dar ca acțiune SECUNDARĂ — câmp nou `butonSecundar` în `EmailContinut` (`render.ts`), randat vizibil mai mic (outline, `border:1px solid`, font 13px, fără fundal) decât `butoane` (umplut, font 15px), poziționat DUPĂ notele de subsol, nu lângă butonul de calendar | Cerință explicită și punctuală: calendarul rămâne CTA-ul principal, primul citit; anularea nu dispare (B3 rămâne acoperit din email 1, nu doar din 2/3), dar nu mai concurează vizual cu acțiunea dorită. Câmp nou în renderer, nu markup unic — dacă alt email are nevoie de o acțiune secundară similară, costul e zero. | `src/emails/render.ts` (`butonSecundar` — interfață + randare text/HTML), `src/emails/templates.ts` (`email1Confirmare` primește din nou `linkAnulare`), `src/inngest/functions/registered.ts`, `tests/emails.test.ts`, `docs/EMAILURI.md` |
+
+**Notă pentru D101b (mai sus):** compromisul descris acolo („scoaterea butonului reintroduce
+parțial riscul B3") nu se mai aplică — a fost valabil doar între primul draft și acest
+feedback, în aceeași zi. Las intrarea neschimbată ca istoric al deciziei, nu o rescriu.
+
+**Verificare:** 141 teste unitare (rescrise pentru noua formă — calendarul apare înaintea
+anulării în text, ambele linkuri prezente), `astro check` (0 erori). Randare verificată
+vizual (390px + 700px) — ierarhia corectă: buton verde plin sus, buton conturat mic jos.
+Trimis real prin Resend, subiect `[PREVIEW v2 — buton mic]`.

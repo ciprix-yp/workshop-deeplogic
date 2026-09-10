@@ -30,7 +30,7 @@ const P = {
 };
 
 const TOATE = [
-  email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar }),
+  email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare }),
   email2Reconfirmare({ nume: P.nume, linkConfirmare: P.linkConfirmare, linkAnulare: P.linkAnulare }),
   email3NeVedemAzi({ nume: P.nume, linkAnulare: P.linkAnulare }),
   email4CheckIn({ nume: P.nume, linkCheckin: P.linkCheckin }),
@@ -49,7 +49,7 @@ describe('toate cele 7 emailuri se randează complet', () => {
 
 describe('subiectele — fidele față de docs/EMAILURI.md, aprobat 28 august', () => {
   it.each([
-    [email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar }), 'Locul tău e rezervat — PRIMUL PAS'],
+    [email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare }), 'Locul tău e rezervat — PRIMUL PAS'],
     [
       email2Reconfirmare({ nume: P.nume, linkConfirmare: P.linkConfirmare, linkAnulare: P.linkAnulare }),
       'Vii miercuri? Am nevoie de un răspuns până la 11:00',
@@ -82,25 +82,26 @@ describe('B1 — pluralul din email 6, nu „un loc" mereu', () => {
 });
 
 describe('linkurile ajung acolo unde trebuie', () => {
-  it('email 1 conține linkul de calendar, NU pe cel de anulare (D101, reversează B3)', () => {
-    // Ton ferm, cerut explicit 2026-09-10: „ai locul, te aștept" — nicio
-    // invitație la anulare încă din primul email. Calea de anulare rămâne
-    // funcțională din email 2 și 3 (ambele păstrează linkAnulare), plus
-    // „răspunde direct la mailul ăsta" — dar nu mai are buton dedicat aici.
-    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar });
+  it('email 1 are calendarul ca CTA principal ȘI anularea ca buton secundar (D101b)', () => {
+    // A doua rundă (2026-09-10): „păstrăm amândouă, dar calendarul e primul
+    // și cel mai important, anularea coboară, mai mică" — B3 rămâne acoperit
+    // și din email 1, nu doar din 2/3.
+    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.text).toContain(P.linkCalendar);
     expect(e.html).toContain(P.linkCalendar);
-    expect(e.text).not.toContain(P.linkAnulare);
-    expect(e.text).not.toMatch(/nu mai pot veni/i);
+    expect(e.text).toContain(P.linkAnulare);
+    expect(e.html).toContain(P.linkAnulare);
+    // Calendarul apare ÎNAINTEA anulării — CTA-ul principal, primul citit.
+    expect(e.text.indexOf(P.linkCalendar)).toBeLessThan(e.text.indexOf(P.linkAnulare));
   });
 
   it('email 1 nu mai prescrie ce aduce participantul', () => {
-    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar });
+    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.text).not.toMatch(/\bpix\b/i);
   });
 
   it('email 1 include biletul — titlu, dată/oră, locație, adresă cu link de hartă', () => {
-    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar });
+    const e = email1Confirmare({ nume: P.nume, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.text).toContain('PRIMUL PAS');
     expect(e.text).toContain('Miercuri, 16 septembrie 2026');
     expect(e.text).toContain('Casa Dăinuirii');
@@ -122,13 +123,13 @@ describe('linkurile ajung acolo unde trebuie', () => {
 describe('securitate — HTML din numele participantului e scăpat', () => {
   it('un nume cu markup nu injectează HTML în email', () => {
     const numeRauVoitor = '<img src=x onerror=alert(1)>';
-    const e = email1Confirmare({ nume: numeRauVoitor, linkCalendar: P.linkCalendar });
+    const e = email1Confirmare({ nume: numeRauVoitor, linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.html).not.toContain('<img src=x onerror=alert(1)>');
     expect(e.html).toContain('&lt;img');
   });
 
   it('& și " din nume nu rup atributele HTML', () => {
-    const e = email1Confirmare({ nume: 'Ion & "Fiul" SRL', linkCalendar: P.linkCalendar });
+    const e = email1Confirmare({ nume: 'Ion & "Fiul" SRL', linkCalendar: P.linkCalendar, linkAnulare: P.linkAnulare });
     expect(e.html).toContain('&amp;');
     expect(e.html).toContain('&quot;');
   });
