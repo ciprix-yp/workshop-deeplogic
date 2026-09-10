@@ -844,3 +844,24 @@ septembrie) — nu `anulat`, starea intermediară de test.
 statusul funcției; ambele randări `/rezultat` (reconfirmat + anulat) capturate desktop+mobil.
 Servere locale (astro dev + Inngest Dev Server) oprite curat la final — nimic rămas pornit
 care ar putea trimite emailuri neașteptate mai târziu.
+
+## 10 septembrie 2026 — Email 1 rescris, ton ferm + bilet premium (D101)
+
+Cerut explicit, pe baza textului livrat de email 1: „vreau să fie mai ferm... nu vreau să-i
+dăm ocazia să se sucească", „nu aș menționa" ce aduce participantul, „scoatem butonul nu pot
+veni și punem buton de adaugă în calendar", „fă o experiență premium".
+
+| # | Decizie | Motiv | Unde s-a aplicat |
+|---|---|---|---|
+| **D101** | Email 1 rescris: „ai un loc" în loc de „ești pe listă"; a dispărut fraza „abia atunci contează locul rezervat" (implica exact opusul angajamentului cerut); a dispărut „Ce aduci: un pix. Atât."; butonul „Nu mai pot veni" a fost înlocuit cu „Adaugă în calendar" (`/eveniment.ics`); logistica (dată, oră, locație, adresă cu link de hartă) mutată dintr-o propoziție înghesuită într-un bloc „bilet" nou, cu bordură, randat de `render.ts` (`bilet: true` în `EmailContinut`) — reutilizabil, nu o bucată de markup unică pentru un singur email | Cerut explicit, cu argumentul de business: tratarea locului ca angajament deja luat (nu condiționat de reconfirmarea de peste două zile) reduce probabilitatea ca cineva „să se sucească". Ce aduce cineva (laptop sau nu) nu ține de organizator — prescrierea unui singur obiect (un pix) suna a instrucțiune inutilă. Blocul „bilet" e noul renderer, nu markup unic — dacă apare cerere similară la alt email (ex. email 3, care repetă azi adresa în proză), costul reutilizării e zero. | `src/emails/render.ts` (interfață + randare text/HTML), `src/emails/templates.ts` (`email1Confirmare`), `src/inngest/functions/registered.ts` (call site), `tests/emails.test.ts`, `docs/EMAILURI.md` |
+| **D101b** | Compromis asumat, ASUMAT nu ascuns: scoaterea butonului de anulare din email 1 reintroduce parțial riscul pe care B3 îl rezolvase (un loc putea sta blocat 17 din 20 de zile dacă cineva știa din prima zi că nu poate veni) | Decizia lui Ciprian, informat despre trade-off înainte de implementare. Calea de anulare RĂMÂNE funcțională — email 2 și email 3 păstrează amândouă `linkAnulare` neschimbat, plus „răspunde direct la mailul ăsta" din subsolul fiecărui email. Nu e o eliminare completă a opt-out-ului, doar scoaterea unui buton dedicat din PRIMUL mail, cel mai puțin probabil să fie citit de cineva care deja se răzgândește. | `docs/EMAILURI.md` (nota tehnică + bullet-ul de deliverability despre List-Unsubscribe, corectat să nu mai afirme „fiecare email are «nu mai pot veni»") |
+
+**Subiect nou:** `Locul tău e rezervat — PRIMUL PAS` (înainte: `Ești înscris — PRIMUL PAS`) —
+aceeași logică de fermitate aplicată și acolo, nu doar în corp.
+
+**Verificare:** 141 teste unitare (2 noi: bilet + absența linkului de anulare/„pix" din email
+1), `npm run contrast`, `astro check` (0 erori), build, suita SQL (20/20 runde waitlist).
+Randare HTML verificată vizual (screenshot 390px + 700px, local) — bloc bilet, buton verde
+de calendar, fără al doilea buton. Trimis real prin Resend către ciprian.micu@gmail.com, cu
+subiect marcat `[PREVIEW rescris]` ca să nu se confunde cu emailul 1 real primit cu o zi
+înainte (test din runda precedentă, cu copy-ul vechi).

@@ -19,6 +19,13 @@ export interface Buton {
 export interface EmailContinut {
   salut: string;
   paragrafe: string[];
+  /**
+   * Bloc „bilet" — titlu, dată+oră, locație, adresă cu link către hartă.
+   * Un singur eveniment pe tot proiectul, deci citește direct din
+   * `EVENIMENT`, nu ia parametri — cerut explicit (2026-09-10), ca
+   * emailul de confirmare să nu îngroape logistica în proză.
+   */
+  bilet?: boolean;
   butoane?: Buton[];
   /** Paragrafe mici, după butoane — note, PS-uri. */
   notePicior?: string[];
@@ -48,6 +55,15 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
+const BILET_TEXT = [
+  '──────────────────────────────',
+  EVENIMENT.titlu,
+  `${EVENIMENT.dataText} · ${EVENIMENT.ora}`,
+  EVENIMENT.locatie,
+  `${EVENIMENT.adresa} — hartă: ${EVENIMENT.mapsUrl}`,
+  '──────────────────────────────',
+].join('\n');
+
 export function randeazaText(c: EmailContinut): string {
   const parti = [
     `Salut, ${c.salut},`,
@@ -55,6 +71,9 @@ export function randeazaText(c: EmailContinut): string {
     c.paragrafe.join('\n\n'),
   ];
 
+  if (c.bilet) {
+    parti.push('', BILET_TEXT);
+  }
   if (c.butoane?.length) {
     parti.push('', c.butoane.map((b) => `[${b.text}] → ${b.href}`).join('\n'));
   }
@@ -66,6 +85,18 @@ export function randeazaText(c: EmailContinut): string {
 
   return parti.join('\n');
 }
+
+const BILET_HTML = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 24px;border:1px solid #E4E7E7;border-radius:10px;">
+      <tr><td style="padding:20px 24px;">
+        <p style="margin:0 0 6px;color:${TEXT};font-size:17px;font-weight:700;">${escapeHtml(EVENIMENT.titlu)}</p>
+        <p style="margin:0 0 14px;color:${ACCENT};font-size:14px;font-weight:600;font-family:'Courier New',Courier,monospace;">${escapeHtml(EVENIMENT.dataText)} · ${escapeHtml(EVENIMENT.ora)}</p>
+        <p style="margin:0;color:${TEXT};font-size:15px;line-height:1.5;">
+          ${escapeHtml(EVENIMENT.locatie)}<br/>
+          <a href="${EVENIMENT.mapsUrl}" style="color:${ACCENT};">${escapeHtml(EVENIMENT.adresa)}</a>
+        </p>
+      </td></tr>
+    </table>`;
 
 export function randeazaHtml(c: EmailContinut): string {
   const p = (text: string) =>
@@ -96,6 +127,7 @@ export function randeazaHtml(c: EmailContinut): string {
         <tr><td>
           ${p(`Salut, ${c.salut},`)}
           ${c.paragrafe.map(p).join('')}
+          ${c.bilet ? BILET_HTML : ''}
           ${butoane ? `<div style="margin:24px 0;">${butoane}</div>` : ''}
           ${notePicior}
           <p style="margin:24px 0 0;color:${TEXT};font-size:16px;">${escapeHtml(c.semnatura ?? 'Ciprian Micu - Deep Logic')}</p>

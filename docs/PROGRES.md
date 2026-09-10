@@ -388,6 +388,17 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
 - [x] **Trimitere reală, verificată** — toate cele 4 emailuri din ciclul principal livrate
       cu succes (`delivered@resend.dev`), la momentele corecte, conținut corect (verificat
       prin descărcarea efectivă a corpului email-ului din Resend)
+- [x] **10 septembrie 2026 — Email 1 rescris, ton ferm + bilet premium (D101).**
+      Cerut explicit: „ai locul și vii", nu „ești pe listă"; fără „ce aduci" (laptop sau nu,
+      nu prescriem); butonul „Nu mai pot veni" înlocuit cu „Adaugă în calendar"; logistica
+      mutată într-un bloc „bilet" nou (bordură, dată/oră mono, adresă cu link de hartă) —
+      reutilizabil din `render.ts`, nu markup unic. Subiect nou: „Locul tău e rezervat —
+      PRIMUL PAS". Compromis asumat, nu ascuns: scoaterea butonului reintroduce parțial
+      riscul pe care B3 îl rezolvase (loc blocat până la 17 din 20 de zile) — calea de
+      anulare rămâne totuși funcțională prin email 2, email 3 și răspuns direct la orice
+      mail. 141 teste unitare (2 noi), randare verificată vizual (390px + 700px) și trimisă
+      real prin Resend, marcată `[PREVIEW rescris]` ca să nu se confunde cu emailul real
+      din testul end-to-end al rundei precedente.
 
 ## F6 — Ciclul Inngest — GATA, verificat end-to-end pe stack-ul real
 

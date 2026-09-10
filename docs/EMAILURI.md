@@ -36,7 +36,9 @@ Cerut explicit de Ciprian — verificat, nu presupus:
 - **List-Unsubscribe header — NU se adaugă.** E cerut de Gmail/Yahoo pentru
   expeditori de volum mare (mii de mailuri/zi). Aici: sub 200 de mailuri în
   toată campania, secvență tranzacțională legată de o înscriere concretă.
-  Fiecare email are deja „Nu mai pot veni" — opt-out-ul real, funcțional.
+  Opt-out real, funcțional, prin „Nu mai pot veni" din email 2 și 3 (D101 —
+  10 septembrie 2026 — a scos butonul din email 1, ton mai ferm) și prin
+  răspuns direct la orice mail din secvență.
 - **Subiectele** — verificate manual pe cuvinte care declanșează filtre
   (CAPS, „gratuit", „urgent", „garantat", semne de exclamare, simboluri de
   bani). Niciunul nu le conține.
@@ -49,35 +51,53 @@ Cerut explicit de Ciprian — verificat, nu presupus:
 ## Email 1 — Confirmare imediată
 
 **Trimis:** imediat după `POST /api/register`, pentru status `inscris`.
-**Subiect:** `Ești înscris — PRIMUL PAS`
+**Subiect:** `Locul tău e rezervat — PRIMUL PAS`
+
+**Rescris 10 septembrie 2026 (D101), cerut explicit — ton mai ferm:** „ești
+pe listă" suna condiționat; varianta nouă afirmă direct că locul e al
+cititorului, nu-l lasă să se întrebe dacă rezervarea contează deja. Fără
+mențiunea „ce aduci" (dacă vrea laptop, aduce; dacă nu, nu — nu prescriem).
+Butonul „Nu mai pot veni" a ieșit — vezi nota tehnică de mai jos pentru
+compromisul asumat față de B3.
 
 ```
 Salut, {{nume}},
 
-Ești pe listă. Miercuri, 16 septembrie, 14:00–17:00, la Casa Dăinuirii —
-Strada 1 Decembrie 1918 nr. 1, Satu Mare.
+Ai un loc la PRIMUL PAS — te aștept miercuri.
 
-Nu trebuie să faci nimic acum. Cu două zile înainte îți scriu din nou, să
-confirmi că vii — abia atunci contează locul rezervat.
+Toate detaliile sunt mai jos — adaugă-le direct în calendar, ca să nu le
+mai cauți.
 
-Un singur lucru dacă se schimbă ceva: dacă știi deja acum că nu mai poți
-veni, spune-mi, ca să dau locul mai departe din timp, nu în ultima clipă.
+──────────────────────────────
+PRIMUL PAS
+Miercuri, 16 septembrie 2026 · 14:00–17:00
+Casa Dăinuirii
+Strada 1 Decembrie 1918 nr. 1, 440010 Satu Mare — hartă: {{maps_url}}
+──────────────────────────────
 
-[Nu mai pot veni] → {{link_anulare}}
+[Adaugă în calendar] → {{link_calendar}}
+
+Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid,
+atât.
+Întrebări? Răspunde direct la mailul ăsta.
 
 Ne vedem miercuri,
 Ciprian Micu - Deep Logic
 
-—
-Ce aduci: un pix. Atât.
-Întrebări? Răspunde direct la mailul ăsta.
-
 {{subsol}}
 ```
 
-**Notă tehnică:** `{{link_anulare}}` = `/raspuns?token={{confirm_token}}&r=nu`.
-E linkul nou din B3 — nu exista în spec-ul original, adăugat ca să nu stea un
-loc blocat 17 din 20 de zile dacă cineva știe din prima zi că nu poate veni.
+**Notă tehnică:** `{{link_calendar}}` = `/eveniment.ics` (același fișier
+static ca butonul de pe pagină/`/multumesc`/`/rezultat`). `{{maps_url}}` =
+`EVENIMENT.mapsUrl`.
+
+**Compromisul asumat față de B3 (linkul de anulare din email 1):** B3 exista
+ca să nu stea un loc blocat 17 din 20 de zile dacă cineva știe din prima zi
+că nu poate veni. Scoaterea butonului de aici reintroduce parțial riscul
+ăla — asumat deliberat, ca preț pentru tonul ferm cerut („nu vreau să le dăm
+ocazia să se sucească"). Calea de anulare rămâne funcțională prin email 2 și
+3 (ambele o păstrează) și prin răspuns direct la orice mail din secvență —
+doar nu mai e un buton dedicat, vizibil, chiar în primul mail.
 
 ---
 

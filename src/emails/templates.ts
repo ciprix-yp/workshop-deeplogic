@@ -19,22 +19,28 @@ const SEMNATURA = 'Ciprian Micu - Deep Logic';
 
 /* ── Email 1 — Confirmare imediată ──────────────────────────────────────── */
 
-export function email1Confirmare(p: { nume: string; linkAnulare: string }): EmailGata {
+export function email1Confirmare(p: { nume: string; linkCalendar: string }): EmailGata {
   const continut = {
     salut: p.nume,
     paragrafe: [
-      `Ești pe listă. Miercuri, 16 septembrie, 14:00–17:00, la ${ADRESA}.`,
-      'Nu trebuie să faci nimic acum. Cu două zile înainte îți scriu din nou, să confirmi că vii — abia atunci contează locul rezervat.',
-      'Un singur lucru dacă se schimbă ceva: dacă știi deja acum că nu mai poți veni, spune-mi, ca să dau locul mai departe din timp, nu în ultima clipă.',
+      `Ai un loc la ${EVENIMENT.titlu} — te aștept miercuri.`,
+      'Toate detaliile sunt mai jos — adaugă-le direct în calendar, ca să nu le mai cauți.',
     ],
-    butoane: [{ text: 'Nu mai pot veni', href: p.linkAnulare }],
-    notePicior: ['Ce aduci: un pix. Atât.', `Întrebări? Răspunde direct la mailul ăsta.`],
+    bilet: true,
+    butoane: [{ text: 'Adaugă în calendar', href: p.linkCalendar }],
+    notePicior: [
+      'Cu două zile înainte îți scriu să-mi confirmi prezența — un răspuns rapid, atât.',
+      'Întrebări? Răspunde direct la mailul ăsta.',
+    ],
     semnatura: `Ne vedem miercuri,\n${SEMNATURA}`,
   };
   return {
-    // Bug real (2026-09-09): era hardcodat „Prima Mutare spre un Asistent
-    // Digital", numele vechi al produsului — vezi nota din render.ts.
-    subject: `Ești înscris — ${EVENIMENT.titlu}`,
+    // Ton mai ferm (2026-09-10, cerut explicit): „ai locul", nu „ești pe
+    // listă" — locul e deja al tău, nu condiționat de reconfirmarea de
+    // peste două zile. Bug real (2026-09-09): era hardcodat „Prima Mutare
+    // spre un Asistent Digital", numele vechi al produsului — vezi nota
+    // din render.ts.
+    subject: `Locul tău e rezervat — ${EVENIMENT.titlu}`,
     text: randeazaText(continut),
     html: randeazaHtml(continut),
   };
