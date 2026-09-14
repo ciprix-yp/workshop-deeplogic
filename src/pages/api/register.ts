@@ -22,6 +22,8 @@ import { inscriereSchema, formDataInSchema } from '../../content/form-schema';
 import { verificaTurnstile } from '../../lib/turnstile';
 import { subLimita } from '../../lib/rate-limit';
 import { stari } from '../../content/copy';
+import { getInscriereCompleta } from '../../lib/supabase';
+import { trimiteNotificareInscriere } from '../../lib/notificare';
 import { registerParticipant, type RegisterStatus } from '../../lib/supabase';
 import { inngest, evtRegistered, evtWaitlisted } from '../../inngest/client';
 
@@ -189,6 +191,31 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     // problemă de mesagerie. B11 (job de reconciliere, F6) recuperează
     // exact situația asta: `welcome_sent_at IS NULL` mai vechi de 10 minute.
     console.error('inngest.send() a eșuat după register_participant reușit:', eroare);
+  }
+
+  /* ── Notificare către organizator — calea SCURTĂ ──────────────────────────
+   *
+   * Cerută explicit (2026-09-11). Trimisă de AICI, nu doar din Inngest, pentru
+   * un motiv câștigat cu greu: pe 14 septembrie două înscrieri reale n-au
+   * primit nicio confirmare fiindcă lanțul prin Inngest era rupt — iar nimeni
+   * n-a aflat șase ore. O notificare care trece prin exact sistemul care se
+   * poate rupe nu e o notificare.
+   *
+   * Există și ca funcție Inngest (`notificare-inscriere.ts`), pentru retry
+   * durabil în cazul invers. Nu se dublează: aceeași cheie de idempotență
+   * Resend, ancorată pe `registration_id`.
+   *
+   * Doar la înscriere NOUĂ (`este_nou`): un re-submit al aceleiași adrese (B4)
+   * nu e o înscriere nouă, deci nu merită un al doilea email.
+   */
+  if (rezultat.este_nou) {
+    try {
+      const date = await getInscriereCompleta(rezultat.registration_id);
+      if (date) await trimiteNotificareInscriere(rezultat.registration_id, date);
+    } catch (eroare) {
+      // Niciodată o eroare pentru om din cauza unei notificări interne.
+      console.error('notificarea către organizator a eșuat:', eroare);
+    }
   }
 
   const tinta = tintaPentruStatus(rezultat.status);

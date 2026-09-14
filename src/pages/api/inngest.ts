@@ -12,6 +12,7 @@ import { seatFreed } from '../../inngest/functions/seat-freed';
 import { leftoverWaitlistNotice } from '../../inngest/functions/leftover-waitlist-notice';
 import { retentionSweep } from '../../inngest/functions/retention-sweep';
 import { reconciliereWelcome } from '../../inngest/functions/reconciliere-welcome';
+import { notificareInscriere } from '../../inngest/functions/notificare-inscriere';
 
 export const prerender = false;
 
@@ -24,5 +25,6 @@ export const { GET, POST, PUT } = serve({
     leftoverWaitlistNotice,
     retentionSweep,
     reconciliereWelcome,
+    notificareInscriere,
   ],
 });

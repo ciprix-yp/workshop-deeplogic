@@ -197,6 +197,63 @@ export async function markWelcomeSent(registrationId: string): Promise<void> {
   if (error) throw new SupabaseRpcError('mark_welcome_sent', error);
 }
 
+/* ── notificarea organizatorului ─────────────────────────────────────────── */
+
+export interface InscriereCompleta {
+  nume: string;
+  email: string;
+  firma_rol: string | null;
+  status: RegisterStatus;
+  sursa: string | null;
+  sursa_detaliu: string | null;
+  nivel_ai: string | null;
+  proces: string | null;
+  qualification_answers: Record<string, unknown>;
+  vrea_discutie: boolean;
+  creat: string;
+}
+
+/**
+ * Tot ce a completat un om, pentru notificarea către organizator (cerut
+ * 2026-09-11: „vreau să îmi trimiți mail și mie pentru fiecare înscriere").
+ *
+ * Include răspunsurile de calificare, nu doar numele: formularul există exact
+ * ca să se pregătească materialul („Le folosesc ca să construiesc workshopul
+ * pentru sala care vine efectiv"), deci ele sunt partea utilă. Altfel ar
+ * trebui interogată baza la fiecare înscriere.
+ */
+export async function getInscriereCompleta(
+  registrationId: string,
+): Promise<InscriereCompleta | null> {
+  const { data, error } = await supabaseAdmin()
+    .from('event_registrations')
+    .select(
+      'status, sursa, sursa_detaliu, nivel_ai, proces, qualification_answers, created_at, contacts(email, nume, firma_rol, consimtamant_marketing)',
+    )
+    .eq('id', registrationId)
+    .maybeSingle();
+
+  if (error) throw new SupabaseRpcError('select înscriere completă', error);
+  if (!data) return null;
+
+  const contact = Array.isArray(data.contacts) ? data.contacts[0] : data.contacts;
+  if (!contact) return null;
+
+  return {
+    nume: contact.nume,
+    email: contact.email,
+    firma_rol: contact.firma_rol ?? null,
+    status: data.status as RegisterStatus,
+    sursa: data.sursa ?? null,
+    sursa_detaliu: data.sursa_detaliu ?? null,
+    nivel_ai: data.nivel_ai ?? null,
+    proces: data.proces ?? null,
+    qualification_answers: (data.qualification_answers ?? {}) as Record<string, unknown>,
+    vrea_discutie: Boolean(contact.consimtamant_marketing),
+    creat: data.created_at as string,
+  };
+}
+
 /* ── reconcilierea B11 ───────────────────────────────────────────────────── */
 
 export interface InscriereNereconciliata {

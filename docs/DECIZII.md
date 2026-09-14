@@ -1029,3 +1029,49 @@ notă de sincronizare în capul specului tehnic, cu cele nouă divergențe verif
 20/20, `astro check` 0 erori, build, `npm run contrast`, `npm run test:visual` (5
 breakpoint-uri, zero defecte). Migrația 0008 rămâne cea aplicată mai devreme — runda asta n-a
 adăugat nicio schimbare de schemă.
+
+## 14 septembrie 2026 — INCIDENT: două înscrieri reale fără confirmare + notificare la fiecare înscriere (D111–D113)
+
+Descoperit la o verificare de rutină („verifică dacă avem înscriși"), nu de un alarmă — ceea ce
+e chiar problema pe care D113 o rezolvă.
+
+**Ce s-a întâmplat.** Primele două înscrieri reale ale campaniei au intrat pe 14 septembrie, la
+10:27 (Diana Sorian) și 11:10 (Copos Otiniel). Amândouă aveau `welcome_sent_at` NULL și status
+`inscris` — adică **n-au primit nicio confirmare**, iar ciclul Inngest nu trecuse nici de primul
+pas (în fereastra `tarziu`, un ciclu reușit i-ar fi marcat `reconfirmat`). Au stat așa ~6 ore,
+cu evenimentul la două zile distanță. Exact modul de eșec pe care B11 îl descrie.
+
+**Ce am verificat, în ordine** (fiecare exclude o ipoteză):
+
+| Verificare | Rezultat | Ce exclude |
+|---|---|---|
+| Producția răspunde, contorul e corect (27/30) | ✅ sănătoasă | aplicația căzută |
+| `PUT /api/inngest` (sync) | ✅ „Successfully registered" | Inngest nu poate ajunge la app; cheia de signing invalidă |
+| Trimitere Resend de probă | ✅ acceptată | Resend căzut sau cheia locală invalidă |
+| `wrangler tail` + `inngest.send()` real declanșat din `/api/raspuns` | ✅ `"outcome": "ok"`, `"exceptions": []`, zero loguri de eroare | **emiterea către Inngest e funcțională** — deci nu e cheia de eveniment |
+
+Concluzia parțială: evenimentul ajunge la Inngest, dar **funcția eșuează**. Iar aici e capcana pe
+care D106 n-o acoperea: reconcilierea re-emite cu ACELAȘI `id` de idempotență (D16), corect
+pentru „emiterea a eșuat" — dar dacă emiterea a REUȘIT și funcția a picat, re-emiterea e
+deduplicată de Inngest și **nu repară nimic**. Plasa avea o gaură exact pe cazul întâlnit.
+
+| # | Decizie | Motiv | Unde |
+|---|---|---|---|
+| **D111** | **Recuperare manuală imediată**, înainte de orice diagnostic complet: confirmarea trimisă la amândoi, cu varianta `cereReconfirmare: false` (emailul 2 plecase deja la 09:00; ei s-au înscris după, deci nu mai vine niciunul) | Oamenii sunt reali și evenimentul e în două zile — n-are rost să aștepte cauza rădăcină. Trimis cu ACEEAȘI cheie de idempotență ca ciclul normal (`email1/<registration_id>`), deci dacă emailul plecase totuși, Resend deduplică. `welcome_sent_at` lăsat NULL deliberat: așa reconcilierea îi mai recuperează automat după fix, fără email dublu. | — (acțiune pe producție) |
+| **D112** | Notificarea către organizator conține **răspunsurile de calificare**, nu doar numele | Formularul există exact ca să se pregătească materialul („Le folosesc ca să construiesc workshopul pentru sala care vine efectiv"). Cu răspunsurile în email, pregătirea se face incremental, fără interogat baza. Randare proprie, nu `render.ts`: subsolul de-acolo („ai primit mailul ăsta pentru că te-ai înscris") e corect pentru participanți și absurd intern. | `src/emails/notificare.ts` (nou), `tests/notificare.test.ts` (nou, 8 aserțiuni) |
+| **D113** | Notificarea pleacă pe **DOUĂ căi**: direct din `register.ts` ȘI ca funcție Inngest | Cerută ca „mail pentru fiecare înscriere" (2026-09-11), dar incidentul de azi i-a dictat arhitectura: o notificare care trece prin exact sistemul care se poate rupe nu e o notificare. Calea directă pleacă chiar dacă Inngest e mort — ar fi semnalat incidentul în primul minut, nu după șase ore. Calea Inngest rămâne pentru cazul invers (app-ul a răspuns, trimiterea directă a eșuat). Dublura nu produce două emailuri: aceeași cheie de idempotență Resend, ancorată pe `registration_id`, deci prima care reușește trimite și a doua devine no-op — același mecanism face inofensivă și re-emiterea din reconciliere. | `src/lib/notificare.ts` (nou), `src/inngest/functions/notificare-inscriere.ts` (nou), `src/pages/api/register.ts`, `src/lib/supabase.ts` (`getInsciereCompleta`), `src/pages/api/inngest.ts` |
+
+**Destinația:** `ALERT_EMAIL` dacă e setat, altfel `EMAIL_FROM` — care e chiar
+`ciprian@deeplogic.ro`, adresa cerută explicit dintre trei variante, și aceeași unde ajung deja
+răspunsurile directe ale participanților. Nu s-a adăugat un secret nou; ca să le muți,
+`wrangler secret put ALERT_EMAIL`.
+
+**Notificările pentru cele două înscrieri pierdute au fost trimise retroactiv**, cu cheia de
+idempotență a producției — deci când calea automată le va atinge, nu se dublează.
+
+**Rămas de stabilit:** cauza exactă a eșecului funcției. Captura de loguri pe fereastra în care
+rulează cronul de reconciliere (la fiecare 10 minute, atinge exact aceleași două rânduri și
+trimite prin aceeași cale) urmează să dea eroarea reală. Ipoteza rămasă în picioare: cheia
+Resend din PRODUCȚIE diferă de cea locală (amprentele din `.env` și `.dev.vars` coincid, deci o
+a treia valoare ar putea fi în `wrangler secret`) — ar explica de ce emailul 1 pică în ciclu, dar
+trece din scripturile mele locale.
