@@ -409,6 +409,38 @@ lipsă/invalide → mesaje corecte, în vocea paginii.
          gate din §5 eșua în loc să ruleze).
       7. **~180 linii de cod mort eliminate**, plus doi invarianți reparați și documentația
          resincronizată (CLAUDE.md §2/§3 + notă de sincronizare în specul tehnic).
+- [x] **14 septembrie 2026 — INCIDENT + notificare la fiecare înscriere (D111–D113).**
+      `docs/DECIZII.md`, secțiunea „INCIDENT: două înscrieri reale fără confirmare".
+      Primele două înscrieri reale (10:27 și 11:10) n-au primit nicio confirmare:
+      `welcome_sent_at` NULL, status încă `inscris`, deci ciclul Inngest n-a trecut de primul
+      pas. Au stat ~6 ore, cu evenimentul la două zile. **Descoperit la o verificare de
+      rutină, nu de o alarmă** — exact problema pe care notificarea o rezolvă.
+      1. **Recuperare imediată:** confirmarea trimisă la amândoi (varianta fără promisiunea
+         reconfirmării — emailul 2 plecase deja la 09:00), cu cheia de idempotență a
+         producției. `welcome_sent_at` lăsat NULL deliberat, ca reconcilierea să-i mai
+         prindă automat după fix, fără email dublu.
+      2. **Notificare la fiecare înscriere, pe două căi** — direct din `register.ts` (pleacă
+         chiar dacă Inngest e mort) și ca funcție Inngest (retry durabil). Aceeași cheie de
+         idempotență, deci fără dublură. Conține răspunsurile de calificare, nu doar numele.
+      3. **Cauza rădăcină (D114):** secretul `EMAIL_FROM` din producție conținea
+         GHILIMELELE literale din `.env` — `wrangler secret put` copiază valoarea exact cum
+         i-o dai, inclusiv ghilimelele pe care dotenv le elimină local. Resend respingea
+         ORICE trimitere din producție („Invalid `from` field"). Explică fiecare simptom,
+         inclusiv de ce scripturile mele locale funcționau și de ce nici alarma nu pleca
+         (alerta trece prin aceeași cale). Secret reparat + **gardă** care aruncă imediat, cu
+         instrucțiunea de reparare în mesaj, într-un modul PUR ca să fie testabilă
+         (`src/lib/expeditor.ts`, 15 aserțiuni).
+      4. **Gaura din propria plasă B11, acoperită (D115):** reconcilierea re-emitea cu id-ul
+         ORIGINAL — corect pentru „emiterea a eșuat", inutil pentru cazul real întâlnit
+         („emiterea a reușit, funcția a picat"), fiindcă Inngest deduplică. Acum folosește un
+         id de recuperare distinct, deci pornește o instanță nouă; emailurile nu se dublează,
+         cheile Resend rămânând aceleași.
+      **Lecția de proces:** trei runde de audit și un test pe toate cele 8 emailuri n-au
+      prins-o, fiindcă TOATE verificările de email s-au făcut din scripturi locale, care
+      citesc `.env`. Niciuna n-a trimis un email declanșat din Worker. Verificarea care ar fi
+      prins-o lipsea și e banală.
+      Verificat: 158 teste unitare (+8 pentru notificare), 70/70 e2e, suita SQL, `verify`
+      complet exit 0. Notificările pentru cele două înscrieri pierdute trimise retroactiv.
 - [ ] **De reconciliat după eveniment: istoricul de migrații Supabase.** Fișierele locale sunt
       `0001`…`0008`; remote-ul are 7 versiuni cu timestamp din 27–28 august. `supabase db push`
       ar încerca să reaplice tot de la zero și ar pica. Nu e urgent — dar e o capcană pentru

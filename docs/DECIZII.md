@@ -1069,9 +1069,36 @@ răspunsurile directe ale participanților. Nu s-a adăugat un secret nou; ca s�
 **Notificările pentru cele două înscrieri pierdute au fost trimise retroactiv**, cu cheia de
 idempotență a producției — deci când calea automată le va atinge, nu se dublează.
 
-**Rămas de stabilit:** cauza exactă a eșecului funcției. Captura de loguri pe fereastra în care
-rulează cronul de reconciliere (la fiecare 10 minute, atinge exact aceleași două rânduri și
-trimite prin aceeași cale) urmează să dea eroarea reală. Ipoteza rămasă în picioare: cheia
-Resend din PRODUCȚIE diferă de cea locală (amprentele din `.env` și `.dev.vars` coincid, deci o
-a treia valoare ar putea fi în `wrangler secret`) — ar explica de ce emailul 1 pică în ciclu, dar
-trece din scripturile mele locale.
+### Cauza rădăcină, găsită (D114)
+
+Captura de loguri pe fereastra cronului de reconciliere a dat eroarea, de patru ori identic:
+
+```
+ResendSendError: Resend a eșuat: Invalid `from` field.
+The email address needs to follow the `email@example.com` or `Name <email@example.com>` format.
+```
+
+**Secretul `EMAIL_FROM` din producție conținea ghilimelele literale din `.env`** —
+`"Ciprian Micu - Deep Logic <ciprian@deeplogic.ro>"` — fiindcă `wrangler secret put` copiază
+valoarea exact cum i-o dai, inclusiv ghilimelele pe care dotenv le elimină local. Resend
+respingea ORICE trimitere din producție.
+
+Explică fiecare simptom, inclusiv pe cele care păreau contradictorii:
+
+| Simptom | De ce |
+|---|---|
+| Emailul 1 nu pleca, funcția eșua | `from` invalid → `trimiteEmail` arunca → cele 4 reîncercări se epuizau |
+| `welcome_sent_at` NULL, status încă `inscris` | rularea moare la primul pas, înainte de marcaje |
+| Nicio alarmă în șase ore | alerta reconcilierii B11 pleacă prin ACEEAȘI cale → pica identic |
+| Scripturile mele locale funcționau | parsez `.env` cu dotenv, care elimină ghilimelele |
+| `inngest.send()` mergea, sync-ul mergea | nimic legat de Inngest nu era rupt — de aceea diagnosticul a durat |
+
+| # | Decizie | Motiv | Unde |
+|---|---|---|---|
+| **D114** | Secretul reparat în producție (`printf 'Nume <email>' \| wrangler secret put EMAIL_FROM`, fără ghilimele), plus **gardă la trimitere**: un `EMAIL_FROM` care nu respectă formatul Resend aruncă imediat, cu instrucțiunea de reparare în mesaj | Un secret prost formatat nu are voie să se manifeste ca eșec tăcut pe fiecare email. Validarea stă într-un modul PUR (`src/lib/expeditor.ts`), separat de `resend.ts` care importă `astro:env/server` și deci nu poate fi încărcat în vitest — altfel garda ar fi netestabilă, exact ca lucrul pe care-l previne. | `src/lib/expeditor.ts` (nou), `src/lib/resend.ts` (ambele căi de trimitere), `tests/expeditor.test.ts` (nou) |
+| **D115** | **Gaura din plasa B11, acoperită:** reconcilierea re-emite acum cu un id de RECUPERARE (`reg-recovery-<id>`), distinct de cel original | Prima versiune folosea id-ul original — corect pentru cazul pentru care a fost scrisă („emiterea a eșuat, evenimentul n-a ajuns"), inutil pentru cazul REAL întâlnit: emiterea a reușit, funcția a picat. Acolo id-ul e deja consumat, Inngest deduplică re-emiterea, și plasa nu repara nimic. Cu prefixul de recuperare pornește o instanță nouă; emailurile nu se dublează, fiindcă cheile Resend (`email1/<id>`) rămân aceleași. Id stabil, fără timestamp — o singură încercare de recuperare per om, nu una la fiecare rulare a cronului. | `src/inngest/functions/reconciliere-welcome.ts` |
+
+**Lecția de proces, nu de cod:** trei runde de audit și un test end-to-end pe toate cele 8
+emailuri n-au prins-o, fiindcă TOATE verificările de email au fost făcute din scripturi locale,
+care citesc `.env`. Niciuna n-a trimis un email din producție. Verificarea care ar fi prins-o e
+banală și lipsea: o singură trimitere reală declanșată din Worker, nu din `tsx`.

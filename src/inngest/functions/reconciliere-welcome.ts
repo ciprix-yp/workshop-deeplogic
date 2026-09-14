@@ -57,6 +57,28 @@ export const reconciliereWelcome = inngest.createFunction(
       return { gasite: 0 };
     }
 
+    /*
+     * Id de RECUPERARE, distinct de cel original — gaură găsită la incidentul
+     * din 14 septembrie 2026.
+     *
+     * Prima versiune re-emitea cu exact `reg-<id>` / `wait-<id>`, adică
+     * id-urile folosite la emiterea originală. Corect pentru cazul pentru care
+     * a fost scrisă („emiterea a eșuat, evenimentul n-a ajuns niciodată"):
+     * atunci id-ul e liber și re-emiterea pornește ciclul.
+     *
+     * Dar cazul REAL întâlnit a fost invers: emiterea a REUȘIT, iar funcția a
+     * eșuat (`EMAIL_FROM` prost formatat în producție → Resend respingea orice
+     * trimitere). Acolo id-ul original e deja consumat, Inngest deduplică
+     * re-emiterea, și plasa nu repara nimic — oamenii rămâneau fără nicio
+     * confirmare, la infinit.
+     *
+     * Cu un prefix de recuperare, Inngest pornește o instanță NOUĂ de funcție.
+     * Emailurile nu se dublează: cheile de idempotență Resend
+     * (`email1/<registration_id>` etc.) sunt aceleași, deci un email deja
+     * trimis rămâne no-op. Id-ul e stabil (fără timestamp), deci recuperarea
+     * se încearcă o singură dată per om — nu pornește o instanță nouă la
+     * fiecare rulare a cronului cât timp rândul rămâne nemarcat.
+     */
     await step.sendEvent(
       're-emite-evenimentele',
       restante.map((r) =>
@@ -68,7 +90,7 @@ export const reconciliereWelcome = inngest.createFunction(
                 nume: r.nume,
                 confirm_token: r.confirm_token,
               },
-              { id: `wait-${r.registration_id}` },
+              { id: `wait-recovery-${r.registration_id}` },
             )
           : evtRegistered.create(
               {
@@ -78,7 +100,7 @@ export const reconciliereWelcome = inngest.createFunction(
                 confirm_token: r.confirm_token,
                 checkin_token: r.checkin_token,
               },
-              { id: `reg-${r.registration_id}` },
+              { id: `reg-recovery-${r.registration_id}` },
             ),
       ),
     );

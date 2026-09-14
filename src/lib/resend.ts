@@ -13,6 +13,13 @@
 import { Resend } from 'resend';
 import { RESEND_API_KEY, EMAIL_FROM } from 'astro:env/server';
 import { codificaAtasamente, type AtasamentEmail } from './attachments';
+import { valideazaExpeditor } from './expeditor';
+
+/**
+ * Expeditorul, validat la fiecare trimitere. Vezi `expeditor.ts` pentru
+ * incidentul din 14 septembrie 2026, care a costat două confirmări reale.
+ */
+const expeditor = () => valideazaExpeditor(EMAIL_FROM);
 
 let client: Resend | undefined;
 function resendAdmin(): Resend {
@@ -40,7 +47,7 @@ export class ResendSendError extends Error {
 export async function trimiteEmail(input: TrimiteEmailInput): Promise<{ id: string }> {
   const { data, error } = await resendAdmin().emails.send(
     {
-      from: EMAIL_FROM,
+      from: expeditor(),
       to: input.to,
       subject: input.subject,
       text: input.text,
@@ -76,7 +83,7 @@ export async function trimiteEmailBatch(input: TrimiteBatchInput): Promise<void>
   for (let i = 0; i < input.destinatari.length; i += BUCATA) {
     const felie = input.destinatari.slice(i, i + BUCATA);
     const { error } = await resendAdmin().batch.send(
-      felie.map((d) => ({ from: EMAIL_FROM, ...d })),
+      felie.map((d) => ({ from: expeditor(), ...d })),
       { idempotencyKey: `${input.idempotencyKeyBaza}-${i / BUCATA}` },
     );
     if (error) throw new ResendSendError(error);
