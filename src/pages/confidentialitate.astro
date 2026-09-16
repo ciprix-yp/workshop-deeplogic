@@ -18,6 +18,13 @@
  * pornind de la un document de plan depășit) a înlocuit lista corectă cu
  * întrebări inventate — inclusiv o pretinsă opțiune de text liber care nu
  * există. Corectat din nou, verificat linie cu linie față de schema reală.
+ *
+ * 2026-09-14 — adăugate §2.7 (aplicația de workshop PRIMUL PAS), §2.8
+ * (compunere roadmap cu AI — componentă neactivă, în așteptarea DPA
+ * Anthropic) și §2.9 (autoevaluare la momentele de educație), plus rândul
+ * Anthropic în tabelul de furnizori. Confirmat de Ciprian Micu și publicat
+ * 2026-09-16. Temeiul legal folosit (consimțământ) urmează convenția
+ * restului documentului; de confirmat cu un jurist odată cu activarea AI.
  */
 import Legal from '../layouts/Legal.astro';
 
@@ -27,7 +34,7 @@ export const prerender = true;
 <Legal
   titlu="Politica de Confidențialitate"
   descriere="Ce date personale colectează Deep Logic, în ce scop, pe ce bază legală și ce drepturi aveți asupra lor, conform GDPR."
-  ultimaActualizare="28 august 2026"
+  ultimaActualizare="16 septembrie 2026"
 >
   <p>
     Acest document explică ce date cu caracter personal colectează Deep Logic, în ce scop, pe ce bază legală, cât timp
@@ -144,6 +151,98 @@ export const prerender = true;
     nepublicate.
   </p>
 
+  <h3>2.7 Aplicația de workshop „PRIMUL PAS"</h3>
+  <p>
+    Pentru participanții la workshopul „PRIMUL PAS", Deep Logic pune la dispoziție o aplicație pe care participantul
+    o completează pe propriul dispozitiv, în timpul evenimentului, în locul caietului pe hârtie.
+  </p>
+  <p>
+    Aplicația colectează răspunsurile structurate date de-a lungul celor șase pași ai exercițiului: cu ce direcție e
+    legată o situație (timp, greșeli sau expertiză), cât de des apare, o fotografie numerică a perioadei analizate
+    (cazuri, minute, cost estimat), situația aleasă ca prioritară și motivul alegerii, și planul de verificare
+    (metodă, responsabil, termen). Aplicația reține și progresul prin cei șase pași, ca să poată relua sesiunea dacă
+    închideți telefonul sau pierdeți conexiunea.
+  </p>
+  <p>
+    <strong>
+      O parte din răspunsuri — descrierile libere, scrise de dumneavoastră, ale situației concrete din firmă — rămân
+      exclusiv pe dispozitivul propriu și nu sunt transmise către serverele Deep Logic.
+    </strong>
+    Doar cifrele, categoriile alese și planul de verificare structurat ajung în baza de date, strict cât e nevoie
+    pentru a asambla roadmap-ul.
+  </p>
+  <p>
+    <strong>Scop:</strong> asamblarea unui plan scurt de verificare („roadmap") pentru situația aleasă, livrat
+    dumneavoastră; afișarea progresului sălii către facilitator, în timpul evenimentului, ca să poată interveni la
+    timp.
+  </p>
+  <p><strong>Temei legal:</strong> consimțământul dumneavoastră, exprimat prin utilizarea aplicației.</p>
+  <p>
+    Emailul folosit pentru livrarea roadmap-ului este cel deja colectat la înscrierea în eveniment (secțiunea 2.1) —
+    aplicația nu vi-l cere din nou.
+  </p>
+  <p>
+    La finalul aplicației vi se pot solicita până la două acorduri separate, opționale și nebifate implicit:
+  </p>
+  <ul>
+    <li>
+      păstrarea răspunsurilor pentru îmbunătățirea metodei PRIMUL PAS, dincolo de scopul inițial de a genera
+      roadmap-ul dumneavoastră;
+    </li>
+    <li>„vreau o discuție despre procesele mele" — aceeași opțiune descrisă la secțiunea 2.2.</li>
+  </ul>
+
+  <h3>2.8 Compunerea roadmap-ului cu asistență AI (Anthropic)</h3>
+  <p>
+    Deep Logic intenționează să folosească un model de limbaj (Claude, dezvoltat de Anthropic) pentru a reformula
+    planul dumneavoastră de verificare (secțiunea 2.7) într-un document mai ușor de citit, trimis pe email.
+  </p>
+  <p>
+    Modelul <strong>nu decide</strong> situația aleasă, nu inventează cifre și nu adaugă despre firma dumneavoastră
+    afirmații pe care nu le-ați scris chiar dumneavoastră — rolul lui e strict reformularea răspunsurilor proprii,
+    verificată automat înainte de trimitere. Dacă verificarea automată nu confirmă corectitudinea textului compus,
+    primiți varianta neprelucrată, formată direct din răspunsurile dumneavoastră, fără AI.
+  </p>
+  <p>
+    <strong>Această componentă nu este încă activă.</strong> Va fi pornită doar după verificarea acordului de
+    prelucrare a datelor (DPA) cu Anthropic și stabilirea temeiului legal aplicabil; această secțiune va fi
+    actualizată la activare și, dacă va fi cazul, vi se va cere un consimțământ separat.
+  </p>
+
+  <h3>2.9 Autoevaluare la momentele de educație</h3>
+  <p>
+    La momentele de educație organizate de Deep Logic (sesiuni scurte, distincte de workshopul „PRIMUL PAS"), e
+    disponibil un instrument scurt de autoevaluare (sub 15 minute), care vă ajută să identificați aria din firmă care
+    merită investigată cu prioritate.
+  </p>
+  <p>Instrumentul:</p>
+  <ul>
+    <li><strong>nu colectează date de contact</strong> pe parcursul întrebărilor;</li>
+    <li>
+      vă cere emailul doar dacă alegeți să primiți rezultatul complet, personalizat; numele și firma sunt opționale;
+    </li>
+    <li>
+      oferă un rezumat orientativ pe ecran și un rezultat mai detaliat pe email —
+      <strong>un semnal de orientare, nu un verdict, un diagnostic sau un audit al firmei dumneavoastră</strong>;
+    </li>
+    <li>
+      <strong>nu produce un plan de implementare</strong> de tip roadmap; acela rămâne specific workshopului descris
+      la secțiunea 2.7.
+    </li>
+  </ul>
+  <p>
+    Rezultatul detaliat, trimis pe email, poate fi compus cu asistență AI, în aceleași condiții de la secțiunea 2.8,
+    inclusiv faptul că această componentă nu e încă activă.
+  </p>
+  <p>
+    Dacă bifați opțional „vreau să aflu despre următorul workshop", vă vom contacta ulterior în acest scop; opțiunea e
+    separată de cererea rezultatului și nu e bifată implicit.
+  </p>
+  <p>
+    <strong>Temei legal:</strong> consimțământul dumneavoastră, exprimat prin utilizarea instrumentului și, pentru
+    rezultatul pe email, prin furnizarea activă a adresei.
+  </p>
+
   <h2>3. Cui transmitem datele</h2>
   <p>
     Datele dumneavoastră sunt prelucrate prin intermediul următorilor furnizori de servicii (procesatori de date),
@@ -187,6 +286,14 @@ export const prerender = true;
           <td>programarea discuțiilor („book a call")</td>
           <td>Statele Unite ale Americii</td>
         </tr>
+        <tr>
+          <td><strong>Anthropic</strong></td>
+          <td>
+            compunerea asistată de AI a roadmap-ului și a rezultatului de autoevaluare (secțiunile 2.8–2.9) —
+            <strong>componentă neactivă</strong>, până la verificarea DPA
+          </td>
+          <td>Statele Unite ale Americii</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -198,7 +305,7 @@ export const prerender = true;
   <h2>4. Transferul internațional de date</h2>
   <p>
     Din furnizorii de mai sus, doar <strong>Supabase</strong> găzduiește infrastructura în Uniunea Europeană. Toți
-    ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly) sunt companii din Statele Unite ale Americii, iar
+    ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly, Anthropic) sunt companii din Statele Unite ale Americii, iar
     datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
   </p>
   <p>Acest transfer se realizează în baza unor mecanisme legale recunoscute de GDPR:</p>
@@ -231,6 +338,11 @@ export const prerender = true;
   <p>
     Vă puteți retrage consimțământul și solicita ștergerea datelor în orice moment, înainte de expirarea acestui
     termen, conform secțiunii 6.
+  </p>
+  <p>
+    Aceeași regulă se aplică datelor din aplicația de workshop (2.7) și din instrumentul de autoevaluare (2.9), cu
+    excepția răspunsurilor păstrate exclusiv pe dispozitivul dumneavoastră (2.7), care nu sunt niciodată transmise
+    Deep Logic și nu intră, deci, sub această politică de retenție.
   </p>
 
   <h2>6. Drepturile dumneavoastră</h2>

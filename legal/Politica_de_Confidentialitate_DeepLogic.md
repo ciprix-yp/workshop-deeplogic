@@ -1,6 +1,6 @@
 # Politica de Confidențialitate
 
-**Ultima actualizare:** 28.08.2026
+**Ultima actualizare:** 16.09.2026
 
 Acest document explică ce date cu caracter personal colectează Deep Logic, în ce scop, pe ce bază legală, cât timp le păstrează și ce drepturi aveți în legătură cu aceste date, conform Regulamentului (UE) 2016/679 (GDPR).
 
@@ -72,6 +72,48 @@ Pentru participanții care se înscriu în numele unei firme, Deep Logic poate c
 
 La începutul fiecărui eveniment, organizatorul anunță verbal acest aspect participanților. Dacă nu doriți să apăreți în fotografii sau materiale video, puteți comunica acest lucru organizatorului la fața locului, sau ulterior, prin email la contact@deeplogic.ro, pentru a solicita neutilizarea sau eliminarea din materialele nepublicate.
 
+### 2.7 Aplicația de workshop „PRIMUL PAS"
+
+Pentru participanții la workshopul „PRIMUL PAS", Deep Logic pune la dispoziție o aplicație pe care participantul o completează pe propriul dispozitiv, în timpul evenimentului, în locul caietului pe hârtie.
+
+Aplicația colectează răspunsurile structurate date de-a lungul celor șase pași ai exercițiului: cu ce direcție e legată o situație (timp, greșeli sau expertiză), cât de des apare, o fotografie numerică a perioadei analizate (cazuri, minute, cost estimat), situația aleasă ca prioritară și motivul alegerii, și planul de verificare (metodă, responsabil, termen). Aplicația reține și progresul prin cei șase pași, ca să poată relua sesiunea dacă închideți telefonul sau pierdeți conexiunea.
+
+**O parte din răspunsuri — descrierile libere, scrise de dumneavoastră, ale situației concrete din firmă — rămân exclusiv pe dispozitivul propriu și nu sunt transmise către serverele Deep Logic.** Doar cifrele, categoriile alese și planul de verificare structurat ajung în baza de date, strict cât e nevoie pentru a asambla roadmap-ul.
+
+**Scop:** asamblarea unui plan scurt de verificare („roadmap") pentru situația aleasă, livrat dumneavoastră; afișarea progresului sălii către facilitator, în timpul evenimentului, ca să poată interveni la timp.
+
+**Temei legal:** consimțământul dumneavoastră, exprimat prin utilizarea aplicației.
+
+Emailul folosit pentru livrarea roadmap-ului este cel deja colectat la înscrierea în eveniment (secțiunea 2.1) — aplicația nu vi-l cere din nou.
+
+La finalul aplicației vi se pot solicita până la două acorduri separate, opționale și nebifate implicit:
+- păstrarea răspunsurilor pentru îmbunătățirea metodei PRIMUL PAS, dincolo de scopul inițial de a genera roadmap-ul dumneavoastră;
+- „vreau o discuție despre procesele mele" — aceeași opțiune descrisă la secțiunea 2.2.
+
+### 2.8 Compunerea roadmap-ului cu asistență AI (Anthropic)
+
+Deep Logic intenționează să folosească un model de limbaj (Claude, dezvoltat de Anthropic) pentru a reformula planul dumneavoastră de verificare (secțiunea 2.7) într-un document mai ușor de citit, trimis pe email.
+
+Modelul **nu decide** situația aleasă, nu inventează cifre și nu adaugă despre firma dumneavoastră afirmații pe care nu le-ați scris chiar dumneavoastră — rolul lui e strict reformularea răspunsurilor proprii, verificată automat înainte de trimitere. Dacă verificarea automată nu confirmă corectitudinea textului compus, primiți varianta neprelucrată, formată direct din răspunsurile dumneavoastră, fără AI.
+
+**Această componentă nu este încă activă.** Va fi pornită doar după verificarea acordului de prelucrare a datelor (DPA) cu Anthropic și stabilirea temeiului legal aplicabil; această secțiune va fi actualizată la activare și, dacă va fi cazul, vi se va cere un consimțământ separat.
+
+### 2.9 Autoevaluare la momentele de educație
+
+La momentele de educație organizate de Deep Logic (sesiuni scurte, distincte de workshopul „PRIMUL PAS"), e disponibil un instrument scurt de autoevaluare (sub 15 minute), care vă ajută să identificați aria din firmă care merită investigată cu prioritate.
+
+Instrumentul:
+- **nu colectează date de contact** pe parcursul întrebărilor;
+- vă cere emailul doar dacă alegeți să primiți rezultatul complet, personalizat; numele și firma sunt opționale;
+- oferă un rezumat orientativ pe ecran și un rezultat mai detaliat pe email — **un semnal de orientare, nu un verdict, un diagnostic sau un audit al firmei dumneavoastră**;
+- **nu produce un plan de implementare** de tip roadmap; acela rămâne specific workshopului descris la secțiunea 2.7.
+
+Rezultatul detaliat, trimis pe email, poate fi compus cu asistență AI, în aceleași condiții de la secțiunea 2.8, inclusiv faptul că această componentă nu e încă activă.
+
+Dacă bifați opțional „vreau să aflu despre următorul workshop", vă vom contacta ulterior în acest scop; opțiunea e separată de cererea rezultatului și nu e bifată implicit.
+
+**Temei legal:** consimțământul dumneavoastră, exprimat prin utilizarea instrumentului și, pentru rezultatul pe email, prin furnizarea activă a adresei.
+
 ## 3. Cui transmitem datele
 
 Datele dumneavoastră sunt prelucrate prin intermediul următorilor furnizori de servicii (procesatori de date), folosiți de Deep Logic pentru operarea site-ului, organizarea evenimentelor și comunicarea cu participanții:
@@ -83,12 +125,13 @@ Datele dumneavoastră sunt prelucrate prin intermediul următorilor furnizori de
 | **Resend** | trimiterea email-urilor automate | Statele Unite ale Americii |
 | **Cloudflare** | găzduirea site-ului și protecție anti-spam la formulare (Turnstile) | rețea globală (companie din SUA); fără o configurare suplimentară de tip „Regional Services", datele pot tranzita și servere din SUA |
 | **Calendly** | programarea discuțiilor („book a call") | Statele Unite ale Americii |
+| **Anthropic** | compunerea asistată de AI a roadmap-ului și a rezultatului de autoevaluare (secțiunile 2.8–2.9) — **componentă neactivă**, până la verificarea DPA | Statele Unite ale Americii |
 
 Deep Logic nu vinde și nu închiriază datele dumneavoastră către terți în scop comercial. Datele pot fi divulgate autorităților publice doar dacă legea o impune expres.
 
 ## 4. Transferul internațional de date
 
-Din furnizorii de mai sus, doar **Supabase** găzduiește infrastructura în Uniunea Europeană. Toți ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly) sunt companii din Statele Unite ale Americii, iar datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
+Din furnizorii de mai sus, doar **Supabase** găzduiește infrastructura în Uniunea Europeană. Toți ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly, Anthropic) sunt companii din Statele Unite ale Americii, iar datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
 
 Acest transfer se realizează în baza unor mecanisme legale recunoscute de GDPR:
 
@@ -106,6 +149,8 @@ La expirarea acestui termen, veți fi contactat pentru **reconfirmarea** dorinț
 Curățenia bazei de date la expirarea termenului este realizată printr-o automatizare dedicată, pentru a asigura respectarea consecventă a acestui termen.
 
 Vă puteți retrage consimțământul și solicita ștergerea datelor în orice moment, înainte de expirarea acestui termen, conform secțiunii 6.
+
+Aceeași regulă se aplică datelor din aplicația de workshop (2.7) și din instrumentul de autoevaluare (2.9), cu excepția răspunsurilor păstrate exclusiv pe dispozitivul dumneavoastră (2.7), care nu sunt niciodată transmise Deep Logic și nu intră, deci, sub această politică de retenție.
 
 ## 6. Drepturile dumneavoastră
 

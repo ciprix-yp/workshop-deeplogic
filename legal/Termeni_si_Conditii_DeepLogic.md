@@ -1,6 +1,6 @@
 # Termeni și Condiții
 
-**Ultima actualizare:** 28.08.2026
+**Ultima actualizare:** 16.09.2026
 
 ## 1. Identificarea operatorului
 
@@ -42,9 +42,12 @@ La data prezentului document, site-ul nu are un flux de plată online. Dacă un 
 
 Site-ul poate include:
 
-- un instrument de **autoevaluare**, disponibil fără colectarea de date de contact;
+- **aplicația de workshop PRIMUL PAS**, folosită de participanții înscriși, pe propriul dispozitiv, în timpul evenimentului — descrisă la secțiunea 2.7 din Politica de Confidențialitate;
+- un instrument de **autoevaluare**, la momentele de educație, disponibil fără colectarea de date de contact pe parcursul întrebărilor — descris la secțiunea 2.9 din Politica de Confidențialitate;
 - opțiunea de a primi rezultatul autoevaluării pe email (colectare de date doar la cererea utilizatorului);
 - opțiunea de programare a unei discuții („book a call"), prin platformă terță (Calendly).
+
+Roadmap-ul livrat prin aplicația de workshop și rezultatul detaliat al autoevaluării nu constituie audit, diagnostic sau recomandare fermă de soluție — sunt un plan de verificare, respectiv un semnal de orientare, pe baza răspunsurilor proprii ale participantului. Nu înlocuiesc un diagnostic profesional al proceselor firmei.
 
 ## 5. Înscrierea la evenimente
 
