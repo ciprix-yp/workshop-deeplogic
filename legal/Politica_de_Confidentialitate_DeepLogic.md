@@ -1,6 +1,6 @@
 # Politica de Confidențialitate
 
-**Ultima actualizare:** 16.09.2026
+**Ultima actualizare:** 18.09.2026
 
 Acest document explică ce date cu caracter personal colectează Deep Logic, în ce scop, pe ce bază legală, cât timp le păstrează și ce drepturi aveți în legătură cu aceste date, conform Regulamentului (UE) 2016/679 (GDPR).
 
@@ -92,11 +92,17 @@ La finalul aplicației vi se pot solicita până la două acorduri separate, op�
 
 ### 2.8 Compunerea roadmap-ului cu asistență AI (Anthropic)
 
-Deep Logic intenționează să folosească un model de limbaj (Claude, dezvoltat de Anthropic) pentru a reformula planul dumneavoastră de verificare (secțiunea 2.7) într-un document mai ușor de citit, trimis pe email.
+Deep Logic folosește un model de limbaj (Claude, dezvoltat de Anthropic) pentru a reformula rezultatul dumneavoastră într-un document mai ușor de citit, trimis pe email.
 
 Modelul **nu decide** situația aleasă, nu inventează cifre și nu adaugă despre firma dumneavoastră afirmații pe care nu le-ați scris chiar dumneavoastră — rolul lui e strict reformularea răspunsurilor proprii, verificată automat înainte de trimitere. Dacă verificarea automată nu confirmă corectitudinea textului compus, primiți varianta neprelucrată, formată direct din răspunsurile dumneavoastră, fără AI.
 
-**Această componentă nu este încă activă.** Va fi pornită doar după verificarea acordului de prelucrare a datelor (DPA) cu Anthropic și stabilirea temeiului legal aplicabil; această secțiune va fi actualizată la activare și, dacă va fi cazul, vi se va cere un consimțământ separat.
+**Ce ajunge la Anthropic:** doar răspunsurile despre firmă și analiza deja calculată de Deep Logic. Numele, adresa de email, telefonul și numele firmei nu sunt trimise. Înainte de trimitere, textele scrise liber sunt curățate automat de adrese de email, numere de telefon, coduri fiscale (CUI) și IBAN-uri.
+
+**Stare:** pentru rezultatul instrumentului de autoevaluare (secțiunea 2.9), componenta este activă din 17 septembrie 2026. Pentru roadmap-ul din aplicația de workshop (secțiunea 2.7), nu este încă activă; această secțiune va fi actualizată la activare.
+
+Anthropic prelucrează aceste date ca persoană împuternicită, în baza acordului de prelucrare a datelor (DPA) inclus în termenii comerciali Anthropic, și nu le folosește pentru antrenarea modelelor. Transferul în SUA e descris la secțiunea 4.
+
+**Temei legal:** consimțământul dumneavoastră, dat pe ecranul de start al instrumentului, unde procesarea „inclusiv de un model AI” este menționată explicit.
 
 ### 2.9 Autoevaluare la momentele de educație
 
@@ -108,9 +114,7 @@ Instrumentul:
 - oferă un rezumat orientativ pe ecran și un rezultat mai detaliat pe email — **un semnal de orientare, nu un verdict, un diagnostic sau un audit al firmei dumneavoastră**;
 - **nu produce un plan de implementare** de tip roadmap; acela rămâne specific workshopului descris la secțiunea 2.7.
 
-Rezultatul detaliat, trimis pe email, poate fi compus cu asistență AI, în aceleași condiții de la secțiunea 2.8, inclusiv faptul că această componentă nu e încă activă.
-
-Dacă bifați opțional „vreau să aflu despre următorul workshop", vă vom contacta ulterior în acest scop; opțiunea e separată de cererea rezultatului și nu e bifată implicit.
+Rezultatul detaliat, trimis pe email, este compus cu asistență AI, în condițiile de la secțiunea 2.8.
 
 **Temei legal:** consimțământul dumneavoastră, exprimat prin utilizarea instrumentului și, pentru rezultatul pe email, prin furnizarea activă a adresei.
 
@@ -125,13 +129,14 @@ Datele dumneavoastră sunt prelucrate prin intermediul următorilor furnizori de
 | **Resend** | trimiterea email-urilor automate | Statele Unite ale Americii |
 | **Cloudflare** | găzduirea site-ului și protecție anti-spam la formulare (Turnstile) | rețea globală (companie din SUA); fără o configurare suplimentară de tip „Regional Services", datele pot tranzita și servere din SUA |
 | **Calendly** | programarea discuțiilor („book a call") | Statele Unite ale Americii |
-| **Anthropic** | compunerea asistată de AI a roadmap-ului și a rezultatului de autoevaluare (secțiunile 2.8–2.9) — **componentă neactivă**, până la verificarea DPA | Statele Unite ale Americii |
+| **Anthropic** | compunerea asistată de AI a rezultatului de autoevaluare (secțiunea 2.9) — activă; pentru roadmap-ul din aplicația de workshop (2.7), neactivă | Statele Unite ale Americii |
+| **Sentry** | raportarea erorilor tehnice ale aplicațiilor; adresele de email, textele scrise și linkurile personale sunt eliminate automat înainte de trimitere | Uniunea Europeană (Frankfurt, Germania); companie din SUA |
 
 Deep Logic nu vinde și nu închiriază datele dumneavoastră către terți în scop comercial. Datele pot fi divulgate autorităților publice doar dacă legea o impune expres.
 
 ## 4. Transferul internațional de date
 
-Din furnizorii de mai sus, doar **Supabase** găzduiește infrastructura în Uniunea Europeană. Toți ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly, Anthropic) sunt companii din Statele Unite ale Americii, iar datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
+Din furnizorii de mai sus, **Supabase** și **Sentry** stochează datele în Uniunea Europeană; Sentry este însă o companie din SUA. Ceilalți furnizori (Inngest, Resend, Cloudflare, Calendly, Anthropic) sunt companii din Statele Unite ale Americii, iar datele prelucrate prin aceste servicii pot fi transferate și procesate pe servere situate acolo.
 
 Acest transfer se realizează în baza unor mecanisme legale recunoscute de GDPR:
 
@@ -151,6 +156,8 @@ Curățenia bazei de date la expirarea termenului este realizată printr-o autom
 Vă puteți retrage consimțământul și solicita ștergerea datelor în orice moment, înainte de expirarea acestui termen, conform secțiunii 6.
 
 Aceeași regulă se aplică datelor din aplicația de workshop (2.7) și din instrumentul de autoevaluare (2.9), cu excepția răspunsurilor păstrate exclusiv pe dispozitivul dumneavoastră (2.7), care nu sunt niciodată transmise Deep Logic și nu intră, deci, sub această politică de retenție.
+
+Pentru instrumentul de autoevaluare (2.9), la expirarea termenului ștergem adresa de email și numele, iar din răspunsuri păstrăm doar alegerile, fără nimic din ce ați scris — o formă care nu vă mai identifică. Răspunsurile trimise fără adresă de email, pentru care nu avem pe cine întreba, sunt tratate la fel, la 1 an de la trimitere.
 
 ## 6. Drepturile dumneavoastră
 
@@ -178,9 +185,11 @@ Deep Logic nu ia decizii automate cu efecte juridice asupra dumneavoastră și n
 
 Automatizările folosite (ex. Inngest) servesc exclusiv scopuri operaționale — logistica evenimentelor, confirmări, gestionarea listei de așteptare, curățenia periodică a bazei de date — și nu produc efecte juridice sau decizii semnificative care vă privesc individual, fără posibilitatea intervenției umane.
 
+Compunerea textului cu asistență AI (secțiunea 2.8) nu ia decizii: reformulează un rezultat calculat deja, după reguli fixe, din răspunsurile dumneavoastră, iar textul compus e verificat automat înainte de trimitere.
+
 ## 8. Securitatea datelor
 
-Deep Logic aplică măsuri tehnice și organizatorice rezonabile pentru protejarea datelor colectate împotriva accesului neautorizat, pierderii sau divulgării accidentale, folosind furnizori de servicii cu propriile politici și măsuri de securitate (Supabase, Inngest, Resend, Cloudflare, Calendly).
+Deep Logic aplică măsuri tehnice și organizatorice rezonabile pentru protejarea datelor colectate împotriva accesului neautorizat, pierderii sau divulgării accidentale, folosind furnizori de servicii cu propriile politici și măsuri de securitate (Supabase, Inngest, Resend, Cloudflare, Calendly, Anthropic, Sentry).
 
 ## 9. Cookie-uri
 
