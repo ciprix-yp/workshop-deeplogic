@@ -157,7 +157,7 @@ Vă puteți retrage consimțământul și solicita ștergerea datelor în orice 
 
 Aceeași regulă se aplică datelor din aplicația de workshop (2.7) și din instrumentul de autoevaluare (2.9), cu excepția răspunsurilor păstrate exclusiv pe dispozitivul dumneavoastră (2.7), care nu sunt niciodată transmise Deep Logic și nu intră, deci, sub această politică de retenție.
 
-Pentru instrumentul de autoevaluare (2.9), la expirarea termenului ștergem adresa de email și numele, iar din răspunsuri păstrăm doar alegerile, fără nimic din ce ați scris — o formă care nu vă mai identifică. Răspunsurile trimise fără adresă de email, pentru care nu avem pe cine întreba, sunt tratate la fel, la 1 an de la trimitere.
+Pentru instrumentul de autoevaluare (2.9), la expirarea termenului ștergem adresa de email și numele, iar din răspunsuri păstrăm doar alegerile, fără nimic din ce ați scris — o formă care nu vă mai identifică. Răspunsurile trimise fără adresă de email, pentru care nu avem pe cine întreba, sunt tratate la fel, la 1 an de la trimitere. Dacă nu ați bifat acordul opțional de păstrare a răspunsurilor pentru îmbunătățirea metodei, anonimizarea are loc mai devreme, la 30 de zile de la trimitere.
 
 ## 6. Drepturile dumneavoastră
 
