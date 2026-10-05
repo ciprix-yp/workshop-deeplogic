@@ -1121,3 +1121,28 @@ site, deci orice schimbare legală pentru el se face aici și se verifică faț�
 **Verificat pe 5 octombrie:** textul de pe `workshop.deeplogic.ro/confidentialitate/` e identic
 cu build-ul local de la `77c52d2`, deci D116–D118 sunt live. Dacă `w0011` rulează în producția
 instrumentului de autoevaluare nu s-a verificat din acest repo.
+
+---
+
+## 5 octombrie 2026 — Înscrierile închise după ediția din 16.09 (D119–D120)
+
+**Ce s-a găsit.** La trei săptămâni după eveniment, `workshop.deeplogic.ro` încă invita la
+înscriere pentru 16 septembrie (7 butoane „Rezervă-ți locul”), iar `/api/register` n-avea nicio
+poartă pe dată. O înscriere făcută acum ajungea în bază și nu primea niciun email (ramura
+`dupa_eveniment` din `registered.ts`). Pe scurt: copy care minte și date personale strânse fără
+scop. Câte înscrieri au intrat după 16.09: neverificat, fiindcă secretele bazei nu sunt accesibile
+din sesiune.
+
+**Direcția, decisă de Ciprian pe 05.10:** site-ul se păstrează pentru o ediție nouă. Acum se
+închid doar înscrierile.
+
+| # | Decizie | Motiv | Unde |
+|---|---|---|---|
+| **D119** | **Comutatorul `EVENIMENT.inscrieriDeschise` (acum `false`).** `/` devine mesajul de închidere plus footer-ul legal, iar `/api/register` refuză înaintea rate limit-ului (410 JSON / redirect `/rezultat?stare=inscrieriInchise`). Plasa de ceas refuză oricum după `PROGRAM.EVENIMENT_SFARSIT` | Un comutator explicit, nu ceasul singur: pagina e prerandată, iar ediția nouă are nevoie de un singur loc de pornire. Ceasul rămâne ca plasă, fiindcă după eveniment nicio înscriere n-are scop, indiferent de comutator. Landing-ul rămâne neatins, pentru ediția nouă | `src/content/copy.ts`, `src/pages/index.astro`, `src/pages/api/register.ts`, `src/pages/rezultat.astro`, `src/components/CardRaspuns.astro` |
+| **D119b** | **Testele e2e de landing sunt suspendate cu `test.skip(!EVENIMENT.inscrieriDeschise)`,** iar un spec nou testează starea închisă | Testele descriu ce se servește. Revin singure odată cu comutatorul, deci trebuie să treacă înainte de redeschidere | `tests/e2e/*.spec.ts`, `tests/e2e/inscrieri-inchise.spec.ts` |
+| **D120** | **Cron-ul `reconciliere-welcome` nu se mai înregistrează cât timp înscrierile sunt închise.** `retention-sweep` rămâne necondiționat | Plasa B11 prinde înscrieri rămase fără email; fără înscrieri n-are ce prinde, dar ar rula la 10 minute pe bază. Retenția e promisiune legală. **Intră în vigoare abia după deploy și un sync Inngest** (`PUT /api/inngest`) | `src/pages/api/inngest.ts` |
+
+**Capcană de mediu, găsită pe drum:** cu `NODE_ENV=production` exportat din shell,
+`astro dev` rulează cu `import.meta.env.DEV = false`, iar garda din `src/inngest/client.ts`
+aruncă la import. Testele de până acum n-o prindeau: mock-uiau toate `/api/register`. Dev-ul
+se pornește cu `env -u NODE_ENV` (CLAUDE.md §0).

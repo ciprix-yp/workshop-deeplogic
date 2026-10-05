@@ -13,6 +13,8 @@ import S16Inscriere from '../components/S16Inscriere.astro';
 import S17Footer from '../components/S17Footer.astro';
 import CtaFloating from '../components/CtaFloating.astro';
 import DialogInscriere from '../components/DialogInscriere.astro';
+import CardRaspuns from '../components/CardRaspuns.astro';
+import { EVENIMENT, stari } from '../content/copy';
 
 /**
  * Prerandată integral. Nimic din pagină nu e dinamic — formularul face POST
@@ -38,10 +40,23 @@ import DialogInscriere from '../components/DialogInscriere.astro';
  *
  * Reversarea a scos și SINGURUL consumator al Lenis+GSAP de pe pagină —
  * vezi `Base.astro`, prop `motion` eliminat, și `docs/DECIZII.md` D78.
+ *
+ * **Înscrierile închise (D119, 2026-10-05).** Cu `EVENIMENT.inscrieriDeschise`
+ * pe `false`, pagina e doar mesajul de închidere plus footer-ul cu paginile
+ * legale: fără bară de locuri, fără CTA, fără formular. Landing-ul de mai jos
+ * rămâne neatins pentru o ediție nouă.
  */
 export const prerender = true;
+
+const inchis = stari.inscrieriInchise;
 ---
 
+{!EVENIMENT.inscrieriDeschise ? (
+<Base titlu={`${inchis.titlu} — ${EVENIMENT.titlu}`} descriere={inchis.corp.join(' ')}>
+  <CardRaspuns titlu={inchis.titlu} corp={inchis.corp} inapoi={false} />
+  <S17Footer />
+</Base>
+) : (
 <Base scarcity depth>
   <S01Hero />
   <TrustBar />
@@ -61,3 +76,4 @@ export const prerender = true;
   <CtaFloating />
   <DialogInscriere />
 </Base>
+)}

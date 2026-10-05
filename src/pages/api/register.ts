@@ -21,7 +21,8 @@ import type { APIRoute } from 'astro';
 import { inscriereSchema, formDataInSchema } from '../../content/form-schema';
 import { verificaTurnstile } from '../../lib/turnstile';
 import { subLimita } from '../../lib/rate-limit';
-import { stari } from '../../content/copy';
+import { stari, EVENIMENT } from '../../content/copy';
+import { fereastraInscrierii } from '../../inngest/schedule';
 import { getInscriereCompleta } from '../../lib/supabase';
 import { trimiteNotificareInscriere } from '../../lib/notificare';
 import { registerParticipant, type RegisterStatus } from '../../lib/supabase';
@@ -87,6 +88,19 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         // gol, fără nicio explicație. `/rezultat` e randată pe server, deci
         // funcționează exact acolo unde JS-ul lipsește.
         raspundeRedirect('/rezultat?stare=eroareFormular');
+
+  // ── 0. Înscrierile închise (D119) ───────────────────────────────────────
+  // Înaintea rate limit-ului, ca să nu atingă baza deloc. Ajunge oricare
+  // condiție. Comutatorul din copy.ts e decizia. Ceasul e plasa: după
+  // EVENIMENT_SFARSIT, o înscriere nu mai primește niciun email (registered.ts,
+  // ramura `dupa_eveniment`), deci ar fi doar date personale strânse fără scop.
+  // Plasa prinde și comutatorul uitat pe `true` după o ediție viitoare.
+  if (!EVENIMENT.inscrieriDeschise || fereastraInscrierii(new Date()) === 'dupa_eveniment') {
+    const { titlu, corp } = stari.inscrieriInchise;
+    return vreaJson
+      ? raspundeJson({ ok: false, mesaj: [titlu, ...corp].join(' ') }, 410)
+      : raspundeRedirect('/rezultat?stare=inscrieriInchise');
+  }
 
   // ── 1. Rate limit ──────────────────────────────────────────────────────
   const permis = await subLimita('register', clientAddress);

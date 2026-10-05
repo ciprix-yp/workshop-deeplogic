@@ -9,8 +9,10 @@ import { footer } from '../content/copy';
 interface Props {
   titlu: string;
   corp: readonly string[];
+  /** `false` doar pe `/` cu înscrierile închise (D119), unde linkul ar duce la aceeași pagină. */
+  inapoi?: boolean;
 }
-const { titlu, corp } = Astro.props;
+const { titlu, corp, inapoi = true } = Astro.props;
 ---
 
 <main id="continut" class="pagina-raspuns">
@@ -18,7 +20,7 @@ const { titlu, corp } = Astro.props;
     <h1>{titlu}</h1>
     {corp.map((p) => <p>{p}</p>)}
     <slot />
-    <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>
+    {inapoi && <a class="inapoi" href="/">← Înapoi la pagina workshopului</a>}
   </div>
   <p class="contact">
     Ceva nu e cum trebuie? Scrie la <a href={`mailto:${footer.email}`}>{footer.email}</a>.

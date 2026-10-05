@@ -9,6 +9,24 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 
 ## Stare curentă — 5 octombrie 2026 (predare pentru sesiunea următoare)
 
+### Actualizare, 5 octombrie, după sesiunea de lucru
+
+**Făcut și verificat** (`npm run verify` verde pe părți: contrast, vitest 173/173, `test:db`
+20/20, `astro check` 0 erori, build; e2e 12/12 pe starea închisă, 64 suspendate):
+- commit pentru tipurile Cloudflare, `.ics`, `.mise.toml` (node 24.21.0) și predarea asta;
+- D116–D118 consemnate (politica din 16–18.09); textul live al `/confidentialitate/` e identic cu build-ul;
+- **înscrierile închise** (D119): `/` e mesajul de închidere, `/api/register` refuză, cron-ul de reconciliere nu se mai înregistrează (D120). Vezi CLAUDE.md §0.
+
+**Nefăcut, blocat pe Ciprian:**
+- **Deploy-ul.** `wrangler` e logat pe contul You Protect (`ciprian.micu@youprotect.ro`), nu pe contul care deține worker-ul (`251beb…`), deci nici `npm run deploy`, nici `wrangler tail` nu merg. Trebuie `npx wrangler login` pe contul corect, apoi `npm run deploy`, apoi un sync Inngest (`PUT /api/inngest`) ca D120 să intre în vigoare.
+- **Push-ul** commit-urilor pe GitHub.
+- **`/api/locuri-disponibile` dă 500 în producție;** cauza: nu am date. E aceeași bază de care depinde `retention-sweep`. După login: `wrangler tail` + verificarea proiectului `leeds-deeplogic` în Supabase și a rulărilor `retention-sweep` în Inngest.
+- Câte înscrieri au intrat după 16.09: nu am date (secretele bazei nu sunt în Keychain, doar în `.dev.vars`).
+
+**Direcția (Ciprian, 05.10):** auditul (stratul 2) rămâne în `~/Assesment ME DeepLogic`, cu deploy și bază proprii. Cutii separate pe două niveluri: fiecare firmă auditată, și fiecare produs Deep Logic (azi workshop-ul și triajul împart proiectul Supabase `leeds-deeplogic`). Metodologia trece la v2.1 (banii pe etape, TCO pe scenariile „închiriezi inteligența” și „local, pe hardware-ul tău”), iar codul vine după calibrare. Workshop-ul se păstrează pentru o ediție nouă.
+
+### Predarea de dimineață
+
 Scrisă din cod și din git, nu din memorie. Ce nu e în repo e marcat „nu am date”.
 
 **Unde e proiectul:**

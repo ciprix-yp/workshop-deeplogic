@@ -66,6 +66,13 @@ export const EVENIMENT = {
   // în calendar" să deschidă și harta, nu doar textul adresei.
   mapsUrl: 'https://maps.app.goo.gl/QZP2Cs7owkZktZMh6',
   capacitate: 30,
+  /**
+   * Comutatorul înscrierilor (D119, 2026-10-05). `false` după ediția din 16.09: `/` arată
+   * doar `stari.inscrieriInchise`, `/api/register` refuză înainte de orice acces la bază,
+   * iar cron-ul de reconciliere nu se mai înregistrează. Codul de eveniment rămâne pentru
+   * o ediție nouă: ce se schimbă înainte de `true` e în CLAUDE.md, „Ediție nouă”.
+   */
+  inscrieriDeschise: false as boolean,
 } as const;
 
 export const CTA = {
@@ -720,6 +727,15 @@ export const stari = {
       'Dacă vrei totuși să vii, scrie-mi la contact@deeplogic.ro și te bag înapoi manual.',
       'Așa mă asigur că nu se dublează nimic în evidență.',
     ],
+  },
+
+  /**
+   * Înscrierile închise (D119): pe `/` cât timp `EVENIMENT.inscrieriDeschise` e `false`, și
+   * pe `/rezultat` când cineva trimite totuși formularul (o pagină veche, fără JS).
+   */
+  inscrieriInchise: {
+    titlu: 'Înscrierile s-au închis.',
+    corp: [`${EVENIMENT.titlu} s-a ținut ${EVENIMENT.dataText.toLowerCase()}, la ${EVENIMENT.oras}.`],
   },
 
   eroare: {

@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { EVENIMENT } from '../../src/content/copy';
+
+// Landing-ul complet se randează doar cu înscrierile deschise (D119). Testele
+// revin singure când comutatorul trece pe `true`, la o ediție nouă.
+test.skip(!EVENIMENT.inscrieriDeschise, 'înscrierile sunt închise (D119)');
 
 /**
  * BaraScarcity.astro — bara fixă de locuri + countdown (reversare deliberată

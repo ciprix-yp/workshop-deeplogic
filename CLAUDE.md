@@ -12,6 +12,39 @@ diverg, documentele se actualizează — nu se abandonează.
 
 ---
 
+## 0. Starea curentă: înscrieri închise (D119, 2026-10-05)
+
+Ediția din 16.09 s-a ținut. Site-ul se păstrează pentru o ediție nouă (decizia lui Ciprian),
+dar înscrierile sunt închise prin comutatorul `EVENIMENT.inscrieriDeschise = false`
+(`src/content/copy.ts`):
+
+- `/` arată doar `stari.inscrieriInchise` și footer-ul cu paginile legale. Landing-ul din
+  `index.astro` rămâne neatins.
+- `/api/register` refuză (410, sau redirect la `/rezultat?stare=inscrieriInchise` fără JS)
+  înainte de orice acces la bază. Plasa de ceas refuză oricum după `PROGRAM.EVENIMENT_SFARSIT`.
+- Cron-ul `reconciliere-welcome` nu se mai înregistrează. `retention-sweep` rămâne: e
+  promisiune legală (§5 din politică).
+- Testele e2e de landing sunt suspendate (`test.skip`) și revin singure cu comutatorul.
+  `tests/e2e/inscrieri-inchise.spec.ts` testează starea închisă.
+- `/confidentialitate` și `/termeni` servesc și instrumentul de autoevaluare din
+  `~/Assesment ME DeepLogic`. Paginile astea rămân live indiferent de soarta landing-ului.
+
+**Ediție nouă: comutatorul singur NU ajunge.** Datele ediției sunt scrise de mână în mai multe
+locuri, iar plasa de ceas refuză înscrierile cât timp `PROGRAM` are datele vechi:
+`EVENIMENT` și textele cu date din `copy.ts` / `form-schema.ts`, `PROGRAM` din
+`src/inngest/schedule.ts`, `EVENT_SLUG` (de două ori: `src/inngest/client.ts`,
+`src/lib/supabase.ts`), emailurile (`src/emails/templates.ts`), `.ics` (`src/lib/ics.ts`),
+`Base.astro` (date structurate), plus capacitatea din cele trei funcții SQL (§4). Caută
+`16 septembrie` și `2026-09` în `src/`. Abia apoi `inscrieriDeschise: true`, `npm run verify`,
+deploy, sync Inngest (cron-ul de reconciliere revine) și verificarea `data-sitekey` (§5).
+
+**Mediul:** dacă shell-ul exportă `NODE_ENV=production`, `astro dev` rulează cu
+`import.meta.env.DEV = false`, iar clientul Inngest aruncă la import fără chei de producție:
+orice rută care-l importă (`/api/register`, `/api/inngest`) dă 500 local. Pornește serverul
+de dev cu `env -u NODE_ENV`.
+
+---
+
 ## 1. Invarianți de copy — netransgresabili
 
 Nu apar pe pagină, **deliberat**. Sunt verificați automat de
@@ -425,6 +458,8 @@ mobil + Outlook; fluxul parcurs end-to-end, nu doar testat unitar.
 **După orice `npm run deploy`:** `curl -s https://workshop.deeplogic.ro/ | grep data-sitekey` —
 trebuie să arate `0x4AAAAAAEd91eLSLyQCvsIL` (cheia reală), niciodată `1x00000000000000000000AA`
 (cheia de test Cloudflare — vezi bug-ul din §4, „widget-ul Turnstile arată roșu").
+Cu înscrierile închise (§0), pagina n-are formular, deci `grep` nu întoarce nimic: e corect.
+Verificarea revine la redeschidere.
 
 **Cross-check de copy, la fiecare rundă:** fiecare afirmație din pagină verificată împotriva
 a ce face sistemul efectiv. „30 și, la mine, chiar sunt 30" — sistemul respectă?
