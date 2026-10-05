@@ -38,6 +38,8 @@ locuri, iar plasa de ceas refuză înscrierile cât timp `PROGRAM` are datele ve
 `16 septembrie` și `2026-09` în `src/`. Abia apoi `inscrieriDeschise: true`, `npm run verify`,
 deploy, sync Inngest (cron-ul de reconciliere revine) și verificarea `data-sitekey` (§5).
 
+**Baza de date e pe pauză (D121, 2026-10-05).** Proiectul Supabase `leeds-deeplogic` (ref `mwmk…`) a fost pus pe pauză de Supabase; se poate reporni până pe 26.10.2027. Tot ce citește baza (`retention-sweep`, `/raspuns`, `/pastreaza-datele`, contorul de locuri) pică până atunci. **Până în august 2027** trebuie ales: repornire, cu un loc liber pe planul gratuit, sau backup și retenție de mână. Nu pe Mac mini și nu cu Pro.
+
 **Mediul:** dacă shell-ul exportă `NODE_ENV=production`, `astro dev` rulează cu
 `import.meta.env.DEV = false`, iar clientul Inngest aruncă la import fără chei de producție:
 orice rută care-l importă (`/api/register`, `/api/inngest`) dă 500 local. Pornește serverul

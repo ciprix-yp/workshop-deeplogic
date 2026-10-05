@@ -1146,3 +1146,34 @@ din sesiune.
 `astro dev` rulează cu `import.meta.env.DEV = false`, iar garda din `src/inngest/client.ts`
 aruncă la import. Testele de până acum n-o prindeau: mock-uiau toate `/api/register`. Dev-ul
 se pornește cu `env -u NODE_ENV` (CLAUDE.md §0).
+
+---
+
+## 5 octombrie 2026, seara — Baza workshop-ului e pusă pe pauză de Supabase (D121)
+
+**Ce s-a găsit.** `/api/locuri-disponibile` dădea 500. Cu statusul HTTP păstrat în eroare, Supabase
+răspunde **530**: domeniul `mwmkggktwlxlrokbvgwx.supabase.co` nu se mai rezolvă. În dashboard,
+Ciprian a găsit proiectul `leeds-deeplogic` **pus pe pauză**: „All data, including backups and
+storage objects, remains safe. You can resume this project from the dashboard until 26 Oct 2027.”
+Repornirea cere un loc liber pe planul gratuit sau trecerea la Pro.
+
+**Ce nu e afectat:** instrumentul de autoevaluare (triajul) folosește alt proiect Supabase (ref
+`gpdw…`, `eu-west-1`, după cheia locală), iar `/v1/health` face un `select 1` real și răspunde `ok`.
+
+**Ce e afectat:** tot ce citește baza workshop-ului: `retention-sweep` (zilnic, pică), `/raspuns`,
+`/checkin`, `/pastreaza-datele`, `/api/locuri-disponibile`. Cu înscrierile închise (D119), nimic din
+astea nu e folosit acum, iar prima acțiune a promisiunii legale (emailul de la 1 an, §5 din
+politică) vine abia în septembrie 2027.
+
+| # | Decizie | Motiv | Unde |
+|---|---|---|---|
+| **D121** | **Baza workshop-ului rămâne pe pauză, fără Pro și fără mutare pe Mac mini.** Înainte de septembrie 2027 se alege una dintre două: (A) se eliberează un loc pe planul gratuit și se repornește proiectul, ca `retention-sweep` să-și facă treaba; (B) se descarcă backup-ul de pe pagina de pauză, iar emailul de la 1 an și ștergerea se fac de mână, din backup | Ciprian nu vrea să plătească. Un Postgres pe `mini-ciprian` (unde rulează Postiz) ar însemna date personale pe o mașină de acasă, instabilă (regula din CLAUDE.md global), un tunel public spre ea, rescrierea stratului de date și altă locație decât cea din politică. Pauza ține datele în siguranță până pe 26.10.2027, după data primei acțiuni legale | — (decizie de operare) |
+
+**Termen ferm: august 2027.** Până atunci se ia decizia A sau B. Cererile de ștergere sau de acces
+venite între timp se rezolvă din backup, de mână.
+
+**De confirmat, legal (constatare din aceeași seară):** politica spune „Supabase: Uniunea Europeană
+(Frankfurt, Germania)”. Workshop-ul e în `eu-central-1` (Frankfurt), deci corect. Cheia locală a
+triajului arată însă `eu-west-1` (Irlanda). Dacă producția triajului e tot acolo, rândul din
+politică trebuie corectat. Regiunea din producție se verifică în dashboard-ul proiectului `gpdw…`.
+
