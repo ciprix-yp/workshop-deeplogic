@@ -406,13 +406,21 @@ export async function listWaitlist(): Promise<IntrareWaitlist[]> {
  * eroare) să fie aplicată într-un singur loc și nu în celălalt — tăcut.
  */
 async function numaraOcupate(statusuri: RegisterStatus[]): Promise<number> {
-  const { count, error } = await supabaseAdmin()
+  const { count, error, status } = await supabaseAdmin()
     .from('event_registrations')
     .select('*', { count: 'exact', head: true })
     .eq('event_slug', EVENT_SLUG)
     .in('status', statusuri);
 
-  if (error) throw new SupabaseRpcError('count event_registrations', error);
+  // `head: true` e o cerere HEAD: răspunsul n-are corp, deci `error.message`
+  // vine gol. Fără statusul HTTP, eroarea din producție nu spunea nimic
+  // (5 octombrie 2026: „a eșuat: ” și atât).
+  if (error) {
+    throw new SupabaseRpcError('count event_registrations', {
+      ...error,
+      message: error.message || `HTTP ${status}`,
+    });
+  }
   return count ?? 0;
 }
 

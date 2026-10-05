@@ -17,7 +17,11 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 - D116–D118 consemnate (politica din 16–18.09); textul live al `/confidentialitate/` e identic cu build-ul;
 - **înscrierile închise** (D119): `/` e mesajul de închidere, `/api/register` refuză, cron-ul de reconciliere nu se mai înregistrează (D120). Vezi CLAUDE.md §0.
 
-**Nefăcut, blocat pe Ciprian:**
+**Deploy, 5 octombrie după-amiază** (versiunea `4fbed7e3`, contul Cloudflare `ciprian.micu@gmail.com`): pagina închisă e live, `/api/register` răspunde 410, `/confidentialitate` și `/termeni` 200. Sync Inngest făcut (`{"message":"Successfully registered","modified":true}`), deci cron-ul de reconciliere a ieșit. **Sync-ul cere `Content-Type: application/json`:** un `PUT` gol e respins de protecția Astro la cereri din alt site (403).
+
+**Cauza erorii 500 de la `/api/locuri-disponibile`, găsită:** Supabase răspunde **HTTP 530** (eroarea avea mesaj gol, fiindcă cererea e HEAD; acum poartă statusul). Proiectul la care e legat repo-ul (`supabase/.temp/project-ref`, ref `mwmk…`) **nu mai are DNS**: `<ref>.supabase.co` nu se rezolvă, nici de pe Mac. Aceeași bază o folosește `retention-sweep`, deci cron-ul de retenție pică zilnic. Primul termen legal (emailul de la 1 an) e în septembrie 2027. Instrumentul de autoevaluare raportează baza `ok`, dar se conectează prin Postgres direct (pooler); dacă e același proiect: nu am date. **De verificat de Ciprian în dashboard-ul Supabase:** starea proiectului (activ, pe pauză, șters) și Project URL.
+
+**Nefăcut, blocat pe Ciprian (lista de dimineață, parțial depășită):**
 - **Deploy-ul.** `wrangler` e logat pe contul You Protect (`ciprian.micu@youprotect.ro`), nu pe contul care deține worker-ul (`251beb…`), deci nici `npm run deploy`, nici `wrangler tail` nu merg. Trebuie `npx wrangler login` pe contul corect, apoi `npm run deploy`, apoi un sync Inngest (`PUT /api/inngest`) ca D120 să intre în vigoare.
 - **Push-ul** commit-urilor pe GitHub.
 - **`/api/locuri-disponibile` dă 500 în producție;** cauza: nu am date. E aceeași bază de care depinde `retention-sweep`. După login: `wrangler tail` + verificarea proiectului `leeds-deeplogic` în Supabase și a rulărilor `retention-sweep` în Inngest.
