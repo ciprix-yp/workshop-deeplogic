@@ -1102,3 +1102,22 @@ Explică fiecare simptom, inclusiv pe cele care păreau contradictorii:
 emailuri n-au prins-o, fiindcă TOATE verificările de email au fost făcute din scripturi locale,
 care citesc `.env`. Niciuna n-a trimis un email din producție. Verificarea care ar fi prins-o e
 banală și lipsea: o singură trimitere reală declanșată din Worker, nu din `tsx`.
+
+---
+
+## 16–18 septembrie 2026 — Politica acoperă instrumentul de autoevaluare (D116–D118)
+
+Consemnate pe 5 octombrie 2026, din commit-uri (`ddcf8f3`, `972b0a6`, `77c52d2`): la momentul
+lor, schimbările n-au ajuns în acest fișier. Instrumentul de autoevaluare PRIMUL PAS
+(`assessment.deeplogic.tools`, repo `~/Assesment ME DeepLogic`) trimite la politica de pe acest
+site, deci orice schimbare legală pentru el se face aici și se verifică față de codul de acolo.
+
+| # | Decizie | Motiv | Unde |
+|---|---|---|---|
+| **D116** | **§2.7–2.9 publicate (16.09):** aplicația workshop-ului, compunerea roadmap-ului cu AI (Anthropic, atunci neactivă) și instrumentul de autoevaluare; rândul Anthropic la împuterniciți; Termenii actualizați | Confirmat de Ciprian pe 16.09. Publicarea era condiția pentru pornirea sincronizării (`SYNC_ENABLED`) pe Worker-ul `primul-pas` | `legal/Politica_de_Confidentialitate_DeepLogic.md`, `legal/Termeni_si_Conditii_DeepLogic.md`, `src/pages/confidentialitate.astro`, `src/pages/termeni.astro` |
+| **D117** | **Politica descrie ce face instrumentul (18.09):** AI activ pentru autoevaluare din 17.09, cu ce ajunge la Anthropic (răspunsurile, fără nume, email, telefon sau firmă; textele libere curățate) și DPA-ul; Sentry la furnizori (regiunea UE, companie din SUA); ce înseamnă ștergerea, cu anonimizarea la 1 an a răspunsurilor fără email; AI-ul nu ia decizii (§7); scoasă bifa „vreau să aflu despre următorul workshop”, care nu există în instrument | Politica nu descria aplicația reală (blocantul 1b din `docs/OPEN_QUESTIONS.md` al repo-ului assessment). Verificat față de cod; afirmația despre DPA-ul Anthropic confirmată de Ciprian pe 18.09 | aceleași fișiere legale + `src/pages/confidentialitate.astro` |
+| **D118** | **§5: refuzul acordului opțional de păstrare scurtează retenția la 30 de zile (18.09)** | Același comportament ca în cod (migrația `w0011`, repo-ul assessment) | `legal/Politica_de_Confidentialitate_DeepLogic.md`, `src/pages/confidentialitate.astro` |
+
+**Verificat pe 5 octombrie:** textul de pe `workshop.deeplogic.ro/confidentialitate/` e identic
+cu build-ul local de la `77c52d2`, deci D116–D118 sunt live. Dacă `w0011` rulează în producția
+instrumentului de autoevaluare nu s-a verificat din acest repo.
