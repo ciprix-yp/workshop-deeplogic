@@ -7,6 +7,47 @@ Legendă: `[ ]` de făcut · `[~]` în lucru · `[x]` gata **și verificat** · 
 
 ---
 
+## Stare curentă — 5 octombrie 2026 (predare pentru sesiunea următoare)
+
+Scrisă din cod și din git, nu din memorie. Ce nu e în repo e marcat „nu am date”.
+
+**Unde e proiectul:**
+- **Evenimentul** era pe 16 septembrie 2026. Cum a ieșit (prezență, feedback, înscrieri finale): **nu am date** în repo.
+- **Ultima muncă în cod e din 18 septembrie,** pe partea legală pentru aplicația de autoevaluare PRIMUL PAS (`assessment.deeplogic.tools`, repo `~/Assesment ME DeepLogic`). Aplicația folosește politica de pe acest site (`/confidentialitate`), deci orice schimbare legală pentru ea se face aici:
+  - `ddcf8f3` (16.09): §2.7–2.9 publicate (aplicația workshop, compoziția AI, autoevaluarea) și Termenii actualizați;
+  - `972b0a6` (18.09): §2.8–2.9, AI activ pentru autoevaluare, Sentry la furnizori, ce înseamnă ștergerea;
+  - `77c52d2` (18.09): §5, refuzul acordului opțional de păstrare scurtează retenția la 30 de zile. Codul e în repo-ul assessment (migrația `w0011`, commit `3a7550d`); aplicarea în producție n-am verificat-o acum.
+- **`docs/DECIZII.md` se oprește la D115** (14.09, incidentul `EMAIL_FROM`). Schimbările legale de mai sus nu sunt consemnate acolo.
+
+**Ce e nesalvat în git:**
+- **2 commit-uri neîmpinse pe GitHub:** `972b0a6`, `77c52d2`.
+- **4 fișiere modificate, necomise:**
+  - `package.json` și `package-lock.json` adaugă devDependency-ul `@cloudflare/workers-types ^5.20260911.1` (16.09);
+  - `tsconfig.json`: `types` trece pe `@cloudflare/workers-types` (fără `/2023-07-01`), iar `baseUrl` dispare și `paths` devine `./src/*` (16.09);
+  - `public/eveniment.ics`: doar `DTSTAMP` regenerat la build (18.09).
+- Înainte de commit: `npm run verify` (vezi §5 din CLAUDE.md).
+
+**Ce rulează încă în producție** (funcții Inngest cu cron):
+- `reconciliere-welcome`, la 10 minute (plasa B11): după eveniment nu mai are la ce folosi. Oprirea ei e decizia lui Ciprian.
+- `retention-sweep`, zilnic la 09:00: **trebuie să rămână**. Trimite emailul 8 (retenție la 1 an, `/pastreaza-datele`) și șterge contactele nereconfirmate după 30 de zile de la notificare. E promisiune legală (§5).
+- `leftover-waitlist-notice` rulează o singură dată, nu e recurentă.
+
+**Rămase deschise din plan** (după eveniment, majoritatea nu mai contează):
+- F8 `/checkin-loc` (amânat deliberat);
+- F10 code review R1–R3 (nebifate);
+- pașii de mână din gate-uri: OG pe WhatsApp, `.ics` importat în Google/Apple/Outlook, emailurile deschise pe Gmail/Outlook;
+- secțiunea „Blocat pe Ciprian” de mai jos e din august și e depășită.
+
+**Direcția, decisă de Ciprian pe 05.10.2026:** urmează dezvoltarea **auditului Deep Logic**, adică stratul 2 din PRIMUL PAS (cei 7 piloni), „ca să avem certitudinea că implementăm AI-ul acolo unde are sens”. Munca se face în `~/Assesment ME DeepLogic`; planul e în `docs/OPEN_QUESTIONS.md` de acolo. Pentru acest repo, legătura concretă e **secțiunea din politica de confidențialitate pentru audit**: se publică aici, pe `/confidentialitate`, înainte de prima sesiune plătită. Rămâne deschis ce urmează pentru restul site-ului (altă ediție a workshop-ului sau arhivare): nu am date.
+
+**Primii pași propuși în sesiunea nouă:**
+1. `npm run verify`.
+2. Dacă trece: un commit pentru cele 4 fișiere (tipurile Cloudflare și `.ics`), apoi push, cu acordul lui Ciprian.
+3. Schimbările legale din 16–18.09 consemnate în `docs/DECIZII.md` (D116–D118).
+4. Decizia despre cron-ul `reconciliere-welcome` și despre viitorul site-ului.
+
+---
+
 ## F0 — Fundație
 
 - [x] Structura de directoare

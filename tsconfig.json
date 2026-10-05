@@ -6,10 +6,9 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true,
-    "types": ["@cloudflare/workers-types/2023-07-01"],
-    "baseUrl": ".",
+    "types": ["@cloudflare/workers-types"],
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["./src/*"]
     }
   }
 }
